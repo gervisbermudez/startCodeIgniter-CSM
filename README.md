@@ -1,27 +1,45 @@
-# [Start Bootstrap](http://startbootstrap.com/) - [Modern Business](http://startbootstrap.com/template-overviews/modern-business/)
+# startCodeigneiter CSM
 
-[Modern Business](http://startbootstrap.com/template-overviews/modern-business/) is a multipurpose, full website template for [Bootstrap](http://getbootstrap.com/) created by [Start Bootstrap](http://startbootstrap.com/). This template includes 17 unique HTML pages and a working PHP contact form.
+### Installation
 
-## Getting Started
+startCodeigneiter requires [Composer](https://getcomposer.org/).
 
-To begin using this template, choose one of the following options to get started:
-* [Download the latest release on Start Bootstrap](http://startbootstrap.com/template-overviews/modern-business/)
-* Clone the repo: `git clone https://github.com/BlackrockDigital/startbootstrap-modern-business.git`
-* Fork the repo
+Install the dependencies and devDependencies and start the server.
 
-## Bugs and Issues
+```sh
+$ git clone https://github.com/gervisbermudez/LoanAdmin.git
+$ cd ./LoanAdmin
+$ composer install
+$ php -S localhost:8000 -t ./
+```
 
-Have a bug or an issue with this template? [Open a new issue](https://github.com/BlackrockDigital/startbootstrap-modern-business/issues) here on GitHub or leave a comment on the [template overview page at Start Bootstrap](http://startbootstrap.com/template-overviews/modern-business/).
+### What is CodeIgniter
+CodeIgniter is an Application Development Framework - a toolkit - for people who build web sites using PHP. Its goal is to enable you to develop projects much faster than you could if you were writing code from scratch, by providing a rich set of libraries for commonly needed tasks, as well as a simple interface and logical structure to access these libraries. CodeIgniter lets you creatively focus on your project by minimizing the amount of code needed for a given task.
 
-## Creator
+### Release Information
+This repo contains in-development code for future releases. To download the latest stable release please visit the CodeIgniter Downloads page.
 
-Start Bootstrap was created by and is maintained by **[David Miller](http://davidmiller.io/)**, Owner of [Blackrock Digital](http://blackrockdigital.io/).
+### Changelog and New Features
+You can find a list of all changes for each release in the user guide change log.
 
-* https://twitter.com/davidmillerskt
-* https://github.com/davidtmiller
+### Server Requirements
+PHP version 5.6 or newer is recommended.
 
-Start Bootstrap is based on the [Bootstrap](http://getbootstrap.com/) framework created by [Mark Otto](https://twitter.com/mdo) and [Jacob Thorton](https://twitter.com/fat).
+It should work on 5.4.8 as well, but we strongly advise you NOT to run such old versions of PHP, because of potential security and performance issues, as well as missing features.
 
-## Copyright and License
+### Installation
+Please see the installation section of the CodeIgniter User Guide.
 
-Copyright 2013-2016 Blackrock Digital LLC. Code released under the [MIT](https://github.com/BlackrockDigital/startbootstrap-modern-business/blob/gh-pages/LICENSE) license.
+### License
+Please see the license agreement.
+
+### Resources
+User Guide
+Language File Translations
+Community Forums
+Community Wiki
+Community Slack Channel
+Report security issues to our Security Panel or via our page on HackerOne, thank you.
+
+### Acknowledgement
+The CodeIgniter team would like to thank EllisLab, all the contributors to the CodeIgniter project and you, the CodeIgniter user.
