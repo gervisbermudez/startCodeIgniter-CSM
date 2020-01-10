@@ -13,11 +13,11 @@
 		?>
 		<title><?php echo $title; ?></title>
 		<!-- Bootstrap Core CSS -->
-		<?php echo link_tag('css/bootstrap.min.css'); ?>
+		<?php echo link_tag('public/css/bootstrap.min.css'); ?>
 		<!-- Custom CSS -->
-		<?php echo link_tag('css/modern-business.css'); ?>
+		<?php echo link_tag('public/css/modern-business.css'); ?>
 		<!-- Custom Fonts -->
-		<?php echo link_tag('font-awesome/css/font-awesome.min.css'); ?>
+		<?php echo link_tag('public/font-awesome/css/font-awesome.min.css'); ?>
 		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 		<!--[if lt IE 9]>

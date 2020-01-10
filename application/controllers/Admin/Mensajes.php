@@ -20,8 +20,8 @@ class Mensajes extends MY_Controller {
 		$data['header'] = '';
 		$data['mensajes'] = $this->MensajesMod->get_mensaje(array('namefolder' => $folder));
 		$data['list'] = $this->load->view('admin/mensajes/list', $data, TRUE);
-		$data['head_includes'] = array('message.css' => link_tag('css/admin/message.css'));
-		$data['footer_includes'] = array('tinymce'=>'<script src="'.base_url('js/chips.js').'"></script>');
+		$data['head_includes'] = array('message.css' => link_tag('public/css/admin/message.css'));
+		$data['footer_includes'] = array('tinymce'=>'<script src="'.base_url('public/js/chips.js').'"></script>');
 		$this->load->view('admin/head', $data);
 		$this->load->view('admin/navbar', $data);
 		$this->load->view('admin/mensajes/todos', $data);
@@ -37,14 +37,14 @@ class Mensajes extends MY_Controller {
 		$data['h1'] = "";
 		$data['header'] = '';
 		$data['folder'] = $folder;
-		$data['head_includes'] = array('message.css' => link_tag('css/admin/message.css'));
+		$data['head_includes'] = array('message.css' => link_tag('public/css/admin/message.css'));
 		$data['mensajes'] = $this->MensajesMod->get_mensaje(array('namefolder' => $folder));
 		if (!$data['mensajes']) {
 			$data['mensajes'] = $this->MensajesMod->get_mensaje(array('namefolder' => 'Inbox'));
 			$data['folder'] = 'Inbox';
 		}
 		$data['list'] = $this->load->view('admin/mensajes/list', $data, TRUE);
-		$data['footer_includes'] = array('tinymce'=>'<script src="'.base_url('js/chips.js').'"></script>');
+		$data['footer_includes'] = array('tinymce'=>'<script src="'.base_url('public/js/chips.js').'"></script>');
 		$this->load->view('admin/head', $data);
 		$this->load->view('admin/navbar', $data);
 		$this->load->view('admin/mensajes/todos', $data);
