@@ -4,7 +4,7 @@
 ?>
 <div class="main">
 	<div class="parallax-container">
-		<div class="parallax"><img src="<?php echo base_url('img/profile/Material-Wallpaper.jpg')  ?>"></div>
+		<div class="parallax"><img src="<?php echo base_url('public/img/profile/Material-Wallpaper.jpg')  ?>"></div>
 	<?php echo $header; ?>
 	</div>
 	<div class="container">
@@ -48,7 +48,7 @@
 					<div class="col m4 s6 l3" id="<?php echo $itemid; ?>">
 						<div class="card">
 							<div class="card-image">
-								<img class="materialboxed" src="<?php echo base_url('img/gallery/'.$album[0]['path'].'/'.$value['nombre']); ?>">
+								<img class="materialboxed" src="<?php echo base_url('public/img/gallery/'.$album[0]['path'].'/'.$value['nombre']); ?>">
 							</div>
 							<div class="card-content">
 								<span><?php echo $value['nombre'] ?></span>

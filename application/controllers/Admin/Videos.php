@@ -89,7 +89,7 @@ class Videos extends MY_Controller {
 		$data['video'] = array();
 		$data['action'] = 'admin/videos/save';
 		$data['footer_includes'] = array(
-				'tinymce'=>'<script src="'.base_url('js/tinymce/js/tinymce/tinymce.min.js').'"></script>',
+				'tinymce'=>'<script src="'.base_url('public/js/tinymce/js/tinymce/tinymce.min.js').'"></script>',
 				'tinymceinit' => "<script>tinymce.init({ selector:'textarea',  plugins : ['link table'] });</script>");
 		$data['videocategoria'] = array();
 		$data['categorias'] = $this->ModVideo->get_categoria(array('tipo' => 'video' ));
@@ -157,7 +157,7 @@ class Videos extends MY_Controller {
 				}
 			}
 			$data['footer_includes'] = array(
-				'tinymce'=>'<script src="'.base_url('js/tinymce/js/tinymce/tinymce.min.js').'"></script>',
+				'tinymce'=>'<script src="'.base_url('public/js/tinymce/js/tinymce/tinymce.min.js').'"></script>',
 				'tinymceinit' => "<script>tinymce.init({ selector:'textarea',  plugins : ['link table'] });</script>");
 
 			$this->load->view('admin/head', $data);

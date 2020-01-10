@@ -130,7 +130,7 @@
         <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;width: 100%;padding-top: 0px;padding-right: 0px;padding-bottom: 0px;padding-left: 0px" align="center">
             <div style="font-size:12px" align="center">
                 <a href="http://promovida.com.ve/" target="_blank">
-                    <img class="center" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block;border: none;height: auto;line-height: 100%;margin: 0 auto;float: none;width: 174px;max-width: 174px" align="center" border="0" src="<?php echo base_url('img/email/logo.png'); ?>" alt="Image" title="Image" width="174">
+                    <img class="center" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block;border: none;height: auto;line-height: 100%;margin: 0 auto;float: none;width: 174px;max-width: 174px" align="center" border="0" src="<?php echo base_url('public/img/email/logo.png'); ?>" alt="Image" title="Image" width="174">
                 </a>
 
             </div>
@@ -205,7 +205,7 @@
         <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;width: 100%;padding-top: 0px;padding-right: 0px;padding-bottom: 0px;padding-left: 0px" align="center">
             <div style="font-size:12px" align="center">
                 <a href="https://www.promovida.com.ve" target="_blank">
-                    <img class="center fullwidth" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block;border: none;height: auto;line-height: 100%;margin: 0 auto;float: none;width: 100% !important;max-width: 500px" align="center" border="0" src="<?php echo base_url('img/email/Informativo3.jpg'); ?>" alt="Image" title="Image" width="500">
+                    <img class="center fullwidth" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block;border: none;height: auto;line-height: 100%;margin: 0 auto;float: none;width: 100% !important;max-width: 500px" align="center" border="0" src="<?php echo base_url('public/img/email/Informativo3.jpg'); ?>" alt="Image" title="Image" width="500">
                 </a>
 
             </div>
@@ -355,7 +355,7 @@
                       <tbody><tr style="vertical-align: top">
                           <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top" width="37" align="left" valign="middle">
                             <a href="https://www.facebook.com/https://www.facebook.com/promovidaproducciones/" title="Facebook" target="_blank">
-                                <img style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block;border: none;height: auto;line-height: 100%;max-width: 32px !important" src="<?php echo base_url('img/email/facebook.png'); ?>" alt="Facebook" title="Facebook" width="32">
+                                <img style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block;border: none;height: auto;line-height: 100%;max-width: 32px !important" src="<?php echo base_url('public/img/email/facebook.png'); ?>" alt="Facebook" title="Facebook" width="32">
                             </a>
                           </td>
                       </tr>
@@ -364,7 +364,7 @@
                       <tbody><tr style="vertical-align: top">
                           <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top" width="37" align="left" valign="middle">
                             <a href="http://twitter.com/https://twitter.com/PromovidaP" title="Twitter" target="_blank">
-                                <img style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block;border: none;height: auto;line-height: 100%;max-width: 32px !important" src="<?php echo base_url('img/email/twitter.png'); ?>" alt="Twitter" title="Twitter" width="32">
+                                <img style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block;border: none;height: auto;line-height: 100%;max-width: 32px !important" src="<?php echo base_url('public/img/email/twitter.png'); ?>" alt="Twitter" title="Twitter" width="32">
                             </a>
                           </td>
                       </tr>
@@ -373,7 +373,7 @@
                       <tbody><tr style="vertical-align: top">
                           <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top" width="37" align="left" valign="middle">
                             <a href="http://instagram.com/https://www.instagram.com/promovida/" title="Instagram" target="_blank">
-                                <img style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block;border: none;height: auto;line-height: 100%;max-width: 32px !important" src="<?php echo base_url('img/email/instagram.png'); ?>" alt="Instagram" title="Instagram" width="32">
+                                <img style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: block;border: none;height: auto;line-height: 100%;max-width: 32px !important" src="<?php echo base_url('public/img/email/instagram.png'); ?>" alt="Instagram" title="Instagram" width="32">
                             </a>
                           </td>
                       </tr>

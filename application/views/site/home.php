@@ -9,19 +9,19 @@
     <!-- Wrapper for slides -->
     <div class="carousel-inner">
         <div class="item active">
-            <div class="fill" style="background-image:url('<?php echo base_url('img/slide1.jpg'); ?>');"></div>
+            <div class="fill" style="background-image:url('<?php echo base_url('public/img/slide1.jpg'); ?>');"></div>
             <div class="carousel-caption">
                 <h2>Caption 1</h2>
             </div>
         </div>
         <div class="item">
-            <div class="fill" style="background-image:url('<?php echo base_url('img/slide2.jpg'); ?>');"></div>
+            <div class="fill" style="background-image:url('<?php echo base_url('public/img/slide2.jpg'); ?>');"></div>
             <div class="carousel-caption">
                 <h2>Caption 2</h2>
             </div>
         </div>
         <div class="item">
-            <div class="fill" style="background-image:url('<?php echo base_url('img/slide3.jpg'); ?>');"></div>
+            <div class="fill" style="background-image:url('<?php echo base_url('public/img/slide3.jpg'); ?>');"></div>
             <div class="carousel-caption">
                 <h2>Caption 3</h2>
             </div>
@@ -86,32 +86,32 @@
         </div>
         <div class="col-md-4 col-sm-6">
             <a href="portfolio-item.html">
-                <img class="img-responsive img-portfolio img-hover" src="<?php echo base_url('img/portfolio/1.jpg') ?>" alt="">
+                <img class="img-responsive img-portfolio img-hover" src="<?php echo base_url('public/img/portfolio/1.jpg') ?>" alt="">
             </a>
         </div>
         <div class="col-md-4 col-sm-6">
             <a href="portfolio-item.html">
-                <img class="img-responsive img-portfolio img-hover" src="<?php echo base_url('img/portfolio/2.jpg') ?>" alt="">
+                <img class="img-responsive img-portfolio img-hover" src="<?php echo base_url('public/img/portfolio/2.jpg') ?>" alt="">
             </a>
         </div>
         <div class="col-md-4 col-sm-6">
             <a href="portfolio-item.html">
-                <img class="img-responsive img-portfolio img-hover" src="<?php echo base_url('img/portfolio/3.jpg') ?>" alt="">
+                <img class="img-responsive img-portfolio img-hover" src="<?php echo base_url('public/img/portfolio/3.jpg') ?>" alt="">
             </a>
         </div>
         <div class="col-md-4 col-sm-6">
             <a href="portfolio-item.html">
-                <img class="img-responsive img-portfolio img-hover" src="<?php echo base_url('img/portfolio/4.jpg') ?>" alt="">
+                <img class="img-responsive img-portfolio img-hover" src="<?php echo base_url('public/img/portfolio/4.jpg') ?>" alt="">
             </a>
         </div>
         <div class="col-md-4 col-sm-6">
             <a href="portfolio-item.html">
-                <img class="img-responsive img-portfolio img-hover" src="<?php echo base_url('img/portfolio/2.jpg') ?>" alt="">
+                <img class="img-responsive img-portfolio img-hover" src="<?php echo base_url('public/img/portfolio/2.jpg') ?>" alt="">
             </a>
         </div>
         <div class="col-md-4 col-sm-6">
             <a href="portfolio-item.html">
-                <img class="img-responsive img-portfolio img-hover" src="<?php echo base_url('img/portfolio/6.jpg') ?>" alt="">
+                <img class="img-responsive img-portfolio img-hover" src="<?php echo base_url('public/img/portfolio/6.jpg') ?>" alt="">
             </a>
         </div>
     </div>
@@ -135,7 +135,7 @@
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corporis, omnis doloremque non cum id reprehenderit, quisquam totam aspernatur tempora minima unde aliquid ea culpa sunt. Reiciendis quia dolorum ducimus unde.</p>
         </div>
         <div class="col-md-6">
-            <img class="img-responsive" src="<?php echo base_url('img/portfolio/6.jpg') ?>" alt="">
+            <img class="img-responsive" src="<?php echo base_url('public/img/portfolio/6.jpg') ?>" alt="">
         </div>
     </div>
     <!-- /.row -->

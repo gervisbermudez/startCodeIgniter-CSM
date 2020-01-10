@@ -52,7 +52,7 @@ class Categorias extends MY_Controller {
 		$data['categoria'] = array();
 
 		$data['footer_includes'] = array(
-				'tinymce'=>'<script src="'.base_url('js/tinymce/js/tinymce/tinymce.min.js').'"></script>',
+				'tinymce'=>'<script src="'.base_url('public/js/tinymce/js/tinymce/tinymce.min.js').'"></script>',
 				'tinymceinit' => "<script>tinymce.init({ selector:'textarea',  plugins : ['link table'] });</script>");
 		$this->load->view('admin/head', $data);
 		$this->load->view('admin/navbar', $data);
@@ -117,7 +117,7 @@ class Categorias extends MY_Controller {
 		$data['categoria'] = $this->StModel->get_data(array('id' => $int_id), 'categorias')[0];
 		
 		$data['footer_includes'] = array(
-				'tinymce'=>'<script src="'.base_url('js/tinymce/js/tinymce/tinymce.min.js').'"></script>',
+				'tinymce'=>'<script src="'.base_url('public/js/tinymce/js/tinymce/tinymce.min.js').'"></script>',
 				'tinymceinit' => "<script>tinymce.init({ selector:'textarea',  plugins : ['link table'] });</script>");
 		
 		$this->load->view('admin/head', $data);

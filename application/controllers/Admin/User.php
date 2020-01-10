@@ -91,7 +91,7 @@ class User extends MY_Controller {
 
 			//Page includes
 			$data['head_includes'] = array('file-input' => link_tag('public/js/fileinput-master/css/fileinput.min.css'));
-			$data['footer_includes'] = array('file-input' => '<script src="'.base_url('js/fileinput-master/js/fileinput.js').'"></script>','file-input-canvas' => '<script src="'.base_url('js/fileinput-master/js/plugins/canvas-to-blob.min.js').'"></script>');
+			$data['footer_includes'] = array('file-input' => '<script src="'.base_url('public/js/fileinput-master/js/fileinput.js').'"></script>','file-input-canvas' => '<script src="'.base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js').'"></script>');
 			
 			// Load the views
 			$this->load->view('admin/head', $data);

@@ -67,7 +67,7 @@ class Eventos extends MY_Controller {
 		$data['title'] = "Admin | Nuevo Evento";
 		$data['h1'] = "Agregar nuevo Evento";
 		$data['header'] = $this->load->view('admin/header', $data, TRUE);
-		$data['footer_includes'] = array('tinymce'=>'<script src="'.base_url('js/tinymce/js/tinymce/tinymce.min.js').'"></script>',
+		$data['footer_includes'] = array('tinymce'=>'<script src="'.base_url('public/js/tinymce/js/tinymce/tinymce.min.js').'"></script>',
 			'tinymceinit' => "<script>tinymce.init({ selector:'textarea',  plugins : ['advlist autolink lists link image charmap print preview anchor','searchreplace visualblocks code fullscreen','insertdatetime media table contextmenu imagetools'] });</script>");
 		$this->load->view('admin/head', $data);
 		$this->load->view('admin/navbar', $data);
@@ -112,7 +112,7 @@ class Eventos extends MY_Controller {
 				$this->load->view('admin/navbar', $data);
 				$this->load->view('admin/eventos/editar', $data);
 				$this->load->helper('url');
-				$data['footer_includes'] = array('tinymce'=>'<script src="'.base_url('js/tinymce/js/tinymce/tinymce.min.js').'"></script>',
+				$data['footer_includes'] = array('tinymce'=>'<script src="'.base_url('public/js/tinymce/js/tinymce/tinymce.min.js').'"></script>',
 				'tinymceinit' => "<script>tinymce.init({ selector:'textarea',  plugins : ['advlist autolink lists link image charmap print preview anchor','searchreplace visualblocks code fullscreen','insertdatetime media table contextmenu imagetools'] });</script>");
 				
 				$this->load->view('admin/footer', $data);

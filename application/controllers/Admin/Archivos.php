@@ -30,7 +30,7 @@ class Archivos extends MY_Controller {
 				$data['load_to'] = 'Admin/Archivos/subirmultiple/'.$dir;
 				$data['form'] = $this->load->view('admin/galeria/upload_form', $data, TRUE);
 				$this->load->view('admin/archivos/todas', $data);
-				$data['footer_includes'] = array('file-input' => '<script src="'.base_url('js/fileinput-master/js/fileinput.js').'"></script>','file-input-canvas' => '<script src="'.base_url('js/fileinput-master/js/plugins/canvas-to-blob.min.js').'"></script>','lightbox' => '<script src="'.base_url('js/lightbox2-master/dist/js/lightbox.min.js').'"></script>');
+				$data['footer_includes'] = array('file-input' => '<script src="'.base_url('public/js/fileinput-master/js/fileinput.js').'"></script>','file-input-canvas' => '<script src="'.base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js').'"></script>','lightbox' => '<script src="'.base_url('public/js/lightbox2-master/dist/js/lightbox.min.js').'"></script>');
 				$this->load->view('admin/footer', $data);
 	}
 

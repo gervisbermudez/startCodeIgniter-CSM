@@ -41,7 +41,7 @@ class Galeria extends MY_Controller {
 				$data['header'] = $this->load->view('admin/header', $data, TRUE);	
 				
 				$data['head_includes'] = array('Galeria' => link_tag('css/galery.css'), 'file-input' => link_tag('public/js/fileinput-master/css/fileinput.min.css'));
-				$data['footer_includes'] = array('file-input' => '<script src="'.base_url('js/fileinput-master/js/fileinput.js').'"></script>', 'file-input-canvas' => '<script src="'.base_url('js/fileinput-master/js/plugins/canvas-to-blob.min.js').'"></script>' );
+				$data['footer_includes'] = array('file-input' => '<script src="'.base_url('public/js/fileinput-master/js/fileinput.js').'"></script>', 'file-input-canvas' => '<script src="'.base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js').'"></script>' );
 				
 				//Set upload options
 				$directorio = './img/portfolio/';
@@ -169,7 +169,7 @@ class Galeria extends MY_Controller {
 			$data['h1'] = "Agregar nuevo Album";
 			$data['header'] = $this->load->view('admin/header', $data, TRUE);
 			$data['footer_includes'] = array(
-				'tinymce'=>'<script src="'.base_url('js/tinymce/js/tinymce/tinymce.min.js').'"></script>',
+				'tinymce'=>'<script src="'.base_url('public/js/tinymce/js/tinymce/tinymce.min.js').'"></script>',
 				'tinymceinit' => "<script>tinymce.init({ selector:'textarea',  plugins : ['link table'] });</script>");
 
 			$this->load->view('admin/head', $data);
@@ -189,7 +189,7 @@ class Galeria extends MY_Controller {
 			$data['album'] = $this->ModGallery->get_album($albumid);
 			
 			$data['footer_includes'] = array(
-				'tinymce'=>'<script src="'.base_url('js/tinymce/js/tinymce/tinymce.min.js').'"></script>',
+				'tinymce'=>'<script src="'.base_url('public/js/tinymce/js/tinymce/tinymce.min.js').'"></script>',
 				'tinymceinit' => "<script>tinymce.init({ selector:'textarea',  plugins : ['link table'] });</script>");
 			
 			$this->load->view('admin/head', $data);

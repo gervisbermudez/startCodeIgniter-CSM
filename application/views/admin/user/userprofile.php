@@ -20,11 +20,11 @@
 					<div class="card-image">
 						<a class='dropdown-button right' href='#' data-activates='dropdown'><i class="material-icons">more_vert</i></a>
 						<?php echo $options; ?>
-						<img src="<?php echo base_url('img/profile/usertop.jpg'); ?>">
+						<img src="<?php echo base_url('public/img/profile/usertop.jpg'); ?>">
 					</div>
 					<div class="avatar">
 						<?php if (array_key_exists('avatar',$userdata[0])): ?>
-						<a href="#modal2" class="modal-trigger"><img src="<?php echo base_url('img/profile/'.$userdata[0]['username'].'/'.$userdata[0]['avatar']); ?>" alt="<?php echo $userdata[0]['avatar'] ?>" class="circle z-depth-1"></a>
+						<a href="#modal2" class="modal-trigger"><img src="<?php echo base_url('public/img/profile/'.$userdata[0]['username'].'/'.$userdata[0]['avatar']); ?>" alt="<?php echo $userdata[0]['avatar'] ?>" class="circle z-depth-1"></a>
 						<?php else: ?>
 						<a href="#modal2" class="modal-trigger"><i class="material-icons circle grey lighten-5 z-depth-1">account_circle</i></a>
 						<?php endif ?>
@@ -122,7 +122,7 @@
 					<div class="col s12">
 						<div class="card album hoverable">
 							<div class="card-image waves-effect waves-block waves-light">
-								<img src="<?php echo base_url('img/portfolio/'.$value['imagen']);?>" class="activator" >
+								<img src="<?php echo base_url('public/img/portfolio/'.$value['imagen']);?>" class="activator" >
 								<span class="card-title"><?php echo $value['titulo'] ?></span>
 							</div>
 							<div class="card-action">
