@@ -8,7 +8,7 @@ class ModGallery extends CI_Model {
 
 	public function get_album($data = 'all', $limit = '', $order = array('id','DESC'))
 	{
-		$this->db->limit($limit);
+		$limit ? $this->db->limit($limit) : null;
 		if ($order!=='') {
 			$this->db->order_by($order[0], $order[1]);
 		}
@@ -34,7 +34,7 @@ class ModGallery extends CI_Model {
 		if (!$id_album) {
 			return false;
 		}
-		$this->db->limit($limit);
+		$limit ? $this->db->limit($limit) : null;
 		$data = array('id_album' => $id_album);
 			$query = $this->db->get_where('album_items',$data);
 			if ($query->num_rows() > 0){

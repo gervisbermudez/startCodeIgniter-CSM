@@ -8,7 +8,7 @@ class ModVideo extends CI_Model {
 
 	public function get_video($data = 'all', $limit = '', $order = array('id', 'DESC'))
 	{	
-		$this->db->limit($limit);
+		$limit ? $this->db->limit($limit) : null;
 		if ($order!=='') {
 			$this->db->order_by($order[0], $order[1]);
 		}
@@ -56,7 +56,7 @@ class ModVideo extends CI_Model {
 
 	public function get_categoria($data = 'all', $limit = '', $order = array('id', 'DESC'))
 	{
-		$this->db->limit($limit);
+		$limit ? $this->db->limit($limit) : null;
 		if ($order!=='') {
 			$this->db->order_by($order[0], $order[1]);
 		}
@@ -77,7 +77,7 @@ class ModVideo extends CI_Model {
 
 	public function get_video_categoria($data = 'all', $limit = '', $order = array('id', 'DESC'))
 	{
-		$this->db->limit($limit);
+		$limit ? $this->db->limit($limit) : null;
 		if ($order!=='') {
 			$this->db->order_by($order[0], $order[1]);
 		}
@@ -98,7 +98,7 @@ class ModVideo extends CI_Model {
 
 	public function get_video_categoria_rel($data = 'all', $limit = '', $order = array('`video-categoria`.`id_video`', 'ASC'))
 	{
-		$this->db->limit($limit);
+		$limit ? $this->db->limit($limit) : null;
 		if ($order!=='') {
 			$this->db->order_by($order[0], $order[1]);
 		}

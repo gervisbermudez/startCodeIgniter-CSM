@@ -16,7 +16,7 @@ class ModNotify extends CI_Model {
 	}
 	public function get_notify($data = 'all', $limit, $order = array('id', 'DESC'))
 	{
-		$this->db->limit($limit);
+		$limit ? $this->db->limit($limit) : null;
 		if ($order!=='') {
 			$this->db->order_by($order[0], $order[1]);
 		}

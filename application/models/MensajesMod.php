@@ -7,7 +7,7 @@ class MensajesMod extends CI_Model {
 	}
 	public function get_mensaje($data = array(), $limit='')
 	{
-		$this->db->limit($limit);
+		$limit ? $this->db->limit($limit) : null;
 		$this->db->select('mensajes.*, mailfolder.namefolder');
 		$this->db->join('mailfolder', 'mensajes.folder = mailfolder.id');
 		$query = false;
