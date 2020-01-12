@@ -77,6 +77,9 @@
 						</li>
 					</ul>
 				</li>
+				<li>
+					<a href="<?=base_url('/admin');?>">Admin</a>
+				</li>
 			</ul>
 		</div>
 		<!-- /.navbar-collapse -->

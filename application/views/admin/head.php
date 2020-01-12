@@ -8,15 +8,15 @@
 		<meta name="author" content="">
 		<title><?php echo "$title"; ?></title>
 		<link href="<?php echo base_url('public/css/materialize.min.css'); ?>" rel="stylesheet">
-		<link href="<?php echo base_url('public/css/admin/star.css'); ?>" rel="stylesheet">
-		<script type="text/javascript"><?php echo 'var base_url = "'.base_url().'";'; ?></script>
+		<link href="<?php echo base_url('public/css/admin/start.min.css'); ?>" rel="stylesheet">
+		<script type="text/javascript"><?php echo 'var base_url = "' . base_url() . '";'; ?></script>
 		<script src="<?php echo base_url('public/js/jquery.js'); ?>"></script>
 		<?php
-			if (isset($head_includes)) {
-				foreach ($head_includes as $value) {
-					echo $value;
-				}
-			}
-		?>
+if (isset($head_includes)) {
+    foreach ($head_includes as $value) {
+        echo $value;
+    }
+}
+?>
 	</head>
 <body>

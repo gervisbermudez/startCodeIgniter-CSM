@@ -1,3 +1,5 @@
+@import "palette";
+
 body {
   overflow-x: hidden;
   font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -336,8 +338,9 @@ nav {
   padding: 0px;
   position: fixed;
   z-index: 9;
-  background-color: #03a9f4;
+  background-color: $color4;
   top: 0;
+  margin: 0 0 0 200px;
 }
 
 .pinned {
@@ -495,7 +498,7 @@ div.row.event a.dropdown-button.right {
 }
 
 .side-nav {
-  padding: 0 0 60px;
+  padding: 0 0 0px;
 
   ul a {
     height: auto;
@@ -532,7 +535,7 @@ div.row.event a.dropdown-button.right {
 @media (min-width: 993px) {
   .side-nav {
     left: 0px !important;
-    padding: 60px 0;
+    padding: 0;
     z-index: 1;
     width: 200px;
   }
