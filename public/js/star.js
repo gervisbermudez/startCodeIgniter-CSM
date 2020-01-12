@@ -1,6 +1,6 @@
 var arrayMensajes = Array();
 jQuery(document).ready(function($) {
-	Materialize.updateTextFields();
+	M.AutoInit();/* 
 	$('.button-collapse').sideNav();
 	$('.modal-trigger').leanModal();
 	$('.materialboxed').materialbox();
@@ -20,7 +20,7 @@ jQuery(document).ready(function($) {
 		selectMonths: true, // Creates a dropdown to control month
 		selectYears: 15 // Creates a dropdown of 15 years to control year
 	  });
-	$('.scrollspy').scrollSpy();
+	$('.scrollspy').scrollSpy(); */
 	
    $('[data-select-img]').click(function(event) {
 		var name = $(this).find('.img').attr('data-name');

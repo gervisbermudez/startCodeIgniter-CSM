@@ -36,6 +36,13 @@ span.current-folder {
   font-size: 20px;
 }
 
+.sidenav {
+  transform: none;
+  @media all and (max-width: 992px) {
+    transform: translateX(-105%);
+  }
+}
+
 .compose-container {
   width: auto;
   position: fixed;
@@ -340,7 +347,11 @@ nav {
   z-index: 9;
   background-color: $color4;
   top: 0;
-  margin: 0 0 0 200px;
+  margin: 0 0 0 300px;
+
+  @media all and (max-width: 992px) {
+    margin: 0px;
+  }
 }
 
 .pinned {
@@ -547,8 +558,7 @@ div.row.event a.dropdown-button.right {
   }
 
   .main {
-    padding: 60px 0 0 240px;
-    padding: 60px 0 0 200px;
+    padding: 60px 0 0 300px;
   }
 
   .menu-spand {
@@ -743,7 +753,8 @@ div#dropnotify {
   clear: both;
   background-color: #fff;
   padding: 10px;
-  z-index: 9;
+  z-index: 999;
   position: absolute;
   top: 200%;
+  width: 100%;
 }

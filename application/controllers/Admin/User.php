@@ -16,8 +16,7 @@ class User extends MY_Controller {
 		$data['h1'] = "Usuarios";
 		$data['header'] = $this->load->view('admin/header', $data, TRUE);
 		$data['username'] = $this->session->userdata('username');
-		
-		$data['userdata'] = $this->UserMod->get_user(array('usergroup.level > '=> $this->session->userdata('level')));
+		$data['footer_includes'] = array("<script src=" . base_url('public/js/user.component.js?v=1') . "></script>");
 		$this->load->view('admin/head', $data);
 		$this->load->view('admin/navbar', $data);
 		$this->load->view('admin/user/alluser', $data);

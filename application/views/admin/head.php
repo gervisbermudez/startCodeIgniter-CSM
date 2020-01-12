@@ -7,16 +7,18 @@
 		<meta name="description" content="">
 		<meta name="author" content="">
 		<title><?php echo "$title"; ?></title>
-		<link href="<?php echo base_url('public/css/materialize.min.css'); ?>" rel="stylesheet">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 		<link href="<?php echo base_url('public/css/admin/start.min.css'); ?>" rel="stylesheet">
 		<script type="text/javascript"><?php echo 'var base_url = "' . base_url() . '";'; ?></script>
 		<script src="<?php echo base_url('public/js/jquery.js'); ?>"></script>
+		<script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+		<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
 		<?php
-if (isset($head_includes)) {
-    foreach ($head_includes as $value) {
-        echo $value;
-    }
-}
-?>
+			if (isset($head_includes)) {
+				foreach ($head_includes as $value) {
+					echo $value;
+				}
+			}
+		?>
 	</head>
 <body>
