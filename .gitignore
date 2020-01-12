@@ -3,7 +3,6 @@
 # Edit at https://www.gitignore.io/?templates=node,react,laravel,windows,composer,codeigniter,visualstudiocode
 
 ### CodeIgniter ###
-*/config/development
 */logs/log-*.php
 !*/logs/index.html
 */cache/*
