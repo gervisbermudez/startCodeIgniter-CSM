@@ -17,6 +17,7 @@
 |
  */
 $config['base_url'] = 'http://localhost:8000/';
+$config['enable_profiler'] = false;
 
 /*
 |--------------------------------------------------------------------------
@@ -92,8 +93,8 @@ $config['charset'] = 'UTF-8';
 | If you would like to use the 'hooks' feature you must enable it by
 | setting this variable to TRUE (boolean).  See the user guide for details.
 |
-*/
-$config['enable_hooks'] = FALSE;
+ */
+$config['enable_hooks'] = false;
 
 /*
 |--------------------------------------------------------------------------
@@ -353,7 +354,6 @@ $config['rewrite_short_tags'] = false;
 |
  */
 $config['proxy_ips'] = '';
-
 
 /* End of file config.php */
 /* Location: ./application/config/config.php */

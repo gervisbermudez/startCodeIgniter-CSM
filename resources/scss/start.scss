@@ -738,3 +738,12 @@ div#dropnotify {
     }
   }
 }
+
+#codeigniter_profiler {
+  clear: both;
+  background-color: #fff;
+  padding: 10px;
+  z-index: 9;
+  position: absolute;
+  top: 200%;
+}
