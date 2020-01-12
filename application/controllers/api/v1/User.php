@@ -29,6 +29,10 @@ class User extends REST_Controller
             $data = $this->db->get("user")->result();
         }
 
+        if (!$data) {
+            $data = array();
+        }
+
         $this->response($data, REST_Controller::HTTP_OK);
     }
 
