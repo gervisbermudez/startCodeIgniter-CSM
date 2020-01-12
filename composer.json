@@ -1,14 +1,13 @@
 {
-    "name": "startcsm",
-    "description": "A simple CSM building with codeigneiter",
-    "type": "project",
-    "license": "GNU",
-    "authors": [
-        {
-            "name": "Gervis Bermudez",
-            "email": "gbermudezmora@quaresitsolutions.com"
-        }
-    ],
-    "minimum-stability": "dev",
-    "require": {}
+  "description": "A simple CSM building with codeigneiter",
+  "type": "project",
+  "license": "GNU",
+  "authors": [
+    {
+      "name": "Gervis Bermudez",
+      "email": "gbermudezmora@quaresitsolutions.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {}
 }
