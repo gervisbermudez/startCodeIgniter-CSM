@@ -1,13 +1,14 @@
-<!DOCTYPE html>
+<?=doctype('html5')?>
 <html lang="en">
 	<head>
-        @yield('head')
+        @include('admin.shared.head')
     </head>
     <body>
-        @yield('navbar')
-        <div class="container">
-            @yield('content')
+        @include('admin.shared.navbar')
+        <div class="main">
+        @yield('header')
+        @yield('content')
         </div>
-        @yield('footer')
+        @include('admin.shared.footer')
     </body>
 </html>

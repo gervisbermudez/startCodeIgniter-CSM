@@ -27,11 +27,6 @@ class Admin extends MY_Controller
         $data['h1'] = "";
         $data['header'] = "";
 
-        /* $this->load->view('admin/head', $data);
-        $this->load->view('admin/navbar', $data);
-        $this->load->view('admin/bodypage', $data);
-        $this->load->view('admin/footer', $data); */
-
         echo $this->blade->view("admin.dashboard", $data);
 
     }
