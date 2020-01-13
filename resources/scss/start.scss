@@ -438,7 +438,7 @@ div.row.main-page .card-content {
     background-color: $color3 !important;
   }
 
-  .btn{ 
+  .btn {
     background-color: $color3 !important;
   }
 }
@@ -522,6 +522,15 @@ div.row.event a.dropdown-button.right {
     font-size: 0.8rem;
     padding: 0 0;
   }
+}
+
+.sidenav .user-view .background:before {
+  background-color: rgba(0, 0, 0, 0.52);
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 }
 
 .grupo a {
@@ -765,29 +774,28 @@ div#dropnotify {
   width: 100%;
 }
 
-.user-card{
-
+.user-card {
   .card-image-container {
     height: 215px;
     overflow: hidden;
   }
-  
+
   .card-info {
     padding: 5px 0px 5px 40px;
     color: #444;
     position: relative;
   }
-  
+
   .card-info .material-icons {
     color: $color3;
     position: absolute;
     left: 0px;
   }
-  .btn-floating{ 
+  .btn-floating {
     background: $color3;
   }
 }
 
-.btn-floating.btn-large{
+.btn-floating.btn-large {
   background: $color3 !important;
 }
