@@ -3,42 +3,84 @@ class UserCard extends React.Component {
         super(props);
     }
     render() {
+        let cardImage;
+        if (this.props.user.user_data.avatar) {
+            cardImage = React.createElement('img', { src: BASEURL + 'public/img/profile/' + this.props.user.username + '/' + this.props.user.user_data.avatar });
+        } else {
+            cardImage = React.createElement('img', { src: 'https://materializecss.com/images/sample-1.jpg' });
+        }
         return React.createElement(
-            "div",
-            { className: "col s12 m6" },
+            'div',
+            { className: 'col s12 m4' },
             React.createElement(
-                "div",
-                { className: "card" },
+                'div',
+                { className: 'card user-card' },
                 React.createElement(
-                    "div",
-                    { className: "card-image" },
-                    React.createElement("img", { src: "https://materializecss.com/images/sample-1.jpg" }),
+                    'div',
+                    { className: 'card-image' },
                     React.createElement(
-                        "span",
-                        { className: "card-title" },
+                        'div',
+                        { className: 'card-image-container' },
+                        cardImage
+                    ),
+                    React.createElement(
+                        'span',
+                        { className: 'card-title' },
                         this.props.user.user_data.nombre,
-                        " ",
+                        ' ',
                         this.props.user.user_data.apellido
                     ),
                     React.createElement(
-                        "a",
-                        { className: "btn-floating halfway-fab waves-effect waves-light red", href: BASEURL + 'admin/user/ver/' + this.props.user.id },
+                        'a',
+                        { className: 'btn-floating halfway-fab waves-effect waves-light', href: BASEURL + 'admin/user/ver/' + this.props.user.id },
                         React.createElement(
-                            "i",
-                            { className: "material-icons" },
-                            "visibility"
+                            'i',
+                            { className: 'material-icons' },
+                            'visibility'
                         )
                     )
                 ),
                 React.createElement(
-                    "div",
-                    { className: "card-content" },
+                    'div',
+                    { className: 'card-content' },
                     React.createElement(
-                        "p",
+                        'div',
                         null,
-                        this.props.user.role,
-                        React.createElement("br", null),
-                        this.props.user.lastseen
+                        React.createElement(
+                            'div',
+                            { className: 'card-info' },
+                            React.createElement(
+                                'i',
+                                { className: 'material-icons' },
+                                'account_box'
+                            ),
+                            ' ',
+                            this.props.user.role,
+                            React.createElement('br', null)
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'card-info' },
+                            React.createElement(
+                                'i',
+                                { className: 'material-icons' },
+                                'access_time'
+                            ),
+                            ' ',
+                            this.props.user.lastseen,
+                            React.createElement('br', null)
+                        ),
+                        React.createElement(
+                            'div',
+                            { className: 'card-info' },
+                            React.createElement(
+                                'i',
+                                { className: 'material-icons' },
+                                'local_phone'
+                            ),
+                            ' ',
+                            this.props.user.user_data.telefono
+                        )
                     )
                 )
             )
@@ -56,7 +98,7 @@ class Welcome extends React.Component {
 
     render() {
         return React.createElement(
-            "div",
+            'div',
             null,
             this.state.users.map(user => React.createElement(UserCard, { user: user, key: user.id }))
         );
@@ -83,5 +125,5 @@ class Welcome extends React.Component {
 
 }
 
-const element = React.createElement(Welcome, { name: "Sara" });
+const element = React.createElement(Welcome, { name: 'Sara' });
 ReactDOM.render(element, document.getElementById('root'));

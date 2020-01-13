@@ -435,6 +435,11 @@ div.row.main-page .card-content {
     box-shadow: none;
     border-radius: 0;
     margin: 0.5rem 0 0rem 0;
+    background-color: $color3 !important;
+  }
+
+  .btn{ 
+    background-color: $color3 !important;
   }
 }
 
@@ -686,6 +691,7 @@ div.row.event a.dropdown-button.right {
     height: 63px;
     z-index: 1;
     margin-top: 10px;
+    margin-left: 0;
 
     .nav-wrapper {
       float: right;
@@ -757,4 +763,31 @@ div#dropnotify {
   position: absolute;
   top: 200%;
   width: 100%;
+}
+
+.user-card{
+
+  .card-image-container {
+    height: 215px;
+    overflow: hidden;
+  }
+  
+  .card-info {
+    padding: 5px 0px 5px 40px;
+    color: #444;
+    position: relative;
+  }
+  
+  .card-info .material-icons {
+    color: $color3;
+    position: absolute;
+    left: 0px;
+  }
+  .btn-floating{ 
+    background: $color3;
+  }
+}
+
+.btn-floating.btn-large{
+  background: $color3 !important;
 }
