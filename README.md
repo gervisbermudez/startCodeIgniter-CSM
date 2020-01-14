@@ -10,6 +10,7 @@ Install the dependencies and devDependencies and start the server.
 $ git clone https://github.com/gervisbermudez/LoanAdmin.git
 $ cd ./LoanAdmin
 $ composer install
+$ npm install
 $ php -S localhost:8000 -t ./
 ```
 
