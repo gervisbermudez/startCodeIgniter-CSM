@@ -1,7 +1,7 @@
 <nav>
 	<!-- navbar content here  -->
 	<div class="nav-wrapper">
-		<a href="{{ base_url('admin/') }}" class="brand-logo">Admin</a>
+		<a href="{{ base_url('admin/') }}" class="brand-logo">Start CMS</a>
 		<a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
 	</div>
 </nav>
@@ -27,7 +27,7 @@
 	<li>
 		<a target="_blank" href="{{ base_url() }}"><i class="material-icons">cloud</i> Ir al sitio</a>
 	</li>
-	<li><a href="{{ base_url('Login/') }}"> Cerrar sesion</a></li>
+	<li><a href="{{ base_url('admin/login/') }}"> Cerrar sesion</a></li>
 	<li>
 		<div class="divider"></div>
 	</li>

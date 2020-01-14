@@ -1,7 +1,7 @@
 <nav>
 	<!-- navbar content here  -->
 	<div class="nav-wrapper">
-		<a href="<?php echo base_url('admin/'); ?>" class="brand-logo">Admin</a>
+		<a href="<?php echo base_url('admin/'); ?>" class="brand-logo">Start CMS</a>
 		<a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
 	</div>
 </nav>

@@ -5,14 +5,10 @@
 @section('content')
 <div class="container large">
 	<div class="row">
-		<?php
-			$quotes = array(" indigo", "blue", " light-blue", " cyan", "grey", " teal", "green", "blue-grey", "pink");
-			$deep = array("darken-1", "accent-3", 'lighten-1', '');
-			?>
 		<?php if ($mensajes): ?>
 		<div class="col s12 m6 l5">
 			<div class="card sticky-action">
-				<div class="card-content <?php echo random_element($quotes).' '.random_element($deep);?>">
+				<div class="card-content color3">
 					<span class="card-title white-text"><span id="mensajesnumber"><?php echo $count_mensajes ?></span>
 						mensajes sin leer</span>
 					<a id="cardmensajeoptions" class="dropdown-button right white-text" href="#"
@@ -25,7 +21,7 @@
 					<?php endif ?>
 
 					<a href="#!" id="next"
-						class="btn btn-floating btn-large <?php echo random_element($quotes).' '.random_element($deep);?> waves-effect waves-circle waves-light"><i
+						class="btn btn-floating btn-large color3 waves-effect waves-circle waves-light"><i
 							class="material-icons">skip_next</i></a>
 				</div>
 				<div id="contenmensajes" class="card-content">
@@ -50,7 +46,7 @@
 		<?php else: ?>
 		<div id="contentmensajes" class="col s12 m6 l5">
 			<div class="card sticky-action">
-				<div class="card-content <?php echo random_element($quotes).' '.random_element($deep);?>">
+				<div class="card-content color3">
 					<span class="card-title white-text">Mensajes</span>
 					<a href="#" class="btn btn-floating btn-large white-text"><i class="material-icons">done</i></a>
 				</div>
@@ -62,10 +58,10 @@
 		<?php endif ?>
 		<div class="col s12 m6 l7">
 			<div class="card sticky-action">
-				<div class="card-content <?php echo random_element($quotes).' '.random_element($deep);?>">
+				<div class="card-content color3">
 					<span class="card-title white-text">Eventos Recientes</span>
 					<a href="<?php echo base_url().'index.php/Admin/Eventos/Agregar/' ?>"
-						class="btn btn-floating btn-large <?php echo random_element($quotes).' '.random_element($deep);?> new"><i
+						class="btn btn-floating btn-large color3 new"><i
 							class="material-icons">add</i></a>
 				</div>
 				<div class="card-content">
@@ -95,7 +91,7 @@
 	<div class="row main-page">
 		<div class="col m12 s6 s12 l4">
 			<div class="card card-main-page hoverable">
-				<a class="card-content <?php echo random_element($quotes).' '.random_element($deep);?>"
+				<a class="card-content color3"
 					href="<?php echo base_url(); ?>index.php/admin/galeria/crearalbum">
 					<div class="center-align"><i class="material-icons medium white-text">queue</i></div>
 
@@ -114,7 +110,7 @@
 		<?php foreach ($albumes as $key => $album): ?>
 		<div class="col m6 s6 l4">
 			<div class="card card-main-page hoverable">
-				<a class="card-content <?php echo random_element($quotes).' '.random_element($deep);?>"
+				<a class="card-content color3"
 					href="<?php echo base_url('admin/galeria/albumes/').$album['id'] ?>">
 					<div class="center-align"><i class="material-icons medium white-text">perm_media</i></div>
 

@@ -10,9 +10,7 @@ class Login extends CI_Controller {
 			$data['continue'] =str_replace('_','/',$continue);
 		}
 		$data['base_url'] = $this->config->base_url();
-		$this->load->view('admin/head', $data);
-		$this->load->view('admin/login', $data);
-		$this->load->view('admin/footer', $data);
+		echo $this->blade->view("admin.login", $data);
 	}
 
 	public function validar()
