@@ -1,139 +1,138 @@
--- phpMyAdmin SQL Dump
--- version 4.5.1
--- http://www.phpmyadmin.net
---
--- Servidor: 127.0.0.1
--- Tiempo de generación: 06-03-2017 a las 03:21:26
--- Versión del servidor: 10.1.9-MariaDB
--- Versión de PHP: 5.6.15
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
---
--- Base de datos: `start`
---
-
+-- --------------------------------------------------------
+-- Host:                         127.0.0.1
+-- Server version:               10.1.34-MariaDB - mariadb.org binary distribution
+-- Server OS:                    Win32
+-- HeidiSQL Version:             10.3.0.5771
 -- --------------------------------------------------------
 
---
--- Estructura de tabla para la tabla `album`
---
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET NAMES utf8 */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-CREATE TABLE `album` (
-  `id` int(11) NOT NULL,
+
+-- Dumping database structure for start_cms
+DROP DATABASE IF EXISTS `start_cms`;
+CREATE DATABASE IF NOT EXISTS `start_cms` /*!40100 DEFAULT CHARACTER SET latin1 */;
+USE `start_cms`;
+
+-- Dumping structure for table start_cms.album
+DROP TABLE IF EXISTS `album`;
+CREATE TABLE IF NOT EXISTS `album` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(75) NOT NULL,
   `descripcion` tinytext NOT NULL,
   `fecha` datetime NOT NULL,
   `path` varchar(125) NOT NULL,
-  `status` tinyint(1) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `status` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nombre` (`nombre`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
+-- Dumping data for table start_cms.album: ~0 rows (approximately)
+/*!40000 ALTER TABLE `album` DISABLE KEYS */;
+/*!40000 ALTER TABLE `album` ENABLE KEYS */;
 
---
--- Estructura de tabla para la tabla `album_items`
---
-
-CREATE TABLE `album_items` (
-  `id` int(11) NOT NULL,
+-- Dumping structure for table start_cms.album_items
+DROP TABLE IF EXISTS `album_items`;
+CREATE TABLE IF NOT EXISTS `album_items` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_album` int(11) NOT NULL,
   `nombre` varchar(125) NOT NULL,
-  `titulo` varchar(75) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `titulo` varchar(75) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_album` (`id_album`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
+-- Dumping data for table start_cms.album_items: ~0 rows (approximately)
+/*!40000 ALTER TABLE `album_items` DISABLE KEYS */;
+/*!40000 ALTER TABLE `album_items` ENABLE KEYS */;
 
---
--- Estructura de tabla para la tabla `categorias`
---
-
-CREATE TABLE `categorias` (
-  `id` int(11) NOT NULL,
+-- Dumping structure for table start_cms.categorias
+DROP TABLE IF EXISTS `categorias`;
+CREATE TABLE IF NOT EXISTS `categorias` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(250) NOT NULL,
   `description` text NOT NULL,
   `tipo` varchar(600) NOT NULL,
   `fecha` datetime NOT NULL,
-  `status` tinyint(1) NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Categorias del sistema';
+  `status` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1 COMMENT='Categorias del sistema';
 
--- --------------------------------------------------------
+-- Dumping data for table start_cms.categorias: ~0 rows (approximately)
+/*!40000 ALTER TABLE `categorias` DISABLE KEYS */;
+/*!40000 ALTER TABLE `categorias` ENABLE KEYS */;
 
---
--- Estructura de tabla para la tabla `contacts`
---
-
-CREATE TABLE `contacts` (
-  `id` int(11) NOT NULL,
+-- Dumping structure for table start_cms.contacts
+DROP TABLE IF EXISTS `contacts`;
+CREATE TABLE IF NOT EXISTS `contacts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   `email` varchar(600) NOT NULL,
-  `status` tinyint(1) NOT NULL DEFAULT '1'
+  `status` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='contacts';
 
--- --------------------------------------------------------
+-- Dumping data for table start_cms.contacts: ~0 rows (approximately)
+/*!40000 ALTER TABLE `contacts` DISABLE KEYS */;
+/*!40000 ALTER TABLE `contacts` ENABLE KEYS */;
 
---
--- Estructura de tabla para la tabla `contactsdata`
---
-
-CREATE TABLE `contactsdata` (
-  `id` int(11) NOT NULL,
+-- Dumping structure for table start_cms.contactsdata
+DROP TABLE IF EXISTS `contactsdata`;
+CREATE TABLE IF NOT EXISTS `contactsdata` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_contact` int(11) NOT NULL,
   `_key` varchar(200) NOT NULL,
-  `_value` varchar(600) NOT NULL
+  `_value` varchar(600) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_contact` (`id_contact`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='contactsdata';
 
--- --------------------------------------------------------
+-- Dumping data for table start_cms.contactsdata: ~0 rows (approximately)
+/*!40000 ALTER TABLE `contactsdata` DISABLE KEYS */;
+/*!40000 ALTER TABLE `contactsdata` ENABLE KEYS */;
 
---
--- Estructura de tabla para la tabla `datauserstorage`
---
-
-CREATE TABLE `datauserstorage` (
-  `id` int(11) NOT NULL,
+-- Dumping structure for table start_cms.datauserstorage
+DROP TABLE IF EXISTS `datauserstorage`;
+CREATE TABLE IF NOT EXISTS `datauserstorage` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_user` int(11) NOT NULL,
   `_key` varchar(100) NOT NULL,
-  `_value` varchar(600) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `_value` varchar(600) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user` (`id_user`)
+) ENGINE=InnoDB AUTO_INCREMENT=90 DEFAULT CHARSET=utf8;
 
---
--- Volcado de datos para la tabla `datauserstorage`
---
-
+-- Dumping data for table start_cms.datauserstorage: ~18 rows (approximately)
+/*!40000 ALTER TABLE `datauserstorage` DISABLE KEYS */;
 INSERT INTO `datauserstorage` (`id`, `id_user`, `_key`, `_value`) VALUES
-(1, 0, 'nombre', 'Yule'),
-(43, 18, 'nombre', 'Gervis'),
-(44, 18, 'apellido', 'Mora'),
-(45, 18, 'direccion', 'Mara'),
-(46, 18, 'telefono', '0414-1672173'),
-(47, 18, 'create by', 'gerber'),
-(64, 27, 'nombre', 'Miguel'),
-(65, 27, 'apellido', 'Urdaneta'),
-(66, 27, 'direccion', 'Los Puertos'),
-(67, 27, 'telefono', '0414-1672173'),
-(68, 27, 'create by', 'gerber'),
-(81, 27, 'avatar', 'murdanetas.jpg'),
-(84, 18, 'avatar', 'gerber.jpg'),
-(85, 19, 'nombre', 'Yule'),
-(86, 19, 'apellido', 'Duran'),
-(87, 19, 'direccion', 'Mara'),
-(88, 19, 'telefono', '0412-9873920'),
-(89, 19, 'create by', 'gerber');
+	(1, 0, 'nombre', 'Yule'),
+	(43, 18, 'nombre', 'Gervis'),
+	(44, 18, 'apellido', 'Mora'),
+	(45, 18, 'direccion', 'Mara'),
+	(46, 18, 'telefono', '0414-1672173'),
+	(47, 18, 'create by', 'gerber'),
+	(64, 27, 'nombre', 'Miguel'),
+	(65, 27, 'apellido', 'Urdaneta'),
+	(66, 27, 'direccion', 'Los Puertos'),
+	(67, 27, 'telefono', '0414-1672173'),
+	(68, 27, 'create by', 'gerber'),
+	(81, 27, 'avatar', 'murdanetas.jpg'),
+	(84, 18, 'avatar', 'gerber.jpg'),
+	(85, 19, 'nombre', 'Yule'),
+	(86, 19, 'apellido', 'Duran'),
+	(87, 19, 'direccion', 'Mara'),
+	(88, 19, 'telefono', '0412-9873920'),
+	(89, 19, 'create by', 'gerber');
+/*!40000 ALTER TABLE `datauserstorage` ENABLE KEYS */;
 
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `eventos`
---
-
-CREATE TABLE `eventos` (
-  `id` int(11) NOT NULL,
+-- Dumping structure for table start_cms.eventos
+DROP TABLE IF EXISTS `eventos`;
+CREATE TABLE IF NOT EXISTS `eventos` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(70) NOT NULL,
   `titulo` varchar(70) NOT NULL,
   `texto` mediumtext NOT NULL,
@@ -143,43 +142,41 @@ CREATE TABLE `eventos` (
   `fecha` varchar(70) NOT NULL,
   `lugar` varchar(70) NOT NULL,
   `publishdate` datetime NOT NULL,
-  `status` tinyint(1) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Eventos a publicar';
+  `status` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='Eventos a publicar';
 
--- --------------------------------------------------------
+-- Dumping data for table start_cms.eventos: ~0 rows (approximately)
+/*!40000 ALTER TABLE `eventos` DISABLE KEYS */;
+/*!40000 ALTER TABLE `eventos` ENABLE KEYS */;
 
---
--- Estructura de tabla para la tabla `mailfolder`
---
-
-CREATE TABLE `mailfolder` (
-  `id` int(11) NOT NULL,
+-- Dumping structure for table start_cms.mailfolder
+DROP TABLE IF EXISTS `mailfolder`;
+CREATE TABLE IF NOT EXISTS `mailfolder` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `namefolder` varchar(60) NOT NULL,
   `description` tinytext NOT NULL,
-  `status` tinyint(1) NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `namefolder` (`namefolder`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 
---
--- Volcado de datos para la tabla `mailfolder`
---
-
+-- Dumping data for table start_cms.mailfolder: ~7 rows (approximately)
+/*!40000 ALTER TABLE `mailfolder` DISABLE KEYS */;
 INSERT INTO `mailfolder` (`id`, `namefolder`, `description`, `status`) VALUES
-(1, 'Inbox', 'The main folder', 1),
-(2, 'Archived', 'Archived folder', 1),
-(3, 'Sent', 'Sent folder', 1),
-(4, 'Deleted', 'Deleted folder', 1),
-(5, 'Spam', 'Spam folder', 1),
-(6, 'Starred', 'Starred folder', 1),
-(7, 'Drafts', 'The drafts folder', 1);
+	(1, 'Inbox', 'The main folder', 1),
+	(2, 'Archived', 'Archived folder', 1),
+	(3, 'Sent', 'Sent folder', 1),
+	(4, 'Deleted', 'Deleted folder', 1),
+	(5, 'Spam', 'Spam folder', 1),
+	(6, 'Starred', 'Starred folder', 1),
+	(7, 'Drafts', 'The drafts folder', 1);
+/*!40000 ALTER TABLE `mailfolder` ENABLE KEYS */;
 
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `mensajes`
---
-
-CREATE TABLE `mensajes` (
-  `id` int(11) NOT NULL,
+-- Dumping structure for table start_cms.mensajes
+DROP TABLE IF EXISTS `mensajes`;
+CREATE TABLE IF NOT EXISTS `mensajes` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `_from` text NOT NULL,
   `_to` text NOT NULL,
   `_subject` varchar(255) NOT NULL,
@@ -188,154 +185,163 @@ CREATE TABLE `mensajes` (
   `_bcc` text NOT NULL,
   `fecha` datetime NOT NULL,
   `folder` int(11) NOT NULL,
-  `estatus` tinyint(1) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `estatus` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `folder` (`folder`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
---
--- Volcado de datos para la tabla `mensajes`
---
-
+-- Dumping data for table start_cms.mensajes: ~3 rows (approximately)
+/*!40000 ALTER TABLE `mensajes` DISABLE KEYS */;
 INSERT INTO `mensajes` (`id`, `_from`, `_to`, `_subject`, `_mensaje`, `_cc`, `_bcc`, `fecha`, `folder`, `estatus`) VALUES
-(1, 'ana24@mail.org', 'admin@mail.org', 'Lorem ipsum dolor sit amet', 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod\r\n			tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,\r\n			quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo\r\n			consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse\r\n			cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non\r\n			proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', '', '', '2016-09-08 00:00:00', 2, 1),
-(4, 'juan45@mail.org', 'Lore@gmail.org', 'Lorem ipsum dolor ', 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', '', '', '2016-09-06 06:29:44', 2, 1),
-(5, 'migul@mail.org', 'Lore@gmail.org', 'Lorem ipsum dolor ', 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', '', '', '2016-09-06 06:29:44', 2, 1);
+	(1, 'ana24@mail.org', 'admin@mail.org', 'Lorem ipsum dolor sit amet', 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod\r\n			tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,\r\n			quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo\r\n			consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse\r\n			cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non\r\n			proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', '', '', '2016-09-08 00:00:00', 2, 1),
+	(4, 'juan45@mail.org', 'Lore@gmail.org', 'Lorem ipsum dolor ', 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', '', '', '2016-09-06 06:29:44', 2, 1),
+	(5, 'migul@mail.org', 'Lore@gmail.org', 'Lorem ipsum dolor ', 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', '', '', '2016-09-06 06:29:44', 2, 1);
+/*!40000 ALTER TABLE `mensajes` ENABLE KEYS */;
 
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `mensajesdata`
---
-
-CREATE TABLE `mensajesdata` (
-  `id` int(11) NOT NULL,
+-- Dumping structure for table start_cms.mensajesdata
+DROP TABLE IF EXISTS `mensajesdata`;
+CREATE TABLE IF NOT EXISTS `mensajesdata` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_mensaje` int(11) NOT NULL,
   `_key` varchar(200) COLLATE utf8_bin NOT NULL,
-  `_value` varchar(600) COLLATE utf8_bin NOT NULL
+  `_value` varchar(600) COLLATE utf8_bin NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_mensaje` (`id_mensaje`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='mensajesdata';
 
--- --------------------------------------------------------
+-- Dumping data for table start_cms.mensajesdata: ~0 rows (approximately)
+/*!40000 ALTER TABLE `mensajesdata` DISABLE KEYS */;
+/*!40000 ALTER TABLE `mensajesdata` ENABLE KEYS */;
 
---
--- Estructura de tabla para la tabla `notificaciones`
---
-
-CREATE TABLE `notificaciones` (
-  `id` int(11) NOT NULL,
+-- Dumping structure for table start_cms.notificaciones
+DROP TABLE IF EXISTS `notificaciones`;
+CREATE TABLE IF NOT EXISTS `notificaciones` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_user` int(11) NOT NULL,
   `description` text NOT NULL,
   `date` datetime NOT NULL,
-  `status` tinyint(1) NOT NULL DEFAULT '0'
+  `status` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
+-- Dumping data for table start_cms.notificaciones: ~0 rows (approximately)
+/*!40000 ALTER TABLE `notificaciones` DISABLE KEYS */;
+/*!40000 ALTER TABLE `notificaciones` ENABLE KEYS */;
 
---
--- Estructura de tabla para la tabla `relations`
---
+-- Dumping structure for table start_cms.page
+DROP TABLE IF EXISTS `page`;
+CREATE TABLE IF NOT EXISTS `page` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `path` varchar(2048) DEFAULT NULL,
+  `title` text,
+  `content` longtext,
+  `author` int(11) DEFAULT NULL,
+  `date_create` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `status` tinyint(4) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`),
+  KEY `author` (`author`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 
-CREATE TABLE `relations` (
-  `id` int(11) NOT NULL,
+-- Dumping data for table start_cms.page: ~2 rows (approximately)
+/*!40000 ALTER TABLE `page` DISABLE KEYS */;
+/*!40000 ALTER TABLE `page` ENABLE KEYS */;
+
+-- Dumping structure for table start_cms.relations
+DROP TABLE IF EXISTS `relations`;
+CREATE TABLE IF NOT EXISTS `relations` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_user` int(11) NOT NULL,
   `tablename` tinytext NOT NULL,
   `id_row` int(11) NOT NULL,
   `date` datetime NOT NULL,
-  `action` tinytext NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `action` tinytext NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 
---
--- Volcado de datos para la tabla `relations`
---
-
+-- Dumping data for table start_cms.relations: ~0 rows (approximately)
+/*!40000 ALTER TABLE `relations` DISABLE KEYS */;
 INSERT INTO `relations` (`id`, `id_user`, `tablename`, `id_row`, `date`, `action`) VALUES
-(11, 18, 'video', 2, '2017-03-06 00:09:51', 'crear');
+	(11, 18, 'video', 2, '2017-03-06 00:09:51', 'crear');
+/*!40000 ALTER TABLE `relations` ENABLE KEYS */;
 
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `suscriptores`
---
-
-CREATE TABLE `suscriptores` (
-  `id` int(11) NOT NULL,
+-- Dumping structure for table start_cms.suscriptores
+DROP TABLE IF EXISTS `suscriptores`;
+CREATE TABLE IF NOT EXISTS `suscriptores` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(75) NOT NULL,
   `email` varchar(125) NOT NULL,
   `fecha` datetime NOT NULL,
   `codigo` varchar(75) NOT NULL,
   `estado` set('Verificado','No verificado') NOT NULL DEFAULT 'No verificado',
-  `status` tinyint(1) NOT NULL DEFAULT '0'
+  `status` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
+-- Dumping data for table start_cms.suscriptores: ~0 rows (approximately)
+/*!40000 ALTER TABLE `suscriptores` DISABLE KEYS */;
+/*!40000 ALTER TABLE `suscriptores` ENABLE KEYS */;
 
---
--- Estructura de tabla para la tabla `user`
---
-
-CREATE TABLE `user` (
-  `id` int(11) NOT NULL,
+-- Dumping structure for table start_cms.user
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE IF NOT EXISTS `user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(25) NOT NULL,
   `password` varchar(25) NOT NULL DEFAULT '1234',
   `email` varchar(255) NOT NULL,
   `lastseen` datetime NOT NULL,
   `usergroup` int(11) NOT NULL DEFAULT '3',
-  `status` tinyint(1) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Usuarios del Sistema';
+  `status` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8 COMMENT='Usuarios del Sistema';
 
---
--- Volcado de datos para la tabla `user`
---
-
+-- Dumping data for table start_cms.user: ~2 rows (approximately)
+/*!40000 ALTER TABLE `user` DISABLE KEYS */;
 INSERT INTO `user` (`id`, `username`, `password`, `email`, `lastseen`, `usergroup`, `status`) VALUES
-(18, 'gerber', '1245', 'gerber@gmail.com', '2016-09-03 03:22:31', 2, 1),
-(19, 'yduran', '1234', 'yduran@gmail.com', '2017-03-05 17:12:06', 3, 1);
+	(18, 'gerber', '1245', 'gerber@gmail.com', '2016-09-03 03:22:31', 2, 1),
+	(19, 'yduran', '1234', 'yduran@gmail.com', '2017-03-05 17:12:06', 3, 1);
+/*!40000 ALTER TABLE `user` ENABLE KEYS */;
 
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `userdatapermisions`
---
-
-CREATE TABLE `userdatapermisions` (
-  `id` int(11) NOT NULL,
+-- Dumping structure for table start_cms.userdatapermisions
+DROP TABLE IF EXISTS `userdatapermisions`;
+CREATE TABLE IF NOT EXISTS `userdatapermisions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_usergroup` int(11) NOT NULL,
   `permision` int(11) NOT NULL,
-  `status` tinyint(1) NOT NULL DEFAULT '0'
+  `status` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- --------------------------------------------------------
+-- Dumping data for table start_cms.userdatapermisions: ~0 rows (approximately)
+/*!40000 ALTER TABLE `userdatapermisions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `userdatapermisions` ENABLE KEYS */;
 
---
--- Estructura de tabla para la tabla `usergroup`
---
-
-CREATE TABLE `usergroup` (
-  `id` int(11) NOT NULL,
+-- Dumping structure for table start_cms.usergroup
+DROP TABLE IF EXISTS `usergroup`;
+CREATE TABLE IF NOT EXISTS `usergroup` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(25) NOT NULL,
   `level` int(11) NOT NULL,
   `description` tinytext NOT NULL,
   `createdate` datetime NOT NULL,
-  `status` tinyint(1) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `status` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
---
--- Volcado de datos para la tabla `usergroup`
---
-
+-- Dumping data for table start_cms.usergroup: ~5 rows (approximately)
+/*!40000 ALTER TABLE `usergroup` DISABLE KEYS */;
 INSERT INTO `usergroup` (`id`, `name`, `level`, `description`, `createdate`, `status`) VALUES
-(1, 'root', 1, 'All permisions allowed', '2016-08-27 09:22:22', 1),
-(2, 'Administrador', 2, 'All configurations allowed', '2016-08-27 09:22:22', 1),
-(3, 'Estandar', 3, 'Not delete permisions allowed', '2016-08-27 08:32:49', 1),
-(7, 'Publisher', 4, 'Only Insert and Update permisions allowed', '2016-08-28 07:35:50', 1),
-(8, 'Editor', 5, 'Only insert permisions allowed', '2016-08-29 03:21:39', 1);
+	(1, 'root', 1, 'All permisions allowed', '2016-08-27 09:22:22', 1),
+	(2, 'Administrador', 2, 'All configurations allowed', '2016-08-27 09:22:22', 1),
+	(3, 'Estandar', 3, 'Not delete permisions allowed', '2016-08-27 08:32:49', 1),
+	(7, 'Publisher', 4, 'Only Insert and Update permisions allowed', '2016-08-28 07:35:50', 1),
+	(8, 'Editor', 5, 'Only insert permisions allowed', '2016-08-29 03:21:39', 1);
+/*!40000 ALTER TABLE `usergroup` ENABLE KEYS */;
 
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `video`
---
-
-CREATE TABLE `video` (
-  `id` int(11) NOT NULL,
+-- Dumping structure for table start_cms.video
+DROP TABLE IF EXISTS `video`;
+CREATE TABLE IF NOT EXISTS `video` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(250) NOT NULL,
   `description` text NOT NULL,
   `duration` varchar(50) NOT NULL,
@@ -343,243 +349,29 @@ CREATE TABLE `video` (
   `preview` varchar(2000) NOT NULL,
   `payinfo` text NOT NULL,
   `fecha` datetime NOT NULL,
-  `status` tinyint(1) NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `status` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 
--- --------------------------------------------------------
+-- Dumping data for table start_cms.video: ~0 rows (approximately)
+/*!40000 ALTER TABLE `video` DISABLE KEYS */;
+/*!40000 ALTER TABLE `video` ENABLE KEYS */;
 
---
--- Estructura de tabla para la tabla `video-categoria`
---
-
-CREATE TABLE `video-categoria` (
-  `id` int(11) NOT NULL,
+-- Dumping structure for table start_cms.video-categoria
+DROP TABLE IF EXISTS `video-categoria`;
+CREATE TABLE IF NOT EXISTS `video-categoria` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_video` int(11) NOT NULL,
-  `id_categoria` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `id_categoria` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
---
--- Volcado de datos para la tabla `video-categoria`
---
-
+-- Dumping data for table start_cms.video-categoria: ~0 rows (approximately)
+/*!40000 ALTER TABLE `video-categoria` DISABLE KEYS */;
 INSERT INTO `video-categoria` (`id`, `id_video`, `id_categoria`) VALUES
-(1, 0, 2);
+	(1, 0, 2);
+/*!40000 ALTER TABLE `video-categoria` ENABLE KEYS */;
 
---
--- Índices para tablas volcadas
---
-
---
--- Indices de la tabla `album`
---
-ALTER TABLE `album`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `nombre` (`nombre`);
-
---
--- Indices de la tabla `album_items`
---
-ALTER TABLE `album_items`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `id_album` (`id_album`);
-
---
--- Indices de la tabla `categorias`
---
-ALTER TABLE `categorias`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indices de la tabla `contacts`
---
-ALTER TABLE `contacts`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
-
---
--- Indices de la tabla `contactsdata`
---
-ALTER TABLE `contactsdata`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `id_contact` (`id_contact`);
-
---
--- Indices de la tabla `datauserstorage`
---
-ALTER TABLE `datauserstorage`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user` (`id_user`);
-
---
--- Indices de la tabla `eventos`
---
-ALTER TABLE `eventos`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indices de la tabla `mailfolder`
---
-ALTER TABLE `mailfolder`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `namefolder` (`namefolder`);
-
---
--- Indices de la tabla `mensajes`
---
-ALTER TABLE `mensajes`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `folder` (`folder`) USING BTREE;
-
---
--- Indices de la tabla `mensajesdata`
---
-ALTER TABLE `mensajesdata`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `id_mensaje` (`id_mensaje`);
-
---
--- Indices de la tabla `notificaciones`
---
-ALTER TABLE `notificaciones`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user` (`id_user`);
-
---
--- Indices de la tabla `relations`
---
-ALTER TABLE `relations`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indices de la tabla `suscriptores`
---
-ALTER TABLE `suscriptores`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indices de la tabla `user`
---
-ALTER TABLE `user`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indices de la tabla `userdatapermisions`
---
-ALTER TABLE `userdatapermisions`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indices de la tabla `usergroup`
---
-ALTER TABLE `usergroup`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indices de la tabla `video`
---
-ALTER TABLE `video`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indices de la tabla `video-categoria`
---
-ALTER TABLE `video-categoria`
-  ADD PRIMARY KEY (`id`);
-
---
--- AUTO_INCREMENT de las tablas volcadas
---
-
---
--- AUTO_INCREMENT de la tabla `album`
---
-ALTER TABLE `album`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
---
--- AUTO_INCREMENT de la tabla `album_items`
---
-ALTER TABLE `album_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
---
--- AUTO_INCREMENT de la tabla `categorias`
---
-ALTER TABLE `categorias`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
---
--- AUTO_INCREMENT de la tabla `contacts`
---
-ALTER TABLE `contacts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT de la tabla `contactsdata`
---
-ALTER TABLE `contactsdata`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT de la tabla `datauserstorage`
---
-ALTER TABLE `datauserstorage`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=90;
---
--- AUTO_INCREMENT de la tabla `eventos`
---
-ALTER TABLE `eventos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
---
--- AUTO_INCREMENT de la tabla `mailfolder`
---
-ALTER TABLE `mailfolder`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
---
--- AUTO_INCREMENT de la tabla `mensajes`
---
-ALTER TABLE `mensajes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
---
--- AUTO_INCREMENT de la tabla `mensajesdata`
---
-ALTER TABLE `mensajesdata`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT de la tabla `notificaciones`
---
-ALTER TABLE `notificaciones`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT de la tabla `relations`
---
-ALTER TABLE `relations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
---
--- AUTO_INCREMENT de la tabla `suscriptores`
---
-ALTER TABLE `suscriptores`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT de la tabla `user`
---
-ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
---
--- AUTO_INCREMENT de la tabla `userdatapermisions`
---
-ALTER TABLE `userdatapermisions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT de la tabla `usergroup`
---
-ALTER TABLE `usergroup`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
---
--- AUTO_INCREMENT de la tabla `video`
---
-ALTER TABLE `video`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
---
--- AUTO_INCREMENT de la tabla `video-categoria`
---
-ALTER TABLE `video-categoria`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
+/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
