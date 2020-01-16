@@ -56,7 +56,7 @@ $db['default']['database'] = 'promovid_sbadmin';
 */
 $db['default']['username'] = 'root';
 $db['default']['password'] = '';
-$db['default']['database'] = 'start';
+$db['default']['database'] = 'start_cms';
 $db['default']['dbdriver'] = 'mysqli';
 $db['default']['dbprefix'] = '';
 $db['default']['pconnect'] = TRUE;

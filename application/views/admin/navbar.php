@@ -54,6 +54,10 @@
 			Categorias</a>
 	</li>
 	<li>
+		<a class="waves-effect" href="<?php echo base_url('admin/paginas/') ?>"><i class="material-icons">receipt</i>
+			Paginas</a>
+	</li>
+	<li>
 		<a class="waves-effect" href="<?php echo base_url('admin/eventos/') ?>"><i class="material-icons">receipt</i>
 			Eventos</a>
 	</li>
