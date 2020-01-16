@@ -344,7 +344,7 @@ span.level {
 
 nav {
   .brand-logo {
-    margin: 10px 0 0 -50px;
+    margin: 0px 0 0 -50px;
     position: absolute;
     left: 50%;
     transform: none;
@@ -562,7 +562,7 @@ div.row.event a.dropdown-button.right {
 
   nav .brand-logo {
     margin: 0 0 0 -40px;
-    width: 80px;
+    width: auto;
     -webkit-transform: initial;
     transform: inherit;
   }
