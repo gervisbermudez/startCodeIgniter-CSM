@@ -25,7 +25,7 @@
 		</div>
 	</li>
 	<li>
-		<a target="_blank" href="{{ base_url() }}"><i class="material-icons">cloud</i> Ir al sitio</a>
+		<a target="_blank" href="{{ base_url() }}"><i class="material-icons">launch</i> Ir al sitio</a>
 	</li>
 	<li><a href="{{ base_url('admin/login/') }}"> Cerrar sesion</a></li>
 	<li>
@@ -35,6 +35,10 @@
 	<li>
 		<a class="waves-effect" href="{{ base_url('admin/user/') }}"><i class="material-icons">perm_identity</i>
 			Usuarios</a>
+	</li>
+	<li>
+		<a class="waves-effect" href="<?php echo base_url('admin/paginas/') ?>"><i class="material-icons">web</i>
+			Paginas</a>
 	</li>
 	<li>
 		<a class="waves-effect" href="{{ base_url('admin/mensajes/') }}"><i class="material-icons">email</i>
@@ -51,10 +55,6 @@
 	<li>
 		<a class="waves-effect" href="{{ base_url('admin/categorias/') }}"><i class="material-icons">receipt</i>
 			Categorias</a>
-	</li>
-	<li>
-		<a class="waves-effect" href="<?php echo base_url('admin/paginas/') ?>"><i class="material-icons">receipt</i>
-			Paginas</a>
 	</li>
 	<li>
 		<a class="waves-effect" href="{{ base_url('admin/eventos/') }}"><i class="material-icons">receipt</i>
