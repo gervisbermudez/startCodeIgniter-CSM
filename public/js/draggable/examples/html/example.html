@@ -1,0 +1,145 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>jQuery dragsort Example</title>
+<link href="http://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+	<style type="text/css">
+		body { font-family:'Roboto'; background-color: #E67E22; color:#fff;  }
+        .container {padding:20px; max-width:820px; margin:150px auto; border:solid 1px black;font-size:12pt; }
+		h1 { font-size:16pt; }
+		h2 { font-size:13pt; }
+		ul { margin:0px; padding:0px; margin-left:20px; }
+		#list1, #list2 { width:350px; list-style-type:none; margin:0px; }
+		#list1 li, #list2 li { float:left; padding:5px; width:100px; height:100px; }
+		#list1 div, #list2 div { width:90px; height:50px; border:solid 1px black; background-color:#7F8C8D; color:#fff; text-align:center; padding-top:40px; }
+		#list2 { float:right; }
+		.placeHolder div { background-color:white !important; border:dashed 1px gray !important; }
+	</style>
+</head>
+<body>
+<div id="jquery-script-menu">
+<div class="jquery-script-center">
+<ul>
+<li><a href="http://www.jqueryscript.net/other/Create-Draggable-Sortable-Lists-In-jQuery-Dragsort.html">Download This Plugin</a></li>
+<li><a href="http://www.jqueryscript.net/">Back To jQueryScript.Net</a></li>
+</ul>
+<div class="jquery-script-ads"><script type="text/javascript"><!--
+google_ad_client = "ca-pub-2783044520727903";
+/* jQuery_demo */
+google_ad_slot = "2780937993";
+google_ad_width = 728;
+google_ad_height = 90;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script></div>
+<div class="jquery-script-clear"></div>
+</div>
+</div>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.12.4.min.js"></script>
+	<script type="text/javascript" src="../../jquery.dragsort.js"></script>
+	<div class="container">
+	<h1>jQuery dragsort Example</h1>
+	<br/>
+
+	<h2>Simple 1D list:</h2>
+	
+	<ul>
+		<li>bread</li>
+		<li>vegetables</li>
+		<li>meat</li>
+		<li>milk</li>
+		<li>butter</li>
+		<li>ice cream</li>
+	</ul>
+	<br/>
+	
+	<script type="text/javascript">
+		$("ul:first").dragsort();
+	</script>
+	
+	<h2>2D list with drag and drop between lists:</h2>
+	
+	<ul id="list2">
+		<li><div>10</div></li>
+		<li><div>11</div></li>
+		<li><div>12</div></li>
+		<li><div>13</div></li>
+		<li><div>14</div></li>
+		<li><div>15</div></li>
+		<li><div>16</div></li>
+		<li><div>17</div></li>
+		<li><div>18</div></li>
+	</ul>
+	
+	<ul id="list1">
+		<li><div>1</div></li>
+		<li><div>2</div></li>
+		<li><div>3</div></li>
+		<li><div>4</div></li>
+		<li><div>5</div></li>
+		<li><div>6</div></li>
+		<li><div>7</div></li>
+		<li><div>8</div></li>
+		<li><div>9</div></li>
+	</ul>
+	
+	<!-- save sort order here which can be retrieved on server on postback -->
+	<input name="list1SortOrder" type="hidden" />
+
+	<script type="text/javascript">
+		$("#list1, #list2").dragsort({ dragSelector: "div", dragBetween: true, dragEnd: saveOrder, placeHolderTemplate: "<li class='placeHolder'><div></div></li>" });
+		
+		function saveOrder() {
+			var data = $("#list1 li").map(function() { return $(this).children().html(); }).get();
+			$("input[name=list1SortOrder]").val(data.join("|"));
+		};
+	</script>
+
+	<div style="clear:both;"></div>
+
+	<h2>Usage</h2>
+	
+	<p>$("ul").dragsort({ dragSelector: "li", dragEnd: function() { }, dragBetween: false, placeHolderTemplate: "&lt;li&gt;&lt;/li&gt;" });</p>
+	<p>$("ul").dragsort("destroy");</p>
+	<br/>
+
+	<dl>
+		<dt>dragSelector</dt>
+		<dd>The <a href="http://api.jquery.com/category/selectors/">CSS selector</a> of the element inside the list item to act as the drag handle. The default is the list item itself e.g. LI.</dd>
+		<dt>dragSelectorExclude</dt>
+		<dd>The css selector of the elements inside the dragSelector to not trigger dragsort. The default is "input, textarea".</dd>
+		<dt>itemSelector</dt>
+		<dd>The css selector of the list items that are moveable. Will only match elements that are immediate children of list container. The default is tag name of first child e.g. LI.</dd>
+		<dt>dragEnd</dt>
+		<dd>The callback function that will be called after the dragging has ended (only called if the list order has changed). The keyword "this" in function will refer to list item that was dragged.</dd>
+		<dt>dragBetween</dt>
+		<dd>Set to "true" if you want to enable the ability to drag between selected lists or to allow dragging of the list item outside of the list for auto scroll. The default is false.</dd>
+		<dt>placeHolderTemplate</dt>
+		<dd>The html of the place holder for the dragged item. The default is empty list item e.g. "&lt;li&gt;&lt;/li&gt;".</dd>
+		<dt>scrollContainer</dt>
+		<dd>The css selector of the element that is to act as the scroll container e.g. a div with overflow set to auto. The default is window.</dd>
+		<dt>scrollSpeed</dt>
+		<dd>A number that represents the speed that the page will scroll when dragging an item outside the scroll container, a higher value is faster and a lower value is slower. Set to 0 to disable scrolling. The default is 5.</dd>
+	</dl>
+    </div>
+    <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-36251023-1']);
+  _gaq.push(['_setDomainName', 'jqueryscript.net']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

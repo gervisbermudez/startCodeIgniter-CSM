@@ -1,0 +1,24 @@
+{
+  "name": "dragsort",
+  "version": "1.0.6",
+  "license": "MIT",
+  "description": "jQuery - Drag & drop JS library",
+  "keywords": [
+    "drag",
+    "drop",
+    "sortable"
+  ],
+  "files": [
+    "dist"
+  ],
+  "author": {
+    "name": "Alexander Gavazov",
+    "url": "http://www.atlantify.com",
+    "email": "alex@atlantify.com"
+  },
+  "main": "dist/js/jquery.dragsort.js",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/agavazov/dragsort.git"
+  }
+}
