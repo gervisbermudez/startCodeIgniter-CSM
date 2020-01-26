@@ -41,6 +41,10 @@
 			Paginas</a>
 	</li>
 	<li>
+		<a class="waves-effect" href="<?php echo base_url('admin/formularios/') ?>"><i class="material-icons">web</i>
+			Api Forms</a>
+	</li>
+	<li>
 		<a class="waves-effect" href="{{ base_url('admin/mensajes/') }}"><i class="material-icons">email</i>
 			Mensajes</a>
 	</li>

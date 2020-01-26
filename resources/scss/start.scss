@@ -46,6 +46,7 @@ span.current-folder {
 
 .sidenav {
   transform: none;
+  width: 240px;
   @media all and (max-width: 992px) {
     transform: translateX(-105%);
   }
@@ -342,13 +343,17 @@ span.level {
   margin: 0;
 }
 
+[v-cloak] {
+  display: none;
+}
+
 nav {
   .brand-logo {
     margin: 0px 0 0 -50px;
     position: absolute;
     left: 50%;
     transform: none;
-    font-family: 'Coda';
+    font-family: "Coda";
     letter-spacing: 1px;
   }
 
@@ -357,7 +362,7 @@ nav {
   z-index: 9;
   background-color: $color4;
   top: 0;
-  margin: 0 0 0 300px;
+  margin: 0 0 0 240px;
   background: linear-gradient(125deg, $color4, #282a2f);
 
   @media all and (max-width: 992px) {
@@ -550,6 +555,84 @@ div.row.event a.dropdown-button.right {
   height: auto;
 }
 
+#formModule {
+  li.indicator {
+    display: none;
+  }
+  .tab-pane {
+    display: none;
+    &.active {
+      display: block;
+    }
+  }
+  .vtabs {
+    position: relative;
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 48px;
+    width: 100%;
+    background-color: #fff;
+    margin: 0 auto;
+    white-space: nowrap;
+    .vtab {
+      position: relative;
+      display: inline-block;
+      text-align: center;
+      line-height: 48px;
+      height: 48px;
+      padding: 0;
+      margin: 0;
+      text-transform: uppercase;
+      &.active:after {
+        content: '';
+        position: absolute;
+        bottom: 0px;
+        left: 0px;
+        width: 100%;
+        height: 2px;
+        background-color: #03a9f4;
+    }
+    
+      .material-icons.right {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+      }
+      input[type="text"] {
+        text-align: center;
+        text-transform: unset;
+      }
+    }
+  }
+  .formsElements{
+    border-left: solid 1px;
+  }
+  .collection a.circle {
+    background-color: #eee;
+    text-align: center;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    justify-content: center;
+}
+  .component{
+    padding-top: 20px;
+    border-bottom: dotted 1px #777;
+    background-color: #fafafa;
+  }
+  .component:first{
+    padding-top: 20px;
+    border-bottom: dotted 1px #777;
+    border-top: dotted 1px #777;
+  }
+}
+
 @media (max-width: 640px) {
   .brand-logo img {
     width: 80px;
@@ -583,7 +666,7 @@ div.row.event a.dropdown-button.right {
   }
 
   .main {
-    padding: 60px 0 0 300px;
+    padding: 60px 0 0 240px;
   }
 
   .menu-spand {
@@ -811,10 +894,10 @@ div#dropnotify {
   background: $color3 !important;
 }
 
-.color3{
+.color3 {
   background: $color1 !important;
 }
 
-.hidden{
+.hidden {
   display: none !important;
 }

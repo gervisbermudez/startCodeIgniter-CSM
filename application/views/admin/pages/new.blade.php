@@ -13,12 +13,12 @@
             <input type="hidden" name="id_form" value="<?php echo element('id', $pagina, ''); ?>">
             <span class="header grey-text text-darken-2">Datos básicos <i class="material-icons left">description</i></span>
             <div class="input-field">
-                <label for="path">Path:</label>
-                <input type="text" id="path" name="path" required="required" value="<?php echo element('path', $pagina, ''); ?>">
-            </div>
-            <div class="input-field">
                 <label for="title">Title:</label>
                 <input type="text" id="title" name="title" required="required" value="<?php echo element('title', $pagina, ''); ?>">
+            </div>
+            <div class="input-field">
+                <label for="path">Path:</label>
+                <input type="text" id="path" name="path" required="required" value="<?php echo element('path', $pagina, ''); ?>">
             </div>
             <div id="introduction" class="section scrollspy">
                 <label for="id_cazary">Contenido:</label>

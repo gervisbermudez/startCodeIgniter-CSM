@@ -37,7 +37,7 @@
 </div>
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
 	<a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left"
-		data-delay="50" data-tooltip="Formulario nuevo" href="{{base_url('admin/paginas/nueva/')}}">
+		data-delay="50" data-tooltip="Pagina Nueva" href="{{base_url('admin/paginas/nueva/')}}">
 		<i class="large material-icons">add</i>
 	</a>
 </div>

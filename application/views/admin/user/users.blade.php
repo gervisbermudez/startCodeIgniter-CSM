@@ -10,8 +10,8 @@
 <div class="container">
 	<div class="row">
 		<div class="col s12">
-			<div class="row" id="root">
-				<div class="col s12" v-bind:class="{ hide: !loader }">
+			<div class="row" id="root" >
+				<div class="col s12 center" v-bind:class="{ hide: !loader }">
 					<div class="preloader-wrapper big active">
 						<div class="spinner-layer spinner-blue-only">
 						  <div class="circle-clipper left">
@@ -24,7 +24,7 @@
 						</div>
 					  </div>
 				</div>
-				<div class="col s12 m4" v-if="!loader"  v-for="user in users">
+				<div class="col s12 m4" v-cloak v-if="!loader"  v-for="user in users">
 					<div class="card user-card">
 						<div class="card-image">
 							<div class="card-image-container">

@@ -28,7 +28,7 @@ jQuery(document).ready(function ($) {
 		$('#' + target).val(name);
 		$('#modal1').closeModal();
 	});
-
+	$("#slide-out").niceScroll();
 	if ($('.tabs-wrapper').length) {
 		$('.tabs-wrapper').pushpin({ top: $('.tabs-wrapper').offset().top });
 	}

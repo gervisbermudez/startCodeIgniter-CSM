@@ -53,3 +53,6 @@ $route['default_controller'] = 'Welcome';
 $route['404_override'] = 'Page';
 $route['translate_uri_dashes'] = FALSE;
 $route['admin'] = 'admin/admin';
+
+//Formularios
+$route['admin/formularios'] = 'Admin/Formularios';
