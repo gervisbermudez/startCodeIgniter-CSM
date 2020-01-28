@@ -4,28 +4,28 @@ Vue.component('formFieldTitle', {
     data: function () {
         return {
             fieldPlaceholder: '',
-            fieldID: this.makeid(10), 
+            fieldID: this.makeid(10),
             fieldName: '',
             fielApiID: ''
         }
     },
 
     methods: {
-        convertfielApiID(){
-            this.fielApiID = this.fieldName.toLowerCase().replace(/ /g,'_').replace(/[^\w-]+/g,'');
+        convertfielApiID() {
+            this.fielApiID = this.fieldName.toLowerCase().replace(/ /g, '_').replace(/[^\w-]+/g, '');
             this.fieldPlaceholder = this.fieldName.toLowerCase();
         },
         makeid(length) {
-            var result           = '';
-            var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            var result = '';
+            var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
             var charactersLength = characters.length;
-            for ( var i = 0; i < length; i++ ) {
-               result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            for (var i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
             }
             return result;
         }
-    },  
-}); 
+    },
+});
 
 var formModule = new Vue({
     el: '#formModule',
@@ -33,7 +33,7 @@ var formModule = new Vue({
         debug: true,
         tabs: [
         ],
-        formsElements:[
+        formsElements: [
             {
                 name: 'title',
                 displayName: 'Titulo',
@@ -83,7 +83,7 @@ var formModule = new Vue({
         ]
     },
     methods: {
-        getInitialTab(){
+        getInitialTab() {
             return {
                 name: 'Tab ' + (this.tabs.length + 1),
                 tabID: this.makeid(10),
@@ -92,51 +92,51 @@ var formModule = new Vue({
                 fields: []
             }
         },
-        setActive(index){
+        setActive(index) {
             this.tabs.map(el => {
                 el.active = false;
                 return el;
             });
             this.tabs[index].active = true;
         },
-        addTab(){
+        addTab() {
             this.debug ? console.log('addTab trigger') : null;
             this.tabs.push(
                 this.getInitialTab()
             );
             this.setActive(this.tabs.length - 1);
         },
-        saveTab(tab){
+        saveTab(tab) {
             this.debug ? console.log('saveTab trigger') : null;
             this.tabs[tab].edited = false;
-            
+
         },
         makeid(length) {
-            var result           = '';
-            var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            var result = '';
+            var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
             var charactersLength = characters.length;
-            for ( var i = 0; i < length; i++ ) {
-               result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            for (var i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
             }
             return result;
         },
-        deleteTab(index){
+        deleteTab(index) {
             this.debug ? console.log('deleteTab trigger') : null;
-            if(this.tabs.length == 1){
+            if (this.tabs.length == 1) {
                 return false;
             }
             this.tabs.splice(index, 1);
         },
-        getActiveTab(){
+        getActiveTab() {
             let activeTab;
             this.tabs.forEach((element, index) => {
-                if(element.active){
+                if (element.active) {
                     activeTab = index;
                 }
             });
             return activeTab;
         },
-        addField(formField){
+        addField(formField) {
             this.debug ? console.log('addField trigger') : null;
 
             this.tabs[this.getActiveTab()].fields.push(formField);
@@ -145,7 +145,7 @@ var formModule = new Vue({
                 M.Collapsible.init(elems, {});
             }, 2000);
         },
-        getfieldsData(){
+        getfieldsData() {
             this.debug ? console.log('getfieldsData trigger') : null;
             fieldsComponents = formModule.$refs;
             for (const key in fieldsComponents) {
@@ -153,28 +153,28 @@ var formModule = new Vue({
                     const element = fieldsComponents[key];
                     for (let index = 0; index < element.length; index++) {
                         const component = element[index];
-                        formModule.setFieldData(component.tabParent.tabID, component.fieldRefIndex, component.$data);
+                        formModule.setFieldData(component.tabParent.tabID, component.fieldRefIndex, JSON.parse(JSON.stringify(component.$data)));
                     }
                 }
             }
             //console.log(data);
-        },         
-        setFieldData(tabID, fieldIndex, data){
+        },
+        setFieldData(tabID, fieldIndex, data) {
             this.debug ? console.log('setFieldData trigger') : null;
             this.tabs.map(element => {
-                if(element.tabID == tabID ){
+                if (element.tabID == tabID) {
                     element.fields[fieldIndex].data = data;
                 }
             });
         },
-        saveData(){
+        saveData() {
             this.debug ? console.log('saveData trigger') : null;
 
             this.getfieldsData();
             let data = {};
             this.tabs.forEach(element => {
                 data[element.name] = {
-                    data : JSON.parse(JSON.stringify(element.fields))
+                    data: JSON.parse(JSON.stringify(element.fields))
                 }
             });
             console.log(data);
@@ -187,6 +187,9 @@ var formModule = new Vue({
                 this.getInitialTab()
             );
             this.tabs[0].edited = false;
+            $(function () {
+                $("#simple-list").dragsort();
+            });
         });
     }
 });

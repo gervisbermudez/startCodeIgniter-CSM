@@ -23,9 +23,11 @@
                 </div>
               </div>
               <div class="col s12 tab-pane" v-for="(tab, i) in tabs" :id="tab.tabID" :class="{active : tab.active}">
-                  <div class="row" v-for="(field, index) in tab.fields">
-                      <div class="col s12 component">
-                        <component v-bind:is="field.component" :tab-parent="tab" :field-ref-index="index" :field-ref="field" ref="field.component"></component>
+                  <div id="simple-list">
+                      <div class="row" v-for="(field, index) in tab.fields">
+                          <div class="col s12 component">
+                            <component v-bind:is="field.component" :tab-parent="tab" :field-ref-index="index" :field-ref="field" ref="field.component"></component>
+                          </div>
                       </div>
                   </div>
               </div>
@@ -51,8 +53,8 @@
 </div>
 <script type="text/x-template" id="formFieldTitle-template">
     <div class="row formFieldTitle">
-        Field Preview:
-        <div class="input-field col s12">
+
+        <div class="input-field col s12"> <b>Field Preview:</b> <br/>
             <input :placeholder="fieldPlaceholder" :id="fieldID" type="text" class="validate">
             <label :for="fieldID">@{{fieldName}}</label>
         </div>
