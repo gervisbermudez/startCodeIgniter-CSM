@@ -2,6 +2,7 @@
 	<!-- navbar content here  -->
 	<div class="nav-wrapper">
 		<a href="{{ base_url('admin/') }}" class="brand-logo">Start CMS</a>
+		<a href="#" class="sidenav-trigger-lg hide-on-med-and-down"><i class="material-icons">menu</i></a>
 		<a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
 			<!-- Dropdown Trigger -->
 			<a class='dropdown-trigger right' href='#' data-target='dropdown1'>
@@ -70,7 +71,7 @@
 			Categorias</a>
 	</li>
 	<li>
-		<a class="waves-effect" href="{{ base_url('admin/eventos/') }}"><i class="material-icons">receipt</i>
+		<a class="waves-effect" href="{{ base_url('admin/eventos/') }}"><i class="material-icons">assistant</i>
 			Eventos</a>
 	</li>
 	<li>

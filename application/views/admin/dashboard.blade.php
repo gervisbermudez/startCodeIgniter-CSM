@@ -61,8 +61,7 @@
 				<div class="card-content color3">
 					<span class="card-title white-text">Eventos Recientes</span>
 					<a href="<?php echo base_url().'index.php/Admin/Eventos/Agregar/' ?>"
-						class="btn btn-floating btn-large color3 new"><i
-							class="material-icons">add</i></a>
+						class="btn btn-floating btn-large color3 new"><i class="material-icons">add</i></a>
 				</div>
 				<div class="card-content">
 					<div class="mainevents">
@@ -91,8 +90,7 @@
 	<div class="row main-page">
 		<div class="col m12 s6 s12 l4">
 			<div class="card card-main-page hoverable">
-				<a class="card-content color3"
-					href="<?php echo base_url(); ?>index.php/admin/galeria/crearalbum">
+				<a class="card-content color3" href="<?php echo base_url(); ?>index.php/admin/galeria/crearalbum">
 					<div class="center-align"><i class="material-icons medium white-text">queue</i></div>
 
 					<div class="center-align white-text ">Agregar álbum nuevo</div>
@@ -110,8 +108,7 @@
 		<?php foreach ($albumes as $key => $album): ?>
 		<div class="col m6 s6 l4">
 			<div class="card card-main-page hoverable">
-				<a class="card-content color3"
-					href="<?php echo base_url('admin/galeria/albumes/').$album['id'] ?>">
+				<a class="card-content color3" href="<?php echo base_url('admin/galeria/albumes/').$album['id'] ?>">
 					<div class="center-align"><i class="material-icons medium white-text">perm_media</i></div>
 
 					<div class="center-align white-text "><?php echo $album['nombre'] ?></div>
@@ -128,5 +125,21 @@
 		<?php endforeach ?>
 		<?php endif ?>
 	</div>
+</div>
+<div class="fixed-action-btn">
+	<a data-position="left"
+		data-delay="50" data-tooltip="Formulario nuevo" class="btn-floating btn-large tooltipped red" href="{{base_url('admin/formularios/new')}}">
+		<i class="large material-icons">add</i>
+	</a>
+	<ul>
+		<li><a data-position="left"
+		data-delay="50" data-tooltip="Usuario nuevo" class="btn-floating tooltipped red" href="{{base_url('admin/user/agregar')}}"><i class="material-icons">perm_identity</i></a></li>
+		<li><a data-position="left"
+		data-delay="50" data-tooltip="Pagina nueva" class="btn-floating tooltipped yellow darken-1" href="{{base_url('admin/paginas/nueva/')}}"><i class="material-icons">web</i></a></li>
+		<li><a data-position="left"
+		data-delay="50" data-tooltip="Album nuevo" class="btn-floating tooltipped green" href="{{base_url('admin/galeria/crearalbum/')}}"><i class="material-icons">publish</i></a></li>
+		<li><a data-position="left"
+		data-delay="50" data-tooltip="Evento nuevo" class="btn-floating tooltipped blue" href="{{ base_url('admin/eventos/agregar/') }}"><i class="material-icons">assistant</i></a></li>
+	</ul>
 </div>
 @endsection

@@ -126,6 +126,33 @@ span.current-folder {
   }
 }
 
+a.sidenav-trigger-lg {
+  width: 50px;
+  display: inline-block;
+  height: 50px;
+  text-align: center;
+}
+
+a.sidenav-trigger-lg i {
+  line-height: 50px;
+  height: 50px;
+}
+
+body.sidenav-open {
+  .sidenav {
+    width: 50px;
+  }
+
+  .sidenav li>a {
+    padding: 0 10px;
+  }
+
+  .main {
+    padding: 60px 0 0 60px;
+  }
+
+}
+
 .compose-container {
   width: auto;
   position: fixed;
