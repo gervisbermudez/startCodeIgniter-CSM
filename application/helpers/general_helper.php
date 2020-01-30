@@ -13,8 +13,10 @@ if (!function_exists('getThemePath')) {
     function getThemePath()
     {
         $ci = &get_instance();
-        if ($ci->config->item('theme_active')) {
-            defined('THEME_PATH') or define('THEME_PATH', FCPATH . 'themes\\' . $ci->config->item('theme_active')) . '\\';
+        $config = $ci->Config_model->load_config();
+
+        if ($config->site_theme) {
+            defined('THEME_PATH') or define('THEME_PATH', FCPATH . 'themes\\' . $config->site_theme) . '\\';
             return THEME_PATH;
         }
         return '';
@@ -25,11 +27,18 @@ if (!function_exists('getThemePublicPath')) {
     function getThemePublicPath()
     {
         $ci = &get_instance();
-        if ($ci->config->item('theme_active')) {
-            return 'themes/' . $ci->config->item('theme_active') . '/public/';
+        $config = $ci->Config_model->load_config();
+
+        if ($config->site_theme) {
+            return 'themes/' . $config->site_theme . '/public/';
         }
 
         return '';
 
     }
+}
+
+function isDir($dir)
+{
+    return is_dir($dir['relative_path'] . $dir['name']);
 }

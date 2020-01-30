@@ -18,7 +18,6 @@
  */
 $config['base_url'] = 'http://localhost:8000/';
 $config['enable_profiler'] = false;
-$config['theme_active'] = 'myGreatTheme';
 
 /*
 |--------------------------------------------------------------------------
