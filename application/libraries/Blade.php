@@ -7,8 +7,8 @@ use eftec\bladeone\BladeOne;
 class Blade
 {
 
-    public $views = APPPATH . '/views';
-    public $cache = APPPATH . '/cache';
+    public $views = APPPATH . 'views';
+    public $cache = APPPATH . 'cache';
     private $BladeOne = null;
 
     public function __construct()
@@ -25,6 +25,14 @@ class Blade
         $ci = &get_instance();
         $params['ci'] = $ci;
         return $this->BladeOne->run($view_name, $params);
+    }
+
+    /**
+     * @param $path string new path to set
+     */
+    public function changePath($path)
+    {
+        $this->BladeOne = new BladeOne($path . '\\views', $path . '\\cache', BladeOne::MODE_AUTO);
     }
 
 }
