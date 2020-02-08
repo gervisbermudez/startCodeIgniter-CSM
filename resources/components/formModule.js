@@ -81,7 +81,8 @@ var formModule = new Vue({
                 icon: 'check_circle'
             }
         ],
-        form_name: 'Nuevo Formulario'
+        form_name: 'Nuevo Formulario',
+        form_status: true
     },
     methods: {
         getInitialTab() {
@@ -174,6 +175,7 @@ var formModule = new Vue({
             this.getfieldsData();
             let data = {
                 form_name : this.form_name,
+                form_status : this.form_status,
                 tabs : {}
             };
             this.tabs.forEach(element => {

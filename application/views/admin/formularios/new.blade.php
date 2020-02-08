@@ -52,7 +52,23 @@
                 </div>
             </div>
         </div>
-        <div class="col s12 text-center">
+        
+				<div class="form-group">
+					Activar Formulario
+					<!-- Switch -->
+					<div class="switch">
+						<label>
+							No activo
+                            <input type="checkbox" checked v-model="form_status"
+                             name="status" value="on">
+							<span class="lever"></span>
+							Activo
+						</label>
+					</div>
+				</div>
+				<br>
+                <div class="col s12 text-center form-group" class="" id="buttons">
+                    <a href="<?php echo base_url('admin/formularios/'); ?>" class="btn red darken-1">Cancelar</a>
             <a class="waves-effect waves-light btn" @click="saveData()"><i class="material-icons right">cloud</i> Guardar</a>
         </div>
     </div>
