@@ -1,0 +1,13 @@
+<?=doctype('html5')?>
+<html lang="en">
+	<head>
+ <?php echo $this->runChild('site.shared.head'); ?>
+ </head>
+ <body>
+ <?php echo $this->runChild('site.shared.navbar'); ?>
+ <div class="main">
+ <?php echo $this->yieldContent('content'); ?>
+ </div>
+ <?php echo $this->runChild('site.shared.footer'); ?>
+ </body>
+</html>

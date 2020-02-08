@@ -73,28 +73,64 @@ class MY_Controller extends CI_Controller
     }
 
     public function error404()
-	{
+    {
 
-		$data['base_url'] = $this->config->base_url();
-		$data['title'] = "404";
-		$url = uri_string();
-		if (stristr($url, 'admin') === FALSE) {
-			echo $this->blade->view("error404", $data);
-		}else{
-			if (!$this->session->userdata('logged_in')) {
-				$uri = str_replace('/','_',uri_string());
-				redirect('login/index/'.$uri);
-			}else{
-				$data['h1'] = "404 Page not found :(";
-				$data['header'] = $this->load->view('admin/header', $data, TRUE);
-				$this->load->view('admin/head', $data);
-				$this->load->view('admin/navbar', $data);
-				$this->load->view('admin/template', $data);
-				$this->load->view('admin/footer', $data);
-			}
-		}
+        $data['base_url'] = $this->config->base_url();
+        $data['title'] = "404";
+        $url = uri_string();
+        if (stristr($url, 'admin') === false) {
+            echo $this->blade->view("error404", $data);
+        } else {
+            if (!$this->session->userdata('logged_in')) {
+                $uri = str_replace('/', '_', uri_string());
+                redirect('login/index/' . $uri);
+            } else {
+                $data['h1'] = "404 Page not found :(";
+                $data['header'] = $this->load->view('admin/header', $data, true);
+                $this->load->view('admin/head', $data);
+                $this->load->view('admin/navbar', $data);
+                $this->load->view('admin/template', $data);
+                $this->load->view('admin/footer', $data);
+            }
+        }
 
-	}
-    
+    }
+
 }
+
+class Base_Controller extends CI_Controller
+{
+
+    public function __construct()
+    {
+        parent::__construct();
+
+    }
+
+    public function error404()
+    {
+
+        $data['base_url'] = $this->config->base_url();
+        $data['title'] = "404";
+        $url = uri_string();
+        if (stristr($url, 'admin') === false) {
+            echo $this->blade->view("error404", $data);
+        } else {
+            if (!$this->session->userdata('logged_in')) {
+                $uri = str_replace('/', '_', uri_string());
+                redirect('login/index/' . $uri);
+            } else {
+                $data['h1'] = "404 Page not found :(";
+                $data['header'] = $this->load->view('admin/header', $data, true);
+                $this->load->view('admin/head', $data);
+                $this->load->view('admin/navbar', $data);
+                $this->load->view('admin/template', $data);
+                $this->load->view('admin/footer', $data);
+            }
+        }
+
+    }
+
+}
+
 /* End of file MY_Controller */
