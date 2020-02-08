@@ -65,7 +65,7 @@ $autoload['libraries'] = array('database', 'session', 'Blade');
 |    $autoload['helper'] = array('url', 'file');
  */
 
-$autoload['helper'] = array('html', 'url', 'string', 'array');
+$autoload['helper'] = array('html', 'url', 'string', 'array', 'general', 'file');
 
 /*
 | -------------------------------------------------------------------
@@ -107,7 +107,7 @@ $autoload['language'] = array();
 |
  */
 
-$autoload['model'] = array('StModel');
+$autoload['model'] = array('StModel', 'Config_model');
 
 /* End of file autoload.php */
 /* Location: ./application/config/autoload.php */
