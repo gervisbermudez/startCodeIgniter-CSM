@@ -9,6 +9,12 @@
 @section('content')
 <div class="container" id="formModule">
     <div class="row" v-cloak>
+        <div class="col s12">
+            <div class="input-field col s12">
+                <input placeholder="Form Name" v-model="form_name" id="form_name" type="text" class="validate">
+                <label for="form_name">Form Name</label>
+            </div>
+        </div>
         <div class="col s9">
             <div class="row">
                 <div class="col s12">
@@ -53,9 +59,11 @@
 </div>
 <script type="text/x-template" id="formFieldTitle-template">
     <div class="row formFieldTitle">
-
-        <div class="input-field col s12"> <b>Field Preview:</b> <br/>
-            <input :placeholder="fieldPlaceholder" :id="fieldID" type="text" class="validate">
+        <div class="col s12">
+            <b>Field Preview:</b>
+        </div>
+        <div class="input-field col s12"> 
+            <input :placeholder="fieldPlaceholder" v-model="fieldName" @keyup="convertfielApiID()" :id="fieldID" type="text" class="validate">
             <label :for="fieldID">@{{fieldName}}</label>
         </div>
         <div class="col s12">

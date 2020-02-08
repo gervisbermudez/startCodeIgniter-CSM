@@ -35,4 +35,11 @@ class Formularios extends MY_Controller
         $data['paginas'] = array();
         echo $this->blade->view("admin.formularios.new", $data);
     }
+
+    public function saveForm()
+    {
+        $this->output
+        ->set_content_type('application/json')
+        ->set_output(json_encode($_POST));
+    }
 }

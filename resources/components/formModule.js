@@ -80,7 +80,8 @@ var formModule = new Vue({
                 displayName: 'Bolean',
                 icon: 'check_circle'
             }
-        ]
+        ],
+        form_name: 'Nuevo Formulario'
     },
     methods: {
         getInitialTab() {
@@ -139,7 +140,7 @@ var formModule = new Vue({
         addField(formField) {
             this.debug ? console.log('addField trigger') : null;
 
-            this.tabs[this.getActiveTab()].fields.push(formField);
+            this.tabs[this.getActiveTab()].fields.push(JSON.parse(JSON.stringify(formField)));
             setTimeout(() => {
                 var elems = document.querySelectorAll('.collapsible');
                 M.Collapsible.init(elems, {});
@@ -171,13 +172,25 @@ var formModule = new Vue({
             this.debug ? console.log('saveData trigger') : null;
 
             this.getfieldsData();
-            let data = {};
+            let data = {
+                form_name : this.form_name,
+                tabs : {}
+            };
             this.tabs.forEach(element => {
-                data[element.name] = {
+                data.tabs[element.name] = {
                     data: JSON.parse(JSON.stringify(element.fields))
                 }
             });
             console.log(data);
+            $.ajax({
+                type: "POST",
+                url: BASEURL + "admin/formularios/saveForm",
+                data: data,
+                dataType: "json",
+                success: function (response) {
+                    console.log(response);
+                }
+            });
         }
     },
     mounted: function () {
