@@ -38,7 +38,20 @@ if (!function_exists('getThemePublicPath')) {
     }
 }
 
-function isDir($dir)
-{
-    return is_dir($dir['relative_path'] . $dir['name']);
+if (!function_exists('isDir')) {
+    function isDir($dir)
+    {
+        return is_dir($dir['relative_path'] . $dir['name']);
+    }
+}
+
+if (!function_exists('isSectionActive')) {
+    function isSectionActive($path = '', $class = 'active')
+    {
+        if ($path == uri_string()) {
+            return $class;
+        }
+
+        return '';
+    }
 }

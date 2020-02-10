@@ -10,7 +10,7 @@
 <div class="container">
 	<div class="row">
 		<div class="col s12">
-			@if (count($paginas) > 1)
+			@if ($paginas && count($paginas) > 0)
 			<table>
 				<thead>
 					<tr>
