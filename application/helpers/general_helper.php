@@ -46,9 +46,15 @@ if (!function_exists('isDir')) {
 }
 
 if (!function_exists('isSectionActive')) {
-    function isSectionActive($path = '', $class = 'active')
+    function isSectionActive($path = '', $position = 2, $class = 'active')
     {
-        if ($path == uri_string()) {
+        $ci = &get_instance();
+        $url_array = $ci->uri->segment_array();
+        if (count($url_array) < 2) {
+            $position = 1;
+        }
+        print_r($url_array);
+        if ($path == $url_array[$position]) {
             return $class;
         }
 

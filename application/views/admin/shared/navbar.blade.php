@@ -42,7 +42,7 @@
 	</div>
 </nav>
 <ul id="slide-out" class="sidenav">
-	<li class="{{isSectionActive('admin/user')}}">
+	<li class="{{isSectionActive('user')}}">
 		<a class="waves-effect" href="{{ base_url('admin/user/') }}"><i class="material-icons">perm_identity</i>
 			Usuarios</a>
 		<ul>
@@ -51,7 +51,7 @@
 			</li>
 		</ul>
 	</li>
-	<li class="{{isSectionActive('admin/paginas')}}">
+	<li class="{{isSectionActive('paginas')}}">
 		<a class="waves-effect" href="{{ base_url('admin/paginas/') }}"><i class="material-icons">web</i>
 			Paginas</a>
 		<ul>
@@ -60,7 +60,7 @@
 			</li>
 		</ul>
 	</li>
-	<li class="{{isSectionActive('admin/formularios')}}">
+	<li class="{{isSectionActive('formularios')}}">
 		<a class="waves-effect" href="{{ base_url('admin/formularios/') }}"><i class="material-icons">web</i>
 			Api Forms</a>
 		<ul>
@@ -69,19 +69,19 @@
 			</li>
 		</ul>
 	</li>
-	<li class="{{isSectionActive('admin/mensajes')}}">
+	<li class="{{isSectionActive('mensajes')}}">
 		<a class="waves-effect" href="{{ base_url('admin/mensajes/') }}"><i class="material-icons">email</i>
 			Mensajes</a>
 	</li>
-	<li class="{{isSectionActive('admin/suscriptores')}}">
+	<li class="{{isSectionActive('suscriptores')}}">
 		<a class="waves-effect" href="{{ base_url('admin/suscriptores/') }}"><i
 				class="material-icons">supervisor_account</i> Suscriptores</a>
 	</li>
-	<li class="{{isSectionActive('admin/archivos')}}">
+	<li class="{{isSectionActive('archivos')}}">
 		<a class="waves-effect" href="{{ base_url('admin/archivos') }}"><i class="material-icons">markunread_mailbox</i>
 			Archivos</a>
 	</li>
-	<li class="{{isSectionActive('admin/categorias')}}">
+	<li class="{{isSectionActive('categorias')}}">
 		<a class="waves-effect" href="{{ base_url('admin/categorias/') }}"><i class="material-icons">receipt</i>
 			Categorias</a>
 		<ul>
@@ -90,7 +90,7 @@
 			</li>
 		</ul>
 	</li>
-	<li class="{{isSectionActive('admin/eventos')}}">
+	<li class="{{isSectionActive('eventos')}}">
 		<a class="waves-effect" href="{{ base_url('admin/eventos/') }}"><i class="material-icons">assistant</i>
 			Eventos</a>
 		<ul>
@@ -99,7 +99,7 @@
 			</li>
 		</ul>
 	</li>
-	<li class="{{isSectionActive('admin/galeria')}}">
+	<li class="{{isSectionActive('galeria')}}">
 		<a class="waves-effect" href="{{ base_url('admin/galeria') }}"><i class="material-icons">perm_media</i>
 			Fotos</a>
 		<ul>
@@ -108,7 +108,7 @@
 			</li>
 		</ul>
 	</li>
-	<li class="{{isSectionActive('admin/videos')}}">
+	<li class="{{isSectionActive('videos')}}">
 		<a class="waves-effect" href="{{ base_url('admin/videos') }}"><i class="material-icons">video_library</i>
 			Videos</a>
 		<ul>
