@@ -1,5 +1,9 @@
-<div class="main">
-<?php echo $header; ?>
+@extends('admin.layouts.app')
+@section('title', $title)
+@section('header')
+@include('admin.shared.header')
+@endsection
+@section('content')
 <div class="container">
 	<div class="row">
 		<div class="col s12">
@@ -71,3 +75,4 @@
 		<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
 	</div>
 </div>
+@endsection

@@ -22,10 +22,7 @@ class MY_Controller extends CI_Controller
     {
         $data['conten'] = $errorMsg;
         $data['header'] = $this->load->view('admin/header', $data, true);
-        $this->load->view('admin/head', $data);
-        $this->load->view('admin/navbar', $data);
-        $this->load->view('admin/template', $data);
-        $this->load->view('admin/footer', $data);
+        echo $this->blade->view("admin.blankpage", $data);
     }
 
     public function fn_ajax_delete_data()
@@ -87,10 +84,7 @@ class MY_Controller extends CI_Controller
             } else {
                 $data['h1'] = "404 Page not found :(";
                 $data['header'] = $this->load->view('admin/header', $data, true);
-                $this->load->view('admin/head', $data);
-                $this->load->view('admin/navbar', $data);
-                $this->load->view('admin/template', $data);
-                $this->load->view('admin/footer', $data);
+                echo $this->blade->view("admin.blankpage", $data);
             }
         }
 
@@ -122,10 +116,7 @@ class Base_Controller extends CI_Controller
             } else {
                 $data['h1'] = "404 Page not found :(";
                 $data['header'] = $this->load->view('admin/header', $data, true);
-                $this->load->view('admin/head', $data);
-                $this->load->view('admin/navbar', $data);
-                $this->load->view('admin/template', $data);
-                $this->load->view('admin/footer', $data);
+                echo $this->blade->view("admin.blankpage", $data);
             }
         }
 

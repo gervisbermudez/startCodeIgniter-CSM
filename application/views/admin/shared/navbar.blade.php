@@ -84,17 +84,37 @@
 	<li class="{{isSectionActive('admin/categorias')}}">
 		<a class="waves-effect" href="{{ base_url('admin/categorias/') }}"><i class="material-icons">receipt</i>
 			Categorias</a>
+		<ul>
+			<li>
+				<a href="{{ base_url('admin/categorias/nueva/') }}">Nueva</a>
+			</li>
+		</ul>
 	</li>
 	<li class="{{isSectionActive('admin/eventos')}}">
 		<a class="waves-effect" href="{{ base_url('admin/eventos/') }}"><i class="material-icons">assistant</i>
 			Eventos</a>
+		<ul>
+			<li>
+				<a href="{{ base_url('admin/eventos/agregar/') }}">Nuevo</a>
+			</li>
+		</ul>
 	</li>
 	<li class="{{isSectionActive('admin/galeria')}}">
 		<a class="waves-effect" href="{{ base_url('admin/galeria') }}"><i class="material-icons">perm_media</i>
-			Galería</a>
+			Fotos</a>
+		<ul>
+			<li>
+				<a href="{{ base_url('admin/galeria/crearalbum/') }}">Nuevo Album</a>
+			</li>
+		</ul>
 	</li>
 	<li class="{{isSectionActive('admin/videos')}}">
 		<a class="waves-effect" href="{{ base_url('admin/videos') }}"><i class="material-icons">video_library</i>
 			Videos</a>
+		<ul>
+			<li>
+				<a href="{{ base_url('admin/videos/nuevo/') }}">Crear Video</a>
+			</li>
+		</ul>
 	</li>
 </ul>
