@@ -15,6 +15,8 @@ class Login extends REST_Controller
     {
         parent::__construct();
         $this->load->database();
+        $this->load->model('LoginMod');
+
     }
 
     /**
@@ -35,31 +37,28 @@ class Login extends REST_Controller
      */
     public function index_post()
     {
+        $this->lang->load('login_lang', 'english');
+        $this->load->helper('language');
+
         if ($this->input->post('username') && $this->input->post('password')) {
             $password = $this->input->post('password');
             $username = $this->input->post('username');
-            $data = array('username' => $username, 'password' => $password, 'user.status' => 1);
-            $this->db->select('user.*, usergroup.name, usergroup.level');
-            $this->db->join('usergroup', 'user.usergroup = usergroup.id');
-            $query = $this->db->get_where('user', $data);
-
-            if ($query->num_rows() > 0) {
-                $query = $query->result();
-
-                $userId = $query[0]->id;
+            $isLoged = $this->LoginMod->isLoged($username, $password);
+            if ($isLoged) {
+                $userId = $isLoged[0]->id;
                 $secret = 'sec!ReT423*&';
                 $expiration = time() + 3600;
                 $issuer = 'localhost';
-
                 $token = Token::create($userId, $secret, $expiration, $issuer);
-
-                $this->response(['token' => $token], REST_Controller::HTTP_OK);
+                $this->response(['token' => $token, 'data' => $isLoged[0]], REST_Controller::HTTP_OK);
             } else {
-                $this->response(array('Usuario / Password incorrecta'), REST_Controller::HTTP_NOT_FOUND);
+                $data = array('error_message' => lang('username_or_password_invalid'), 'error_code' => 2);
+                $this->response($data, REST_Controller::HTTP_UNAUTHORIZED);
 
             }
         } else {
-            $this->response(array('Ingrese Usuario / Contraseña'), REST_Controller::HTTP_NOT_FOUND);
+            $data = array('error_message' => lang('username_or_password_not_found'), 'error_code' => 3);
+            $this->response($data, REST_Controller::HTTP_UNAUTHORIZED);
         }
 
     }
