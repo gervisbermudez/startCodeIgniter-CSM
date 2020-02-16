@@ -179,11 +179,10 @@ class User extends MY_Controller
         $data['userdata'] = false;
         $data['usergroups'] = $this->UserMod->get_usergroup(array('status' => '1', 'level >' => $this->session->userdata('level')));
         $data['mode'] = 'new';
-        // Load the views
-        $this->load->view('admin/head', $data);
-        $this->load->view('admin/navbar', $data);
-        $this->load->view('admin/user/form', $data);
-        $this->load->view('admin/footer', $data);
+        $data['footer_includes'] = array('<script src="' . base_url('public/js/user.js') . '"></script>');
+
+        echo $this->blade->view("admin.user.form", $data);
+
     }
     public function save()
     {
