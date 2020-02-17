@@ -7,7 +7,7 @@ const rename = require("gulp-rename");
 const resources = './resources/';
 const public = './public/';
 
-gulp.task('compress_js', function () {
+gulp.task('compress_js_components', function () {
     return gulp.src(resources + 'components/*.js')
         .pipe(rename(function (path) {
             // Updates the object in-place
@@ -16,7 +16,20 @@ gulp.task('compress_js', function () {
             path.extname = ".js";
         }))
         .pipe(terser())
-        .pipe(gulp.dest(public + '/components/js'));
+        .pipe(gulp.dest(public + '/js/components/'));
+}
+);
+
+gulp.task('compress_js', function () {
+    return gulp.src(resources + 'js/*.js')
+        .pipe(rename(function (path) {
+            // Updates the object in-place
+            path.dirname += "";
+            path.basename += ".min";
+            path.extname = ".js";
+        }))
+        .pipe(terser())
+        .pipe(gulp.dest(public + '/js/'));
 }
 );
 
@@ -33,7 +46,7 @@ gulp.task('compile_sass', function () {
         .pipe(gulp.dest(public + '/css/admin/'));
 });
 
-gulp.task('task_series', gulp.series('compress_js', 'compile_sass'));
+gulp.task('task_series', gulp.series('compress_js', 'compress_js_components', 'compile_sass'));
 
 gulp.task("watch_resources", function () {
     gulp.watch([resources + '**/*.js', resources + '**/*.scss', '!' + resources + 'components/*.scss'], gulp.series('task_series'));
