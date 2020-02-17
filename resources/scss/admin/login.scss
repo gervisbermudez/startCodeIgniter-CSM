@@ -3,7 +3,7 @@
 body {
   overflow-x: hidden;
   font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  background: $color4;
+  background: #242424;
 }
 
 @font-face {
@@ -28,6 +28,10 @@ body {
   direction: ltr;
   -webkit-font-feature-settings: "liga";
   -webkit-font-smoothing: antialiased;
+}
+
+[v-cloak] {
+  display: none
 }
 
 .logo {

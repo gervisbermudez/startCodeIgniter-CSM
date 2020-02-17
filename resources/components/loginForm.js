@@ -1,6 +1,7 @@
 var loginForm = new Vue({
     el: '#root',
     data: {
+        loader: true,
         username: '',
         password: '',
     },
@@ -11,6 +12,8 @@ var loginForm = new Vue({
     },
     methods: {
         login() {
+            var self = this;
+            this.loader = true;
             $.ajax({
                 type: "POST",
                 url: BASEURL + "admin/login/ajax_verify_auth",
@@ -25,6 +28,7 @@ var loginForm = new Vue({
                 },
                 error: function (response) {
                     M.toast({ html: response.responseJSON.error_message });
+                    self.loader = false;
                 }
             });
         }
@@ -32,6 +36,7 @@ var loginForm = new Vue({
     mounted: function () {
         this.$nextTick(function () {
             console.log('mounted loginForm');
+            this.loader = false;
         });
     }
 });
