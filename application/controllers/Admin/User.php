@@ -18,7 +18,7 @@ class User extends MY_Controller
         $data['h1'] = "Usuarios";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['username'] = $this->session->userdata('username');
-        $data['footer_includes'] = array("<script src=" . base_url('public/components/userComponent.js?v=1') . "></script>");
+        $data['footer_includes'] = array("<script src=" . base_url('public/js/components/userComponent.js?v=1') . "></script>");
 
         echo $this->blade->view("admin.user.users", $data);
 

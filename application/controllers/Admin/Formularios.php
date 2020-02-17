@@ -17,7 +17,7 @@ class Formularios extends MY_Controller
         $data['h1'] = "Formularios";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['username'] = $this->session->userdata('username');
-        $data['footer_includes'] = array("<script src=" . base_url('public/components/formModule.js?v=' . SITEVERSION) . "></script>");
+        $data['footer_includes'] = array("<script src=" . base_url('public/js/components/formModule.js?v=' . SITEVERSION) . "></script>");
 
         $data['paginas'] = array();
         echo $this->blade->view("admin.formularios.formularios_list", $data);
@@ -29,7 +29,7 @@ class Formularios extends MY_Controller
         $data['h1'] = "Formularios";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['username'] = $this->session->userdata('username');
-        $data['footer_includes'] = array("<script src=" . base_url('public/js/draggable/dist/js/jquery.dragsort.min.js?v=' . SITEVERSION) . "></script>", "<script src=" . base_url('public/components/formModule.js?v=' . SITEVERSION) . "></script>");
+        $data['footer_includes'] = array("<script src=" . base_url('public/js/draggable/dist/js/jquery.dragsort.min.js?v=' . SITEVERSION) . "></script>", "<script src=" . base_url('public/js/components/formModule.js?v=' . SITEVERSION) . "></script>");
 
         $data['paginas'] = array();
         echo $this->blade->view("admin.formularios.new", $data);
