@@ -1,8 +1,8 @@
 -- --------------------------------------------------------
 -- Host:                         127.0.0.1
--- Versión del servidor:         10.4.6-MariaDB - mariadb.org binary distribution
--- SO del servidor:              Win64
--- HeidiSQL Versión:             10.3.0.5771
+-- Server version:               10.1.34-MariaDB - mariadb.org binary distribution
+-- Server OS:                    Win32
+-- HeidiSQL Version:             10.2.0.5599
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -157,7 +157,87 @@ DELETE FROM `eventos`;
 /*!40000 ALTER TABLE `eventos` DISABLE KEYS */;
 /*!40000 ALTER TABLE `eventos` ENABLE KEYS */;
 
--- Volcando estructura para tabla start_cms.mailfolder
+-- Dumping structure for table start_cms.form_custom
+DROP TABLE IF EXISTS `form_custom`;
+CREATE TABLE IF NOT EXISTS `form_custom` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `form_name` varchar(250) DEFAULT NULL,
+  `date_create` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `date_update` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `id_user` int(11) DEFAULT NULL,
+  `status` tinyint(4) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+
+-- Dumping data for table start_cms.form_custom: ~0 rows (approximately)
+/*!40000 ALTER TABLE `form_custom` DISABLE KEYS */;
+INSERT INTO `form_custom` (`id`, `form_name`, `date_create`, `date_update`, `id_user`, `status`) VALUES
+	(3, 'Nuevo Formulario', '2020-02-09 14:13:46', '2020-02-09 14:13:46', 18, 1);
+/*!40000 ALTER TABLE `form_custom` ENABLE KEYS */;
+
+-- Dumping structure for table start_cms.form_fields
+DROP TABLE IF EXISTS `form_fields`;
+CREATE TABLE IF NOT EXISTS `form_fields` (
+  `field_id` int(11) NOT NULL AUTO_INCREMENT,
+  `form_tab_id` int(11) DEFAULT NULL,
+  `field_name` varchar(250) DEFAULT NULL,
+  `displayName` varchar(250) DEFAULT NULL,
+  `icon` varchar(250) DEFAULT NULL,
+  `component` varchar(250) DEFAULT NULL,
+  `date_create` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `date_update` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `status` tinyint(4) DEFAULT '1',
+  PRIMARY KEY (`field_id`),
+  KEY `form_tab_id` (`form_tab_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+
+-- Dumping data for table start_cms.form_fields: ~2 rows (approximately)
+/*!40000 ALTER TABLE `form_fields` DISABLE KEYS */;
+INSERT INTO `form_fields` (`field_id`, `form_tab_id`, `field_name`, `displayName`, `icon`, `component`, `date_create`, `date_update`, `status`) VALUES
+	(5, 11, 'title', 'Titulo', 'format_color_text', 'formFieldTitle', '2020-02-09 14:13:47', '2020-02-09 14:13:47', 1),
+	(6, 12, 'title', 'Titulo', 'format_color_text', 'formFieldTitle', '2020-02-09 14:13:47', '2020-02-09 14:13:47', 1),
+	(7, 11, 'title', 'Titulo', 'format_color_text', 'formFieldTitle', '2020-02-09 14:13:47', '2020-02-09 14:13:47', 1);
+/*!40000 ALTER TABLE `form_fields` ENABLE KEYS */;
+
+-- Dumping structure for table start_cms.form_field_config
+DROP TABLE IF EXISTS `form_field_config`;
+CREATE TABLE IF NOT EXISTS `form_field_config` (
+  `form_field_config_id` int(11) NOT NULL AUTO_INCREMENT,
+  `form_field_id` int(11) DEFAULT NULL,
+  `config_name` varchar(200) DEFAULT NULL,
+  `config_value` varchar(200) DEFAULT NULL,
+  `date_create` timestamp NULL DEFAULT NULL,
+  `date_update` timestamp NULL DEFAULT NULL,
+  `status` tinyint(4) DEFAULT '1',
+  PRIMARY KEY (`form_field_config_id`),
+  KEY `form_id` (`form_field_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- Dumping data for table start_cms.form_field_config: ~0 rows (approximately)
+/*!40000 ALTER TABLE `form_field_config` DISABLE KEYS */;
+/*!40000 ALTER TABLE `form_field_config` ENABLE KEYS */;
+
+-- Dumping structure for table start_cms.form_tabs
+DROP TABLE IF EXISTS `form_tabs`;
+CREATE TABLE IF NOT EXISTS `form_tabs` (
+  `form_tab_id` int(11) NOT NULL AUTO_INCREMENT,
+  `form_id` int(11) DEFAULT NULL,
+  `tab_name` varchar(200) DEFAULT NULL,
+  `date_create` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `date_update` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `status` tinyint(4) DEFAULT '1',
+  PRIMARY KEY (`form_tab_id`),
+  KEY `form_id` (`form_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
+
+-- Dumping data for table start_cms.form_tabs: ~2 rows (approximately)
+/*!40000 ALTER TABLE `form_tabs` DISABLE KEYS */;
+INSERT INTO `form_tabs` (`form_tab_id`, `form_id`, `tab_name`, `date_create`, `date_update`, `status`) VALUES
+	(11, 3, 'Tab 1', '2020-02-09 14:13:46', '2020-02-09 14:13:46', 1),
+	(12, 3, 'Tab 2', '2020-02-09 14:13:47', '2020-02-09 14:13:47', 1);
+/*!40000 ALTER TABLE `form_tabs` ENABLE KEYS */;
+
+-- Dumping structure for table start_cms.mailfolder
 DROP TABLE IF EXISTS `mailfolder`;
 CREATE TABLE IF NOT EXISTS `mailfolder` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -278,28 +358,27 @@ INSERT INTO `relations` (`id`, `id_user`, `tablename`, `id_row`, `date`, `action
 	(11, 18, 'video', 2, '2017-03-06 00:09:51', 'crear');
 /*!40000 ALTER TABLE `relations` ENABLE KEYS */;
 
--- Volcando estructura para tabla start_cms.site_config
+-- Dumping structure for table start_cms.site_config
 DROP TABLE IF EXISTS `site_config`;
 CREATE TABLE IF NOT EXISTS `site_config` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `config_name` varchar(500) NOT NULL,
   `config_value` varchar(500) NOT NULL,
   `perm_values` varchar(500) NOT NULL,
-  `date_create` timestamp NOT NULL DEFAULT current_timestamp(),
-  `date_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `user_id` int(11) NOT NULL DEFAULT 0,
-  `status` int(11) NOT NULL DEFAULT 1,
+  `date_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `date_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `user_id` int(11) NOT NULL DEFAULT '0',
+  `status` int(11) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
--- Volcando datos para la tabla start_cms.site_config: ~1 rows (aproximadamente)
-DELETE FROM `site_config`;
+-- Dumping data for table start_cms.site_config: ~0 rows (approximately)
 /*!40000 ALTER TABLE `site_config` DISABLE KEYS */;
 INSERT INTO `site_config` (`id`, `config_name`, `config_value`, `perm_values`, `date_create`, `date_update`, `user_id`, `status`) VALUES
-	(1, 'site_theme', 'awesomeTheme', '', '2020-01-30 16:00:23', '2020-02-03 21:34:35', 18, 1);
+	(1, 'site_theme', 'myGreatTheme', '', '2020-01-30 16:00:23', '2020-01-30 17:30:55', 18, 1);
 /*!40000 ALTER TABLE `site_config` ENABLE KEYS */;
 
--- Volcando estructura para tabla start_cms.suscriptores
+-- Dumping structure for table start_cms.suscriptores
 DROP TABLE IF EXISTS `suscriptores`;
 CREATE TABLE IF NOT EXISTS `suscriptores` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

@@ -7,6 +7,7 @@ Vue.component('formFieldTitle', {
             fieldID: this.makeid(10),
             fieldName: '',
             fielApiID: '',
+            data: {}
         }
     },
     methods: {
@@ -36,8 +37,8 @@ Vue.component('formFieldTitle', {
     },
 });
 
-var formModule = new Vue({
-    el: '#formModule',
+var dataFormModule = new Vue({
+    el: '#dataFormModule',
     data: {
         debug: true,
         editMode: false,
@@ -188,13 +189,13 @@ var formModule = new Vue({
         },
         getfieldsData() {
             this.debug ? console.log('getfieldsData trigger') : null;
-            fieldsComponents = formModule.$refs;
+            fieldsComponents = dataFormModule.$refs;
             for (const key in fieldsComponents) {
                 if (fieldsComponents.hasOwnProperty(key)) {
                     const element = fieldsComponents[key];
                     for (let index = 0; index < element.length; index++) {
                         const component = element[index];
-                        formModule.setFieldData(component.tabParent.tabID, component.fieldRefIndex, JSON.parse(JSON.stringify(component.$data)));
+                        dataFormModule.setFieldData(component.tabParent.tabID, component.fieldRefIndex, JSON.parse(JSON.stringify(component.$data)));
                     }
                 }
             }
@@ -228,13 +229,13 @@ var formModule = new Vue({
                     fields: element.fields
                 }
             });
-
+            
+            data.form_id = form_id;
             
             if(this.editMode){
-                data.form_id = form_id;
                 $.ajax({
                     type: "POST",
-                    url: BASEURL + "admin/formularios/updateForm",
+                    url: BASEURL + "admin/formularios/updateDataForm",
                     data: {
                         data: JSON.stringify(data)
                     },
@@ -248,7 +249,7 @@ var formModule = new Vue({
             }else{
                 $.ajax({
                     type: "POST",
-                    url: BASEURL + "admin/formularios/saveForm",
+                    url: BASEURL + "admin/formularios/saveDataForm",
                     data: {
                         data: JSON.stringify(data)
                     },
@@ -262,10 +263,10 @@ var formModule = new Vue({
             }
         },
         checkEditMode(){
-            if(typeof form_id != 'undefined'){
+            if(typeof form_id != 'undefined' && typeof editMode != 'undefined'){
                 //cargar datos del formulario
                 var self = this;
-                self.editMode = true;
+                self.editMode = editMode;
                 self.form_id = form_id;
                 console.log('editMode');
                 $.ajax({
@@ -316,7 +317,7 @@ var formModule = new Vue({
     },
     mounted: function () {
         this.$nextTick(function () {
-            this.debug ? console.log('formModule mounted') : null;
+            this.debug ? console.log('dataFormModule mounted') : null;
             this.tabs.push(
                 this.getInitialTab()
             );

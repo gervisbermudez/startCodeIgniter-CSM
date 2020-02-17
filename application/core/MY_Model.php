@@ -1,10 +1,19 @@
 <?php 
 class MY_model extends CI_Model
 {
+	public $table = '';
 
 	function __construct()
 	{
 		parent::__construct();
+	}
+
+	public function all()
+	{
+		$query = $this->db->get($this->table);
+		if ($query->num_rows() > 0) {
+			return $query->result_array();
+		}
 	}
 
 	public function set_data($data, $strTable)
@@ -76,4 +85,3 @@ class MY_model extends CI_Model
 		return $this->db->count_all_results();
 	}
 }
-?>

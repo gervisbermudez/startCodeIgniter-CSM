@@ -4,7 +4,7 @@
  */
 class Config_model extends MY_Model
 {
-    private $table = 'site_config';
+    public $table = 'site_config';
 
     public function __construct()
     {

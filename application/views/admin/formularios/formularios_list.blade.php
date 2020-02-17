@@ -10,23 +10,29 @@
 <div class="container">
 	<div class="row">
 		<div class="col s12">
-			@if (count($paginas) > 1)
+			@if (count($forms_list) > 0)
 			<table>
 				<thead>
 					<tr>
-						<th>Name</th>
-						<th>Item Name</th>
-						<th>Item Price</th>
-						<th>Editar</th>
+						<th>Form Name</th>
+						<th>User</th>
+						<th>date_create</th>
+						<th>status</th>
+						<th>Add Data</th>
+						<th>Edit</th>
+						<th>Delete</th>
 					</tr>
 				</thead>
 				<tbody>
-					@foreach ($paginas as $page)
+					@foreach ($forms_list as $form)
 					<tr>
-						<td>{{$page['title']}}</td>
-						<td><a href="{{base_url($page['path'])}}" target="_blank">{{$page['path']}}</a></td>
-						<td>{{$page['author']}}</td>
-						<td><a href="{{base_url()}}admin/paginas/editar/{{$page['id']}}">Editar</a></td>
+						<td>{{$form['form_name']}}</td>
+						<td>{{$form['username']}}</td>
+						<td>{{$form['date_create']}}</td>
+						<td>{{$form['status']}}</td>
+						<td><a href="{{base_url('admin/formularios/addData/' . $form['id'])}}"><i class="material-icons">add_to_photos</i></a></td>
+						<td><a href="{{base_url('admin/formularios/editForm/' . $form['id'])}}"><i class="material-icons">edit</i></a></td>
+						<td><a href="{{base_url('admin/formularios/deleteForm/' . $form['id'])}}"><i class="material-icons">delete</i></a></td>
 					</tr>
 					@endforeach
 				</tbody>
