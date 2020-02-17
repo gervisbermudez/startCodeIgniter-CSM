@@ -1,23 +1,35 @@
-var gulp = require('gulp');
-//Concatenar JS
-var concat = require('gulp-concat');
-//Minificar Js 
+const gulp = require('gulp');
+const concat = require('gulp-concat');
 const terser = require('gulp-terser');
-var sass = require('gulp-sass');
+const sass = require('gulp-sass');
+const rename = require("gulp-rename");
 
 const resources = './resources/';
 const public = './public/';
 
 gulp.task('compress_js', function () {
     return gulp.src(resources + 'components/*.js')
+        .pipe(rename(function (path) {
+            // Updates the object in-place
+            path.dirname += "";
+            path.basename += ".min";
+            path.extname = ".js";
+        }))
         .pipe(terser())
-        .pipe(gulp.dest(public + '/js'));
+        .pipe(gulp.dest(public + '/components/js'));
 }
 );
 
 gulp.task('compile_sass', function () {
     return gulp.src(resources + 'scss/admin/*.scss')
         .pipe(sass().on('error', sass.logError))
+        .pipe(sass({ outputStyle: 'compressed' }))
+        .pipe(rename(function (path) {
+            // Updates the object in-place
+            path.dirname += "";
+            path.basename += ".min";
+            path.extname = ".css";
+        }))
         .pipe(gulp.dest(public + '/css/admin/'));
 });
 

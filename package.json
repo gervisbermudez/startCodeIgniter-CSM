@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/gervisbermudez/startCodeIgniter-CSM#readme",
   "dependencies": {
+    "gulp-rename": "^2.0.0",
     "terser": "^4.6.3",
     "uglify-es": "^3.3.9"
   },
