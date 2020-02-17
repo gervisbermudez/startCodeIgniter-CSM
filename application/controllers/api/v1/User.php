@@ -14,6 +14,7 @@ class User extends REST_Controller
     {
         parent::__construct();
         $this->load->database();
+        $this->check_token();
     }
 
     /**
@@ -51,12 +52,12 @@ class User extends REST_Controller
         if (!$data) {
             $data = array();
             $this->response($data, REST_Controller::HTTP_NOT_FOUND);
-        }else{
+        } else {
             foreach ($data as $key => &$value) {
                 $data_values = json_decode($value['user_data']);
                 $value['user_data'] = $data_values;
             }
-    
+
             $this->response($data, REST_Controller::HTTP_OK);
         }
 
@@ -98,6 +99,20 @@ class User extends REST_Controller
         $this->db->delete('items', array('id' => $id));
 
         $this->response(['Item deleted successfully.'], REST_Controller::HTTP_OK);
+    }
+
+    public function group_get($level = 1)
+    {
+
+        $this->load->model('UserMod');
+        $data = $this->UserMod->get_usergroup(array('status' => '1', 'level >' => $level));
+        if (!$data) {
+            $data = array();
+            $this->response($data, REST_Controller::HTTP_NOT_FOUND);
+        } else {
+            $this->response($data, REST_Controller::HTTP_OK);
+        }
+
     }
 
 }
