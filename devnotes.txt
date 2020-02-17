@@ -1,4 +1,3 @@
 Iniciar serve
 php -S localhost:8000 -t ./
-cd resources/scss
-sass --watch start.scss:../../public/css/admin/start.min.css --style compressed
+gulp watch_resources

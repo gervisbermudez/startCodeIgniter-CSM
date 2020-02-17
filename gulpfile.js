@@ -1,74 +1,53 @@
-"use strict";
-var gulp = require("gulp");
-var autoprefixer = require("gulp-autoprefixer");
-var csso = require("gulp-csso");
-var del = require("del");
-var gulp = require("gulp");
-var sass = require("gulp-sass");
-var uglify = require("gulp-uglify");
-var rename = require("gulp-rename");
-var exec = require("child_process").exec;
-const minify = require('gulp-minify');
+const gulp = require('gulp');
+const concat = require('gulp-concat');
+const terser = require('gulp-terser');
+const sass = require('gulp-sass');
+const rename = require("gulp-rename");
 
-// Set the browser that you want to support
-const AUTOPREFIXER_BROWSERS = [
-    "ie >= 10",
-    "ie_mob >= 10",
-    "ff >= 30",
-    "chrome >= 34",
-    "safari >= 7",
-    "opera >= 23",
-    "ios >= 7",
-    "android >= 4.4",
-    "bb >= 10"
-];
+const resources = './resources/';
+const public = './public/';
 
-// Gulp task to minify CSS files
-gulp.task("styles", function () {
-    return (
-        gulp
-            .src("./resources/scss/start.scss")
-            // Compile SASS files
-            .pipe(
-                sass({
-                    outputStyle: "nested",
-                    precision: 10,
-                    includePaths: ["."],
-                    onError: console.error.bind(console, "Sass error:")
-                })
-            )
-            // Auto-prefix css styles for cross browser compatibility
-            .pipe(autoprefixer({ browsers: AUTOPREFIXER_BROWSERS }))
-            // Minify the file
-            .pipe(csso())
-            .pipe(rename({ suffix: ".min" }))
-            // Output
-            .pipe(gulp.dest("./public/css/admin/"))
-    );
+gulp.task('compress_js_components', function () {
+    return gulp.src(resources + 'components/*.js')
+        .pipe(rename(function (path) {
+            // Updates the object in-place
+            path.dirname += "";
+            path.basename += ".min";
+            path.extname = ".js";
+        }))
+        .pipe(terser())
+        .pipe(gulp.dest(public + '/js/components/'));
+}
+);
+
+gulp.task('compress_js', function () {
+    return gulp.src(resources + 'js/*.js')
+        .pipe(rename(function (path) {
+            // Updates the object in-place
+            path.dirname += "";
+            path.basename += ".min";
+            path.extname = ".js";
+        }))
+        .pipe(terser())
+        .pipe(gulp.dest(public + '/js/'));
+}
+);
+
+gulp.task('compile_sass', function () {
+    return gulp.src(resources + 'scss/admin/*.scss')
+        .pipe(sass().on('error', sass.logError))
+        .pipe(sass({ outputStyle: 'compressed' }))
+        .pipe(rename(function (path) {
+            // Updates the object in-place
+            path.dirname += "";
+            path.basename += ".min";
+            path.extname = ".css";
+        }))
+        .pipe(gulp.dest(public + '/css/admin/'));
 });
 
-gulp.task('compress-app', function () {
-    gulp.src('resources/js/app.js')
-        .pipe(minify({
-            ext: {
-                src: '-debug.js',
-                min: '.min.js'
-            },
-            exclude: ['tasks'],
-            ignoreFiles: ['.combo.js', '-min.js']
-        }))
-        .pipe(gulp.dest('public/js/'))
-});
+gulp.task('task_series', gulp.series('compress_js', 'compress_js_components', 'compile_sass'));
 
-gulp.task('compress-components', function () {
-    gulp.src('resources/components/*.js')
-        .pipe(minify({
-            ext: {
-                src: '-debug.js',
-                min: '.min.js'
-            },
-            exclude: ['tasks'],
-            ignoreFiles: ['.combo.js', '-min.js']
-        }))
-        .pipe(gulp.dest('public/js/components/'))
+gulp.task("watch_resources", function () {
+    gulp.watch([resources + '**/*.js', resources + '**/*.scss', '!' + resources + 'components/*.scss'], gulp.series('task_series'));
 });

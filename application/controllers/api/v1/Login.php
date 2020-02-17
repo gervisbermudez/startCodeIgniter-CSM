@@ -43,14 +43,14 @@ class Login extends REST_Controller
         if ($this->input->post('username') && $this->input->post('password')) {
             $password = $this->input->post('password');
             $username = $this->input->post('username');
-            $isLoged = $this->LoginMod->isLoged($username, $password);
+            $isLoged = $this->LoginMod->isLoged($username, $password)[0];
             if ($isLoged) {
-                $userId = $isLoged[0]->id;
+                $userId = $isLoged['id'];
                 $secret = 'sec!ReT423*&';
                 $expiration = time() + 3600;
                 $issuer = 'localhost';
                 $token = Token::create($userId, $secret, $expiration, $issuer);
-                $this->response(['token' => $token, 'data' => $isLoged[0]], REST_Controller::HTTP_OK);
+                $this->response(['token' => $token, 'data' => $isLoged], REST_Controller::HTTP_OK);
             } else {
                 $data = array('error_message' => lang('username_or_password_invalid'), 'error_code' => 2);
                 $this->response($data, REST_Controller::HTTP_UNAUTHORIZED);
@@ -70,10 +70,8 @@ class Login extends REST_Controller
      */
     public function index_put($id)
     {
-        $input = $this->put();
-        $this->db->update('items', $input, array('id' => $id));
+        $this->response(array('Metodo no permitido'), REST_Controller::HTTP_METHOD_NOT_ALLOWED);
 
-        $this->response(['Item updated successfully.'], REST_Controller::HTTP_OK);
     }
 
     /**
@@ -83,9 +81,8 @@ class Login extends REST_Controller
      */
     public function index_delete($id)
     {
-        $this->db->delete('items', array('id' => $id));
+        $this->response(array('Metodo no permitido'), REST_Controller::HTTP_METHOD_NOT_ALLOWED);
 
-        $this->response(['Item deleted successfully.'], REST_Controller::HTTP_OK);
     }
 
 }
