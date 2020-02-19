@@ -50,14 +50,43 @@ if (!function_exists('isSectionActive')) {
     {
         $ci = &get_instance();
         $url_array = $ci->uri->segment_array();
-        if (count($url_array) < 2) {
+        if (count($url_array) < $position) {
             $position = 1;
         }
-        print_r($url_array);
         if ($path == $url_array[$position]) {
             return $class;
         }
 
         return '';
     }
+}
+
+if (!function_exists('slugify')) {
+    function slugify($text)
+    {
+        // replace non letter or digits by -
+        $text = preg_replace('~[^\pL\d]+~u', '-', $text);
+
+        // transliterate
+        $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+
+        // remove unwanted characters
+        $text = preg_replace('~[^-\w]+~', '', $text);
+
+        // trim
+        $text = trim($text, '-');
+
+        // remove duplicate -
+        $text = preg_replace('~-+~', '-', $text);
+
+        // lowercase
+        $text = strtolower($text);
+
+        if (empty($text)) {
+            return 'n-a';
+        }
+
+        return $text;
+    }
+
 }

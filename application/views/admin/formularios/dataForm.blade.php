@@ -24,7 +24,7 @@
             <div class="col s12">
                 <div class="col s12">
                     <h2>
-                        @{{form_name}}
+                        @{{getFormName}}
                     </h2>
                 </div>
             </div>
@@ -79,6 +79,7 @@
 <script>
     const form_id = <?= json_encode($form_id); ?>;
     const editMode = <?= json_encode($editMode); ?>;
+    const form_content_id = <?= json_encode($form_content_id); ?>;
 </script>
 @endisset
 @endsection

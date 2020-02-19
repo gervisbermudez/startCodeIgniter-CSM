@@ -8,7 +8,7 @@ class Formularios extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('Forms_model');     
+        $this->load->model('Forms_model');
     }
 
     public function index()
@@ -22,15 +22,25 @@ class Formularios extends MY_Controller
         echo $this->blade->view("admin.formularios.formularios_list", $data);
     }
 
-    public function new()
+    public function data()
     {
+        $data['base_url'] = $this->config->base_url();
+        $data['title'] = "Admin | Content";
+        $data['h1'] = "Content";
+        $data['header'] = $this->load->view('admin/header', $data, true);
+        $data['username'] = $this->session->userdata('username');
+        $data['footer_includes'] = array("<script src=" . base_url('public/js/components/formContent.min.js?v=' . SITEVERSION) . "></script>");
+        echo $this->blade->view("admin.formularios.data_list", $data);
+    }
+
+    function new () {
         $data['base_url'] = $this->config->base_url();
         $data['title'] = "Admin | Formularios";
         $data['h1'] = "Formularios";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['username'] = $this->session->userdata('username');
-        $data['footer_includes'] = array("<script src=" . base_url('public/js/draggable/dist/js/jquery.dragsort.min.js?v=' . SITEVERSION) . "></script>", 
-        "<script src=" . base_url('resources/components/formModule.js?v=' . SITEVERSION) . "></script>");
+        $data['footer_includes'] = array("<script src=" . base_url('public/js/draggable/dist/js/jquery.dragsort.min.js?v=' . SITEVERSION) . "></script>",
+            "<script src=" . base_url('resources/components/formModule.js?v=' . SITEVERSION) . "></script>");
 
         echo $this->blade->view("admin.formularios.new", $data);
     }
@@ -42,10 +52,10 @@ class Formularios extends MY_Controller
         $data['h1'] = "Formularios";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['username'] = $this->session->userdata('username');
-        $data['footer_includes'] = array("<script src=" . base_url('public/js/draggable/dist/js/jquery.dragsort.min.js?v=' . SITEVERSION) . "></script>", 
-        "<script src=" . base_url('resources/components/formModule.js?v=' . SITEVERSION) . "></script>");
+        $data['footer_includes'] = array("<script src=" . base_url('public/js/draggable/dist/js/jquery.dragsort.min.js?v=' . SITEVERSION) . "></script>",
+            "<script src=" . base_url('resources/components/formModule.js?v=' . SITEVERSION) . "></script>");
         $data['form_id'] = $form_id;
-        
+
         echo $this->blade->view("admin.formularios.new", $data);
     }
 
@@ -58,8 +68,25 @@ class Formularios extends MY_Controller
         $data['username'] = $this->session->userdata('username');
         $data['footer_includes'] = array("<script src=" . base_url('resources/components/dataFormModule.js?v=' . SITEVERSION) . "></script>");
         $data['form_id'] = $form_id;
+        $data['form_content_id'] = false;
+
         $data['editMode'] = false;
-        
+
+        echo $this->blade->view("admin.formularios.dataForm", $data);
+    }
+
+    public function editData($form_id, $form_content_id)
+    {
+        $data['base_url'] = $this->config->base_url();
+        $data['title'] = "Admin | Formularios";
+        $data['h1'] = "Formularios";
+        $data['header'] = $this->load->view('admin/header', $data, true);
+        $data['username'] = $this->session->userdata('username');
+        $data['footer_includes'] = array("<script src=" . base_url('resources/components/dataFormModule.js?v=' . SITEVERSION) . "></script>");
+        $data['form_id'] = $form_id;
+        $data['form_content_id'] = $form_content_id;
+        $data['editMode'] = true;
+
         echo $this->blade->view("admin.formularios.dataForm", $data);
     }
 
@@ -81,8 +108,8 @@ class Formularios extends MY_Controller
         );
 
         $this->output
-        ->set_content_type('application/json')
-        ->set_output(json_encode($response));
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
     }
 
     public function saveDataForm()
@@ -96,8 +123,8 @@ class Formularios extends MY_Controller
         );
 
         $this->output
-        ->set_content_type('application/json')
-        ->set_output(json_encode($response));  
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
     }
 
     public function updateForm()
@@ -111,8 +138,8 @@ class Formularios extends MY_Controller
         );
 
         $this->output
-        ->set_content_type('application/json')
-        ->set_output(json_encode($response));
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
     }
 
     public function get_form_info($form_id)
@@ -131,11 +158,49 @@ class Formularios extends MY_Controller
 
         $response = array(
             'code' => 200,
-            'data' => $result
+            'data' => $result,
         );
 
         $this->output
-        ->set_content_type('application/json')
-        ->set_output(json_encode($response));
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    public function ajax_get_forms_types()
+    {
+        $this->output->enable_profiler(false);
+        $result = $data['forms_list'] = $this->Forms_model->get_form_types();
+
+        $response = array(
+            'code' => 200,
+            'data' => $result,
+        );
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+
+    }
+
+    public function ajax_get_forms_data()
+    {
+        $this->output->enable_profiler(false);
+        $where = '';
+
+        if ($this->input->post('form_content_id')) {
+            $where = 'WHERE fc.form_content_id = ' . (Integer) $this->input->post('form_content_id');
+        }
+
+        $result = $data['forms_list'] = $this->Forms_model->get_form_content_data($where);
+
+        $response = array(
+            'code' => 200,
+            'data' => $result,
+        );
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+
     }
 }

@@ -69,6 +69,10 @@
 			</li>
 		</ul>
 	</li>
+	<li class="{{isSectionActive('content')}}">
+		<a class="waves-effect" href="{{ base_url('admin/content') }}"><i class="material-icons">insert_chart</i>
+			Forms Content</a>
+	</li>
 	<li class="{{isSectionActive('mensajes')}}">
 		<a class="waves-effect" href="{{ base_url('admin/mensajes/') }}"><i class="material-icons">email</i>
 			Mensajes</a>

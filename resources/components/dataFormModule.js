@@ -23,9 +23,12 @@ Vue.component('formFieldTitle', {
                 result += characters.charAt(Math.floor(Math.random() * charactersLength));
             }
             return result;
+        },
+        updateFielData(value) {
+            this.data.fieldValue = value;
         }
     },
-    mounted: function() {
+    mounted: function () {
         this.$nextTick(function () {
             for (const key in this.serveData) {
                 if (this.serveData.hasOwnProperty(key)) {
@@ -120,8 +123,14 @@ var dataFormModule = new Vue({
                 }
             }
         ],
-        form_name: 'Nuevo Formulario',
-        form_status: true
+        form_name: '',
+        form_status: true,
+        fieldsData: []
+    },
+    computed: {
+        getFormName() {
+            return this.editMode ? 'Edit ' + this.form_name : 'New ' + this.form_name;
+        }
     },
     methods: {
         getInitialTab() {
@@ -210,18 +219,18 @@ var dataFormModule = new Vue({
         },
         saveData() {
             this.loader = true;
-            $('html, body').animate( { scrollTop : 0 }, 600 );
+            $('html, body').animate({ scrollTop: 0 }, 600);
 
             this.debug ? console.log('saveData trigger') : null;
 
             this.getfieldsData();
             let data = {
-                form_name : this.form_name,
-                form_status : this.form_status ? 1 : 0,
-                tabs : {}
+                form_name: this.form_name,
+                form_status: this.form_status ? 1 : 0,
+                tabs: {}
             };
             this.tabs.forEach(element => {
-                if(element.fields.length < 0){
+                if (element.fields.length < 0) {
                     return false;
                 }
                 data.tabs[element.name] = {
@@ -229,10 +238,10 @@ var dataFormModule = new Vue({
                     fields: element.fields
                 }
             });
-            
+
             data.form_id = form_id;
-            
-            if(this.editMode){
+
+            if (this.editMode) {
                 $.ajax({
                     type: "POST",
                     url: BASEURL + "admin/formularios/updateDataForm",
@@ -241,12 +250,12 @@ var dataFormModule = new Vue({
                     },
                     dataType: "json",
                     success: function (response) {
-                        if(response.data){
-                            window.location = BASEURL + 'admin/formularios/';
+                        if (response.data) {
+                            window.location = BASEURL + 'admin/content';
                         }
                     }
                 });
-            }else{
+            } else {
                 $.ajax({
                     type: "POST",
                     url: BASEURL + "admin/formularios/saveDataForm",
@@ -255,20 +264,20 @@ var dataFormModule = new Vue({
                     },
                     dataType: "json",
                     success: function (response) {
-                        if(response.data){
-                            window.location = BASEURL + 'admin/formularios/';
+                        if (response.data) {
+                            window.location = BASEURL + 'admin/content';
                         }
                     }
                 });
             }
         },
-        checkEditMode(){
-            if(typeof form_id != 'undefined' && typeof editMode != 'undefined'){
+        loadFormFields() {
+            if (typeof form_id != 'undefined' && typeof editMode != 'undefined') {
                 //cargar datos del formulario
                 var self = this;
                 self.editMode = editMode;
                 self.form_id = form_id;
-                console.log('editMode');
+                this.debug ? console.log('editMode') : null;
                 $.ajax({
                     type: "GET",
                     url: "/admin/formularios/get_form_info/" + form_id,
@@ -276,14 +285,50 @@ var dataFormModule = new Vue({
                     dataType: "json",
                     success: function (response) {
                         console.log(response);
-                        self.updateFormData(response.data)
+                        if (response.code == 200 && response.data.length > 0) {
+                            self.updateFields(response.data)
+                        } else {
+                            M.toast({ html: 'Ocurrio un error' })
+                        }
+                    },
+                    error: function (param) {
+                        M.toast({ html: 'Ocurrio un error' })
                     }
                 });
-            }else{
+            } else {
                 this.loader = false;
             }
         },
-        updateFormData(data){
+        checkEditMode() {
+            if (form_content_id && typeof editMode != 'undefined') {
+                var self = this;
+                self.editMode = editMode;
+                self.form_id = form_id;
+                this.debug ? console.log('editMode') : null;
+                $.ajax({
+                    type: "POST",
+                    url: "/admin/formularios/ajax_get_forms_data/",
+                    data: {
+                        form_content_id: form_content_id
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        this.debug ? console.log(response) : null;
+                        if (response.code == 200 && response.data.length > 0) {
+                            self.updateFieldsData(response.data)
+                        } else {
+                            M.toast({ html: 'Ocurrio un error' })
+                        }
+                    },
+                    error: function (param) {
+                        M.toast({ html: 'Ocurrio un error' })
+                    }
+                });
+            } else {
+                this.loader = false;
+            }
+        },
+        updateFields(data) {
             this.form_name = data[0].form_name;
             this.form_status = (data[0].status == '1');
             this.loader = false;
@@ -296,7 +341,7 @@ var dataFormModule = new Vue({
                 console.log(element.fields_data);
                 let tempField = {};
                 element.fields_data.forEach((field) => {
-                    tempField = { 
+                    tempField = {
                         component: field.component,
                         displayName: field.displayName,
                         icon: field.icon,
@@ -305,14 +350,42 @@ var dataFormModule = new Vue({
                     }
                     tab.fields.push(tempField);
                 });
-                
+
                 this.tabs.push(tab);
             });
             this.tabs[0].active = true;
-            setTimeout(() => {
-                var elems = document.querySelectorAll('.collapsible');
-                M.Collapsible.init(elems, {});
-            }, 2000);
+        },
+        updateFieldsData(data) {
+            //this.debug ? console.log(data) : null;
+            var self = this;
+            self.fieldsData = data;
+            values = JSON.parse(self.fieldsData[0].form_data);
+            values.forEach(element => {
+                this.debug ? console.log(element) : null;
+                for (const key in element) {
+                    if (element.hasOwnProperty(key)) {
+                        const value = element[key];
+                        self.setFieldDataFromServe(key, value);
+                    }
+                }
+            });
+
+        },
+        setFieldDataFromServe(fieldName, fieldValue) {
+            fieldsComponents = dataFormModule.$refs;
+            for (const key in fieldsComponents) {
+                if (fieldsComponents.hasOwnProperty(key)) {
+                    const element = fieldsComponents[key];
+                    for (let index = 0; index < element.length; index++) {
+                        const component = element[index];
+                        this.debug ? console.log(component) : null;
+                        if (component.fielApiID == fieldName) {
+                            component.updateFielData(fieldValue);
+                        }
+                        component.$forceUpdate();
+                    }
+                }
+            }
         }
     },
     mounted: function () {
@@ -322,6 +395,7 @@ var dataFormModule = new Vue({
                 this.getInitialTab()
             );
             this.tabs[0].edited = false;
+            this.loadFormFields();
             this.checkEditMode();
         });
     }
