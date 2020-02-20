@@ -16,6 +16,7 @@ class Admin extends MY_Controller
         $data['title'] = "Admin";
         $data['h1'] = "";
         $data['header'] = "";
+
         echo $this->blade->view("admin.dashboard", $data);
     }
 

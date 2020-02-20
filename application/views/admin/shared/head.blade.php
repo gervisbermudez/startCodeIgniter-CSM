@@ -27,5 +27,4 @@
 <link rel="manifest" href="{{base_url('public/img/admin/favicon')}}/manifest.json{{'?v=' . SITEVERSION}}">
 <meta name="msapplication-TileColor" content="#ffffff">
 <meta name="msapplication-TileImage" content="{{base_url('public/img/admin/favicon')}}/ms-icon-144x144.png">
-@yield('head_includes')
 <title>@yield('title')</title>
