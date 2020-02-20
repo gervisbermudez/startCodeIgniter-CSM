@@ -127,6 +127,25 @@ class Formularios extends MY_Controller
             ->set_output(json_encode($response));
     }
 
+    public function updateDataForm()
+    {
+        $this->output->enable_profiler(false);
+        $data = (json_decode($_POST['data']));
+        //Update last data
+        $update_where = array('form_content_id' => $data->form_content_id);
+        $update_data = array('status' => 2);
+        $this->Forms_model->update_data($update_where, $update_data, 'form_content_data');
+
+        $response = array(
+            'code' => 200,
+            'data' => $this->Forms_model->save_data_form($data),
+        );
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
     public function updateForm()
     {
         $this->output->enable_profiler(false);

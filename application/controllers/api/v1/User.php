@@ -14,7 +14,6 @@ class User extends REST_Controller
     {
         parent::__construct();
         $this->load->database();
-        $this->check_token();
     }
 
     /**

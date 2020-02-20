@@ -179,6 +179,7 @@ EOD;
                 FROM (
                 SELECT form_content_id, CONCAT('[',GROUP_CONCAT(JSON_OBJECT(form_key, form_value)), ']') AS 'form_data'
                 FROM form_content_data
+                WHERE form_content_data.status = 1
                 GROUP BY form_content_id
                 ) sq1
                 INNER JOIN form_content fc ON fc.form_content_id = sq1.form_content_id

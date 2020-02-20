@@ -240,6 +240,7 @@ var dataFormModule = new Vue({
             });
 
             data.form_id = form_id;
+            data.form_content_id = form_content_id;
 
             if (this.editMode) {
                 $.ajax({
@@ -252,7 +253,12 @@ var dataFormModule = new Vue({
                     success: function (response) {
                         if (response.data) {
                             window.location = BASEURL + 'admin/content';
+                        } else {
+                            M.toast({ html: 'Ocurrio un error' })
                         }
+                    },
+                    error: function (param) {
+                        M.toast({ html: 'Ocurrio un error' })
                     }
                 });
             } else {
@@ -266,7 +272,12 @@ var dataFormModule = new Vue({
                     success: function (response) {
                         if (response.data) {
                             window.location = BASEURL + 'admin/content';
+                        } else {
+                            M.toast({ html: 'Ocurrio un error' })
                         }
+                    },
+                    error: function (param) {
+                        M.toast({ html: 'Ocurrio un error' })
                     }
                 });
             }

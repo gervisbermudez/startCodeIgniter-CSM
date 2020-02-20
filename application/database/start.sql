@@ -157,6 +157,47 @@ DELETE FROM `eventos`;
 /*!40000 ALTER TABLE `eventos` DISABLE KEYS */;
 /*!40000 ALTER TABLE `eventos` ENABLE KEYS */;
 
+-- Volcando estructura para tabla start_cms.form_content
+DROP TABLE IF EXISTS `form_content`;
+CREATE TABLE IF NOT EXISTS `form_content` (
+  `form_content_id` int(11) NOT NULL AUTO_INCREMENT,
+  `form_custom_id` int(11) NOT NULL DEFAULT 0,
+  `date_create` timestamp NULL DEFAULT current_timestamp(),
+  `date_update` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `id_user` int(11) DEFAULT NULL,
+  `status` tinyint(4) DEFAULT 1,
+  PRIMARY KEY (`form_content_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+
+-- Volcando datos para la tabla start_cms.form_content: ~1 rows (aproximadamente)
+DELETE FROM `form_content`;
+/*!40000 ALTER TABLE `form_content` DISABLE KEYS */;
+INSERT INTO `form_content` (`form_content_id`, `form_custom_id`, `date_create`, `date_update`, `id_user`, `status`) VALUES
+	(18, 7, '2020-02-19 11:59:49', '2020-02-19 11:59:49', 18, 1);
+/*!40000 ALTER TABLE `form_content` ENABLE KEYS */;
+
+-- Volcando estructura para tabla start_cms.form_content_data
+DROP TABLE IF EXISTS `form_content_data`;
+CREATE TABLE IF NOT EXISTS `form_content_data` (
+  `form_custom_data_id` int(11) NOT NULL AUTO_INCREMENT,
+  `form_content_id` int(11) DEFAULT NULL,
+  `form_key` varchar(200) DEFAULT NULL,
+  `form_value` text DEFAULT NULL,
+  `date_create` timestamp NULL DEFAULT current_timestamp(),
+  `date_update` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `status` tinyint(4) DEFAULT 1,
+  PRIMARY KEY (`form_custom_data_id`),
+  KEY `form_id` (`form_content_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+
+-- Volcando datos para la tabla start_cms.form_content_data: ~2 rows (aproximadamente)
+DELETE FROM `form_content_data`;
+/*!40000 ALTER TABLE `form_content_data` DISABLE KEYS */;
+INSERT INTO `form_content_data` (`form_custom_data_id`, `form_content_id`, `form_key`, `form_value`, `date_create`, `date_update`, `status`) VALUES
+	(23, 18, 'titulo', 'Hola', '2020-02-19 11:59:49', '2020-02-19 11:59:49', 1),
+	(24, 18, 'texto', 'Bermudez', '2020-02-19 11:59:49', '2020-02-19 11:59:49', 1);
+/*!40000 ALTER TABLE `form_content_data` ENABLE KEYS */;
+
 -- Volcando estructura para tabla start_cms.form_custom
 DROP TABLE IF EXISTS `form_custom`;
 CREATE TABLE IF NOT EXISTS `form_custom` (
@@ -165,7 +206,7 @@ CREATE TABLE IF NOT EXISTS `form_custom` (
   `date_create` timestamp NULL DEFAULT current_timestamp(),
   `date_update` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `id_user` int(11) DEFAULT NULL,
-  `status` tinyint(4) DEFAULT NULL,
+  `status` tinyint(4) DEFAULT 1,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
 
@@ -176,33 +217,6 @@ INSERT INTO `form_custom` (`id`, `form_name`, `date_create`, `date_update`, `id_
 	(7, 'Card', '2020-02-17 16:03:33', '2020-02-17 16:03:33', 18, 1),
 	(8, 'Post', '2020-02-17 17:32:02', '2020-02-17 17:32:02', 18, 1);
 /*!40000 ALTER TABLE `form_custom` ENABLE KEYS */;
-
--- Volcando estructura para tabla start_cms.form_custom_data
-DROP TABLE IF EXISTS `form_custom_data`;
-CREATE TABLE IF NOT EXISTS `form_custom_data` (
-  `form_custom_data_id` int(11) NOT NULL AUTO_INCREMENT,
-  `form_id` int(11) DEFAULT NULL,
-  `id_user` int(11) DEFAULT NULL,
-  `form_key` varchar(200) DEFAULT NULL,
-  `form_value` text DEFAULT NULL,
-  `date_create` timestamp NULL DEFAULT current_timestamp(),
-  `date_update` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `status` tinyint(4) DEFAULT 1,
-  PRIMARY KEY (`form_custom_data_id`),
-  KEY `form_id` (`form_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
-
--- Volcando datos para la tabla start_cms.form_custom_data: ~6 rows (aproximadamente)
-DELETE FROM `form_custom_data`;
-/*!40000 ALTER TABLE `form_custom_data` DISABLE KEYS */;
-INSERT INTO `form_custom_data` (`form_custom_data_id`, `form_id`, `id_user`, `form_key`, `form_value`, `date_create`, `date_update`, `status`) VALUES
-	(1, 7, NULL, 'titulo', 'Card Title', NULL, NULL, 1),
-	(2, 7, NULL, 'texto', 'I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.', NULL, NULL, 1),
-	(3, 8, 18, 'titulo', 'sunt aut facere repellat provident occaecati excepturi optio reprehenderit', NULL, NULL, 1),
-	(4, 8, 18, 'texto', 'quia et suscipit\\nsuscipit recusandae consequuntur expedita et cum\\nreprehenderit molestiae ut ut quas totam\\nnostrum rerum est autem sunt rem eveniet architecto', NULL, NULL, 1),
-	(5, 7, 18, 'titulo', 'dolorem eum magni eos aperiam quia', NULL, NULL, 1),
-	(6, 7, 18, 'texto', 'ut aspernatur corporis harum nihil quis provident sequi\\nmollitia nobis aliquid molestiae\\nperspiciatis et ea nemo ab reprehenderit accusantium quas\\nvoluptate dolores velit et doloremque molestiae', NULL, NULL, 1);
-/*!40000 ALTER TABLE `form_custom_data` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.form_fields
 DROP TABLE IF EXISTS `form_fields`;
