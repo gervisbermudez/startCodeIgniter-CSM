@@ -7,6 +7,19 @@ const rename = require("gulp-rename");
 const resources = './resources/';
 const public = './public/';
 
+/**
+ * Compilar cotizador AP: cotizador-ap.min.js
+ */
+gulp.task('concat_widgets', function () {
+    return gulp.src(
+        [
+            resources + 'components/widget/*.js',
+            resources + 'components/dashboardModule.js',
+        ])
+        .pipe(concat('dashboardModule.js'))
+        .pipe(gulp.dest(resources + 'components/'));
+});
+
 gulp.task('compress_js_components', function () {
     return gulp.src(resources + 'components/*.js')
         .pipe(rename(function (path) {

@@ -24,7 +24,7 @@ Vue.component('formFieldTitle', {
             return result;
         }
     },
-    mounted: function() {
+    mounted: function () {
         this.$nextTick(function () {
             for (const key in this.serveData) {
                 if (this.serveData.hasOwnProperty(key)) {
@@ -209,18 +209,18 @@ var formModule = new Vue({
         },
         saveData() {
             this.loader = true;
-            $('html, body').animate( { scrollTop : 0 }, 600 );
+            $('html, body').animate({ scrollTop: 0 }, 600);
 
             this.debug ? console.log('saveData trigger') : null;
 
             this.getfieldsData();
             let data = {
-                form_name : this.form_name,
-                form_status : this.form_status ? 1 : 0,
-                tabs : {}
+                form_name: this.form_name,
+                form_status: this.form_status ? 1 : 0,
+                tabs: {}
             };
             this.tabs.forEach(element => {
-                if(element.fields.length < 0){
+                if (element.fields.length < 0) {
                     return false;
                 }
                 data.tabs[element.name] = {
@@ -229,8 +229,8 @@ var formModule = new Vue({
                 }
             });
 
-            
-            if(this.editMode){
+
+            if (this.editMode) {
                 data.form_id = form_id;
                 $.ajax({
                     type: "POST",
@@ -240,12 +240,12 @@ var formModule = new Vue({
                     },
                     dataType: "json",
                     success: function (response) {
-                        if(response.data){
+                        if (response.data) {
                             window.location = BASEURL + 'admin/formularios/';
                         }
                     }
                 });
-            }else{
+            } else {
                 $.ajax({
                     type: "POST",
                     url: BASEURL + "admin/formularios/saveForm",
@@ -254,15 +254,15 @@ var formModule = new Vue({
                     },
                     dataType: "json",
                     success: function (response) {
-                        if(response.data){
+                        if (response.data) {
                             window.location = BASEURL + 'admin/formularios/';
                         }
                     }
                 });
             }
         },
-        checkEditMode(){
-            if(typeof form_id != 'undefined'){
+        checkEditMode() {
+            if (typeof form_id != 'undefined') {
                 //cargar datos del formulario
                 var self = this;
                 self.editMode = true;
@@ -278,11 +278,11 @@ var formModule = new Vue({
                         self.updateFormData(response.data)
                     }
                 });
-            }else{
+            } else {
                 this.loader = false;
             }
         },
-        updateFormData(data){
+        updateFormData(data) {
             this.form_name = data[0].form_name;
             this.form_status = (data[0].status == '1');
             this.loader = false;
@@ -295,7 +295,7 @@ var formModule = new Vue({
                 console.log(element.fields_data);
                 let tempField = {};
                 element.fields_data.forEach((field) => {
-                    tempField = { 
+                    tempField = {
                         component: field.component,
                         displayName: field.displayName,
                         icon: field.icon,
@@ -304,7 +304,7 @@ var formModule = new Vue({
                     }
                     tab.fields.push(tempField);
                 });
-                
+
                 this.tabs.push(tab);
             });
             this.tabs[0].active = true;
