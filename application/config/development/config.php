@@ -17,7 +17,7 @@
 |
  */
 $config['base_url'] = 'http://localhost:8000/';
-$config['enable_profiler'] = true;
+$config['enable_profiler'] = false;
 
 /*
 |--------------------------------------------------------------------------

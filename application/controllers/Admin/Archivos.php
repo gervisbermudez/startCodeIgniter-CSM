@@ -11,9 +11,17 @@ class Archivos extends MY_Controller
         $this->load->helper('form');
     }
 
+    public function map($folder = null)
+    {
+        $this->load->model('Files_model');
+        if ($folder != null) {
+            $this->Files_model->current_folder = $folder . '/';
+        }
+        $this->Files_model->map_files();
+    }
+
     public function index($dir = 'root')
     {
-        $data['base_url'] = $this->config->base_url();
         $data['udir'] = $dir;
         if ($dir === 'root') {
             $data['dir'] = dirname('img');
@@ -21,18 +29,16 @@ class Archivos extends MY_Controller
         } else {
             $data['dir'] = str_replace('_', '/', $dir);
         }
+
         $data['username'] = $this->session->userdata('username');
         $data['title'] = "Admin | Archivos";
         $data['h1'] = "Archivos";
         $data['header'] = $this->load->view('admin/header', $data, true);
-        $this->load->helper('url');
-        $data['head_includes'] = array('file-input' => link_tag('public/js/fileinput-master/css/fileinput.min.css'), 'lightbox' => link_tag('public/js/lightbox2-master/dist/css/lightbox.min.css'));
 
         $data['error'] = '';
         $data['load_to'] = 'Admin/Archivos/subirmultiple/' . $dir;
         $data['form'] = $this->load->view('admin/galeria/upload_form', $data, true);
-        $data['footer_includes'] = array('file-input' => '<script src="' . base_url('public/js/fileinput-master/js/fileinput.js') . '"></script>', 'file-input-canvas' => '<script src="' . base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js') . '"></script>',
-            'lightbox' => '<script src="' . base_url('public/js/lightbox2-master/dist/js/lightbox.min.js') . '"></script>');
+
         echo $this->blade->view("admin.archivos.todas", $data);
 
     }
@@ -46,7 +52,6 @@ class Archivos extends MY_Controller
             $dir = dirname('img');
         }
         $data['base_url'] = $this->config->base_url();
-        $this->load->helper('strbefore');
         foreach ($_FILES["imagenes"]["error"] as $clave => $error) {
             if ($error == UPLOAD_ERR_OK) {
                 $nombre_tmp = $_FILES["imagenes"]["tmp_name"][$clave];

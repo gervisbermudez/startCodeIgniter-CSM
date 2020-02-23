@@ -65,7 +65,6 @@ class Galeria extends MY_Controller
         if (!$this->session->userdata('logged_in')) {
             header('Location: ' . $data['base_url'] . 'index.php/Login/');
         } else {
-            $this->load->helper('strbefore');
             foreach ($_FILES["imagenes"]["error"] as $clave => $error) {
                 if ($error == UPLOAD_ERR_OK) {
                     $nombre_tmp = $_FILES["imagenes"]["tmp_name"][$clave];

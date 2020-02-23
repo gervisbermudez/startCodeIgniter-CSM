@@ -90,3 +90,12 @@ if (!function_exists('slugify')) {
     }
 
 }
+
+if (!function_exists('userdata')) {
+    function userdata($text)
+    {
+        $ci = &get_instance();
+        return $ci->session->userdata($text);
+    }
+
+}
