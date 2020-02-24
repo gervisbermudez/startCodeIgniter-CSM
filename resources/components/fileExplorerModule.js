@@ -94,6 +94,18 @@ var fileExplorerModule = new Vue({
                 return '.' + fileObject.file_type;
             }
         },
+        isImage(item) {
+            if (item.file_type == 'jpg' || item.file_type == 'png' || item.file_type == 'gif') {
+                return true;
+            }
+            return false;
+        },
+
+        getImagePath(item) {
+            if (this.isImage(item)) {
+                return BASEURL + (item.file_path.substr(2)) + item.file_name + '.' + item.file_type;
+            }
+        },
         navigateFiles(path) {
             var self = this;
             self.backto = self.getBackPath;
@@ -120,6 +132,7 @@ var fileExplorerModule = new Vue({
                 }
             });
         },
+
         filterFiles(filter) {
             switch (filter) {
                 case 'important':

@@ -144,15 +144,18 @@
                                                 <li><a href="#!">Rename</a></li>
                                                 <li><a href="#!">Delete</a></li>
                                             </ul>
-                                            <div class="card-image waves-effect waves-block waves-light">
+                                            <div class="card-image waves-effect waves-block waves-light"
+                                                v-if="!isImage(item)">
                                                 <div class="file icon activator">
                                                     <i :class="getIcon(item)"></i>
                                                 </div>
-
+                                            </div>
+                                            <div class="card-image" v-if="isImage(item)">
+                                                <img :src="getImagePath(item)">
                                             </div>
                                             <div class="card-content">
                                                 @{{(item.file_name + getExtention(item)) | shortName}}
-                                                <p><a href="#">This is a link</a></p>
+                                                <p><a href="#">Share file</a></p>
                                             </div>
                                             <div class="card-reveal">
                                                 <span class="card-title grey-text text-darken-4">@{{item.file_name}}<i
