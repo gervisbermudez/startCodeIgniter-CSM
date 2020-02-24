@@ -6,8 +6,7 @@
 @endsection
 
 @section('head_includes')
-<!-- <link rel="stylesheet" href="<?= base_url('public/js/fileinput-master/css/fileinput.min.css') ?>">
-<link rel="stylesheet" href="<?= base_url('public/js/lightbox2-master/dist/css/lightbox.min.css') ?>"> -->
+<link rel="stylesheet" href="<?= base_url('public/js/lightbox2-master/dist/css/lightbox.min.css') ?>">
 <link rel="stylesheet" href="<?= base_url('public/css/admin/file_explorer.min.css') ?>">
 <link rel="stylesheet" href="<?= base_url('public\font-awesome\css\all.min.css') ?>">
 @endsection
@@ -151,7 +150,8 @@
                                                 </div>
                                             </div>
                                             <div class="card-image" v-if="isImage(item)">
-                                                <img :src="getImagePath(item)">
+                                                <a :href="getImagePath(item)" data-lightbox="roadtrip"><img
+                                                        :src="getImagePath(item)"></a>
                                             </div>
                                             <div class="card-content">
                                                 @{{(item.file_name + getExtention(item)) | shortName}}
@@ -191,4 +191,5 @@
 
 @section('footer_includes')
 <script src="<?= base_url('public/js/components/fileExplorerModule.min.js') ?>"></script>
+<script src="<?= base_url('public\js\lightbox2-master\dist\js\lightbox.min.js') ?>"></script>
 @endsection

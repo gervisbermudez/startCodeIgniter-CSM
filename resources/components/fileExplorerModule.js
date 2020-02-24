@@ -68,6 +68,9 @@ var fileExplorerModule = new Vue({
                 case 'html':
                     icon = 'fab fa-html5';
                     break;
+                case 'scss':
+                    icon = 'fab fa-sass';
+                    break;
                 case 'css':
                 case 'min.css':
                     icon = 'fab fa-css3-alt';
@@ -83,6 +86,11 @@ var fileExplorerModule = new Vue({
                 case 'json':
                 case 'min.js':
                     icon = 'fab fa-js';
+                    break;
+                case 'eot':
+                case 'otf':
+                case 'woff2':
+                    icon = 'fas fa-font';
                     break;
             }
             return icon;
@@ -124,10 +132,7 @@ var fileExplorerModule = new Vue({
                 success: function (response) {
                     if (response.code == 200 && response.data.length) {
                         self.files = response.data;
-                        setTimeout(() => {
-                            var elems = document.querySelectorAll('.dropdown-trigger');
-                            var instances = M.Dropdown.init(elems, {});
-                        }, 2000);
+                        self.initMT();
                     }
                 }
             });
@@ -188,13 +193,16 @@ var fileExplorerModule = new Vue({
                 success: function (response) {
                     if (response.code == 200) {
                         self.files = response.data;
-                        setTimeout(() => {
-                            var elems = document.querySelectorAll('.dropdown-trigger');
-                            var instances = M.Dropdown.init(elems, {});
-                        }, 2000);
+                        self.initMT();
                     }
                 }
             });
+        },
+        initMT() {
+            setTimeout(() => {
+                var elems = document.querySelectorAll('.dropdown-trigger');
+                var instances = M.Dropdown.init(elems, {});
+            }, 2000);
         }
     },
     filters: {
