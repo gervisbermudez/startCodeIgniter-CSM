@@ -149,4 +149,27 @@ class Archivos extends MY_Controller
         $directorio = array('_parentdir' => dirname($dir), 'files' => scandir("" . $dir));
         $this->output->set_content_type('application/json')->set_output(json_encode($directorio));
     }
+
+    public function ajax_rename_file()
+    {
+        $file = $this->input->post('file');
+        $result = $this->Files_model->update_data(array('rand_key' => $file['rand_key']), array('file_name' => $file['new_name']), 'files');
+
+        if ($result) {
+            rename(
+                $file['file_path'] . $file['file_name'] . '.' . $file['file_type'],
+                $file['file_path'] . $file['new_name'] . '.' . $file['file_type'],
+            );
+        }
+
+        $response = array(
+            'code' => 200,
+            'data' => $result,
+        );
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+
+    }
 }

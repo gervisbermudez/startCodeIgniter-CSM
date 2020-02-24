@@ -12,10 +12,10 @@
 @endsection
 
 @section('content')
-<div class="container explorer">
+<div class="container explorer" id="root">
     <div class="row">
         <div class="col s12">
-            <div class="row" id="root">
+            <div class="row">
                 <div class="col s12 center" v-bind:class="{ hide: !loader }">
                     <div class="preloader-wrapper big active">
                         <div class="spinner-layer spinner-blue-only">
@@ -139,8 +139,11 @@
                                                     class="material-icons right">more_vert</i></a>
                                             <ul :id="'file_options' + index" class='dropdown-content'>
                                                 <li><a href="#!">Share file</a></li>
+                                                <li>
+                                                    <a class="waves-effect waves-light modal-trigger" href="#modal1"
+                                                        @click="renameFile(item)">Rename</a>
+                                                </li>
                                                 <li><a href="#!">Important</a></li>
-                                                <li><a href="#!">Rename</a></li>
                                                 <li><a href="#!">Delete</a></li>
                                             </ul>
                                             <div class="card-image waves-effect waves-block waves-light"
@@ -184,6 +187,22 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <!-- Modal Structure -->
+    <div id="modal1" class="modal">
+        <div class="modal-content">
+            <h4>Rename File</h4>
+            <p>
+                <div class="input-field col s6">
+                    <input placeholder="Placeholder" id="first_name" type="text" v-on:keyup.enter="renameFileServe()"
+                        v-model="editFile.new_name" class="validate">
+                    <label for="first_name">Rename</label>
+                </div>
+            </p>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" @click="renameFileServe()" class="modal-close waves-effect waves-green btn-flat">Agree</a>
         </div>
     </div>
 </div>

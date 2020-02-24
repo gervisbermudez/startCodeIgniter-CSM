@@ -7,7 +7,8 @@ var fileExplorerModule = new Vue({
         files: [],
         recentlyFiles: [],
         backto: null,
-        search: ''
+        search: '',
+        editFile: {}
     },
     computed: {
         getFolders() {
@@ -108,7 +109,32 @@ var fileExplorerModule = new Vue({
             }
             return false;
         },
+        renameFile(item) {
+            console.log(item);
+            this.editFile = item;
+            this.editFile.new_name = this.editFile.file_name;
+        },
+        renameFileServe() {
+            var self = this;
 
+            $.ajax({
+                type: "POST",
+                url: BASEURL + "admin/archivos/ajax_rename_file",
+                data: {
+                    file: self.editFile
+                },
+                dataType: "json",
+                success: function (response) {
+                    if (response.code == 200) {
+                        self.editFile.file_name = self.editFile.new_name;
+                        M.toast({ html: 'Renamed file' });
+                        var elems = document.querySelectorAll('.modal');
+                        var instances = M.Modal.init(elems, {});
+                        instances.close();
+                    }
+                }
+            });
+        },
         getImagePath(item) {
             if (this.isImage(item)) {
                 return BASEURL + (item.file_path.substr(2)) + item.file_name + '.' + item.file_type;
