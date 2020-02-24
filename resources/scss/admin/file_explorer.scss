@@ -1,0 +1,64 @@
+@import "components/palette";
+
+.explorer {
+    padding: 0px 10px;
+    width: 95%;
+
+    nav {
+        position: relative;
+        background-color: white;
+
+        .input-field i {
+            color: #000;
+            height: 50px;
+            line-height: 50px;
+        }
+    }
+
+    .files {
+        .search>div {
+            padding: 0px !important;
+        }
+
+        .folder {
+            .card-panel {
+                overflow: hidden;
+            }
+
+            .card-icon {
+                float: left;
+            }
+
+            .card-content {
+                float: left;
+                padding-left: 10px;
+            }
+        }
+
+    }
+
+    .file {
+        span.activator.grey-text.text-darken-4 {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+        }
+    }
+
+    .tree {
+        padding: 0px !important;
+
+        .sidenav {
+            transform: none;
+            width: auto;
+            left: 0px;
+            position: relative;
+            margin: 0px;
+            z-index: auto;
+
+            &>a {
+                margin: 10px 0px 0px;
+            }
+        }
+    }
+}
