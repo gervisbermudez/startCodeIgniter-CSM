@@ -8,38 +8,40 @@ class Archivos extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->helper('form');
+        $this->load->model('Files_model');
     }
 
     public function map($folder = null)
     {
-        $this->load->model('Files_model');
         if ($folder != null) {
             $this->Files_model->current_folder = $folder . '/';
         }
         $this->Files_model->map_files();
     }
 
-    public function index($dir = 'root')
+    public function index()
     {
-        $data['udir'] = $dir;
-        if ($dir === 'root') {
-            $data['dir'] = dirname('img');
-            $data['udir'] = $data['dir'];
-        } else {
-            $data['dir'] = str_replace('_', '/', $dir);
-        }
-
-        $data['username'] = $this->session->userdata('username');
         $data['title'] = "Admin | Archivos";
-        $data['h1'] = "Archivos";
-        $data['header'] = $this->load->view('admin/header', $data, true);
+        $data['h1'] = "";
 
-        $data['error'] = '';
-        $data['load_to'] = 'Admin/Archivos/subirmultiple/' . $dir;
-        $data['form'] = $this->load->view('admin/galeria/upload_form', $data, true);
+        echo $this->blade->view("admin.archivos.file_explorer", $data);
 
-        echo $this->blade->view("admin.archivos.todas", $data);
+    }
+
+    public function ajax_get_files()
+    {
+        $file_path = $this->input->post('path');
+
+        $result = $this->Files_model->get_data(array('file_path' => $file_path), 'files', '', '');
+
+        $response = array(
+            'code' => 200,
+            'data' => $result,
+        );
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
 
     }
 

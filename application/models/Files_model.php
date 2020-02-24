@@ -29,14 +29,20 @@ class Files_model extends MY_Model
     public function map_files()
     {
         echo '<pre>';
-        $directorio = directory_map($this->current_dir . $this->current_folder, 2);
+        $directorio = directory_map($this->current_dir . $this->current_folder);
+        unset($directorio['node_modules\\']);
         print_r($directorio);
         echo '<br>';
         echo '=====================================================';
         echo '<br>';
-
+        $this->delete_data(array('status' => 1), $this->table);
         $curdir = $this->current_dir . $this->current_folder;
         $this->save_dir($directorio, $curdir);
+        if (!$this->get_data(array('config_name' => 'map_dir', 'config_value' => $this->current_dir), 'site_config')) {
+            $this->update_data(array('config_name' => 'map_dir'), array('config_value' => $this->current_dir), 'site_config');
+        } else {
+            $this->set_data(array('config_name' => 'map_dir', 'config_value' => $this->current_dir, 'user_id' => userdata('id')), 'site_config');
+        }
     }
 
     /**
@@ -49,7 +55,7 @@ class Files_model extends MY_Model
             echo '<br />';
             $this->save_file($value, $key, $curdir);
             if (is_array($value)) {
-                $this->save_dir($value, $curdir . substr($key, 0, -1));
+                $this->save_dir($value, $curdir . $key);
             }
         }
 
@@ -117,7 +123,7 @@ class Files_model extends MY_Model
         $insert_array = array(
             'rand_key' => $file_key,
             'file_name' => $this->get_substr_folder_name($folder),
-            'file_path' => $dir_name,
+            'file_path' => $this->get_file_path($dir_name),
             'file_type' => $this->get_substr_file_ext($folder),
             'parent_name' => $this->get_substr_file_parent_name($dir_name),
             'user_id' => userdata('id'),
@@ -134,7 +140,7 @@ class Files_model extends MY_Model
         if ($dir == $this->root_dir) {
             return $this->root_dir;
         } else {
-            return $dir;
+            return str_replace('\\', '/', $dir);
         }
     }
 
@@ -143,12 +149,10 @@ class Files_model extends MY_Model
         if ($folder == $this->root_dir) {
             return $folder;
         } else {
+            $folder = str_replace('\\', '/', $folder);
+            $folder = substr($folder, 0, -1);
+            return substr($folder, strrpos($folder, '/') + 1);
 
-            if (substr($folder, -1) == '/') {
-                $folder = substr($folder, 0, -1);
-            }
-
-            return $substr = substr($folder, strrpos($folder, '/') + 1);
         }
     }
 

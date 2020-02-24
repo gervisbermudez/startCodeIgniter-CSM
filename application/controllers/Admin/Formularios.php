@@ -204,18 +204,20 @@ class Formularios extends MY_Controller
     public function ajax_get_forms_data()
     {
         $this->output->enable_profiler(false);
-        $where = '';
 
-        if ($this->input->post('form_content_id')) {
-            $where = 'WHERE fc.form_content_id = ' . (Integer) $this->input->post('form_content_id');
+        $result = $this->Forms_model->get_all();
+        if ($result) {
+            $response = array(
+                'code' => 200,
+                'data' => $result,
+            );
+        } else {
+            $response = array(
+                'code' => 404,
+                'data' => [],
+            );
+
         }
-
-        $result = $data['forms_list'] = $this->Forms_model->get_form_content_data($where);
-
-        $response = array(
-            'code' => 200,
-            'data' => $result,
-        );
 
         $this->output
             ->set_content_type('application/json')
