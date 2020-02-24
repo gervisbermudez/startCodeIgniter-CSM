@@ -44,14 +44,22 @@
                             <li>
                                 <a href="#!"><i class="fas fa-history"></i> Recents</a>
                             </li>
-                            <li><a class="waves-effect" href="#!"><i class="fas fa-star"></i> Important</a></li>
-                            <li><a class="waves-effect" href="#!"><i class="fas fa-trash"></i> Deleted Files</a></li>
+                            <li><a class="waves-effect" href="#!" @click="filterFiles('important')"><i
+                                        class="fas fa-star"></i> Important</a></li>
+                            <li><a class="waves-effect" href="#!" @click="filterFiles('trash')"><i
+                                        class="fas fa-trash"></i> Deleted Files</a></li>
                             <li><a class="subheader">Labels</a></li>
-                            <li><a class="waves-effect" href="#!"><i class="far fa-images"></i> Images</a></li>
-                            <li><a class="waves-effect" href="#!"><i class="far fa-file-word"></i> Document</a></li>
-                            <li><a class="waves-effect" href="#!"><i class="far fa-file-audio"></i> Audios</a></li>
-                            <li><a class="waves-effect" href="#!"><i class="fas fa-file-video"></i> Videos</a></li>
-                            <li><a class="waves-effect" href="#!"><i class="fas fa-file-archive"></i> Zip Files</a></li>
+                            <li><a class="waves-effect" href="#!" @click="filterFiles('images')"><i
+                                        class="far fa-images"></i>
+                                    Images</a></li>
+                            <li><a class="waves-effect" href="#!" @click="filterFiles('docs')"><i
+                                        class="far fa-file-word"></i> Document</a></li>
+                            <li><a class="waves-effect" href="#!" @click="filterFiles('audio')"><i
+                                        class="far fa-file-audio"></i> Audios</a></li>
+                            <li><a class="waves-effect" href="#!" @click="filterFiles('video')"><i
+                                        class="fas fa-file-video"></i> Videos</a></li>
+                            <li><a class="waves-effect" href="#!" @click="filterFiles('zip')"><i
+                                        class="fas fa-file-archive"></i> Zip Files</a></li>
 
 
                         </ul>
@@ -64,10 +72,10 @@
                                         <form>
                                             <div class="input-field">
                                                 <input id="search" type="search" placeholder="Buscar Archivos..."
-                                                    required>
+                                                    v-model="search" v-on:keyup.enter="searchfiles()">
                                                 <label class="label-icon" for="search"><i
                                                         class="material-icons">search</i></label>
-                                                <i class="material-icons">close</i>
+                                                <i class="material-icons" @click="resetSearch()">close</i>
                                             </div>
                                         </form>
                                     </div>
@@ -121,17 +129,26 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col s12">
-                                <h5 v-if="getFiles.length">Files</h5>
+                            <div class="col s12" v-if="getFiles.length">
+                                <h5>Files</h5>
                                 <div class="row">
-                                    <div class="col s3" v-for="(item, index) in getFiles" :key="index">
-                                        <div class="card file">
+                                    <div class="col s4 file" v-for="(item, index) in getFiles" :key="index">
+                                        <div class="card">
+                                            <!-- Dropdown Structure -->
+                                            <a class="grey-text text-darken-4 dropdown-trigger" href='#!'
+                                                :data-target="'file_options' + index"><i
+                                                    class="material-icons right">more_vert</i></a>
+                                            <ul :id="'file_options' + index" class='dropdown-content'>
+                                                <li><a href="#!">Share file</a></li>
+                                                <li><a href="#!">Important</a></li>
+                                                <li><a href="#!">Rename</a></li>
+                                                <li><a href="#!">Delete</a></li>
+                                            </ul>
                                             <div class="card-image waves-effect waves-block waves-light">
-                                                <div class="file icon">
+                                                <div class="file icon activator">
                                                     <i :class="getIcon(item)"></i>
                                                 </div>
-                                                <span class="activator grey-text text-darken-4"><i
-                                                        class="material-icons right">more_vert</i></span>
+
                                             </div>
                                             <div class="card-content">
                                                 @{{(item.file_name + getExtention(item)) | shortName}}
@@ -140,11 +157,22 @@
                                             <div class="card-reveal">
                                                 <span class="card-title grey-text text-darken-4">@{{item.file_name}}<i
                                                         class="material-icons right">close</i></span>
-                                                <p>Here is some more information about this product that is only
-                                                    revealed once
-                                                    clicked on.</p>
+                                                <p>
+                                                    <b>Type</b>: @{{item.file_type}} <br />
+                                                    <b>Create</b>: @{{item.date_create}} <br />
+                                                    <b>Update</b>: @{{item.date_update}} <br />
+                                                    <b>shared</b> with: @{{item.shared_user_group_id}} <br />
+                                                    <b>User</b>: @{{item.user_id}} <br />
+                                                </p>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-else>
+                                <div class="row">
+                                    <div class="col s12">
+                                        <h5>No hay archivos</h5>
                                     </div>
                                 </div>
                             </div>

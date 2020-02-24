@@ -88,6 +88,21 @@ class Files_model extends MY_Model
 
     }
 
+    public function get_filter_files($column, $filters)
+    {
+        $this->db->select('*');
+        $this->db->from($this->table);
+        $this->db->where_in($column, $filters);
+        $query = $this->db->get();
+
+        if ($query->num_rows() > 0) {
+            return $query->result_array();
+        }
+
+        return array();
+
+    }
+
     public function get_array_save_file($file_name, $dir_name)
     {
         $file_key = random_string('alnum', 16);

@@ -32,7 +32,25 @@ class Archivos extends MY_Controller
     {
         $file_path = $this->input->post('path');
 
-        $result = $this->Files_model->get_data(array('file_path' => $file_path), 'files', '', '');
+        $result = $this->Files_model->get_data(array('file_path' => $file_path, 'status' => 1), 'files', '', '');
+
+        $response = array(
+            'code' => 200,
+            'data' => $result,
+        );
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+
+    }
+
+    public function ajax_get_filter_files()
+    {
+        $filter_name = $this->input->post('filter_name');
+        $filter_value = $this->input->post('filter_value');
+
+        $result = $this->Files_model->get_filter_files($filter_name, $filter_value);
 
         $response = array(
             'code' => 200,

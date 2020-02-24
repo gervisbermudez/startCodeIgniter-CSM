@@ -14,7 +14,7 @@
             line-height: 50px;
         }
 
-        .input-field label.label-icon.active i {
+        .input-field label.label-icon i {
             color: #000 !important;
             height: 50px;
             line-height: 50px;
@@ -57,6 +57,8 @@
         }
 
         .folder {
+            cursor: pointer;
+
             .card-panel {
                 overflow: hidden;
             }
@@ -74,13 +76,26 @@
     }
 
     .file {
-        span.activator.grey-text.text-darken-4 {
-            position: absolute;
-            right: 10px;
-            top: 10px;
+        .card .card-image {
+            position: relative;
+            z-index: 1;
         }
 
+        span.grey-text.text-darken-4 {
+            position: relative;
+        }
 
+        a.grey-text.text-darken-4.dropdown-trigger {
+            position: absolute;
+            right: 0px;
+            z-index: 9;
+            height: 32px;
+        }
+
+        .dropdown-content {
+            left: auto !important;
+            right: 0px !important;
+        }
     }
 
     .file.icon {

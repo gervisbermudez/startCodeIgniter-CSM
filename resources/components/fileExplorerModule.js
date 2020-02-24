@@ -7,6 +7,7 @@ var fileExplorerModule = new Vue({
         files: [],
         recentlyFiles: [],
         backto: null,
+        search: ''
     },
     computed: {
         getFolders() {
@@ -35,9 +36,18 @@ var fileExplorerModule = new Vue({
                 for (let i = 0; i < index; i++) {
                     tempArray.push(breadcrumb[i]);
                 }
-                return {
-                    path: this.root + tempArray.join('/'),
-                    folder: element
+
+                let path = tempArray.join('/');
+                if (path) {
+                    return {
+                        path: this.root + path + '/',
+                        folder: element
+                    }
+                } else {
+                    return {
+                        path: this.root + path,
+                        folder: element
+                    }
                 }
             });
             return breadcrumb;
@@ -50,7 +60,7 @@ var fileExplorerModule = new Vue({
                 case 'folder':
                     icon = 'far fa-folder';
                     break;
-                case 'img':
+                case 'jpg':
                 case 'png':
                 case 'gif':
                     icon = 'fas fa-file-image';
@@ -102,6 +112,73 @@ var fileExplorerModule = new Vue({
                 success: function (response) {
                     if (response.code == 200 && response.data.length) {
                         self.files = response.data;
+                        setTimeout(() => {
+                            var elems = document.querySelectorAll('.dropdown-trigger');
+                            var instances = M.Dropdown.init(elems, {});
+                        }, 2000);
+                    }
+                }
+            });
+        },
+        filterFiles(filter) {
+            switch (filter) {
+                case 'important':
+                    this.getFilterFiles('important', ['1']);
+                    break;
+                case 'trash':
+                    this.getFilterFiles('status', ['0']);
+                    break;
+                case 'images':
+                    this.getFilterFiles('file_type', ['jpg', 'png', 'gif']);
+                    break;
+                case 'doc':
+                    this.getFilterFiles('file_type', ['pdf', 'doc']);
+                    break;
+                case 'docs':
+                    this.getFilterFiles('file_type', ['pdf', 'doc', 'xls']);
+                    break
+                case 'audio':
+                    this.getFilterFiles('file_type', ['acc, mp3']);
+                    break
+                case 'video':
+                    this.getFilterFiles('file_type', ['mp4']);
+                    break
+                case 'zip':
+                    this.getFilterFiles('file_type', ['zip', 'rar']);
+                    break
+                default:
+                    break;
+            }
+        },
+        resetSearch() {
+            this.search = null;
+            this.navigateFiles(this.root);
+        },
+        searchfiles() {
+            if (this.search) {
+                this.getFilterFiles('file_name', [this.search]);
+            } else {
+                this.navigateFiles(this.root);
+            }
+        },
+
+        getFilterFiles(filter_name, filter_value) {
+            var self = this;
+            $.ajax({
+                type: "POST",
+                url: BASEURL + "admin/archivos/ajax_get_filter_files",
+                data: {
+                    'filter_name': filter_name,
+                    'filter_value': filter_value
+                },
+                dataType: "json",
+                success: function (response) {
+                    if (response.code == 200) {
+                        self.files = response.data;
+                        setTimeout(() => {
+                            var elems = document.querySelectorAll('.dropdown-trigger');
+                            var instances = M.Dropdown.init(elems, {});
+                        }, 2000);
                     }
                 }
             });
