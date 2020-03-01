@@ -2,6 +2,9 @@
     exit('No direct script access allowed');
 }
 
+/**
+ * Configuration Controller
+ */
 class Configuracion extends MY_Controller
 {
 
@@ -20,7 +23,7 @@ class Configuracion extends MY_Controller
         $data['action'] = base_url('admin/configuracion/save');
         $realthemes = get_dir_file_info('./themes/');
         $data['themes_'] = array_filter($realthemes, 'isDir');
-        $data['config'] = $this->Config_model->load_config();
+        $data['config'] = $this->Site_config->load_config();
         echo $this->blade->view("admin.configuracion.all_config", $data);
     }
 
@@ -32,7 +35,7 @@ class Configuracion extends MY_Controller
                 'config_value' => $this->input->post('theme_selected'),
             ),
         );
-        $this->Config_model->save_config($data);
+        $this->Site_config->save_config($data);
         $data['base_url'] = $this->config->base_url();
         $data['title'] = "Admin | Configuracion";
         $data['h1'] = "Configuracion";
@@ -42,7 +45,7 @@ class Configuracion extends MY_Controller
         $realthemes = get_dir_file_info('./themes/');
         $data['themes_'] = array_filter($realthemes, 'isDir');
         $data['saved'] = 'Configuracion guardada';
-        $data['config'] = $this->Config_model->load_config();
+        $data['config'] = $this->Site_config->load_config();
 
         echo $this->blade->view("admin.configuracion.all_config", $data);
 

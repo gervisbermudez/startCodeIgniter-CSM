@@ -13,7 +13,7 @@ if (!function_exists('getThemePath')) {
     function getThemePath()
     {
         $ci = &get_instance();
-        $config = $ci->Config_model->load_config();
+        $config = $ci->Site_config->load_config();
 
         if ($config->site_theme) {
             defined('THEME_PATH') or define('THEME_PATH', FCPATH . 'themes\\' . $config->site_theme) . '\\';
@@ -27,7 +27,7 @@ if (!function_exists('getThemePublicPath')) {
     function getThemePublicPath()
     {
         $ci = &get_instance();
-        $config = $ci->Config_model->load_config();
+        $config = $ci->Site_config->load_config();
 
         if ($config->site_theme) {
             return 'themes/' . $config->site_theme . '/public/';

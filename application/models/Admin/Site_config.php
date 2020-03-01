@@ -1,17 +1,19 @@
-<?php
-/**
- * The config model
- */
-class Config_model extends MY_Model
+<?php if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
+
+class Site_config extends MY_model
 {
-    public $table = 'site_config';
 
     public function __construct()
     {
         parent::__construct();
     }
 
-    public function save_config($data)
+    /**
+     * Update all config data 
+     */
+    public function update_config($data)
     {
         foreach ($data as $key => $config) {
             $this->update_data(
@@ -23,7 +25,8 @@ class Config_model extends MY_Model
     }
 
     /**
-     * Array with config
+     * Return a object with the current site config
+     * @return json object
      */
     public function load_config()
     {
@@ -33,8 +36,10 @@ class Config_model extends MY_Model
                 FROM site_config) c";
         $result = $this->get_query($sql);
         if ($result) {
-            return json_decode($result[0]['all_config']);
+            $result = $result->first();
+            return json_decode($result->all_config);
         }
-        return array();
+        return json_decode(array());
     }
+
 }
