@@ -1,7 +1,7 @@
-<?php
-/**
- * The config model
- */
+<?php if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
+
 class Forms_model extends MY_Model
 {
     public $table = 'form_custom';
@@ -15,9 +15,8 @@ class Forms_model extends MY_Model
     {
         $sql = "SELECT f.*, u.username
         FROM form_custom f
-        INNER JOIN user u ON u.id = f.id_user";
+        INNER JOIN user u ON u.user_id = f.id_user";
         return $this->get_query($sql);
-
     }
 
     public function get_form_types()

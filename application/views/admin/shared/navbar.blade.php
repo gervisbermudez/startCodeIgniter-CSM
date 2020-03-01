@@ -42,12 +42,12 @@
 	</div>
 </nav>
 <ul id="slide-out" class="sidenav">
-	<li class="{{isSectionActive('user')}}">
-		<a class="waves-effect" href="{{ base_url('admin/user/') }}"><i class="material-icons">perm_identity</i>
+	<li class="{{isSectionActive('usuarios')}}">
+		<a class="waves-effect" href="{{ base_url('admin/usuarios/') }}"><i class="material-icons">perm_identity</i>
 			Usuarios</a>
 		<ul>
 			<li>
-				<a href="{{ base_url('admin/user/agregar/') }}">Nuevo</a>
+				<a href="{{ base_url('admin/usuarios/agregar/') }}">Nuevo</a>
 			</li>
 		</ul>
 	</li>

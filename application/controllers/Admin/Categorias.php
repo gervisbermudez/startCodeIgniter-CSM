@@ -8,14 +8,13 @@ class Categorias extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('ModCategorias');
-        $this->load->helper('string');
+        $this->load->model('Admin/Categories');
     }
 
     public function index()
     {
         $data['h1'] = "Todas las Categorias";
-        $data['categorias'] = $this->StModel->get_data('all', 'categorias');
+        $data['categorias'] = $this->Categories->all();
         $data['title'] = "Admin | Categorias";
         $data['header'] = $this->load->view('admin/header', $data, true);
         echo $this->blade->view("admin.categorias.categorias_list", $data);
@@ -25,9 +24,9 @@ class Categorias extends MY_Controller
     {
         $data['h1'] = "Todas las Categorias";
         if ($str_tipo == 'all') {
-            $data['categorias'] = $this->StModel->get_data('all', 'categorias');
+            $data['categorias'] = $this->Categories->get_data('all', 'categorias');
         } else {
-            $data['categorias'] = $this->StModel->get_data(array('tipo' => $str_tipo), 'categorias');
+            $data['categorias'] = $this->Categories->get_data(array('tipo' => $str_tipo), 'categorias');
             $data['h1'] = "Categoria " . $str_tipo;
 
         }
@@ -117,7 +116,7 @@ class Categorias extends MY_Controller
         $data['h1'] = "Editar Categoria";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['action'] = base_url('admin/categorias/update/');
-        $data['categoria'] = $this->StModel->get_data(array('id' => $int_id), 'categorias')[0];
+        $data['categoria'] = $this->Categories->get_data(array('id' => $int_id), 'categorias')[0];
 
         $data['footer_includes'] = array(
             'tinymce' => '<script src="' . base_url('public/js/tinymce/js/tinymce/tinymce.min.js') . '"></script>',

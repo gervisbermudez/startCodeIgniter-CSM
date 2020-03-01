@@ -347,19 +347,18 @@ ul.tabs {
 
 .card.banner {
   margin: 20px 0 0 0;
-
+  .dropdown-trigger.right {
+    position: absolute;
+    z-index: 1;
+    right: 10px;
+    top: 10px;
+  }
   .card-content {
     padding-left: 160px;
     padding-top: 10px;
   }
 }
 
-.banner .dropdown-button.right {
-  position: absolute;
-  z-index: 1;
-  right: 10px;
-  top: 10px;
-}
 
 span.level {
   position: absolute;

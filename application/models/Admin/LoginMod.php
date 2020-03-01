@@ -1,5 +1,8 @@
-<?php
-class LoginMod extends CI_Model
+<?php if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
+
+class LoginMod extends MY_model
 {
 
     public function __construct()

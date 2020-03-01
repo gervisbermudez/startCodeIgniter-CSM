@@ -8,7 +8,6 @@ class Archivos extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->helper('form');
     }
 
     public function index($dir = 'root')

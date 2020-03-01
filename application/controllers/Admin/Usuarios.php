@@ -2,15 +2,18 @@
     exit('No direct script access allowed');
 }
 
-class User extends MY_Controller
+class Usuarios extends MY_Controller
 {
 
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('UserMod');
+        $this->load->model('Admin/User');
     }
 
+    /**
+     * Index page for @route admin/usuarios
+     */
     public function index()
     {
         $data['base_url'] = $this->config->base_url();
@@ -21,86 +24,51 @@ class User extends MY_Controller
         $data['footer_includes'] = array("<script src=" . base_url('public/js/components/userComponent.min.js?v=1') . "></script>");
 
         echo $this->blade->view("admin.user.users", $data);
-
     }
-    public function ver($id = false)
+
+    public function ver($user_id = false)
     {
-
-        $this->load->model('ModRelations');
-        $this->load->model('EventosMod');
-        $this->load->model('ModGallery');
-        $this->load->model('ModVideo');
-        $this->load->helper('form');
-
         //get_user
-        $data['userdata'] = $this->UserMod->get_user(array('user.id' => $id));
-        if ($data['userdata']) {
-
-            //Make the timeline
-            $relations = $this->ModRelations->get_relation(array('id_user' => $id), '', array('date', 'DESC'));
-            $data['relations'] = $this->get_datarelations($relations);
-
-            //get_datauserstorage
-            $datastorage = $this->UserMod->get_datauserstorage(array('id_user' => $id));
-            if ($datastorage) {
-                foreach ($datastorage as $key => $value) {
-                    $data['userdata'][0][$value['_key']] = $value['_value'];
-                }
-            }
-
-            $data['currentlevel'] = $this->session->userdata('level');
-            $data['username'] = $this->session->userdata('username');
-            $data['title'] = "Admin | Ver";
-            $data['h1'] = '';
-            $data['header'] = '';
-
-            //Form Options
-            $data['error'] = '';
-            $data['nomultiple'] = true;
-            $data['load_to'] = 'admin/user/profileimage/' . $data['userdata'][0]['username'] . '/' . $id;
-            $data['form'] = $this->load->view('admin/galeria/upload_form', $data, true);
-
-            $data['modalid'] = random_string('alnum', 16);
-
+        $user = $this->User->get_full_info($user_id);
+        if ($user) {
+            $user = (object) $user->first();
+            $data['title'] = "Admin | Usuario";
+            $data['user'] = $user;
             //Make the menu options
+            $data['dropdown_id'] = 'dropdown' . random_string('alnum', 16);
             $this->load->library('menu');
             $this->menu->char = "'";
-            $this->menu->set_ul_properties($properties = array('class' => 'dropdown-content', 'role' => 'menu', 'id' => 'dropdown'));
+            $this->menu->set_ul_properties(
+                array(
+                    'class' => 'dropdown-content',
+                    'role' => 'menu',
+                    'id' => $data['dropdown_id'],
+                )
+            );
 
-            $links = array();
-            if ($data['currentlevel'] <= $data['userdata'][0]['level']) {
-                $links = array('Editar' => array('href' => base_url('admin/user/edit/' . $id)),
+            $links = array(
+                'Editar' => array('href' => base_url('admin/user/edit/' . $user_id)),
+                'Cambiar avatar' => array('href' => '#modal2', 'class' => 'modal-trigger'),
+                'Eliminar' => array('href' => '#!'),
+                'Bloquear' => array('href' => '#!'),
+            );
+
+            if ($user_id == $this->session->userdata('user_id')) {
+                $links = array(
+                    'Editar' => array('href' => base_url('admin/user/edit/' . $user_id)),
                     'Cambiar avatar' => array('href' => '#modal2', 'class' => 'modal-trigger'),
-                    'Eliminar' => array('href' => '#' . $data['modalid'],
-                        'class' => 'modal-trigger',
-                        'data-action-param' => '{"id":"' . $id . '", "table":"user"}',
-                        'data-url' => 'admin/user/fn_ajax_delete_data',
-                        'data-url-redirect' => 'admin/user/',
-                        'data-ajax-action' => 'inactive',
-                    ),
-                    'Bloquear' => array('href' => '#'));
+                );
             }
 
-            if ($id == $this->session->userdata('id')) {
-                $links = array('Editar' => array('href' => base_url('admin/user/edit/' . $id)),
-                    'Cambiar avatar' => array('href' => '#modal2', 'class' => 'modal-trigger'));
-
-            }
-
-            $data['options'] = $this->menu->get_menu($links);
-
+            $data['dropdown_menu'] = $this->menu->get_menu($links);
             //Page includes
-            $data['head_includes'] = array('file-input' => link_tag('public/js/fileinput-master/css/fileinput.min.css'));
-            $data['footer_includes'] = array('file-input' => '<script src="' . base_url('public/js/fileinput-master/js/fileinput.js') . '"></script>', 'file-input-canvas' => '<script src="' . base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js') . '"></script>');
+            //$data['head_includes'] = array('file-input' => link_tag('public/js/fileinput-master/css/fileinput.min.css'));
+            //$data['footer_includes'] = array('file-input' => '<script src="' . base_url('public/js/fileinput-master/js/fileinput.js') . '"></script>', 'file-input-canvas' => '<script src="' . base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js') . '"></script>');
 
             // Load the views
-            $this->load->view('admin/head', $data);
-            $this->load->view('admin/navbar', $data);
-            $this->load->view('admin/user/userprofile', $data);
-            $this->load->view('admin/footer', $data);
-
+            echo $this->blade->view("admin.user.userprofile", $data);
         } else {
-            $this->showError('El usuario al que intenta acceder no existe :(');
+            $this->error404();
         }
     }
 
@@ -135,13 +103,13 @@ class User extends MY_Controller
         }
         return $dat;
     }
+
     public function edit($id)
     {
 
         // Load the model
-        $this->load->model('UserMod');
-        $data['userdata'] = $this->UserMod->get_user(array('user.id' => $id));
-        $datastorage = $this->UserMod->get_datauserstorage(array('id_user' => $id));
+        $data['userdata'] = $this->User->get_user(array('user.id' => $id));
+        $datastorage = $this->User->get_datauserstorage(array('id_user' => $id));
         if ($datastorage) {
             # code...
             foreach ($datastorage as $key => $value) {
@@ -155,7 +123,7 @@ class User extends MY_Controller
             $data['h1'] = "Editar Usuario";
             $data['header'] = $this->load->view('admin/header', $data, true);
             $data['action'] = 'Admin/User/save/';
-            $data['usergroups'] = $this->UserMod->get_usergroup(array('status' => '1', 'level >' => $this->session->userdata('level')));
+            $data['usergroups'] = $this->User->get_usergroup(array('status' => '1', 'level >' => $this->session->userdata('level')));
             $data['mode'] = 'edit';
             $this->load->view('admin/head', $data);
             $this->load->view('admin/navbar', $data);
@@ -164,31 +132,29 @@ class User extends MY_Controller
         } else {
             $this->showError();
         }
-
     }
+
     public function agregar()
     {
-        $this->load->model('UserMod');
-        $this->load->helper('form');
+        
+        $this->load->model('Admin/Usergroup');
+        
         // set the url base
-        $data['base_url'] = $this->config->base_url();
         $data['action'] = 'Admin/User/save/';
         $data['title'] = "Admin | Nuevo Usuario";
         $data['h1'] = "Nuevo Usuario";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['userdata'] = false;
-        $data['usergroups'] = $this->UserMod->get_usergroup(array('status' => '1', 'level >' => $this->session->userdata('level')));
+        $data['usergroups'] = $this->Usergroup->where(array('status' => '1', 'level >' => $this->session->userdata('level')));
         $data['mode'] = 'new';
         $data['footer_includes'] = array('<script src="' . base_url('public/js/user.js') . '"></script>');
-
         echo $this->blade->view("admin.user.form", $data);
-
     }
+
     public function save()
     {
 
         // Load the model
-        $this->load->model('UserMod');
         $mode = $this->input->post('mode');
         $query = false;
         if ($mode === "new") {
@@ -205,8 +171,8 @@ class User extends MY_Controller
             );
             $date = new DateTime();
             $data['lastseen'] = $date->format('Y-m-d H:i:s');
-            if ($this->UserMod->set_user($data)) {
-                $id_user = $this->UserMod->get_user(array('username' => url_title($this->input->post('username'), 'underscore', true)))[0]['id'];
+            if ($this->User->set_user($data)) {
+                $id_user = $this->User->get_user(array('username' => url_title($this->input->post('username'), 'underscore', true)))[0]['id'];
                 $datauserstorage = array(
                     array('_key' => 'nombre', '_value' => $this->input->post('nombre'), 'id_user' => $id_user),
                     array('_key' => 'apellido', '_value' => $this->input->post('apellido'), 'id_user' => $id_user),
@@ -215,7 +181,7 @@ class User extends MY_Controller
                     array('_key' => 'create by', '_value' => $this->session->userdata('username'), 'id_user' => $id_user),
                 );
                 foreach ($datauserstorage as $key => $data) {
-                    $this->UserMod->set_datauserstorage($data);
+                    $this->User->set_datauserstorage($data);
                 }
                 if (!file_exists('./img/profile/' . url_title($this->input->post('username'), 'underscore', true))) {
                     mkdir('./img/profile/' . url_title($this->input->post('username'), 'underscore', true));
@@ -225,7 +191,6 @@ class User extends MY_Controller
             } else {
                 $this->showError();
             }
-
         } else {
             $id = $this->input->post('id');
             $status = "0";
@@ -239,7 +204,7 @@ class User extends MY_Controller
                 'usergroup' => $this->input->post('usergroup'),
                 'status' => $status,
             );
-            if ($this->UserMod->update_user($data, $id)) {
+            if ($this->User->update_user($data, $id)) {
                 $datauserstorage = array(
                     array('_key' => 'nombre', '_value' => $this->input->post('nombre')),
                     array('_key' => 'apellido', '_value' => $this->input->post('apellido')),
@@ -248,7 +213,7 @@ class User extends MY_Controller
                     array('_key' => 'create by', '_value' => $this->session->userdata('username')),
                 );
                 foreach ($datauserstorage as $key => $data) {
-                    $this->UserMod->update_datauserstorage($data, $arrayName = array('_key' => $data['_key'], 'id_user' => $id));
+                    $this->User->update_datauserstorage($data, $arrayName = array('_key' => $data['_key'], 'id_user' => $id));
                 }
                 redirect('admin/user/ver/' . $id);
             }
@@ -257,8 +222,7 @@ class User extends MY_Controller
 
     public function profileimage($dir = '/img', $id_user)
     {
-        $this->load->model('UserMod');
-        $username = $this->UserMod->get_user(array('user.id' => $id_user))[0]['username'];
+        $username = $this->User->get_user(array('user.id' => $id_user))[0]['username'];
         // set the url base
         $udir = $dir;
         $dir = str_replace('_', '/', $dir);
@@ -275,13 +239,28 @@ class User extends MY_Controller
         }
         $data = array('_key' => 'avatar', 'id_user' => $id_user);
         // delete the current avatar
-        $this->UserMod->delete_datauserstorage($data);
+        $this->User->delete_datauserstorage($data);
         $data = array('_key' => 'avatar', '_value' => $nombre, 'id_user' => $id_user);
         // set the new avatar in the db
-        $this->UserMod->set_datauserstorage($data);
+        $this->User->set_datauserstorage($data);
         if ($id_user == $this->session->userdata('id')) {
             $this->session->set_userdata('avatar', $nombre);
         }
         redirect('admin/user/ver/' . $id_user);
+    }
+
+    public function ajax_get_users($user_id = false)
+    {
+        $this->output->enable_profiler(false);
+        $result = $data['forms_list'] = $this->User->get_full_info($user_id);
+
+        $response = array(
+            'code' => 200,
+            'data' => $result,
+        );
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
     }
 }

@@ -163,12 +163,14 @@ class MY_model extends CI_Model
      * @param array $order for set the order clause
      * @return Collection instance
      */
-    public function get_data($where = 'all', $limit = '', $order = array('id', 'ASC'))
+    public function get_data($where = 'all', $limit = '', $order = array())
     {
         $limit ? $this->db->limit($limit) : null;
 
-        if ($order !== '') {
+        if ($order) {
             $this->db->order_by($order[0], $order[1]);
+        }else{
+            $this->db->order_by($this->primaryKey, 'ASC');
         }
 
         if ($where === 'all') {

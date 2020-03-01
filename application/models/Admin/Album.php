@@ -1,7 +1,12 @@
-<?php 
-class ModGallery extends CI_Model {
+<?php if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
-	function __construct()
+class Album extends MY_model {
+
+	public $primaryKey = 'album_id';
+
+	public function __construct()
 	{
 		parent::__construct();
 	}

@@ -7,8 +7,8 @@
 @endsection
 
 @section('content')
-<div class="container">
-	<div class="row mensaje-container">
+<div class="mensaje-container">
+	<div class="row">
 		<div class="col s12 search-bar">
 			<nav class="red darken-1">
 				<span class="current-folder"><?php echo $folder; ?></span>

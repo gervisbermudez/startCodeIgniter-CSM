@@ -4,6 +4,8 @@
 
 class Usergroup extends MY_model
 {
+    public $primaryKey = 'usergroup_id';
+
     protected $attributes = array(
         'status' => 1,
         'level' => 3,

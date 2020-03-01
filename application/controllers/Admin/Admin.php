@@ -12,12 +12,12 @@ class Admin extends MY_Controller
 
     public function index()
     {
-        
-        $this->load->model('admin/Site_config');
-        echo '<pre>';
-        print_r($this->Site_config->all());
-        echo '<pre />';
+        $data['username'] = $this->session->userdata('username');
+        $data['title'] = "Admin";
+        $data['h1'] = "";
+        $data['header'] = "";
 
+        echo $this->blade->view("admin.dashboard", $data);
     }
 
 }

@@ -8,16 +8,14 @@ class Formularios extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('Forms_model');
+        $this->load->model('Admin/Forms_model');
     }
 
     public function index()
     {
-        $data['base_url'] = $this->config->base_url();
         $data['title'] = "Admin | Formularios";
         $data['h1'] = "Formularios";
         $data['header'] = $this->load->view('admin/header', $data, true);
-        $data['username'] = $this->session->userdata('username');
         $data['forms_list'] = $this->Forms_model->get_all();
         echo $this->blade->view("admin.formularios.formularios_list", $data);
     }

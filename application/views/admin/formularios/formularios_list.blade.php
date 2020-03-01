@@ -10,7 +10,7 @@
 <div class="container">
 	<div class="row">
 		<div class="col s12">
-			@if (count($forms_list) > 0)
+			@if ($forms_list)
 			<table>
 				<thead>
 					<tr>
