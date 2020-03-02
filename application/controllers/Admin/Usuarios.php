@@ -109,7 +109,7 @@ class Usuarios extends MY_Controller
 
         // Load the model
         $data['userdata'] = $this->User->get_user(array('user.id' => $id));
-        $datastorage = $this->User->get_datauserstorage(array('id_user' => $id));
+        $datastorage = $this->User->get_datauserstorage(array('user_id' => $id));
         if ($datastorage) {
             # code...
             foreach ($datastorage as $key => $value) {
@@ -147,7 +147,7 @@ class Usuarios extends MY_Controller
         $data['userdata'] = false;
         $data['usergroups'] = $this->Usergroup->where(array('status' => '1', 'level >' => $this->session->userdata('level')));
         $data['mode'] = 'new';
-        $data['footer_includes'] = array('<script src="' . base_url('public/js/user.js') . '"></script>');
+        $data['footer_includes'] = array('<script src="' . base_url('public/js/components/UserNewForm.min.js') . '"></script>');
         echo $this->blade->view("admin.user.form", $data);
     }
 
@@ -172,22 +172,22 @@ class Usuarios extends MY_Controller
             $date = new DateTime();
             $data['lastseen'] = $date->format('Y-m-d H:i:s');
             if ($this->User->set_user($data)) {
-                $id_user = $this->User->get_user(array('username' => url_title($this->input->post('username'), 'underscore', true)))[0]['id'];
-                $datauserstorage = array(
-                    array('_key' => 'nombre', '_value' => $this->input->post('nombre'), 'id_user' => $id_user),
-                    array('_key' => 'apellido', '_value' => $this->input->post('apellido'), 'id_user' => $id_user),
-                    array('_key' => 'direccion', '_value' => $this->input->post('direccion'), 'id_user' => $id_user),
-                    array('_key' => 'telefono', '_value' => $this->input->post('telefono'), 'id_user' => $id_user),
-                    array('_key' => 'create by', '_value' => $this->session->userdata('username'), 'id_user' => $id_user),
+                $user_id = $this->User->get_user(array('username' => url_title($this->input->post('username'), 'underscore', true)))[0]['id'];
+                $user_data = array(
+                    array('_key' => 'nombre', '_value' => $this->input->post('nombre'), 'user_id' => $user_id),
+                    array('_key' => 'apellido', '_value' => $this->input->post('apellido'), 'user_id' => $user_id),
+                    array('_key' => 'direccion', '_value' => $this->input->post('direccion'), 'user_id' => $user_id),
+                    array('_key' => 'telefono', '_value' => $this->input->post('telefono'), 'user_id' => $user_id),
+                    array('_key' => 'create by', '_value' => $this->session->userdata('username'), 'user_id' => $user_id),
                 );
-                foreach ($datauserstorage as $key => $data) {
+                foreach ($user_data as $key => $data) {
                     $this->User->set_datauserstorage($data);
                 }
                 if (!file_exists('./img/profile/' . url_title($this->input->post('username'), 'underscore', true))) {
                     mkdir('./img/profile/' . url_title($this->input->post('username'), 'underscore', true));
                 }
 
-                redirect('admin/user/ver/' . $id_user);
+                redirect('admin/user/ver/' . $user_id);
             } else {
                 $this->showError();
             }
@@ -213,16 +213,16 @@ class Usuarios extends MY_Controller
                     array('_key' => 'create by', '_value' => $this->session->userdata('username')),
                 );
                 foreach ($datauserstorage as $key => $data) {
-                    $this->User->update_datauserstorage($data, $arrayName = array('_key' => $data['_key'], 'id_user' => $id));
+                    $this->User->update_datauserstorage($data, $arrayName = array('_key' => $data['_key'], 'user_id' => $id));
                 }
                 redirect('admin/user/ver/' . $id);
             }
         }
     }
 
-    public function profileimage($dir = '/img', $id_user)
+    public function profileimage($dir = '/img', $user_id)
     {
-        $username = $this->User->get_user(array('user.id' => $id_user))[0]['username'];
+        $username = $this->User->get_user(array('user.id' => $user_id))[0]['username'];
         // set the url base
         $udir = $dir;
         $dir = str_replace('_', '/', $dir);
@@ -237,16 +237,16 @@ class Usuarios extends MY_Controller
                 move_uploaded_file($nombre_tmp, 'img/profile/' . $dir . '/' . $nombre);
             }
         }
-        $data = array('_key' => 'avatar', 'id_user' => $id_user);
+        $data = array('_key' => 'avatar', 'user_id' => $user_id);
         // delete the current avatar
         $this->User->delete_datauserstorage($data);
-        $data = array('_key' => 'avatar', '_value' => $nombre, 'id_user' => $id_user);
+        $data = array('_key' => 'avatar', '_value' => $nombre, 'user_id' => $user_id);
         // set the new avatar in the db
         $this->User->set_datauserstorage($data);
-        if ($id_user == $this->session->userdata('id')) {
+        if ($user_id == $this->session->userdata('id')) {
             $this->session->set_userdata('avatar', $nombre);
         }
-        redirect('admin/user/ver/' . $id_user);
+        redirect('admin/user/ver/' . $user_id);
     }
 
     public function ajax_get_users($user_id = false)

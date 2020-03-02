@@ -117,7 +117,7 @@ class Videos extends MY_Controller
                 }
             }
             $this->load->model('ModRelations');
-            $relations = array('id_user' => $this->session->userdata('id'), 'tablename' => 'video', 'id_row' => $video[0]['id'], 'action' => 'crear');
+            $relations = array('user_id' => $this->session->userdata('id'), 'tablename' => 'video', 'id_row' => $video[0]['id'], 'action' => 'crear');
             $this->ModRelations->set_relation($relations);
 
             redirect('admin/videos/ver/' . $video[0]['id']);

@@ -137,7 +137,7 @@ CREATE TABLE IF NOT EXISTS `form_content` (
   `form_custom_id` int(11) NOT NULL DEFAULT 0,
   `date_create` timestamp NULL DEFAULT current_timestamp(),
   `date_update` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `id_user` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
   `status` tinyint(4) DEFAULT 1,
   PRIMARY KEY (`form_content_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
@@ -171,7 +171,7 @@ CREATE TABLE IF NOT EXISTS `form_custom` (
   `form_name` varchar(250) DEFAULT NULL,
   `date_create` timestamp NULL DEFAULT current_timestamp(),
   `date_update` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `id_user` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
   `status` tinyint(4) DEFAULT 1,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -205,7 +205,7 @@ DROP TABLE IF EXISTS `form_field_config`;
 CREATE TABLE IF NOT EXISTS `form_field_config` (
   `form_field_config_id` int(11) NOT NULL AUTO_INCREMENT,
   `form_field_id` int(11) DEFAULT NULL,
-  `id_user` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
   `config_name` varchar(200) DEFAULT NULL,
   `config_value` varchar(200) DEFAULT NULL,
   `date_create` timestamp NULL DEFAULT current_timestamp(),
@@ -341,7 +341,7 @@ CREATE TABLE IF NOT EXISTS `page` (
 DROP TABLE IF EXISTS `relations`;
 CREATE TABLE IF NOT EXISTS `relations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `id_user` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
   `tablename` tinytext NOT NULL,
   `id_row` int(11) NOT NULL,
   `date` datetime NOT NULL,
@@ -416,7 +416,7 @@ INSERT INTO `user` (`user_id`, `username`, `password`, `email`, `lastseen`, `use
 DROP TABLE IF EXISTS `userdatapermisions`;
 CREATE TABLE IF NOT EXISTS `userdatapermisions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `id_usergroup` int(11) NOT NULL,
+  `usergroup_id` int(11) NOT NULL,
   `permision` int(11) NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)

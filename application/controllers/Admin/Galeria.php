@@ -201,7 +201,7 @@ class Galeria extends MY_Controller
         if ($this->Album->set_album($path)) {
             $this->load->model('Admin/ModRelations');
             $album = $this->Album->get_album(array('path' => $path));
-            $relations = array('id_user' => $this->session->userdata('id'), 'tablename' => 'album', 'id_row' => $album[0]['id'], 'action' => 'crear');
+            $relations = array('user_id' => $this->session->userdata('id'), 'tablename' => 'album', 'id_row' => $album[0]['id'], 'action' => 'crear');
             $this->ModRelations->set_relation($relations);
             redirect('admin/galeria/albumes/' . $album[0]['id']);
         } else {

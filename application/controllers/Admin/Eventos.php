@@ -78,7 +78,7 @@ class Eventos extends MY_Controller
                 $event = $this->Events->get_event(array('nombre' => $this->input->post('nombre')), '', '');
                 $id = $event[0]['id'];
                 $this->load->model('Admin/ModRelations');
-                $relations = array('id_user' => $this->session->userdata('id'), 'tablename' => 'eventos', 'id_row' => $id, 'action' => 'crear');
+                $relations = array('user_id' => $this->session->userdata('id'), 'tablename' => 'eventos', 'id_row' => $id, 'action' => 'crear');
                 $this->ModRelations->set_relation($relations);
                 redirect('admin/eventos/ver/' . $id);
             } else {

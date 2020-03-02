@@ -650,6 +650,7 @@ div.row.event a.dropdown-button.right {
 
 .card .card-image .card-title {
   text-transform: none;
+  z-index: 3;
 }
 
 .side-nav {
@@ -994,6 +995,16 @@ div#dropnotify {
 }
 
 .user-card {
+  .card-image:after {
+    background-color: rgba(0, 0, 0, 0.43);
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    top: 0px;
+  }
+
   .card-image-container {
     height: 215px;
     overflow: hidden;
@@ -1013,6 +1024,7 @@ div#dropnotify {
 
   .btn-floating {
     background: $color3;
+    z-index: 3;
   }
 }
 
