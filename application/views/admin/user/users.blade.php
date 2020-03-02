@@ -33,7 +33,7 @@
 </div>
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
 	<a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left"
-		data-delay="50" data-tooltip="Crear Usuario" href="{{base_url('admin/user/agregar/')}} ">
+		data-delay="50" data-tooltip="Crear Usuario" href="{{base_url('admin/usuarios/agregar/')}} ">
 		<i class="large material-icons">add</i>
 	</a>
 </div>

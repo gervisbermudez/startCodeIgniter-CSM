@@ -14,9 +14,6 @@ jQuery(document).ready(function ($) {
 		$('#modal1').closeModal();
 	});
 	$("#slide-out").niceScroll();
-	if ($('.tabs-wrapper').length) {
-		$('.tabs-wrapper').pushpin({ top: $('.tabs-wrapper').offset().top });
-	}
 	fn_navigate_files();
 	fn_delete_data();
 	fn_change_state();

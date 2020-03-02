@@ -61,6 +61,14 @@ if (!function_exists('isSectionActive')) {
     }
 }
 
+if (!function_exists('userdata')) {
+    function userdata($index)
+    {
+        $ci = &get_instance();
+        return $ci->session->userdata($index);
+    }
+}
+
 if (!function_exists('slugify')) {
     function slugify($text)
     {

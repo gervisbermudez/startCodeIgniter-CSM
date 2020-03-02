@@ -145,7 +145,6 @@ class Usuarios extends MY_Controller
         $data['h1'] = "Nuevo Usuario";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['userdata'] = false;
-        $data['usergroups'] = $this->Usergroup->where(array('status' => '1', 'level >' => $this->session->userdata('level')));
         $data['mode'] = 'new';
         $data['footer_includes'] = array('<script src="' . base_url('public/js/components/UserNewForm.min.js') . '"></script>');
         echo $this->blade->view("admin.user.form", $data);
@@ -252,11 +251,46 @@ class Usuarios extends MY_Controller
     public function ajax_get_users($user_id = false)
     {
         $this->output->enable_profiler(false);
-        $result = $data['forms_list'] = $this->User->get_full_info($user_id);
+        $result = $this->User->get_full_info($user_id);
 
         $response = array(
             'code' => 200,
             'data' => $result,
+        );
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    public function ajax_get_usergroups()
+    {
+        $this->output->enable_profiler(false);
+        
+        $this->load->model('Admin/Usergroup');
+        
+        $result = $this->Usergroup->where(array('level >' => userdata('level')));
+
+        $response = array(
+            'code' => 200,
+            'data' => $result,
+        );
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    public function ajax_check_field()
+    {
+        $this->output->enable_profiler(false);
+        $field = $this->input->post('field');
+        $value = $this->input->post('value');
+        $result = $this->User->where(array($field => $value));
+
+        $response = array(
+            'code' => 200,
+            'data' => $result ? false : true,
         );
 
         $this->output
