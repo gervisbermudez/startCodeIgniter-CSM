@@ -104,7 +104,9 @@
 						<a href="<?php echo base_url('admin/usuarios/'); ?>"
 							class="btn btn-default waves-effect waves-teal btn-flat">Cancelar</a>
 						<button type="submit" :class="{disabled: !btnEnable}"
-							class="btn btn-primary waves-effect waves-teal">Guardar</button>
+							class="btn btn-primary waves-effect waves-teal"
+							@click="save();"
+							>Guardar</button>
 					</div>
 				</div>
 

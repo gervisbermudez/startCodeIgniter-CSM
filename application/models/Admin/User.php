@@ -6,7 +6,8 @@ use Tightenco\Collect\Support\Collection;
 
 class User extends MY_model
 {
-	public $primaryKey = 'user_id';
+    public $primaryKey = 'user_id';
+    public $user_data = null;
 
     public function __construct()
     {
@@ -15,12 +16,12 @@ class User extends MY_model
 
     public function get_full_info($user_id = "")
     {
-		$where = "";
+        $where = "";
 
         if ($user_id != '') {
             $where = "WHERE u.user_id = $user_id";
-		}
-		
+        }
+
         $sql = "SELECT u.`user_id`,
 		u.`username`,
 		u.`email`,
@@ -38,10 +39,10 @@ class User extends MY_model
         $where
         GROUP BY s.user_id;";
 
-		$data = $this->db->query($sql);
+        $data = $this->db->query($sql);
         if ($data->num_rows() > 0) {
-			$data = $data->result_array();
-			foreach ($data as $key => &$value) {
+            $data = $data->result_array();
+            foreach ($data as $key => &$value) {
                 $data_values = json_decode($value['user_data']);
                 $value['user_data'] = $data_values;
             }
@@ -51,46 +52,68 @@ class User extends MY_model
         return false;
     }
 
-    public function set_user_data($data){
-		
-		if (!$data) {
-			return false;
-		}
-		if (!$this->db->insert('user_data', $data)) {
-			return false;
-		}		
-		return true;
-	}
+    public function retrieved()
+    {
+        $user_id = $this->{$this->primaryKey};
+        $sql = "SELECT d.user_id, CONCAT('{', GROUP_CONCAT('\"', d._key, '\"', ':', '\"', d._value, '\"'), '}')
+				AS `data` FROM user_data d
+				WHERE user_id = $user_id
+				GROUP BY user_id";
+        $user_data = $this->get_query($sql);
+        if ($user_data) {
+            $user_data = json_decode($user_data->first()->data);
+        }
+        $this->user_data = $user_data;
+    }
 
-	public function get_user_data($data)
-	{
-		if ($data === 'all') {
-			$query = $this->db->get('user_data');	
-			if ($query->num_rows() > 0)
-			{
-			   return $query->result_array();
-			}
-		}else{
-			$query = $this->db->get_where('user_data', $data);
-			if ($query->num_rows() > 0){
-				return $query->result_array();
-			}
-		}
-		return false;
-	}
-	
-	public function update_user_data($data, $where)
-	{
-		$this->db->where($where);
-		return $this->db->update('user_data', $data);
-	}
+    public function created()
+    {
+        $this->user_id = $this->db->insert_id();
+        foreach ($this->user_data as $key => $value) {
+            $insert = array(
+                'user_id' => $this->user_id,
+                '_key' => $key,
+                '_value' => $value,
+                'status' => 1,
+            );
+            $this->set_user_data($insert);
+        }
+        $this->find($this->user_id);
+    }
 
-	public function delete_user_data($data)
-	{
-		if (!$data) {
-			return false;
-		}
-		$this->db->where($data);
-		return $this->db->delete('user_data');
-	}
+    public function set_user_data($data)
+    {
+        return $this->db->insert('user_data', $data);
+    }
+
+    public function get_user_data($data)
+    {
+        if ($data === 'all') {
+            $query = $this->db->get('user_data');
+            if ($query->num_rows() > 0) {
+                return $query->result_array();
+            }
+        } else {
+            $query = $this->db->get_where('user_data', $data);
+            if ($query->num_rows() > 0) {
+                return $query->result_array();
+            }
+        }
+        return false;
+    }
+
+    public function update_user_data($data, $where)
+    {
+        $this->db->where($where);
+        return $this->db->update('user_data', $data);
+    }
+
+    public function delete_user_data($data)
+    {
+        if (!$data) {
+            return false;
+        }
+        $this->db->where($data);
+        return $this->db->delete('user_data');
+    }
 }

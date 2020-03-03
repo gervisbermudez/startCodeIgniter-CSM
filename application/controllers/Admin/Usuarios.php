@@ -136,9 +136,7 @@ class Usuarios extends MY_Controller
 
     public function agregar()
     {
-        
         $this->load->model('Admin/Usergroup');
-        
         // set the url base
         $data['action'] = 'Admin/User/save/';
         $data['title'] = "Admin | Nuevo Usuario";
@@ -152,7 +150,6 @@ class Usuarios extends MY_Controller
 
     public function save()
     {
-
         // Load the model
         $mode = $this->input->post('mode');
         $query = false;
@@ -255,6 +252,7 @@ class Usuarios extends MY_Controller
 
         $response = array(
             'code' => 200,
+            'error_message' => '',
             'data' => $result,
         );
 
@@ -266,13 +264,14 @@ class Usuarios extends MY_Controller
     public function ajax_get_usergroups()
     {
         $this->output->enable_profiler(false);
-        
+
         $this->load->model('Admin/Usergroup');
-        
+
         $result = $this->Usergroup->where(array('level >' => userdata('level')));
 
         $response = array(
             'code' => 200,
+            'error_message' => '',
             'data' => $result,
         );
 
@@ -290,11 +289,52 @@ class Usuarios extends MY_Controller
 
         $response = array(
             'code' => 200,
+            'error_message' => '',
             'data' => $result ? false : true,
         );
 
         $this->output
             ->set_content_type('application/json')
             ->set_output(json_encode($response));
+    }
+
+    public function ajax_save_user()
+    {
+        $this->output->enable_profiler(false);
+        $usuario = new User();
+        $usuario->username = $this->input->post('username');
+        $usuario->password = $this->input->post('password');
+        $usuario->email = $this->input->post('email');
+        $usuario->lastseen = date("Y-m-d H:i:s");
+        $usuario->usergroup_id = $this->input->post('usergroup_id');
+        $usuario->status = 1;
+        $usuario->user_data = $this->input->post('user_data');
+
+        if ($usuario->save()) {
+            $response = array(
+                'code' => 200,
+                'data' => $usuario,
+            );
+
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
+
+        } else {
+
+            $error_message = 'Ha ocurrido un error inesperado';
+            $response = array(
+                'code' => 500,
+                'error_message' => $error_message,
+                'data' => $_POST,
+            );
+
+            $this->output
+                ->set_status_header(500)
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
+
+        }
+
     }
 }

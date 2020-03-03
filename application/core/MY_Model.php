@@ -28,7 +28,7 @@ class MY_model extends CI_Model
     }
 
     /**
-     * Return all records found on a table or false if nothing is found 
+     * Return all records found on a table or false if nothing is found
      * @return Collection
      */
     public function all()
@@ -43,7 +43,7 @@ class MY_model extends CI_Model
     }
 
     /**
-     * Search the primary key value specify into the table and map / fill the object with the properties founds 
+     * Search the primary key value specify into the table and map / fill the object with the properties founds
      * @param string $primaryKey
      * @return array or false on fail
      */
@@ -54,15 +54,20 @@ class MY_model extends CI_Model
         if ($query->num_rows() > 0) {
             $result = new Collection($query->result());
             $result = $result->first();
-            $this->map = true;
-            foreach ($result as $key => $value) {
-                $this->fields[] = $key;
-                $this->{$key} = $value;
-            }
+            $this->mapfields($result);
             $this->retrieved();
             return $result;
         }
         return false;
+    }
+
+    public function mapfields($fields)
+    {
+        $this->map = true;
+        foreach ($fields as $key => $value) {
+            $this->fields[] = $key;
+            $this->{$key} = $value;
+        }
     }
 
     public function where($where)
@@ -70,17 +75,16 @@ class MY_model extends CI_Model
         $this->db->where($where);
         $query = $this->db->get($this->table);
         if ($query->num_rows() > 0) {
-            $result = new Collection($query->result());            
-            $this->retrieved();
+            $result = new Collection($query->result());
             return $result;
         }
         return false;
     }
 
     /**
-     * Set current object data on database, this method will performs a insert or update sql depends of 
+     * Set current object data on database, this method will performs a insert or update sql depends of
      * map atribute
-     * @return boolean 
+     * @return boolean
      */
     public function save()
     {
@@ -116,10 +120,9 @@ class MY_model extends CI_Model
             $this->creating();
             $result = $this->set_data($data);
             $this->created();
-
         }
 
-        if($result){
+        if ($result) {
             $this->saved();
         }
         return $result;
@@ -134,12 +137,12 @@ class MY_model extends CI_Model
         $this->deleting();
         $result = false;
         if ($this->map) {
-            $result =  $this->delete_data(array($this->primaryKey => $this->{$this->primaryKey}));
-            if($result){
+            $result = $this->delete_data(array($this->primaryKey => $this->{$this->primaryKey}));
+            if ($result) {
                 $this->deleted();
             }
         }
-        
+
         return $result;
     }
 
@@ -169,7 +172,7 @@ class MY_model extends CI_Model
 
         if ($order) {
             $this->db->order_by($order[0], $order[1]);
-        }else{
+        } else {
             $this->db->order_by($this->primaryKey, 'ASC');
         }
 
@@ -233,7 +236,7 @@ class MY_model extends CI_Model
     /**
      * Retuns the numbers of records on the table or sql query
      * @param array $where default false
-     * @return int 
+     * @return int
      */
     public function get_count($where = false)
     {
@@ -254,7 +257,7 @@ class MY_model extends CI_Model
 
     /**
      * Default getfields function
-     * @return array 
+     * @return array
      */
     private function getfields()
     {
@@ -263,7 +266,7 @@ class MY_model extends CI_Model
 
     /**
      * Returns a sql select segment with the table fields mappeds
-     * @return string select segment 
+     * @return string select segment
      */
     private function getFieldsSelectCompile()
     {

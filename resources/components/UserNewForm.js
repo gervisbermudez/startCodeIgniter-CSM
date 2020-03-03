@@ -32,15 +32,15 @@ var loginForm = new Vue({
     }
   },
   computed: {
-    btnEnable: function() {
+    btnEnable: function () {
       let result = true;
       for (const key in this.validFields) {
-          if (this.validFields.hasOwnProperty(key)) {
-              const element = this.validFields[key];
-              if(!element){
-                  result = false;
-              } 
+        if (this.validFields.hasOwnProperty(key)) {
+          const element = this.validFields[key];
+          if (!element) {
+            result = false;
           }
+        }
       }
       return result;
     }
@@ -51,17 +51,25 @@ var loginForm = new Vue({
       this.loader = true;
       $.ajax({
         type: "POST",
-        url: BASEURL + "admin/login/ajax_verify_auth",
+        url: BASEURL + "admin/usuarios/ajax_save_user",
         data: {
-          username: this.username,
-          password: this.password
+          username: self.username,
+          password: self.password,
+          email: self.email,
+          usergroup_id: self.usergroup_id,
+          user_data: self.user_data
         },
         dataType: "json",
-        success: function(response) {
-          console.log(response);
-          window.location = BASEURL + response.redirect;
+        success: function (response) {
+          if (response.code == 200) {
+            console.log(response);
+            window.location = BASEURL + 'admin/usuarios/ver/' + response.data.user_id;
+          } else {
+            M.toast({ html: response.responseJSON.error_message });
+            self.loader = false;
+          }
         },
-        error: function(response) {
+        error: function (response) {
           M.toast({ html: response.responseJSON.error_message });
           self.loader = false;
         }
@@ -130,7 +138,7 @@ var loginForm = new Vue({
           value: self[field]
         },
         dataType: "json",
-        success: function(response) {
+        success: function (response) {
           if (response.code) {
             self.validFields[field] = response.data;
             if (!response.data) {
@@ -142,8 +150,8 @@ var loginForm = new Vue({
       });
     }
   },
-  mounted: function() {
-    this.$nextTick(function() {
+  mounted: function () {
+    this.$nextTick(function () {
       console.log("mounted UserNewForm");
       this.loader = false;
       var self = this;
@@ -152,7 +160,7 @@ var loginForm = new Vue({
         url: BASEURL + "admin/usuarios/ajax_get_usergroups",
         data: {},
         dataType: "json",
-        success: function(response) {
+        success: function (response) {
           if (response.code == 200) {
             self.usergroups = response.data;
             setTimeout(() => {
@@ -161,7 +169,7 @@ var loginForm = new Vue({
             }, 2000);
           }
         },
-        error: function(error) {
+        error: function (error) {
           M.toast({ html: response.responseJSON.error_message });
           self.loader = false;
         }
