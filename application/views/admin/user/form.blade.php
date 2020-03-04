@@ -104,9 +104,7 @@
 						<a href="<?php echo base_url('admin/usuarios/'); ?>"
 							class="btn btn-default waves-effect waves-teal btn-flat">Cancelar</a>
 						<button type="submit" :class="{disabled: !btnEnable}"
-							class="btn btn-primary waves-effect waves-teal"
-							@click="save();"
-							>Guardar</button>
+							class="btn btn-primary waves-effect waves-teal" @click="save();">Guardar</button>
 					</div>
 				</div>
 
@@ -122,4 +120,7 @@
 		</div>
 	</div>
 </div>
+<script>
+	const user_id = <?= json_encode($userdata ? $userdata->user_id : false); ?>;
+</script>
 @endsection

@@ -148,15 +148,11 @@ var loginForm = new Vue({
           }
         }
       });
-    }
-  },
-  mounted: function () {
-    this.$nextTick(function () {
-      console.log("mounted UserNewForm");
-      this.loader = false;
+    },
+    getUsergroups() {
       var self = this;
       $.ajax({
-        type: "GET",
+        type: "POST",
         url: BASEURL + "admin/usuarios/ajax_get_usergroups",
         data: {},
         dataType: "json",
@@ -167,6 +163,7 @@ var loginForm = new Vue({
               var elems = document.querySelectorAll("select");
               var instances = M.FormSelect.init(elems, {});
             }, 2000);
+            self.loader = false;
           }
         },
         error: function (error) {
@@ -174,6 +171,49 @@ var loginForm = new Vue({
           self.loader = false;
         }
       });
+    },
+    checkEditMode() {
+      if (user_id) {
+        var self = this;
+        self.editMode = true;
+        $.ajax({
+          type: "POST",
+          url: BASEURL + "admin/usuarios/ajax_get_users",
+          data: {
+            user_id: user_id
+          },
+          dataType: "json",
+          success: function (response) {
+            if (response.code == 200) {
+              let data = response.data[0];
+              self.user_id = data.user_id;
+              self.username = data.username;
+              self.email = data.email;
+              self.status = data.status;
+              self.usergroup_id = data.usergroup_id;
+              self.user_data.nombre = data.user_data.nombre;
+              self.user_data.apellido = data.user_data.apellido;
+              self.user_data.direccion = data.user_data.direccion;
+              self.user_data.telefono = data.user_data.telefono;
+            }
+            self.loader = false;
+            setTimeout(() => {
+              M.updateTextFields();
+            }, 1000);
+          },
+          error: function (error) {
+            M.toast({ html: response.responseJSON.error_message });
+            self.loader = false;
+          }
+        });
+      }
+    }
+  },
+  mounted: function () {
+    this.$nextTick(function () {
+      console.log("mounted UserNewForm");
+      this.getUsergroups();
+      this.checkEditMode();
     });
   }
 });
