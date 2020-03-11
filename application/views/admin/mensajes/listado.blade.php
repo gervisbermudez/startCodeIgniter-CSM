@@ -2,10 +2,6 @@
 
 @section('title', $title)
 
-@section('header')
-@include('admin.shared.header')
-@endsection
-
 @section('content')
 <div class="mensaje-container">
 	<div class="row">
@@ -62,21 +58,21 @@
 		class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left"
 		data-delay="50" data-tooltip="Nuevo Mensaje" href="#" id="mail-create"><i
 			class="large material-icons">add</i></a></div>
-<div class="compose-container">
-	<div class="compose-msg-cont">
-		<div class="compose-msg-head blue darken-1 white-text">
-			<span class="window-title">Nuevo Mensaje</span>
-			<a href="#" class="white-text right close-compose-msg"><i class="material-icons">close</i></a>
-			<a href="#" class="white-text right toggle-compose-msg"><i class="material-icons">expand_more</i></a>
+		<div class="compose-container">
+			<div class="compose-msg-cont hidden">
+				<div class="compose-msg-head blue darken-1 white-text">
+					<span class="window-title">Nuevo Mensaje</span>
+					<a href="#" class="white-text right close-compose-msg"><i class="material-icons">close</i></a>
+					<a href="#" class="white-text right toggle-compose-msg"><i class="material-icons">expand_more</i></a>
+				</div>
+				<div class="compose-msg-body">
+					<div class="chips"></div>
+					<input id="subject" type="text" class="validate" placeholder="Subject">
+					<textarea id="mensaje" class="materialize-textarea" placeholder="Mensaje"></textarea>
+					<button class="btn waves-effect waves-light" type="submit" name="action">Enviar
+						<i class="material-icons right">send</i>
+					</button>
+				</div>
+			</div>
 		</div>
-		<div class="compose-msg-body">
-			<div class="chips"></div>
-			<input id="subject" type="text" class="validate" placeholder="Subject">
-			<textarea id="mensaje" class="materialize-textarea" placeholder="Mensaje"></textarea>
-			<button class="btn waves-effect waves-light" type="submit" name="action">Enviar
-				<i class="material-icons right">send</i>
-			</button>
-		</div>
-	</div>
-</div>
 @endsection

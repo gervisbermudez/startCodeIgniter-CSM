@@ -81,7 +81,10 @@ class Usuarios extends MY_Controller
             $data['h1'] = "Nuevo Usuario";
             $data['header'] = $this->load->view('admin/header', $data, true);
             $data['mode'] = 'new';
-            $data['footer_includes'] = array('<script src="' . base_url('public/js/components/UserNewForm.min.js') . '"></script>');
+            $data['footer_includes'] = array(
+                script('public/js/validateForm.min.js'),
+                script('public/js/components/UserNewForm.min.js')
+            );
             echo $this->blade->view("admin.user.form", $data);
         } else {
             $this->showError('Usuario no encontrado');
@@ -98,7 +101,10 @@ class Usuarios extends MY_Controller
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['userdata'] = false;
         $data['mode'] = 'new';
-        $data['footer_includes'] = array('<script src="' . base_url('public/js/components/UserNewForm.min.js') . '"></script>');
+        $data['footer_includes'] = array(
+                script('public/js/validateForm.min.js'),
+                script('public/js/components/UserNewForm.min.js')
+        );
         echo $this->blade->view("admin.user.form", $data);
     }
 

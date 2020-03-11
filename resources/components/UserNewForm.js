@@ -1,35 +1,21 @@
-var loginForm = new Vue({
+var UserNewForm = new Vue({
   el: "#root",
   data: {
     loader: true,
     editMode: false,
     user_id: "",
-    username: "",
-    password: "",
-    email: "",
-    usergroup_id: "",
-    usergroups: [],
-    user_data: {
-      nombre: "",
-      apellido: "",
-      direccion: "",
-      telefono: ""
-    },
+		usergroups: [],
+		form: new VueForm({
+			username: { value: null, required: true, type: 'alphanumeric' },
+			password: { value: null, required: true, type: 'symbols' },
+			email: { value: '', required: true, type: 'email' },
+			usergroup_id: { value: '', required: true, type: 'number' },
+			nombre: { value: '', required: true, type: 'name', maxLength: 15 },
+			apellido: { value: '', required: true, type: 'name', maxLength: 15 },
+			telefono: { value: '', required: true, type: 'number', maxLength: 12 },
+			direccion: { value: '', required: true, type: 'alphanumeric', maxLength: 60 },
+		}),
     status: true,
-    validFields: {
-      username: false,
-      email: false,
-      nombre: false,
-      apellido: false,
-      direccion: false,
-      telefono: false
-    },
-    patterns: {
-      letters: /^[A-Za-z]+$/,
-      email: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-      numbers: /^\d+$/,
-      alphanumeric: /^[ a-z0-9A-ZÀ-ÿ\u00f1\u00d1]*$/g
-    }
   },
   computed: {
     btnEnable: function () {

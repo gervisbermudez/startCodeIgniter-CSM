@@ -98,3 +98,11 @@ if (!function_exists('slugify')) {
     }
 
 }
+
+if (!function_exists('script')) {
+    function script($url)
+    {
+        return '<script src="' . base_url($url) . '"></script>';
+    }
+
+}

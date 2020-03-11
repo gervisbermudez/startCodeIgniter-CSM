@@ -13,7 +13,6 @@ class Mensajes extends MY_Controller
 
     public function index($folder = 'Inbox')
     {
-        $this->load->helper('text');
         $data['username'] = $this->session->userdata('username');
         $data['title'] = "Admin | Mensajes";
         $data['folder'] = $folder;
@@ -21,8 +20,8 @@ class Mensajes extends MY_Controller
         $data['header'] = '';
         $data['mensajes'] = $this->Messages->all();
         $data['list'] = $this->load->view('admin/mensajes/list', $data, true);
-        $data['head_includes'] = array('messages.css' => link_tag('public/css/admin/messages.css'));
-        $data['footer_includes'] = array('<script src="' . base_url('public/js/chips.js') . '"></script>', '<script src="' . base_url('public/js/mensajes.js') . '"></script>');
+        $data['head_includes'] = array(link_tag('public/css/admin/messages.css'));
+        $data['footer_includes'] = array('<script src="' . base_url('public/js/chips.js') . '"></script>', '<script src="' . base_url('public/js/mensajes.min.js') . '"></script>');
 
         echo $this->blade->view("admin.mensajes.listado", $data);
 

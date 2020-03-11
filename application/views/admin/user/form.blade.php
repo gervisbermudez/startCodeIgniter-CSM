@@ -10,9 +10,7 @@
 <div class="container" id="root">
 	<div class="row">
 		<div class="col s12 center" v-bind:class="{ hide: !loader }">
-			<div class="preloader-wrapper big active">
-				<div class="spinner-layer spinner-blue-only">
-					<div class="circle-clipper left">
+			<div class="preloader-wrapper big active"> <div class="spinner-ner-blue-only"> div class="circle-clipper left">
 						<div class="circle"></div>
 					</div>
 					<div class="gap-patch">
@@ -29,27 +27,33 @@
 				<h4 class="section-header">Perfil</h4>
 				<div class="input-field">
 					<input maxlength="25" type="text" id="username" name="username" value="" required="required"
-						v-model="username" @blur="validateField('username');" :class="{
-							valid: validFields.username, 
-							invalid: !validFields.username
-						}" autocomplete="off">
+						@change="form.validateField('username')"
+						v-model="form.fields.username.value" 
+						:class="{ valid: form.fields.username.touched && form.fields.username.valid, invalid: !form.fields.username.valid }" 
+						autocomplete="off">
 					<label data-error="Username usado" data-success="Username valido">Username</label>
 				</div>
 				<div class="input-field ">
 					<input maxlength="25" id="password" name="password" value="" required="required" type="password"
-						v-model="password">
+						@change="form.validateField('password')"
+						:class="{ valid: form.fields.password.touched && form.fields.password.valid, invalid: !form.fields.password.valid }" 
+						v-model="form.fields.password.value">
 					<label>Contraseña</label>
 				</div>
 				<div class="input-field">
-					<input id="email" type="email" name="email" value="" required="required" maxlength="255"
-						v-model="email" @blur="validateField('email');" :class="{
-							valid: validFields.email, 
-							invalid: !validFields.email
-						}" autocomplete="off">
+					<input id="email" type="email" name="email" required="required" maxlength="255"
+					@change="form.validateField('email')"
+					:class="{ valid: form.fields.email.touched && form.fields.email.valid, invalid: !form.fields.email.valid }" 
+					v-model="form.fields.email.value" 
+					autocomplete="off">
 					<label data-error="Email usado" data-success="Valido">Email</label>
 				</div>
-				<div class="input-field">
-					<select name="usergroup_id" v-model="usergroup_id">
+				<div class="input-field"
+				:class="{ valid: form.fields.usergroup_id.touched && form.fields.usergroup_id.valid, invalid: !form.fields.usergroup_id.valid }"
+				>
+					<select name="usergroup_id" v-model="form.fields.usergroup_id.value"
+						@change="form.validateField('usergroup_id')"
+					>
 						<option v-for="(item, index) in usergroups" :key="index" :value="item.usergroup_id">
 							@{{item.name}}</option>
 					</select>
@@ -60,33 +64,29 @@
 				<h4 class="section-header">Información de Perfil</h4>
 				<div class="input-field">
 					<input maxlength="20" id="nombre" type="text" name="nombre" value=""
-						@blur="validateField('nombre');" :class="{
-							valid: validFields.nombre, 
-							invalid: !validFields.nombre
-						}" v-model="user_data.nombre">
+					@change="form.validateField('nombre')"
+					:class="{ valid: form.fields.nombre.touched && form.fields.nombre.valid, invalid: !form.fields.nombre.valid }"
+					v-model="form.fields.nombre.value">
 					<label>Nombre:</label>
 				</div>
 				<div class="input-field">
 					<input maxlength="20" type="text" id="apellido" name="apellido" value=""
-						@blur="validateField('apellido');" :class="{
-							valid: validFields.apellido, 
-							invalid: !validFields.apellido
-						}" v-model="user_data.apellido"><label for="apellido">Apellido:</label>
+					@change="form.validateField('apellido')"
+					:class="{ valid: form.fields.apellido.touched && form.fields.apellido.valid, invalid: !form.fields.apellido.valid }"
+					v-model="form.fields.apellido.value"><label for="apellido">Apellido:</label>
 				</div>
 				<div class="input-field">
 
 					<input maxlength="200" type="text" id="direccion" name="direccion" value=""
-						@blur="validateField('direccion');" :class="{
-							valid: validFields.direccion, 
-							invalid: !validFields.direccion
-						}" v-model="user_data.direccion"><label for="direccion">Direccion:</label>
+					@change="form.validateField('direccion')"
+					:class="{ valid: form.fields.direccion.touched && form.fields.direccion.valid, invalid: !form.fields.direccion.valid }"
+					v-model="form.fields.direccion.value"><label for="direccion">Direccion:</label>
 				</div>
 				<div class="input-field">
 					<input maxlength="50" type="text" id="telefono" name="telefono" value=""
-						@blur="validateField('telefono');" :class="{
-							valid: validFields.telefono, 
-							invalid: !validFields.telefono
-						}" v-model="user_data.telefono"><label for="telefono">Telefono:</label>
+					@change="form.validateField('telefono')"
+					:class="{ valid: form.fields.telefono.touched && form.fields.telefono.valid, invalid: !form.fields.telefono.valid }"
+					v-model="form.fields.telefono.value"><label for="telefono">Telefono:</label>
 				</div>
 				<br><br>
 				<div class="switch">
@@ -103,8 +103,10 @@
 					<div class="col s12" id="buttons">
 						<a href="<?php echo base_url('admin/usuarios/'); ?>"
 							class="btn btn-default waves-effect waves-teal btn-flat">Cancelar</a>
-						<button type="submit" :class="{disabled: !btnEnable}"
-							class="btn btn-primary waves-effect waves-teal" @click="save();">Guardar</button>
+						<button 
+							type="submit"
+							class="btn btn-primary waves-effect waves-teal" 
+							@click="form.validate();">Guardar</button>
 					</div>
 				</div>
 

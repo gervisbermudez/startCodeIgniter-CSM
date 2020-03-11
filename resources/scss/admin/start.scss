@@ -347,12 +347,14 @@ ul.tabs {
 
 .card.banner {
   margin: 20px 0 0 0;
+
   .dropdown-trigger.right {
     position: absolute;
     z-index: 1;
     right: 10px;
     top: 10px;
   }
+
   .card-content {
     padding-left: 160px;
     padding-top: 10px;
@@ -797,6 +799,18 @@ div.row.event a.dropdown-button.right {
   .menu-spand {
     display: none;
   }
+}
+
+.invalid .select-wrapper>input.select-dropdown {
+  border-bottom: 1px solid #F44336;
+  -webkit-box-shadow: 0 1px 0 0 #F44336;
+  box-shadow: 0 1px 0 0 #F44336;
+}
+
+.valid .select-wrapper>input.select-dropdown {
+  border-bottom: 1px solid #4CAF50;
+  -webkit-box-shadow: 0 1px 0 0 #4CAF50;
+  box-shadow: 0 1px 0 0 #4CAF50;
 }
 
 .collection {
