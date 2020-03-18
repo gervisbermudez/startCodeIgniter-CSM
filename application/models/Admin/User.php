@@ -81,6 +81,16 @@ class User extends MY_model
         $this->find($this->user_id);
     }
 
+    public function updated()
+    {
+        foreach ($this->user_data as $key => $value) {
+            $update = array(
+                '_value' => $value,
+            );
+            $this->update_user_data($update, array('user_id' => $this->user_id , '_key' => $key));
+        }
+    }
+
     public function set_user_data($data)
     {
         return $this->db->insert('user_data', $data);

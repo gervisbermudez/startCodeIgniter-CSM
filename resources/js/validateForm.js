@@ -1,6 +1,6 @@
 class VueForm {
     fields = null;
-    debug = false;
+    debug = true;
     errors = [];
     valid = false;
     patterns = {
@@ -8,8 +8,13 @@ class VueForm {
         email: /^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*(\+[a-zA-Z0-9-]+)?@[a-zA-Z0-9]+[a-zA-Z0-9.-]+\.[a-zA-Z]{1,6}$/i,
         number: /^[0-9]*$/,
         date: /^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$/,
-        symbols: /^[\w.]+$/i,
-        alphanumeric: /^[ a-z0-9A-Z]*$/g
+        symbols: /[-!$%^&*()_+|~=`{}\[\]:";'<>?,.\/]/,
+        //Must contain more than 5 character, a-z numbers and _ - character
+        username: /^[A-Za-z]*[A-Za-z][A-Za-z0-9-_]{5,}$/,
+        //Can contain numbers and letters 
+        alphanumeric: /^[a-z0-9]+$/i,
+        // Password need to be a minimum of 8 characters include a special character and at least one capital letter
+        password: /^(?=.*?[0-9])(?=.*?[A-Z])(?=.*?[#?!@$%^&*\-_]).{8,}$/
     }
     constructor(fields) {
         this.generateForm(fields);
@@ -31,6 +36,8 @@ class VueForm {
                 customPattern: fields[field].customPattern || null,
                 validateWith: null,
                 maxLength: fields[field].maxLength || null,
+                minLength: fields[field].minLength || null,
+                readOnlyValue: null,
             }
         }
     }
@@ -39,99 +46,151 @@ class VueForm {
      * @param field campo a validar
      */
     validateField(field) {
-        /** Lo marca como tocado o alterado */
+        /**
+         *  Lo marca como tocado o alterado 
+         */
         this.fields[field].touched = true;
-        /**Verifica si el campo tiene una funcion de validacion personalizada */
-        if (this.fields[field].validateWith && (typeof this.fields[field].validateWith === 'function')) {
-            if (this.fields[field].validateWith(this.fields[field].value)) {
-                this.markFieldAsInvalid(field);
-                this.fields[field].errorText = this.getErrorText(field);
-                return false;
-            } else {
-                this.markFieldAsValid(field);
-                this.fields[field].errorText = this.getErrorText(field);
-                return true;
-            }
-        } else {
-            /**
-             * Verifica que el campo sea requerido y que tenga un maxLength
-             */
-            if (this.fields[field].required && !!this.fields[field].maxLength) {
-                if (!this.maxLength(this.fields[field].value, this.fields[field].maxLength)) {
-                    this.markFieldAsInvalid(field);
-                    this.fields[field].errorText = this.getErrorText(field);
-                    return false;
-                }
-            }
 
-            /**
-             * Verifica que si el campo es requerido contenga un valor 
-             */
-            if (this.fields[field].required && !this.fields[field].value) {
-                this.markFieldAsInvalid(field);
-                this.fields[field].errorText = this.getErrorText(field);
-                return false;
-            }
-
-            /**
-             * Verifica que si contiene un valor sea válido
-             */
-            else if (this.fields[field].value && !this.fieldTypeValidation(field)) {
-                this.markFieldAsInvalid(field);
-                this.fields[field].errorText = this.getErrorText(field);
-                return false;
-            } else {
-                this.markFieldAsValid(field);
-                this.fields[field].errorText = this.getErrorText(field);
-                return true;
-            }
-
+        if (this.fields[field].readOnlyValue && (this.fields[field].readOnlyValue == this.fields[field].value)) {
+            this.markFieldAsValid(field);
+            this.fields[field].errorText = '';
+            return true;
         }
+
+        /**
+         * Realizar la validacion basica
+         */
+        if (!this.basicFieldValidation(field)) {
+            return false;
+        }
+
+        /**
+         * Marcar el campo como valido
+         */
+        this.markFieldAsValid(field);
+        this.fields[field].errorText = '';
+
+        /** 
+         * Verifica si el campo tiene una funcion de validacion personalizada y la ejecuta
+         */
+        if (this.fields[field].validateWith && (typeof this.fields[field].validateWith === 'function') && !this.fields[field].validateWith(field)) {
+            this.markFieldAsInvalid(field);
+            this.fields[field].errorText = this.getErrorText(field);
+            return false;
+        }
+
+        return true;
     }
+
+    /**
+     * Realiza las siguientes validaciones: 
+     * Contiene un valor
+     * Requerido
+     * Minlength
+     * Maxlength
+     * Expresion regular
+     * @param {string} field campo a validar
+     */
+    basicFieldValidation(field) {
+
+        /**
+         * Verifica que si el campo es requerido contenga un valor 
+         */
+        if (this.fields[field].required && !this.fields[field].value) {
+            this.markFieldAsInvalid(field);
+            this.fields[field].errorText = 'This field is required';
+            return false;
+        }
+
+        /**
+         * Verifica que el campo tenga un minLength valido
+         */
+        if (this.fields[field].minLength && !this.minLength(this.fields[field].value, this.fields[field].minLength)) {
+            this.markFieldAsInvalid(field);
+            this.fields[field].errorText = 'Minlength required: ' + this.fields[field].minLength;
+            return false;
+        }
+
+        /**
+         * Verifica que el campo tenga un maxLength valido
+         */
+        if (this.fields[field].maxLength && !this.maxLength(this.fields[field].value, this.fields[field].maxLength)) {
+            this.markFieldAsInvalid(field);
+            this.fields[field].errorText = this.fields[field].errorText = 'Maxlength required: ' + this.fields[field].maxLength;
+            return false;
+        }
+
+        /**
+         * Verifica que si contiene un valor sea válido
+         */
+        if (!this.patternValidation(field)) {
+            this.markFieldAsInvalid(field);
+            return false;
+        }
+
+        return true;
+    }
+
     validate() {
         /** Recorre los campos del form */
         this.errors = [];
         for (const field in this.fields) {
             this.fields[field].touched = true;
-            if (!this.validateField(field)) {
-                this.errors.push(field);
-            }
+            this.validateField(field)
         }
-        this.valid = this.errors.length ? false : true;
-        this.debug ? console.log(this, this.valid) : null;
         return this.valid;
     }
     /**
-     * @todo: crear custom types con validaciones
+     * Valida el valor del campo contra una expresion regular
      */
-    fieldTypeValidation(field, length = 0) {
+    patternValidation(field, length = 0) {
         var valid = true;
-        var control = this.fields[field]
-        switch (control.type) {
-            case 'name':
-                valid = this.nameValidation(control.value, length);
-                break;
-            case 'number':
-                valid = this.numValidation(control.value, length);
-                break;
-            case 'email':
-                valid = this.emailValidation(control.value);
-                break;
-            case 'cuit':
-                valid = this.CUILValidation(control.value);
-                break;
-            case 'date':
-                valid = this.dateValidation(control.value);
-                break;
-            default:
-                /** Texto libre - Para este form no es necesario validar el pattern ni length */
-                break;
-        }
-        if (valid) {
-            this.markFieldAsValid(field);
+        var control = this.fields[field];
+        /**
+         * Varifica que exista un custom patern
+         */
+        if (this.fields[field].customPattern) {
+            valid = this.fields[field].customPattern.test(control.value);
         } else {
-            this.markFieldAsInvalid(field);
+            switch (control.type) {
+                case 'name':
+                    valid = this.nameValidation(control.value, length);
+                    this.fields[field].errorText = valid ? '' : 'Only letters in this field';
+                    break;
+                case 'number':
+                    valid = this.numValidation(control.value, length);
+                    this.fields[field].errorText = valid ? '' : 'Only numbers in this field';
+                    break;
+                case 'email':
+                    valid = this.emailValidation(control.value);
+                    this.fields[field].errorText = valid ? '' : 'Email don`t have the correct format: example@domain.com';
+                    break;
+                case 'cuit':
+                    valid = this.CUILValidation(control.value);
+                    this.fields[field].errorText = valid ? '' : 'Cuit don`t have the correct format: ##-########-#';
+                    break;
+                case 'date':
+                    valid = this.dateValidation(control.value);
+                    this.fields[field].errorText = valid ? '' : 'Correct date format: YYYY-MM-DD';
+                    break;
+                case 'password':
+                    valid = this.passwordValidator(control.value);
+                    this.fields[field].errorText = valid ? '' : 'Include a special character, number and at least one capital and lower letter';
+                    break;
+                default:
+                    /**
+                     * Varificar si existe una expresion regular global y testear
+                     */
+                    if (typeof this.patterns[control.type] != 'undefined') {
+                        valid = this.patterns[control.type].test(control.value);
+                        this.fields[field].errorText = valid ? '' : field.charAt(0).toUpperCase() + field.slice(1) + ' is invalid';
+                    } else {
+                        valid = false;
+                    }
+                break;
+            }
         }
+
         return valid;
     }
     /**
@@ -141,7 +200,7 @@ class VueForm {
         if (this.fields[field].valid) {
             return '';
         }
-        return 'Campo invalido'
+        return this.fields[field].errorText ? this.fields[field].errorText : field.charAt(0).toUpperCase() + field.slice(1) + ' is invalid';
     }
     /** VALIDATION LIST */
     /**
@@ -178,47 +237,56 @@ class VueForm {
         }
         return true;
     }
+
+    /**
+     * 
+     * @param {string} field 
+     */
+    passwordValidator(value) {
+        return this.patterns.password.test(value);
+    }
+
     /**
      * Validar que un string v valide que no sea mayor que m (maximo)
-     * @param {any} v valor string a validar
+     * @param {any} value valor string a validar
      * @param {number} m longitud maxima a validar
      */
-    maxLength(v, m) {
-        if (!v || (v && v.length > m)) {
+    maxLength(value, m) {
+        if (!value || (value && value.length > m)) {
             return false;
         }
         return true;
     }
     /**
      * Validar que un string tiene formato definido por un patron
-     * @param {any} v value
+     * @param {any} value value
      */
-    emailValidation(v) {
-        return this.patterns.email.test(v);
+    emailValidation(value) {
+        return this.patterns.email.test(value);
     }
     /**
      * Validar que un string tiene formato definido por un patron
-     * @param {any} v value
+     * @param {any} value value
      */
-    nameValidation(v, l = 1) {
-        if (this.patterns.name.test(v) == false || !this.minLength(v, l)) {
+    nameValidation(value, l = 1) {
+        if (this.patterns.name.test(value) == false || !this.minLength(value, l)) {
             return false;
         }
         return true;
     }
     /**
      * Validar que un string tiene formato definido por un patron
-     * @param {any} v value
+     * @param {any} value value
      */
-    dateValidation(v) {
-        return this.patterns.date.test(v);
+    dateValidation(value) {
+        return this.patterns.date.test(value);
     }
     /**
      * Validar que un string tiene formato definido por un patron
-     * @param {any} v value
+     * @param {any} value value
      */
-    numValidation(v, l = 0) {
-        if (this.patterns.number.test(v) == false || !this.minLength(v, l)) {
+    numValidation(value, l = 0) {
+        if (this.patterns.number.test(value) == false || !this.minLength(value, l)) {
             return false;
         }
         return true;
@@ -229,6 +297,7 @@ class VueForm {
      */
     markFieldAsInvalid(field) {
         this.fields[field].valid = false;
+        this.errors.push(field);
     }
     /**
      * Marcar como valido el campo
@@ -236,5 +305,9 @@ class VueForm {
      */
     markFieldAsValid(field) {
         this.fields[field].valid = true;
+        const index = this.errors.indexOf(field);
+        if (index > -1) {
+            this.errors.splice(index, 1);
+        }
     }
 }

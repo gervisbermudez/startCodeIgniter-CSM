@@ -4,17 +4,17 @@ var UserNewForm = new Vue({
     loader: true,
     editMode: false,
     user_id: "",
-		usergroups: [],
-		form: new VueForm({
-			username: { value: null, required: true, type: 'alphanumeric' },
-			password: { value: null, required: true, type: 'symbols' },
-			email: { value: '', required: true, type: 'email' },
-			usergroup_id: { value: '', required: true, type: 'number' },
-			nombre: { value: '', required: true, type: 'name', maxLength: 15 },
-			apellido: { value: '', required: true, type: 'name', maxLength: 15 },
-			telefono: { value: '', required: true, type: 'number', maxLength: 12 },
-			direccion: { value: '', required: true, type: 'alphanumeric', maxLength: 60 },
-		}),
+    usergroups: [],
+    form: new VueForm({
+      username: { value: null, required: true, type: 'username', maxLength: 15, minLength: 5 },
+      password: { value: null, required: true, type: 'password', maxLength: 25, minLength: 5 },
+      email: { value: '', required: true, type: 'email', maxLength: 150 },
+      usergroup_id: { value: '', required: true, type: 'number' },
+      nombre: { value: '', required: true, type: 'name', maxLength: 15, minLength: 3 },
+      apellido: { value: '', required: true, type: 'name', maxLength: 15, minLength: 3 },
+      telefono: { value: '', required: true, type: 'number', maxLength: 12 },
+      direccion: { value: '', required: true, type: 'alphanumeric', maxLength: 60 },
+    }),
     status: true,
   },
   computed: {
@@ -32,87 +32,57 @@ var UserNewForm = new Vue({
     }
   },
   methods: {
+    validateField(field) {
+      let self = UserNewForm;
+      if (self.form.validateField(field)) {
+        self.serverValidation(field);
+        return;
+      }
+      return self.form.fields[field].valid;
+    },
     save() {
       var self = this;
-      this.loader = true;
-      $.ajax({
-        type: "POST",
-        url: BASEURL + "admin/usuarios/ajax_save_user",
-        data: {
-          username: self.username,
-          password: self.password,
-          email: self.email,
-          usergroup_id: self.usergroup_id,
-          user_data: self.user_data
-        },
-        dataType: "json",
-        success: function (response) {
-          if (response.code == 200) {
-            console.log(response);
-            window.location = BASEURL + 'admin/usuarios/ver/' + response.data.user_id;
-          } else {
+      self.form.validate();
+      if (self.form.errors.length == 0) {
+        this.loader = true;
+        $.ajax({
+          type: "POST",
+          url: BASEURL + "admin/usuarios/ajax_save_user",
+          data: self.getUserData(),
+          dataType: "json",
+          success: function (response) {
+            if (response.code == 200) {
+              console.log(response);
+              window.location = BASEURL + 'admin/usuarios/ver/' + response.data.user_id;
+            } else {
+              M.toast({ html: response.responseJSON.error_message });
+              self.loader = false;
+            }
+          },
+          error: function (response) {
             M.toast({ html: response.responseJSON.error_message });
             self.loader = false;
           }
-        },
-        error: function (response) {
-          M.toast({ html: response.responseJSON.error_message });
-          self.loader = false;
-        }
-      });
-    },
-    validateField(field) {
-      switch (field) {
-        case "username":
-          if (!this.username.match(this.patterns.letters)) {
-            this.validFields[field] = false;
-            M.toast({ html: "Only letters are allowed" });
-            return;
-          } else {
-            this.serverValidation(field);
-          }
-          break;
-        case "email":
-          if (!this.email.match(this.patterns.email)) {
-            this.validFields[field] = false;
-            M.toast({ html: "Email invalid" });
-            return;
-          } else {
-            this.serverValidation(field);
-          }
-          break;
-        case "nombre":
-          if (!this.user_data.nombre.match(this.patterns.letters)) {
-            this.validFields.nombre = false;
-            M.toast({ html: "Only letters are allowed" });
-            return;
-          }
-          break;
-        case "apellido":
-          if (!this.user_data.apellido.match(this.patterns.letters)) {
-            this.validFields.apellido = false;
-            M.toast({ html: "Only letters are allowed" });
-            return;
-          }
-          break;
-        case "telefono":
-          if (!this.user_data.telefono.match(this.patterns.numbers)) {
-            this.validFields.telefono = false;
-            M.toast({ html: "Only numbers are allowed" });
-            return;
-          }
-          break;
-        case "direccion":
-          if (!this.user_data.direccion.match(this.patterns.alphanumeric)) {
-            this.validFields.direccion = false;
-            M.toast({ html: "Simbols are not allowed" });
-            return;
-          }
-          break;
+        });
+      } else {
+        M.toast({ html: 'Verifique todos los campos del formulario' });
       }
-
-      this.validFields[field] = true;
-
+    },
+    getUserData() {
+      let form = this.form.fields;
+      return {
+        user_id: this.user_id,
+        username: form.username.value,
+        password: form.password.value,
+        email: form.email.value,
+        usergroup_id: form.usergroup_id.value,
+        user_data: {
+          nombre: form.nombre.value,
+          apellido: form.apellido.value,
+          direccion: form.direccion.value,
+          telefono: form.telefono.value,
+        }
+      }
     },
     serverValidation(field) {
       var self = this;
@@ -121,14 +91,16 @@ var UserNewForm = new Vue({
         url: BASEURL + "admin/usuarios/ajax_check_field",
         data: {
           field: field,
-          value: self[field]
+          value: self.form.fields[field].value
         },
         dataType: "json",
         success: function (response) {
           if (response.code) {
-            self.validFields[field] = response.data;
-            if (!response.data) {
-              M.toast({ html: "The " + field + " is already registered!" });
+            self.form.fields[field].valid = response.data;
+            if (response.data) {
+              self.form.markFieldAsValid(field);
+            }else {
+              self.form.fields[field].errorText = "The " + field + " is already registered";
             }
             self.$forceUpdate();
           }
@@ -173,14 +145,14 @@ var UserNewForm = new Vue({
             if (response.code == 200) {
               let data = response.data[0];
               self.user_id = data.user_id;
-              self.username = data.username;
-              self.email = data.email;
+              self.form.fields.username.value = data.username;
+              self.form.fields.email.value = data.email;
               self.status = data.status;
-              self.usergroup_id = data.usergroup_id;
-              self.user_data.nombre = data.user_data.nombre;
-              self.user_data.apellido = data.user_data.apellido;
-              self.user_data.direccion = data.user_data.direccion;
-              self.user_data.telefono = data.user_data.telefono;
+              self.form.fields.usergroup_id.value = data.usergroup_id;
+              self.form.fields.nombre.value = data.user_data.nombre;
+              self.form.fields.apellido.value = data.user_data.apellido;
+              self.form.fields.direccion.value = data.user_data.direccion;
+              self.form.fields.telefono.value = data.user_data.telefono;
             }
             self.loader = false;
             setTimeout(() => {
@@ -200,6 +172,8 @@ var UserNewForm = new Vue({
       console.log("mounted UserNewForm");
       this.getUsergroups();
       this.checkEditMode();
+      /* this.form.fields.username.validateWith = this.validateField;
+      this.form.fields.email.validateWith = this.validateField; */
     });
   }
 });

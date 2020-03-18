@@ -10,43 +10,50 @@
 <div class="container" id="root">
 	<div class="row">
 		<div class="col s12 center" v-bind:class="{ hide: !loader }">
-			<div class="preloader-wrapper big active"> <div class="spinner-ner-blue-only"> div class="circle-clipper left">
-						<div class="circle"></div>
-					</div>
-					<div class="gap-patch">
-						<div class="circle"></div>
-					</div>
-					<div class="circle-clipper right">
-						<div class="circle"></div>
-					</div>
+			<div class="preloader-wrapper big active">
+				<div class="spinner-layer spinner-blue-only">
+				  <div class="circle-clipper left">
+					<div class="circle"></div>
+				  </div><div class="gap-patch">
+					<div class="circle"></div>
+				  </div><div class="circle-clipper right">
+					<div class="circle"></div>
+				  </div>
 				</div>
-			</div>
+			  </div>
 		</div>
 		<div v-cloak v-if="!loader" class="col s12 m10 l10">
 			<div id="initialization" class="section scrollspy">
 				<h4 class="section-header">Perfil</h4>
+				<br>
 				<div class="input-field">
-					<input maxlength="25" type="text" id="username" name="username" value="" required="required"
-						@change="form.validateField('username')"
+					<input maxlength="25" type="text" id="username" name="username" value=""
+						@change="validateField('username')"
 						v-model="form.fields.username.value" 
 						:class="{ valid: form.fields.username.touched && form.fields.username.valid, invalid: !form.fields.username.valid }" 
-						autocomplete="off">
-					<label data-error="Username usado" data-success="Username valido">Username</label>
+						autocomplete="none">
+						<label>Username</label>
+						<span class="helper-text" :data-error="form.fields.username.errorText" data-success="Valid"></span>
 				</div>
 				<div class="input-field ">
-					<input maxlength="25" id="password" name="password" value="" required="required" type="password"
+					<input maxlength="25" id="password" name="password" value="" type="password"
 						@change="form.validateField('password')"
 						:class="{ valid: form.fields.password.touched && form.fields.password.valid, invalid: !form.fields.password.valid }" 
-						v-model="form.fields.password.value">
+						v-model="form.fields.password.value"
+						autocomplete="none"
+						>
 					<label>Contraseña</label>
+					<span class="helper-text" :data-error="form.fields.password.errorText" data-success="Valid">Debe contener mayusculas, minuculas, numeros y un caracter especial</span>
 				</div>
 				<div class="input-field">
-					<input id="email" type="email" name="email" required="required" maxlength="255"
-					@change="form.validateField('email')"
+					<input id="email" type="email" name="email" maxlength="255"
+					@change="validateField('email')"
 					:class="{ valid: form.fields.email.touched && form.fields.email.valid, invalid: !form.fields.email.valid }" 
 					v-model="form.fields.email.value" 
 					autocomplete="off">
-					<label data-error="Email usado" data-success="Valido">Email</label>
+					<label >Email</label>
+					<span class="helper-text" :data-error="form.fields.email.errorText" data-success="Valid"></span>
+					<br>
 				</div>
 				<div class="input-field"
 				:class="{ valid: form.fields.usergroup_id.touched && form.fields.usergroup_id.valid, invalid: !form.fields.usergroup_id.valid }"
@@ -68,12 +75,14 @@
 					:class="{ valid: form.fields.nombre.touched && form.fields.nombre.valid, invalid: !form.fields.nombre.valid }"
 					v-model="form.fields.nombre.value">
 					<label>Nombre:</label>
+					<span class="helper-text" :data-error="form.fields.nombre.errorText"></span>
 				</div>
 				<div class="input-field">
 					<input maxlength="20" type="text" id="apellido" name="apellido" value=""
 					@change="form.validateField('apellido')"
 					:class="{ valid: form.fields.apellido.touched && form.fields.apellido.valid, invalid: !form.fields.apellido.valid }"
 					v-model="form.fields.apellido.value"><label for="apellido">Apellido:</label>
+					<span class="helper-text" :data-error="form.fields.apellido.errorText"></span>
 				</div>
 				<div class="input-field">
 
@@ -81,12 +90,14 @@
 					@change="form.validateField('direccion')"
 					:class="{ valid: form.fields.direccion.touched && form.fields.direccion.valid, invalid: !form.fields.direccion.valid }"
 					v-model="form.fields.direccion.value"><label for="direccion">Direccion:</label>
+					<span class="helper-text" :data-error="form.fields.direccion.errorText"></span>
 				</div>
 				<div class="input-field">
 					<input maxlength="50" type="text" id="telefono" name="telefono" value=""
 					@change="form.validateField('telefono')"
 					:class="{ valid: form.fields.telefono.touched && form.fields.telefono.valid, invalid: !form.fields.telefono.valid }"
 					v-model="form.fields.telefono.value"><label for="telefono">Telefono:</label>
+					<span class="helper-text" :data-error="form.fields.telefono.errorText"></span>
 				</div>
 				<br><br>
 				<div class="switch">
@@ -106,7 +117,7 @@
 						<button 
 							type="submit"
 							class="btn btn-primary waves-effect waves-teal" 
-							@click="form.validate();">Guardar</button>
+							@click="save();">Guardar</button>
 					</div>
 				</div>
 

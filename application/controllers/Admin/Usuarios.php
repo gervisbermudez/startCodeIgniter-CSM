@@ -196,6 +196,7 @@ class Usuarios extends MY_Controller
     {
         $this->output->enable_profiler(false);
         $usuario = new User();
+        $this->input->post('user_id') ? $usuario->find($this->input->post('user_id')) : false;
         $usuario->username = $this->input->post('username');
         $usuario->password = $this->input->post('password');
         $usuario->email = $this->input->post('email');
