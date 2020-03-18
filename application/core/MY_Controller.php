@@ -25,50 +25,6 @@ class MY_Controller extends CI_Controller
         echo $this->blade->view("admin.blankpage", $data);
     }
 
-    public function fn_ajax_delete_data()
-    {
-        $id = $this->input->post('id');
-        $table = $this->input->post('table');
-        $json = array('result' => false, 'message' => 'Error al eliminar datos');
-
-        if ($this->StModel->delete_data(array('id' => $id), $table)) {
-            $json = array('result' => true, 'message' => 'Datos eliminados con exito!');
-        }
-
-        $this->output->set_content_type('application/json')->set_output(json_encode($json));
-    }
-
-    public function fn_ajax_check_value()
-    {
-        $this->load->model('StModel');
-        $table = $this->input->post('table');
-        $campo = $this->input->post('campo');
-        $valor = $this->input->post('valor');
-        $res = $this->UserMod->get_is_exist_value($table, $campo, $valor);
-        $json = array('result' => false);
-        if ($res) {
-            $json = array('result' => true);
-        }
-        $this->output->set_content_type('application/json')->set_output(json_encode($json));
-    }
-
-    public function fn_ajax_change_state()
-    {
-
-        $id = $this->input->post('id');
-        $table = $this->input->post('table');
-        $status = 0;
-        if ($this->input->post('status') === '1') {
-            $status = 1;
-        }
-        $json = array('result' => false, 'message' => 'Error al cambiar estado!');
-        if ($this->StModel->update_data(array('id' => $id), array('status' => $status), $table)) {
-            $json = array('result' => true, 'message' => 'Actualizado con exito!');
-        }
-
-        $this->output->set_content_type('application/json')->set_output(json_encode($json));
-    }
-
     public function error404()
     {
 
@@ -103,7 +59,6 @@ class Base_Controller extends CI_Controller
 
     public function error404()
     {
-
         $data['base_url'] = $this->config->base_url();
         $data['title'] = "404";
         $url = uri_string();

@@ -1,7 +1,7 @@
-<?php
-/**
- * The config model
- */
+<?php if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
+
 class Forms_model extends MY_Model
 {
     public $table = 'form_custom';
@@ -15,18 +15,17 @@ class Forms_model extends MY_Model
     {
         $sql = "SELECT f.*, u.username
         FROM form_custom f
-        INNER JOIN user u ON u.id = f.id_user";
+        INNER JOIN user u ON u.user_id = f.user_id";
         return $this->get_query($sql);
-
     }
 
     public function get_form_types()
     {
         $sql = "SELECT DISTINCT(f.form_name),
         f.id, f.date_create, f.date_update,
-        f.id_user, f.`status`, u.username
+        f.user_id, f.`status`, u.username
         FROM form_custom f
-        INNER JOIN USER u ON u.id = f.id_user";
+        INNER JOIN USER u ON u.user_id = f.user_id";
         return $this->get_query($sql);
 
     }
@@ -39,7 +38,7 @@ class Forms_model extends MY_Model
             SELECT form_id, JSON_OBJECT(form_key, form_value) AS 'form_data'
             FROM form_custom_data) sq1
             INNER JOIN form_custom fc ON fc.id = sq1.form_id
-            INNER JOIN USER u ON u.id = fc.id_user
+            INNER JOIN USER u ON u.user_id = fc.user_id
             $where
             GROUP BY form_id
             ";
@@ -96,7 +95,7 @@ EOD;
     {
         $insert = array(
             'form_name' => $data->form_name,
-            'id_user' => $this->session->userdata('id'),
+            'user_id' => $this->session->userdata('id'),
             'status' => $data->form_status,
         );
 
@@ -129,7 +128,7 @@ EOD;
                             'form_field_id' => $field_id,
                             'config_name' => $index,
                             'config_value' => $value,
-                            'id_user' => $this->session->userdata('id'),
+                            'user_id' => $this->session->userdata('id'),
                         );
                         $this->set_data($field_config, 'form_field_config');
 
@@ -152,7 +151,7 @@ EOD;
         $form_id = $data->form_id;
         $form_content = array(
             'form_custom_id' => $form_id,
-            'id_user' => $this->session->userdata('id'),
+            'user_id' => $this->session->userdata('id'),
         );
         $this->set_data($form_content, 'form_content');
         $form_content_id = $this->db->insert_id();
@@ -184,7 +183,7 @@ EOD;
                 ) sq1
                 INNER JOIN form_content fc ON fc.form_content_id = sq1.form_content_id
                 INNER JOIN form_custom f ON fc.form_custom_id = f.id
-                INNER JOIN user u ON u.id = fc.id_user
+                INNER JOIN user u ON u.user_id = fc.user_id
                 $where
                 ";
         return $this->get_query($sql);
@@ -203,7 +202,7 @@ EOD;
 
         $insert = array(
             'form_name' => $data->form_name,
-            'id_user' => $this->session->userdata('id'),
+            'user_id' => $this->session->userdata('id'),
             'status' => $data->form_status,
         );
 

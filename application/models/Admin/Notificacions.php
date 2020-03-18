@@ -2,12 +2,11 @@
     exit('No direct script access allowed');
 }
 
-class PageModel extends MY_Model {
+class Notificacions extends MY_model {
 
-	public $table = 'page';
-	public $primaryKey = 'page_id';
+	public $primaryKey = 'notificacion_id';
 
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 	}

@@ -26,7 +26,7 @@
 						<td>{{$page['title']}}</td>
 						<td><a href="{{base_url($page['path'])}}" target="_blank">{{$page['path']}}</a></td>
 						<td>{{$page['author']}}</td>
-						<td><a href="{{base_url()}}admin/paginas/editar/{{$page['id']}}">Editar</a></td>
+						<td><a href="{{base_url()}}admin/paginas/editar/{{$page['page_id']}}">Editar</a></td>
 					</tr>
 					@endforeach
 				</tbody>

@@ -13,7 +13,7 @@ if (!function_exists('getThemePath')) {
     function getThemePath()
     {
         $ci = &get_instance();
-        $config = $ci->Config_model->load_config();
+        $config = $ci->Site_config->load_config();
 
         if ($config->site_theme) {
             defined('THEME_PATH') or define('THEME_PATH', FCPATH . 'themes\\' . $config->site_theme) . '\\';
@@ -27,7 +27,7 @@ if (!function_exists('getThemePublicPath')) {
     function getThemePublicPath()
     {
         $ci = &get_instance();
-        $config = $ci->Config_model->load_config();
+        $config = $ci->Site_config->load_config();
 
         if ($config->site_theme) {
             return 'themes/' . $config->site_theme . '/public/';
@@ -58,6 +58,14 @@ if (!function_exists('isSectionActive')) {
         }
 
         return '';
+    }
+}
+
+if (!function_exists('userdata')) {
+    function userdata($index)
+    {
+        $ci = &get_instance();
+        return $ci->session->userdata($index);
     }
 }
 
@@ -96,6 +104,14 @@ if (!function_exists('userdata')) {
     {
         $ci = &get_instance();
         return $ci->session->userdata($text);
+    }
+
+}
+
+if (!function_exists('script')) {
+    function script($url)
+    {
+        return '<script src="' . base_url($url) . '"></script>';
     }
 
 }

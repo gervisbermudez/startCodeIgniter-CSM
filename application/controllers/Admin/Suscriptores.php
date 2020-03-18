@@ -8,17 +8,15 @@ class Suscriptores extends MY_Controller
     public function __construct()
     {
         parent::__construct();
+        $this->load->model('Admin/Suscriptions');
     }
 
     public function index()
     {
-        $data['base_url'] = $this->config->base_url();
-        $data['username'] = $this->session->userdata('username');
         $data['title'] = "Admin | Suscriptores";
         $data['h1'] = "Suscritos";
         $data['header'] = $this->load->view('admin/header', $data, true);
-        $this->load->model('SuscriptoresMod');
-        $data['Suscriptores'] = $this->SuscriptoresMod->get_all_suscriptores();
+        $data['Suscriptores'] = $this->Suscriptions->all();
         echo $this->blade->view("admin.suscriptores.listado", $data);
 
     }
@@ -27,9 +25,8 @@ class Suscriptores extends MY_Controller
     {
         $data['base_url'] = $this->config->base_url();
         if ($this->input->post('email')) {
-            $this->load->model('SuscriptoresMod');
-            if (!$this->SuscriptoresMod->get_existMail($this->input->post('email'))) {
-                if (!$this->SuscriptoresMod->setSuscriptorData()) {
+            if (!$this->Suscriptions->get_existMail($this->input->post('email'))) {
+                if (!$this->Suscriptions->setSuscriptorData()) {
 
                     $this->load->library('email');
                     $this->email->set_mailtype("html");
@@ -39,7 +36,7 @@ class Suscriptores extends MY_Controller
                     $this->email->cc('');
                     $this->email->bcc('');
                     $this->email->subject('Suscripcion: Verificar email');
-                    $code = $this->SuscriptoresMod->getCode($this->input->post('email'));
+                    $code = $this->Suscriptions->getCode($this->input->post('email'));
                     $data['nombre'] = $this->input->post('nombre');
                     $data['codigo'] = $code[0]['codigo'];
                     $message = $this->load->view('email/email', $data, true);
@@ -99,8 +96,8 @@ class Suscriptores extends MY_Controller
     public function Verificar($codigo = '')
     {
         if ($codigo) {
-            $this->load->model('SuscriptoresMod');
-            if ($this->SuscriptoresMod->update_state($codigo)) {
+            $this->load->model('Suscriptions');
+            if ($this->Suscriptions->update_state($codigo)) {
                 $data['base_url'] = $this->config->base_url();
                 $data['eventos'] = false;
                 $data['eventos_pasados'] = false;
@@ -160,8 +157,8 @@ class Suscriptores extends MY_Controller
         if ($id == "") {
             header('Location: ' . $data['base_url']);
         } else {
-            $this->load->model('SuscriptoresMod');
-            if ($this->SuscriptoresMod->deleteSuscriptorData($id)) {
+            $this->load->model('Suscriptions');
+            if ($this->Suscriptions->deleteSuscriptorData($id)) {
                 $data['base_url'] = $this->config->base_url();
                 // Cargar vistas ->
                 $data['navbar'] = $this->load->view('home/navbar_interno', $data, true);

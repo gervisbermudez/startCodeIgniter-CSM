@@ -12,8 +12,8 @@
 				<?php
 					$modalid = random_string('alnum', 16);
 				?>
-				<?php if ($arrayEventos): ?>
-				<?php foreach ($arrayEventos as $array): ?>
+				<?php if ($eventos): ?>
+				<?php foreach ($eventos as $array): ?>
 				<?php 
 					$itemid = random_string('alnum', 16);
 					$ddmid = random_string('alnum', 16);

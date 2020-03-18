@@ -8,17 +8,15 @@ class Eventos extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('EventosMod');
+        $this->load->model('Admin/Events');
     }
 
     public function index()
     {
-        $data['base_url'] = $this->config->base_url();
-        $data['username'] = $this->session->userdata('username');
         $data['title'] = "Admin | Eventos";
         $data['h1'] = "Eventos";
         $data['header'] = $this->load->view('admin/header', $data, true);
-        $data['arrayEventos'] = $this->EventosMod->get_event('all');
+        $data['eventos'] = $this->Events->all();
 
         echo $this->blade->view("admin.eventos.eventos_list", $data);
 
@@ -26,7 +24,7 @@ class Eventos extends MY_Controller
 
     public function Ver($id = '')
     {
-        $array = $this->EventosMod->get_event(array('id' => $id), '1', '');
+        $array = $this->Events->get_event(array('id' => $id), '1', '');
         if ($array) {
             $data['modalid'] = random_string('alnum', 16);
             $this->load->library('menu');
@@ -76,11 +74,11 @@ class Eventos extends MY_Controller
         // set the url base
         $data['base_url'] = $this->config->base_url();
         if ($this->input->post('nombre')) {
-            if (!$this->EventosMod->setEventData()) {
-                $event = $this->EventosMod->get_event(array('nombre' => $this->input->post('nombre')), '', '');
+            if (!$this->Events->setEventData()) {
+                $event = $this->Events->get_event(array('nombre' => $this->input->post('nombre')), '', '');
                 $id = $event[0]['id'];
-                $this->load->model('ModRelations');
-                $relations = array('id_user' => $this->session->userdata('id'), 'tablename' => 'eventos', 'id_row' => $id, 'action' => 'crear');
+                $this->load->model('Admin/ModRelations');
+                $relations = array('user_id' => $this->session->userdata('id'), 'tablename' => 'eventos', 'id_row' => $id, 'action' => 'crear');
                 $this->ModRelations->set_relation($relations);
                 redirect('admin/eventos/ver/' . $id);
             } else {
@@ -93,8 +91,7 @@ class Eventos extends MY_Controller
     {
 
         if ($id != "") {
-            $this->load->model('EventosMod');
-            $array = $this->EventosMod->get_event(array('id' => $id), '');
+            $array = $this->Events->get_event(array('id' => $id), '');
             if ($array) {
                 $data['eventdata'] = $array[0];
                 $data['title'] = "Admin | Editar Evento";
@@ -116,9 +113,9 @@ class Eventos extends MY_Controller
     public function update($id = "")
     {
         if ($id != "") {
-            $array = $this->EventosMod->get_event(array('id' => $id), '');
+            $array = $this->Events->get_event(array('id' => $id), '');
             if ($array) {
-                if ($this->EventosMod->updateEvent($id)) {
+                if ($this->Events->updateEvent($id)) {
                     $this->Ver($id);
                 } else {
                     $this->showError();

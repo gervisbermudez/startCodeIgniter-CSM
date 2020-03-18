@@ -8,57 +8,32 @@ class Archivos extends MY_Controller
     public function __construct()
     {
         parent::__construct();
+        $this->load->helper('form');
     }
 
-    public function map($folder = null)
+    public function index($dir = 'root')
     {
-        if ($folder != null) {
-            $this->Files_model->current_folder = $folder . '/';
+        $data['base_url'] = $this->config->base_url();
+        $data['udir'] = $dir;
+        if ($dir === 'root') {
+            $data['dir'] = dirname('img');
+            $data['udir'] = $data['dir'];
+        } else {
+            $data['dir'] = str_replace('_', '/', $dir);
         }
-        $this->Files_model->map_files();
-    }
-
-    public function index()
-    {
+        $data['username'] = $this->session->userdata('username');
         $data['title'] = "Admin | Archivos";
-        $data['h1'] = "";
+        $data['h1'] = "Archivos";
+        $data['header'] = $this->load->view('admin/header', $data, true);
+        $this->load->helper('url');
+        $data['head_includes'] = array('file-input' => link_tag('public/js/fileinput-master/css/fileinput.min.css'), 'lightbox' => link_tag('public/js/lightbox2-master/dist/css/lightbox.min.css'));
 
-        echo $this->blade->view("admin.archivos.file_explorer", $data);
-
-    }
-
-    public function ajax_get_files()
-    {
-        $file_path = $this->input->post('path');
-
-        $result = $this->Files_model->get_data(array('file_path' => $file_path, 'status' => 1), 'files', '', '');
-
-        $response = array(
-            'code' => 200,
-            'data' => $result,
-        );
-
-        $this->output
-            ->set_content_type('application/json')
-            ->set_output(json_encode($response));
-
-    }
-
-    public function ajax_get_filter_files()
-    {
-        $filter_name = $this->input->post('filter_name');
-        $filter_value = $this->input->post('filter_value');
-
-        $result = $this->Files_model->get_filter_files($filter_name, $filter_value);
-
-        $response = array(
-            'code' => 200,
-            'data' => $result,
-        );
-
-        $this->output
-            ->set_content_type('application/json')
-            ->set_output(json_encode($response));
+        $data['error'] = '';
+        $data['load_to'] = 'Admin/Archivos/subirmultiple/' . $dir;
+        $data['form'] = $this->load->view('admin/galeria/upload_form', $data, true);
+        $data['footer_includes'] = array('file-input' => '<script src="' . base_url('public/js/fileinput-master/js/fileinput.js') . '"></script>', 'file-input-canvas' => '<script src="' . base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js') . '"></script>',
+            'lightbox' => '<script src="' . base_url('public/js/lightbox2-master/dist/js/lightbox.min.js') . '"></script>');
+        echo $this->blade->view("admin.archivos.todas", $data);
 
     }
 
@@ -71,6 +46,7 @@ class Archivos extends MY_Controller
             $dir = dirname('img');
         }
         $data['base_url'] = $this->config->base_url();
+        $this->load->helper('strbefore');
         foreach ($_FILES["imagenes"]["error"] as $clave => $error) {
             if ($error == UPLOAD_ERR_OK) {
                 $nombre_tmp = $_FILES["imagenes"]["tmp_name"][$clave];
@@ -147,28 +123,5 @@ class Archivos extends MY_Controller
         $dir = $this->input->post('directorio');
         $directorio = array('_parentdir' => dirname($dir), 'files' => scandir("" . $dir));
         $this->output->set_content_type('application/json')->set_output(json_encode($directorio));
-    }
-
-    public function ajax_rename_file()
-    {
-        $file = $this->input->post('file');
-        $result = $this->Files_model->update_data(array('rand_key' => $file['rand_key']), array('file_name' => $file['new_name']), 'files');
-
-        if ($result) {
-            rename(
-                $file['file_path'] . $file['file_name'] . '.' . $file['file_type'],
-                $file['file_path'] . $file['new_name'] . '.' . $file['file_type'],
-            );
-        }
-
-        $response = array(
-            'code' => 200,
-            'data' => $result,
-        );
-
-        $this->output
-            ->set_content_type('application/json')
-            ->set_output(json_encode($response));
-
     }
 }

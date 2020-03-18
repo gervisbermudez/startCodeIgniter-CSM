@@ -8,40 +8,36 @@ class Mensajes extends MY_Controller
     public function __construct()
     {
         parent::__construct();
+        $this->load->model('Admin/Messages');
     }
 
     public function index($folder = 'Inbox')
     {
-        $this->load->model('MensajesMod');
-        $this->load->helper('text');
         $data['username'] = $this->session->userdata('username');
         $data['title'] = "Admin | Mensajes";
-        $this->load->model('MensajesMod');
         $data['folder'] = $folder;
         $data['h1'] = "";
         $data['header'] = '';
-        $data['mensajes'] = $this->MensajesMod->get_mensaje(array('namefolder' => $folder));
+        $data['mensajes'] = $this->Messages->all();
         $data['list'] = $this->load->view('admin/mensajes/list', $data, true);
-        $data['head_includes'] = array('message.css' => link_tag('public/css/admin/message.css'));
-        $data['footer_includes'] = array('<script src="' . base_url('public/js/chips.js') . '"></script>', '<script src="' . base_url('public/js/mensajes.js') . '"></script>');
+        $data['head_includes'] = array(link_tag('public/css/admin/messages.css'));
+        $data['footer_includes'] = array('<script src="' . base_url('public/js/chips.js') . '"></script>', '<script src="' . base_url('public/js/mensajes.min.js') . '"></script>');
 
         echo $this->blade->view("admin.mensajes.listado", $data);
 
     }
     public function folder($folder = 'Inbox')
     {
-        $this->load->model('MensajesMod');
         $this->load->helper('text');
         $data['username'] = $this->session->userdata('username');
         $data['title'] = "Admin | Mensajes";
-        $this->load->model('MensajesMod');
         $data['h1'] = "";
         $data['header'] = '';
         $data['folder'] = $folder;
-        $data['head_includes'] = array('message.css' => link_tag('public/css/admin/message.css'));
-        $data['mensajes'] = $this->MensajesMod->get_mensaje(array('namefolder' => $folder));
+        $data['head_includes'] = array('messages.css' => link_tag('public/css/admin/messages.css'));
+        $data['mensajes'] = $this->Messages->get_mensaje(array('namefolder' => $folder));
         if (!$data['mensajes']) {
-            $data['mensajes'] = $this->MensajesMod->get_mensaje(array('namefolder' => 'Inbox'));
+            $data['mensajes'] = $this->Messages->get_mensaje(array('namefolder' => 'Inbox'));
             $data['folder'] = 'Inbox';
         }
         $data['list'] = $this->load->view('admin/mensajes/list', $data, true);
@@ -53,26 +49,24 @@ class Mensajes extends MY_Controller
     }
     public function ver($id = '')
     {
-        $this->load->model('MensajesMod');
-        $data['mensajes'] = $this->MensajesMod->get_mensaje('all');
+        $data['mensajes'] = $this->Messages->get_mensaje('all');
         $this->load->helper('array');
         $this->load->library('parser');
         $quotes = array(" indigo", "blue", " cyan", "green", "pink", "lime", 'orange');
         $deep = array("darken-1", 'accent-4', '');
-        $mensaje = $this->MensajesMod->get_mensaje(array('mensajes.id' => $id))[0];
-        $this->MensajesMod->set_mensaje_as_read($id);
+        $mensaje = $this->Messages->get_mensaje(array('mensajes.id' => $id))[0];
+        $this->Messages->set_mensaje_as_read($id);
         $data = array('_subject' => $mensaje['_subject'],
             'color' => random_element($quotes) . ' ' . random_element($deep),
             'initial_letter' => substr($mensaje['_from'], 0, 1),
             '_from' => $mensaje['_from'], '_mensaje' => $mensaje['_mensaje'], 'mensaje-id' => $id);
         $data['preview'] = $this->parser->parse('admin/mensajes/preview', $data, true);
-        $data['mensajes'] = $this->MensajesMod->get_mensaje('all');
+        $data['mensajes'] = $this->Messages->get_mensaje('all');
         $data['list'] = $this->load->view('admin/mensajes/list', $data, true);
         $data['base_url'] = $this->config->base_url();
         $this->load->helper('text');
         $data['username'] = $this->session->userdata('username');
         $data['title'] = "Admin | Mensajes";
-        $this->load->model('MensajesMod');
         $data['h1'] = "";
         $data['header'] = ''; //$this->load->view('admin/header', $data, TRUE);
         $this->load->view('admin/head', $data);
@@ -83,10 +77,8 @@ class Mensajes extends MY_Controller
     public function getfolder($foldername = 'Inbox')
     {
         $data['base_url'] = $this->config->base_url();
-        $this->load->model('MensajesMod');
         $this->load->helper('text');
-        $this->load->model('MensajesMod');
-        $data['mensajes'] = $this->MensajesMod->get_mensaje(array('folder' => $foldername));
+        $data['mensajes'] = $this->Messages->get_mensaje(array('folder' => $foldername));
         $this->load->view('admin/mensajes/list', $data);
     }
     public function showError($errorMsg = 'Ocurrio un error inesperado', $data = array('title' => 'Error', 'h1' => 'Error'))
@@ -101,12 +93,11 @@ class Mensajes extends MY_Controller
     }
     public function get_mensaje_by_ajax()
     {
-        $this->load->model('MensajesMod');
 
         $this->load->helper('array');
         $id_mensaje = $this->input->post('id_mensaje');
-        $data['mensajes'] = $this->MensajesMod->get_mensaje(array('mensajes.id' => $id_mensaje));
-        $this->MensajesMod->set_mensaje_as_read($id_mensaje);
+        $data['mensajes'] = $this->Messages->get_mensaje(array('mensajes.id' => $id_mensaje));
+        $this->Messages->set_mensaje_as_read($id_mensaje);
         $preview = $this->load->view('admin/mensajes/preview', $data, true);
         $this->output->set_output($preview);
     }
@@ -118,18 +109,16 @@ class Mensajes extends MY_Controller
             $time = time();
             $fecha = mdate($datestring, $time);
             echo "$fecha";
-            $this->load->model('MensajesMod');
-            $this->MensajesMod->set_Message();
+            $this->Messages->set_Messages();
         }
     }
-    public function update_messagefolder_byajax()
+    public function update_messagesfolder_byajax()
     {
         $id = $this->input->post('id');
         $folder = $this->input->post('folder');
-        $this->load->model('MensajesMod');
         $datawhere = array('id' => $id);
         $arraydata = array('folder' => $folder);
-        $data['mensajes'] = $this->MensajesMod->update_mensajefolder($arraydata, $datawhere);
+        $data['mensajes'] = $this->Messages->update_mensajefolder($arraydata, $datawhere);
         $json = array('result' => false);
         if ($data['mensajes']) {
             $json = array('result' => true);

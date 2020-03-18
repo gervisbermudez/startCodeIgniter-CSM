@@ -1,5 +1,6 @@
-<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
-
+<?php if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 class Paginas extends MY_Controller
 {
 
@@ -9,14 +10,20 @@ class Paginas extends MY_Controller
 		$this->load->model('PageModel');
 	}
 
+	/**
+	 * Index page for admin/paginas
+	 *
+	 * @return void
+	 */
 	public function index()
 	{
 		$data['h1'] = "Todas las Paginas";
-		$data['paginas'] = $this->PageModel->get_data('all', 'page');
+		$data['paginas'] = $this->PageModel->all();
 		$data['title'] = "Admin | Paginas";
 		$data['header'] = $this->load->view('admin/header', $data, TRUE);
 		echo $this->blade->view("admin.pages.pages_list", $data);
 	}
+
 	public function filter($str_tipo = 'all')
 	{
 		$data['h1'] = "Todas las Categorias";

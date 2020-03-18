@@ -2,14 +2,12 @@
     exit('No direct script access allowed');
 }
 
-class PageModel extends MY_Model {
+class Suscriptions extends MY_model {
 
-	public $table = 'page';
-	public $primaryKey = 'page_id';
+	public $primaryKey = 'suscriptions_id';
 
 	function __construct()
 	{
 		parent::__construct();
 	}
-
 }

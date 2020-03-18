@@ -8,7 +8,7 @@ class Videos extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('ModVideo');
+        $this->load->model('Admin/Video');
     }
 
     public function index()
@@ -16,7 +16,7 @@ class Videos extends MY_Controller
         $data['title'] = "Admin | Videos";
         $data['h1'] = "Videos";
         $data['header'] = $this->load->view('admin/header', $data, true);
-        $data['videos'] = $this->ModVideo->get_video('all');
+        $data['videos'] = $this->Video->all();
 
         echo $this->blade->view("admin.videos.videos_listado", $data);
 
@@ -27,7 +27,7 @@ class Videos extends MY_Controller
         $data['title'] = "Admin | Videos";
         $data['h1'] = "Categorias de Videos";
         $data['header'] = $this->load->view('admin/header', $data, true);
-        $data['categorias'] = $this->ModVideo->get_categoria(array('tipo' => 'video'));
+        $data['categorias'] = $this->Video->get_categoria(array('tipo' => 'video'));
 
         echo $this->blade->view("admin.videos.videos_listado", $data);
 
@@ -39,14 +39,14 @@ class Videos extends MY_Controller
             $this->index();
         } else {
 
-            $data['video'] = $this->ModVideo->get_video(array('id' => $id))[0];
+            $data['video'] = $this->Video->get_video(array('id' => $id))[0];
 
             if ($data['video']) {
 
                 $data['title'] = "Admin | Videos";
                 $data['h1'] = $data['video']['nombre'];
                 $data['header'] = $this->load->view('admin/header', $data, true);
-                $data['categorias'] = $this->ModVideo->get_video_categoria_rel(array('`video-categoria`.`id_video`' => $id));
+                $data['categorias'] = $this->Video->get_video_categoria_rel(array('`video-categoria`.`id_video`' => $id));
                 $data['modalid'] = random_string('alnum', 16);
                 $data['itemid'] = random_string('alnum', 16);
                 $this->load->library('menu');
@@ -86,7 +86,7 @@ class Videos extends MY_Controller
             'tinymce' => '<script src="' . base_url('public/js/tinymce/js/tinymce/tinymce.min.js') . '"></script>',
             'tinymceinit' => "<script>tinymce.init({ selector:'textarea',  plugins : ['link table'] });</script>");
         $data['videocategoria'] = array();
-        $data['categorias'] = $this->ModVideo->get_categoria(array('tipo' => 'video'));
+        $data['categorias'] = $this->Video->get_categoria(array('tipo' => 'video'));
         echo $this->blade->view("admin.videos.crear", $data);
 
     }
@@ -108,16 +108,16 @@ class Videos extends MY_Controller
             'fecha' => $fecha->format('Y-m-d H:i:s'),
             'status' => $status,
         );
-        if ($this->ModVideo->set_video($data)) {
+        if ($this->Video->set_video($data)) {
             unset($data['id']);
-            $video = $this->ModVideo->get_video($data);
+            $video = $this->Video->get_video($data);
             if ($this->input->post('categorias')) {
                 foreach ($this->input->post('categorias') as $key => $value) {
-                    $this->ModVideo->set_video_categoria(array('id' => 'NULL', 'id_video' => $video[0]['id'], 'id_categoria' => $value));
+                    $this->Video->set_video_categoria(array('id' => 'NULL', 'id_video' => $video[0]['id'], 'id_categoria' => $value));
                 }
             }
             $this->load->model('ModRelations');
-            $relations = array('id_user' => $this->session->userdata('id'), 'tablename' => 'video', 'id_row' => $video[0]['id'], 'action' => 'crear');
+            $relations = array('user_id' => $this->session->userdata('id'), 'tablename' => 'video', 'id_row' => $video[0]['id'], 'action' => 'crear');
             $this->ModRelations->set_relation($relations);
 
             redirect('admin/videos/ver/' . $video[0]['id']);
@@ -129,7 +129,7 @@ class Videos extends MY_Controller
     public function editar($id)
     {
 
-        $data['video'] = $this->ModVideo->get_video(array('id' => $id))[0];
+        $data['video'] = $this->Video->get_video(array('id' => $id))[0];
         if ($data['video']) {
             $this->load->helper('array');
 
@@ -137,10 +137,10 @@ class Videos extends MY_Controller
             $data['h1'] = "Videos";
             $data['header'] = $this->load->view('admin/header', $data, true);
             $data['action'] = 'admin/videos/update';
-            $data['video'] = $this->ModVideo->get_video(array('id' => $id))[0];
+            $data['video'] = $this->Video->get_video(array('id' => $id))[0];
             $data['categorias'] = $this->StModel->get_data(array('tipo' => 'Video'), 'categorias');
 
-            $videocategoria = $this->ModVideo->get_video_categoria(array('`id_video`' => $id));
+            $videocategoria = $this->Video->get_video_categoria(array('`id_video`' => $id));
             $data['videocategoria'] = array();
             if ($videocategoria) {
                 foreach ($videocategoria as $key => $value) {
@@ -173,10 +173,10 @@ class Videos extends MY_Controller
             'payinfo' => $this->input->post('paypal'),
             'status' => $status,
         );
-        if ($this->ModVideo->update_video($where, $data)) {
-            $this->ModVideo->delete_video_categoria(array('id_video' => $this->input->post('id')));
+        if ($this->Video->update_video($where, $data)) {
+            $this->Video->delete_video_categoria(array('id_video' => $this->input->post('id')));
             foreach ($this->input->post('categorias') as $key => $value) {
-                $this->ModVideo->set_video_categoria(array('id' => 'NULL', 'id_video' => $this->input->post('id'), 'id_categoria' => $value));
+                $this->Video->set_video_categoria(array('id' => 'NULL', 'id_video' => $this->input->post('id'), 'id_categoria' => $value));
             }
             redirect('admin/videos/ver/' . $this->input->post('id'));
         } else {

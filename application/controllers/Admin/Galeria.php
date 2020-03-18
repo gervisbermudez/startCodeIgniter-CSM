@@ -8,16 +8,12 @@ class Galeria extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('ModGallery');
-        $this->load->helper('form');
-
+        $this->load->model('Admin/Album');
     }
 
     public function index()
     {
-
-        $data['albumes'] = $this->ModGallery->get_album('all', '', array('fecha', 'DESC'));
-        $data['username'] = $this->session->userdata('username');
+        $data['albumes'] = $this->Album->all();
         $data['title'] = "Admin | Galería";
         $data['h1'] = "Galería de Imagenes";
         $data['header'] = $this->load->view('admin/header', $data, true);
@@ -30,7 +26,7 @@ class Galeria extends MY_Controller
             $this->index();
         } else {
 
-            $album = $this->ModGallery->get_album(array('id' => $albumid));
+            $album = $this->Album->get_album(array('id' => $albumid));
             if ($album) {
 
                 $data['album'] = $album;
@@ -81,7 +77,6 @@ class Galeria extends MY_Controller
     {
         // set the url base
         $data['base_url'] = $this->config->base_url();
-        $this->load->model('ModGallery');
         $album = $this->StModel->get_data(array('id' => $albumid), 'album');
         $this->load->helper('string');
         foreach ($_FILES["imagenes"]["error"] as $clave => $error) {
@@ -90,7 +85,7 @@ class Galeria extends MY_Controller
                 $ext = strstr($_FILES["imagenes"]["name"][$clave], '.');
                 $nombre = random_string('alpha', 16) . $ext;
                 move_uploaded_file($nombre_tmp, "./img/gallery/" . $album[0]['path'] . "/$nombre");
-                $this->ModGallery->set_item($albumid, $nombre);
+                $this->Album->set_item($albumid, $nombre);
             }
         }
         redirect('Admin/Galeria/albumes/' . $albumid);
@@ -119,8 +114,7 @@ class Galeria extends MY_Controller
         } else {
             if ($albumid != '') {
 
-                $this->load->model('ModGallery');
-                $album = $this->ModGallery->get_album($albumid);
+                $album = $this->Album->get_album($albumid);
                 $config['upload_path'] = './img/gallery/' . $album[0]['path'];
                 $config['allowed_types'] = 'gif|jpg|png';
                 $config['max_size'] = 0;
@@ -150,7 +144,7 @@ class Galeria extends MY_Controller
                     if (!$this->image_lib->resize()) {
                         $this->image_lib->display_errors('<p>', '</p>');
                     }
-                    $this->ModGallery->set_item($albumid, $this->upload->data('file_name'));
+                    $this->Album->set_item($albumid, $this->upload->data('file_name'));
                     $this->Albumes($albumid);
                 }
             }
@@ -159,7 +153,6 @@ class Galeria extends MY_Controller
 
     public function crearalbum()
     {
-
         $data['title'] = "Admin | Nuevo Album";
         $data['h1'] = "Agregar nuevo Album";
         $data['header'] = $this->load->view('admin/header', $data, true);
@@ -176,7 +169,7 @@ class Galeria extends MY_Controller
         $data['title'] = "Admin | Editar album";
         $data['h1'] = "Editar album";
         $data['header'] = $this->load->view('admin/header', $data, true);
-        $data['album'] = $this->ModGallery->get_album($albumid);
+        $data['album'] = $this->Album->get_album($albumid);
 
         $data['footer_includes'] = array(
             'tinymce' => '<script src="' . base_url('public/js/tinymce/js/tinymce/tinymce.min.js') . '"></script>',
@@ -190,8 +183,7 @@ class Galeria extends MY_Controller
         // set the url base
         $data['base_url'] = $this->config->base_url();
 
-        $this->load->model('ModGallery');
-        $result = $this->ModGallery->update_album($albumid);
+        $result = $this->Album->update_album($albumid);
         if ($result) {
             $this->Albumes($albumid);
         } else {
@@ -205,10 +197,10 @@ class Galeria extends MY_Controller
         $path = "album" . random_string('alnum', 16);
         mkdir('./img/gallery/' . $path);
         $this->load->helper('date');
-        if ($this->ModGallery->set_album($path)) {
-            $this->load->model('ModRelations');
-            $album = $this->ModGallery->get_album(array('path' => $path));
-            $relations = array('id_user' => $this->session->userdata('id'), 'tablename' => 'album', 'id_row' => $album[0]['id'], 'action' => 'crear');
+        if ($this->Album->set_album($path)) {
+            $this->load->model('Admin/ModRelations');
+            $album = $this->Album->get_album(array('path' => $path));
+            $relations = array('user_id' => $this->session->userdata('id'), 'tablename' => 'album', 'id_row' => $album[0]['id'], 'action' => 'crear');
             $this->ModRelations->set_relation($relations);
             redirect('admin/galeria/albumes/' . $album[0]['id']);
         } else {

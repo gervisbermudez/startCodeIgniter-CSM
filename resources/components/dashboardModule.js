@@ -26,12 +26,12 @@ Vue.component('usersCollection', {
             var self = this;
             $.ajax({
                 type: "GET",
-                url: BASEURL + 'api/v1/user',
+                url: BASEURL + 'admin/usuarios/ajax_get_users',
                 data: {},
                 dataType: "json",
                 success: function (response) {
                     console.log(response);
-                    self.users = response;
+                    self.users = response.data;
                     self.loader = false;
                     setTimeout(() => {
                         M.AutoInit();
@@ -47,7 +47,7 @@ Vue.component('usersCollection', {
             }
         },
         getUserLink(user) {
-            return BASEURL + '/admin/user/ver/' + user.id;
+            return BASEURL + 'admin/usuarios/ver/' + user.user_id;
         }
     },
     mounted: function () {

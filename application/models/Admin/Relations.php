@@ -2,10 +2,7 @@
     exit('No direct script access allowed');
 }
 
-class PageModel extends MY_Model {
-
-	public $table = 'page';
-	public $primaryKey = 'page_id';
+class Relations extends MY_model {
 
 	function __construct()
 	{

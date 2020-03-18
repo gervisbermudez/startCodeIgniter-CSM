@@ -18,7 +18,7 @@
 			<div class="user-view">
 				<div class="background">
 				</div>
-				<a href="{{base_url('admin/user/ver/' . $ci->session->userdata('id')) }}" class="user-avatar">
+				<a href="{{base_url('admin/usuarios/ver/' . $ci->session->userdata('id')) }}" class="user-avatar">
 					@if ($ci->session->userdata('avatar'))
 					<img src="{{base_url(IMGPROFILEPATH) . $ci->session->userdata('username') . '/' . $ci->session->userdata('avatar') }}"
 						alt="" class="circle z-depth-1" />
@@ -26,7 +26,7 @@
 					<i class="material-icons circle grey lighten-5 profile z-depth-1">account_circle</i>
 					@endif
 				</a>
-				<a class="avatar-username" href="{{base_url('admin/user/ver/' . $ci->session->userdata('id')) }}">
+				<a class="avatar-username" href="{{base_url('admin/usuarios/ver/' . $ci->session->userdata('id')) }}">
 					<span class="white-text name">{{$ci->session->userdata('username') }}</span>
 				</a>
 				<a class="avatar-email" href="#email">
@@ -42,12 +42,12 @@
 	</div>
 </nav>
 <ul id="slide-out" class="sidenav">
-	<li class="{{isSectionActive('user')}}">
-		<a class="waves-effect" href="{{ base_url('admin/user/') }}"><i class="material-icons">perm_identity</i>
+	<li class="{{isSectionActive('usuarios')}}">
+		<a class="waves-effect" href="{{ base_url('admin/usuarios/') }}"><i class="material-icons">perm_identity</i>
 			Usuarios</a>
 		<ul>
 			<li>
-				<a href="{{ base_url('admin/user/agregar/') }}">Nuevo</a>
+				<a href="{{ base_url('admin/usuarios/agregar/') }}">Nuevo</a>
 			</li>
 		</ul>
 	</li>

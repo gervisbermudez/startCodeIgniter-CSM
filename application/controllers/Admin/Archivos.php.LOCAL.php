@@ -8,6 +8,7 @@ class Archivos extends MY_Controller
     public function __construct()
     {
         parent::__construct();
+        $this->load->model('Files_model');
     }
 
     public function map($folder = null)

@@ -30,7 +30,7 @@
 	</a>
 	<ul>
 		<li><a data-position="left" data-delay="50" data-tooltip="Usuario nuevo" class="btn-floating tooltipped red"
-				href="{{base_url('admin/user/agregar')}}"><i class="material-icons">perm_identity</i></a></li>
+				href="{{base_url('admin/usuarios/agregar')}}"><i class="material-icons">perm_identity</i></a></li>
 		<li><a data-position="left" data-delay="50" data-tooltip="Pagina nueva"
 				class="btn-floating tooltipped yellow darken-1" href="{{base_url('admin/paginas/nueva/')}}"><i
 					class="material-icons">web</i></a></li>

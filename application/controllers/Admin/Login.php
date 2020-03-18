@@ -7,7 +7,7 @@ class Login extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('LoginMod');
+        $this->load->model('Admin/LoginMod');
     }
 
     public function index($continue = '')
