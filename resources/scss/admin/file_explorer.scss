@@ -7,6 +7,7 @@
     nav {
         position: relative;
         background-color: white;
+        z-index: auto;
 
         i {
             color: #000;
@@ -73,6 +74,10 @@
             }
         }
 
+        .filelist {
+            padding: 0px 20px;
+        }
+
     }
 
     .file {
@@ -97,6 +102,13 @@
         .dropdown-content {
             left: auto !important;
             right: 0px !important;
+            width: 130px !important;
+
+            i {
+                float: none;
+                width: auto;
+                margin: auto;
+            }
         }
     }
 

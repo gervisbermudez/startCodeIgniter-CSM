@@ -138,13 +138,22 @@
                                                 :data-target="'file_options' + index"><i
                                                     class="material-icons right">more_vert</i></a>
                                             <ul :id="'file_options' + index" class='dropdown-content'>
-                                                <li><a href="#!">Share file</a></li>
+                                                <li><a href="#!">
+                                                    <i class="fas fa-share-alt"></i> Share file</a>
+                                                </li>
                                                 <li>
                                                     <a class="waves-effect waves-light modal-trigger" href="#modal1"
-                                                        @click="renameFile(item)">Rename</a>
+                                                        @click="renameFile(item);">
+                                                        <i class="far fa-edit"></i>
+                                                        Rename</a>
                                                 </li>
-                                                <li><a href="#!">Important</a></li>
-                                                <li><a href="#!">Delete</a></li>
+                                                <li><a href="#!" @click="featuredFileServe(item);">
+                                                    <i class="fa-star" :class='[item.featured == 1 ? "fas" : "far"]'></i> Important</a></li>
+                                                <li v-if="curDir != './trash/'">
+                                                    <a href="#!" @click="moveFileTo(item, './trash/');">
+                                                        <i class="fas fa-trash"></i> Delete
+                                                    </a>
+                                                </li>
                                             </ul>
                                             <div class="card-image waves-effect waves-block waves-light"
                                                 v-if="!isImage(item)">

@@ -17,6 +17,7 @@ class Files_model extends MY_Model
     public $root_dir = './';
     public $current_dir = './';
     public $current_folder = '';
+    public $primaryKey = 'file_id';
 
     public function __construct()
     {
@@ -38,10 +39,12 @@ class Files_model extends MY_Model
         $this->delete_data(array('status' => 1), $this->table);
         $curdir = $this->current_dir . $this->current_folder;
         $this->save_dir($directorio, $curdir);
-        if (!$this->get_data(array('config_name' => 'map_dir', 'config_value' => $this->current_dir), 'site_config')) {
-            $this->update_data(array('config_name' => 'map_dir'), array('config_value' => $this->current_dir), 'site_config');
+        $this->load->model('Admin/Site_config');
+        
+        if (!$this->Site_config->get_data(array('config_name' => 'map_dir', 'config_value' => $this->current_dir), 'site_config')) {
+            $this->Site_config->update_data(array('config_name' => 'map_dir'), array('config_value' => $this->current_dir), 'site_config');
         } else {
-            $this->set_data(array('config_name' => 'map_dir', 'config_value' => $this->current_dir, 'user_id' => userdata('id')), 'site_config');
+            $this->Site_config->set_data(array('config_name' => 'map_dir', 'config_value' => $this->current_dir, 'user_id' => userdata('id')), 'site_config');
         }
     }
 
@@ -112,8 +115,8 @@ class Files_model extends MY_Model
             'file_path' => $this->get_file_path($dir_name),
             'file_type' => $this->get_substr_file_ext($file_name),
             'parent_name' => $this->get_substr_file_parent_name($dir_name),
-            'user_id' => userdata('id'),
-            'shared_user_group_id' => userdata('usergroup'),
+            'user_id' => userdata('user_id'),
+            'shared_user_group_id' => userdata('usergroup_id'),
             'share_link' => "admin/archivos/shared_file/" . $file_key,
         );
 

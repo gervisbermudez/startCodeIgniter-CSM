@@ -8,6 +8,8 @@ class Archivos extends MY_Controller
     public function __construct()
     {
         parent::__construct();
+        $this->load->model('Files_model');
+        
     }
 
     public function map($folder = null)
@@ -29,13 +31,16 @@ class Archivos extends MY_Controller
 
     public function ajax_get_files()
     {
+        $this->output->enable_profiler(false);
+        
         $file_path = $this->input->post('path');
 
-        $result = $this->Files_model->get_data(array('file_path' => $file_path, 'status' => 1), 'files', '', '');
+        $where = array('file_path' => $file_path, 'status' => 1);
+        $result = $this->Files_model->get_data($where);
 
         $response = array(
             'code' => 200,
-            'data' => $result,
+            'data' => $result
         );
 
         $this->output
@@ -46,6 +51,8 @@ class Archivos extends MY_Controller
 
     public function ajax_get_filter_files()
     {
+        $this->output->enable_profiler(false);
+
         $filter_name = $this->input->post('filter_name');
         $filter_value = $this->input->post('filter_value');
 
@@ -151,6 +158,8 @@ class Archivos extends MY_Controller
 
     public function ajax_rename_file()
     {
+        $this->output->enable_profiler(false);
+
         $file = $this->input->post('file');
         $result = $this->Files_model->update_data(array('rand_key' => $file['rand_key']), array('file_name' => $file['new_name']), 'files');
 
@@ -171,4 +180,55 @@ class Archivos extends MY_Controller
             ->set_output(json_encode($response));
 
     }
+
+    public function ajax_featured_file()
+    {
+        $this->output->enable_profiler(false);
+
+        $file = $this->input->post('file');
+        $result = $this->Files_model->update_data(
+            array('rand_key' => $file['rand_key']), 
+            array('featured' => $file['featured']), 
+            'files'
+        );
+
+        $response = array(
+            'code' => 200,
+            'data' => $result,
+        );
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+
+    }
+
+    public function ajax_move_file()
+    {
+        $this->output->enable_profiler(false);
+
+        $file = $this->input->post('file');
+        $newPath = $this->input->post('newPath');
+
+        $result = $this->Files_model->update_data(
+            array('rand_key' => $file['rand_key']), 
+            array('file_path' => $newPath), 
+            'files'
+        );
+
+        $file_name = $file['file_name'] . '.' . $file['file_type'];
+
+        $rename = rename($file['file_path'] . $file_name , $newPath . $file_name);
+
+        $response = array(
+            'code' => 200,
+            'data' => $result,
+        );
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+
+    }
+
 }
