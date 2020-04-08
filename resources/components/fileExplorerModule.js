@@ -9,6 +9,7 @@ var fileExplorerModule = new Vue({
     backto: null,
     search: "",
     editFile: {},
+    moveToTrash: {},
   },
   computed: {
     getFolders() {
@@ -55,6 +56,12 @@ var fileExplorerModule = new Vue({
     },
   },
   methods: {
+    getFullFileName(item) {
+      return item.file_name + "." + item.file_type;
+    },
+    getFullFilePath(item) {
+      return BASEURL + item.file_path + this.getFullFileName(item);
+    },
     getIcon(fileObject) {
       let icon = "far fa-file";
       switch (fileObject.file_type) {
@@ -163,6 +170,9 @@ var fileExplorerModule = new Vue({
         },
       });
     },
+    trashFile(item) {
+      this.moveToTrash = item;
+    },
     moveFileTo(item, newPath) {
       var self = this;
       var file = {};
@@ -183,11 +193,12 @@ var fileExplorerModule = new Vue({
         dataType: "json",
         success: function (response) {
           if (response.code == 200) {
-            html = '<span>I am toast content</span><button class="btn-flat toast-action">Undo</button>';
+            html =
+              '<span>I am toast content</span><button class="btn-flat toast-action">Undo</button>';
             M.toast({ html: html });
 
-              self.files[indexFile].file_path = newPath;
-              self.files.splice(indexFile, 1);
+            self.files[indexFile].file_path = newPath;
+            self.files.splice(indexFile, 1);
           }
         },
       });
@@ -263,6 +274,8 @@ var fileExplorerModule = new Vue({
       this.navigateFiles(this.root);
     },
     searchfiles() {
+      debugger;
+
       if (this.search) {
         this.getFilterFiles("file_name", [this.search]);
       } else {

@@ -124,6 +124,24 @@
     .tree {
         padding: 0px !important;
 
+        ul.collapsible {
+            .collapsible-header {
+                border-bottom: none;
+            }
+
+            li {
+                padding: 5px 0px;
+            }
+        }
+
+        ul.collapsible li a {
+            color: #444;
+        }
+
+        ul.collapsible .collapsible-body {
+            padding: 10px 15px;
+        }
+
         .sidenav {
             transform: none;
             width: auto;
