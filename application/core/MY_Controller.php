@@ -9,8 +9,8 @@ class MY_Controller extends CI_Controller
     {
         parent::__construct();
         if (!$this->session->userdata('logged_in')) {
-            $uri = str_replace('/', '_', uri_string());
-            redirect('admin/login/index/' . $uri);
+            $uri = urlencode (uri_string());
+            redirect('admin/login/?redirect=' . $uri);
         }
         if ($this->config->item('enable_profiler')) {
             $this->output->enable_profiler(true);

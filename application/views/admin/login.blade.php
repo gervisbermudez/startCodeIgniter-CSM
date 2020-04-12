@@ -55,12 +55,13 @@
                         <button class="btn light-blue waves-effect waves-light" type="button"
                             :class="{disabled: !btnEnable}" @click="login">Login</button>
                     </div>
-                    <?php if (isset($continue)): ?>
-                    <input type="hidden" value="<?php echo $continue ?>" name="continue" id="continue">
-                    <?php endif ?>
                 </form>
             </div>
         </div>
     </div>
 </div>
+@endsection
+
+@section('footer_includes'):
+<script src="{{base_url('public/js/components/loginForm.min.js?v=' . SITEVERSION)}}"></script>
 @endsection

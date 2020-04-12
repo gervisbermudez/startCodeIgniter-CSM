@@ -10,5 +10,6 @@
     <body>
         @yield('content')
         @include('admin.shared.footer')
+        @yield('footer_includes')
     </body>
 </html>
