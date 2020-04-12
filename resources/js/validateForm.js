@@ -26,19 +26,19 @@ class VueForm {
         this.fields = fields;
         for (const field in fields) {
             this.fields[field] = {
-                value: fields[field].value || null,
-                required: fields[field].required || false,
-                type: fields[field].type || 'text',
-                length: fields[field].length || 0,
-                valid: fields[field].required || true,
-                touched: false,
-                errorText: fields[field].errorText || '',
-                customPattern: fields[field].customPattern || null,
-                validateWith: null,
-                maxLength: fields[field].maxLength || null,
-                minLength: fields[field].minLength || null,
-                readOnlyValue: null,
-            }
+              value: fields[field].value || null,
+              required: fields[field].required || false,
+              type: fields[field].type || "text",
+              length: fields[field].length || 0,
+              valid: fields[field].valid || true,
+              touched: false,
+              errorText: fields[field].errorText || "",
+              customPattern: fields[field].customPattern || null,
+              validateWith: null,
+              maxLength: fields[field].maxLength || null,
+              minLength: fields[field].minLength || null,
+              readOnlyValue: null,
+            };
         }
     }
     /**
@@ -136,7 +136,7 @@ class VueForm {
         this.errors = [];
         for (const field in this.fields) {
             this.fields[field].touched = true;
-            this.validateField(field)
+            this.fields[field].required && this.validateField(field);
         }
         return this.valid;
     }
