@@ -108,8 +108,11 @@ var PageNewForm = new Vue({
           dataType: "json",
           success: function (response) {
             if (response.code == 200) {
-              console.log(response);
               self.loader = false;
+              M.toast({ html: 'Success!!' });
+              setTimeout(() => {
+                window.location = BASEURL + "admin/paginas/";
+              }, 2000);
             } else {
               M.toast({ html: response.responseJSON.error_message });
               self.loader = false;
@@ -131,14 +134,13 @@ var PageNewForm = new Vue({
         path: this.path || "",
         status: this.status ? 1 : 0,
         content: this.content || "",
-        page_id: this.page_id,
+        page_id: this.page_id || null,
         publishondate: this.publishondate,
         date_publish: this.getDateTimePublish,
-        template: this.template,
         visibility: this.visibility,
         template: this.template,
-        categorie: this.categorie,
-        subcategories: this.subcategories,
+        categorie: this.categorie || null,
+        subcategories: this.subcategories || null,
       };
     },
     serverValidation(field) {
@@ -189,28 +191,34 @@ var PageNewForm = new Vue({
       });
     },
     checkEditMode() {
-      if (user_id) {
+      var page_id = document.getElementById("page_id").value;
+      var editMode = document.getElementById("editMode").value;
+      if (page_id && editMode == "edit") {
         var self = this;
         self.editMode = true;
         $.ajax({
           type: "POST",
-          url: BASEURL + "admin/usuarios/ajax_get_users",
+          url: BASEURL + "admin/paginas/ajax_get_page",
           data: {
-            user_id: user_id,
+            page_id: page_id,
           },
           dataType: "json",
           success: function (response) {
             if (response.code == 200) {
-              let data = response.data[0];
-              self.user_id = data.user_id;
-              self.form.fields.username.value = data.username;
-              self.form.fields.email.value = data.email;
-              self.status = data.status;
-              self.form.fields.usergroup_id.value = data.usergroup_id;
-              self.form.fields.nombre.value = data.user_data.nombre;
-              self.form.fields.apellido.value = data.user_data.apellido;
-              self.form.fields.direccion.value = data.user_data.direccion;
-              self.form.fields.telefono.value = data.user_data.telefono;
+              console.log(response);
+              self.form.fields.title.value = response.data.title;
+              self.form.fields.subtitle.value = response.data.subtitle;
+              self.page_id = response.data.page_id;
+              self.status = !!response.data.status;
+              self.visibility = response.data.visibility;
+              self.publishondate = !!response.data.date_publish;
+              self.template = response.data.template;
+              self.categorie = response.data.categorie || 0;
+              self.subcategories = response.data.subcategories || 0;
+              setTimeout(() => {
+                tinymce.editors["id_cazary"].setContent(response.data.content);
+                self.content = response.data.content;
+              }, 2000);
             }
             self.loader = false;
             setTimeout(() => {
@@ -224,41 +232,47 @@ var PageNewForm = new Vue({
         });
       }
     },
+    initPlugins() {
+            tinymce.init({
+              selector: "textarea",
+              plugins: ["link table code"],
+              setup: function (editor) {
+                editor.on("Change", function (e) {
+                  PageNewForm.content = tinymce.editors[
+                    "id_cazary"
+                  ].getContent();
+                });
+              },
+            });
+            setTimeout(() => {
+              var elems = document.querySelectorAll(".datepicker");
+              M.Datepicker.init(elems, {
+                format: "yyyy-mm-dd",
+                onClose: function () {
+                  PageNewForm.datepublish = document.getElementById(
+                    "datepublish"
+                  ).value;
+                },
+              });
+              var elems = document.querySelectorAll(".timepicker");
+              M.Timepicker.init(elems, {
+                twelveHour: false,
+                defaultTime: "now",
+                onCloseEnd: function () {
+                  PageNewForm.timepublish = document.getElementById(
+                    "timepublish"
+                  ).value;
+                },
+              });
+            }, 1000);
+    }
   },
   mounted: function () {
     this.$nextTick(function () {
       console.log("mounted PageNewForm");
       this.loader = false;
-      tinymce.init({
-        selector: "textarea",
-        plugins: ["link table code"],
-        setup: function (editor) {
-          editor.on("Change", function (e) {
-            PageNewForm.content = tinymce.editors["id_cazary"].getContent();
-          });
-        },
-      });
-      setTimeout(() => {
-        var elems = document.querySelectorAll(".datepicker");
-        M.Datepicker.init(elems, {
-          format: "yyyy-mm-dd",
-          onClose: function () {
-            PageNewForm.datepublish = document.getElementById(
-              "datepublish"
-            ).value;
-          },
-        });
-        var elems = document.querySelectorAll(".timepicker");
-        M.Timepicker.init(elems, {
-          twelveHour: false,
-          defaultTime: "now",
-          onCloseEnd: function () {
-            PageNewForm.timepublish = document.getElementById(
-              "timepublish"
-            ).value;
-          },
-        });
-      }, 1000);
+      this.initPlugins();
+      this.checkEditMode();
     });
   },
 });

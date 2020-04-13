@@ -8,6 +8,8 @@
 
 @section('content')
 <div class="container" id="root">
+    <input type="hidden" name="editMode" id="editMode"   value="{{$editMode}}">
+    <input type="hidden" name="page_id"  id="page_id"  value="{{$page_id}}">
     <div class="row" id="form">
         <div class="col s12 center" v-bind:class="{ hide: !loader }">
 			<div class="preloader-wrapper big active">
@@ -23,7 +25,6 @@
 			  </div>
 		</div>
         <div v-cloak v-if="!loader" class="col s12 m8 l9">
-            <input type="hidden" name="id_form" value="">
             <span class="header grey-text text-darken-2">Datos básicos <i
                     class="material-icons left">assignment</i></span>
             <div class="input-field">

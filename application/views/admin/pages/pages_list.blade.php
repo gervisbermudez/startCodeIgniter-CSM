@@ -14,9 +14,9 @@
 			<table>
 				<thead>
 					<tr>
-						<th>Name</th>
-						<th>Item Name</th>
-						<th>Item Price</th>
+						<th>Page Title</th>
+						<th>Page Path</th>
+						<th>Author</th>
 						<th>Editar</th>
 					</tr>
 				</thead>
@@ -25,7 +25,7 @@
 					<tr>
 						<td>{{$page->title}}</td>
 						<td><a href="{{base_url($page->path)}}" target="_blank">{{$page->path}}</a></td>
-						<td>{{$page->author}}</td>
+						<td>{{$page->username}}</td>
 						<td><a href="{{base_url()}}admin/paginas/editar/{{$page->page_id}}">Editar</a></td>
 					</tr>
 					@endforeach
