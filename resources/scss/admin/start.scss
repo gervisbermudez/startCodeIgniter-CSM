@@ -58,7 +58,15 @@ span.current-folder {
   }
 
   li.active {
-    background-color: #c0c0c0;
+    background-color: $color3;
+
+    &>a {
+      color: $white !important;
+
+      i.material-icons {
+        color: $white !important;
+      }
+    }
 
     ul {
       background-color: #e3e3e3;
