@@ -17,6 +17,8 @@ class Paginas extends MY_Controller
      */
     public function index()
     {
+        $this->output->enable_profiler(true);
+
         $data['h1'] = "Todas las Paginas";
         $pages = new Page();
         $data['paginas'] = $pages->all();
@@ -128,6 +130,23 @@ class Paginas extends MY_Controller
                 ->set_content_type('application/json')
                 ->set_output(json_encode($response));
         }
+
+    }
+
+    public function ajax_get_page_types()
+    {
+        $this->output->enable_profiler(false);
+        $this->load->model('Admin/Page_types');
+        
+        $page_types = new Page_types();
+        $all_pages = $page_types->all();
+        $response = array(
+            'code' => 200,
+            'data' => $all_pages ? $all_pages : [],
+        );
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
 
     }
 

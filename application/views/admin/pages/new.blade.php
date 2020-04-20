@@ -8,22 +8,24 @@
 
 @section('content')
 <div class="container" id="root">
-    <input type="hidden" name="editMode" id="editMode"   value="{{$editMode}}">
-    <input type="hidden" name="page_id"  id="page_id"  value="{{$page_id}}">
+    <input type="hidden" name="editMode" id="editMode" value="{{$editMode}}">
+    <input type="hidden" name="page_id" id="page_id" value="{{$page_id}}">
     <div class="row" id="form">
         <div class="col s12 center" v-bind:class="{ hide: !loader }">
-			<div class="preloader-wrapper big active">
-				<div class="spinner-layer spinner-blue-only">
-				  <div class="circle-clipper left">
-					<div class="circle"></div>
-				  </div><div class="gap-patch">
-					<div class="circle"></div>
-				  </div><div class="circle-clipper right">
-					<div class="circle"></div>
-				  </div>
-				</div>
-			  </div>
-		</div>
+            <div class="preloader-wrapper big active">
+                <div class="spinner-layer spinner-blue-only">
+                    <div class="circle-clipper left">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="gap-patch">
+                        <div class="circle"></div>
+                    </div>
+                    <div class="circle-clipper right">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div v-cloak v-if="!loader" class="col s12 m8 l9">
             <span class="header grey-text text-darken-2">Datos básicos <i
                     class="material-icons left">assignment</i></span>
@@ -43,8 +45,9 @@
                     @blur="setPath(path);">
             </div>
             <div id="introduction" class="section scrollspy">
-            <span class="header grey-text text-darken-2">Contenido <i class="material-icons left">description</i></span>
-            <br>
+                <span class="header grey-text text-darken-2">Contenido <i
+                        class="material-icons left">description</i></span>
+                <br>
                 <div class="input-field">
                     <textarea id="id_cazary" name="content"></textarea>
                 </div>
@@ -53,7 +56,8 @@
             <br>
         </div>
         <div v-cloak v-if="!loader" class="col s12 m4 l3">
-            <span class="header grey-text text-darken-2">Publicar Pagina <i class="material-icons left">assignment_turned_in</i></span>
+            <span class="header grey-text text-darken-2">Publicar Pagina <i
+                    class="material-icons left">assignment_turned_in</i></span>
             <div class="input-field">
                 <div class="switch">
                     <label>
@@ -74,17 +78,12 @@
                 </p>
                 <p>
                     <label>
-                        <input class="blue" name="visibility" v-model="visibility" value="2" type="radio" />
-                        <span>Con Contraseña</span>
-                    </label>
-                </p>
-                <p>
-                    <label>
-                        <input class="red" name="visibility" v-model="visibility" value="3" type="radio" />
+                        <input class="red" name="visibility" v-model="visibility" value="2" type="radio" />
                         <span>Privada</span>
                     </label>
                 </p>
-                <b class="grey-text text-darken-2"><i class="material-icons left">date_range</i> Fecha de Publicación</b>
+                <b class="grey-text text-darken-2"><i class="material-icons left">date_range</i> Fecha de
+                    Publicación</b>
                 <p>
                     <label>
                         <input type="checkbox" checked v-model="publishondate" />
@@ -107,24 +106,32 @@
                 </div>
             </div>
             <br>
+            <span class="header grey-text text-darken-2"><i class="material-icons left">list</i> Tipo</span>
+            <br>
+            <div class="input-field">
+                <select v-model="pageType" name="template">
+                    <option v-for="(item, index) in pageTypes" :key="index" :value="item">
+                        @{{item.page_type_name | capitalize}}</option>
+                </select>
+                <label>Tipo</label>
+            </div>
+            <br>
             <span class="header grey-text text-darken-2"><i class="material-icons left">toc</i> Categoria</span>
             <br>
             <div class="input-field">
-                <select v-model="categorie" name="categorie">
+                <select v-model="categorie" id="categorie" name="template" v-on:change="getSubCategories">
                     <option value="0">Ninguna</option>
-                    @foreach ($templates as $template)
-                    <option value="1">{{ $template }}</option>
-                    @endforeach
+                    <option v-for="(item, index) in categories" :key="index" :value="item.categorie_id">
+                        @{{item.name | capitalize}}</option>
                 </select>
                 <label>Categoria</label>
             </div>
             <br>
             <div class="input-field">
-                <select v-model="subcategories" name="subcategories">
+                <select v-model="subcategorie" id="subcategories" name="subcategories">
                     <option value="0">Ninguna</option>
-                    @foreach ($templates as $template)
-                    <option value="1">{{ $template }}</option>
-                    @endforeach
+                    <option v-for="(item, index) in subcategories" :key="index" :value="item.categorie_id">
+                        @{{item.name | capitalize}}</option>
                 </select>
                 <label>Sub Categoria</label>
             </div>
@@ -132,7 +139,7 @@
             <span class="header grey-text text-darken-2"><i class="material-icons left">layers</i> Template</span>
             <br>
             <div class="input-field">
-                <select v-model="template" name="template">
+                <select v-model="template" id="template" name="template">
                     <option value="default">Default</option>
                     @foreach ($templates as $template)
                     <option value="2">{{ $template }}</option>
@@ -143,11 +150,11 @@
         </div>
         <div v-cloak v-if="!loader" class="col s12">
             <div class="input-field" id="buttons">
-                <a href="<?php echo base_url('admin/paginas/'); ?>" class="btn red darken-1">Cancelar</a>
+                <a href="<?php echo base_url('admin/paginas/'); ?>" class="btn-flat">Cancelar</a>
                 <button type="submit" class="btn btn-primary" @click="save" :class="{disabled: !btnEnable}">
-                    <span v-if="!status"><i class="material-icons right">edit</i> Guardar Borrador</span>    
-                    <span v-if="status && btnEnable"><i class="material-icons right">publish</i> Publicar</span>    
-                    <span v-if="status && !btnEnable"><i class="material-icons right">publish</i> Publicar</span>    
+                    <span v-if="!status"><i class="material-icons right">edit</i> Guardar Borrador</span>
+                    <span v-if="status && btnEnable"><i class="material-icons right">publish</i> Publicar</span>
+                    <span v-if="status && !btnEnable"><i class="material-icons right">publish</i> Publicar</span>
                 </button>
             </div>
         </div>

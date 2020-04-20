@@ -1,6 +1,7 @@
 var PageNewForm = new Vue({
   el: "#root",
   data: {
+    debug: true,
     loader: true,
     editMode: false,
     page_id: null,
@@ -30,8 +31,15 @@ var PageNewForm = new Vue({
     datepublish: "",
     timepublish: "",
     template: "default",
-    categorie: 1,
-    subcategories: 1,
+    categorie: "0",
+    subcategorie: "0",
+    pageTypes: [],
+    categories: [],
+    subcategories: [],
+    pageType: {
+      page_type_id: "1",
+      page_type_name: "page",
+    },
   },
   computed: {
     btnEnable: function () {
@@ -50,23 +58,53 @@ var PageNewForm = new Vue({
     },
   },
   watch: {
-    "form.fields.title.value": function (value) {
+    'form.fields.title.value': function (value) {
       this.setPath(value);
     },
-    publishondate: function (value) {
+    'publishondate': function (value) {
       if (value) {
         this.datepublish = "";
         this.timepublish = "";
       }
     },
+    'pageType': function (newType, oldType) {
+      this.debug ? console.log(newType, oldType) : null;
+      if (this.path.indexOf(oldType.page_type_name + "/") != -1) {
+        let remplace = newType.page_type_name + "/";
+        if (newType.page_type_id == '1') {
+          remplace = '';
+        }
+        this.path = this.path.replace(oldType.page_type_name + "/", remplace);
+      }
+      this.setPath(this.path);
+    },
+  },
+  filters: {
+    capitalize: function (value) {
+      if (!value) return "";
+      value = value.toString();
+      return value.charAt(0).toUpperCase() + value.slice(1);
+    },
   },
   methods: {
     autoSave() {
       //@todo
-      console.log("running autosave...");
+      this.debug ? console.log("running autosave...") : null;
     },
     setPath(value) {
-      this.path = this.string_to_slug(value);
+      let addSubPath = this.pageType && this.pageType.page_type_id != "1";
+      if (
+        addSubPath &&
+        value.indexOf(this.pageType.page_type_name + "/") != -1
+      ) {
+        value = value.replace(this.pageType.page_type_name + "/", "");
+      }
+      let slug = this.string_to_slug(value);
+      if (addSubPath) {
+        this.path = this.pageType.page_type_name + "/" + slug;
+      } else {
+        this.path = slug;
+      }
     },
     string_to_slug: function (str) {
       if (str.length == 0) return "";
@@ -109,7 +147,7 @@ var PageNewForm = new Vue({
           success: function (response) {
             if (response.code == 200) {
               self.loader = false;
-              M.toast({ html: 'Success!!' });
+              M.toast({ html: "Success!!" });
               setTimeout(() => {
                 window.location = BASEURL + "admin/paginas/";
               }, 2000);
@@ -132,6 +170,7 @@ var PageNewForm = new Vue({
         title: this.form.fields.title.value || "",
         subtitle: this.form.fields.subtitle.value || "",
         path: this.path || "",
+        type: this.path || "",
         status: this.status ? 1 : 0,
         content: this.content || "",
         page_id: this.page_id || null,
@@ -140,7 +179,7 @@ var PageNewForm = new Vue({
         visibility: this.visibility,
         template: this.template,
         categorie: this.categorie || null,
-        subcategories: this.subcategories || null,
+        subcategorie: this.subcategorie || null,
       };
     },
     serverValidation(field) {
@@ -167,25 +206,67 @@ var PageNewForm = new Vue({
         },
       });
     },
-    getUsergroups() {
+    getPageTypes() {
       var self = this;
       $.ajax({
         type: "POST",
-        url: BASEURL + "admin/usuarios/ajax_get_usergroups",
+        url: BASEURL + "admin/paginas/ajax_get_page_types",
         data: {},
         dataType: "json",
         success: function (response) {
+          self.debug ? console.log("ajax_get_page_types: ", response) : null;
           if (response.code == 200) {
-            self.usergroups = response.data;
-            setTimeout(() => {
-              var elems = document.querySelectorAll("select");
-              var instances = M.FormSelect.init(elems, {});
-            }, 2000);
-            self.loader = false;
+            self.pageTypes = response.data;
           }
         },
         error: function (error) {
-          M.toast({ html: response.responseJSON.error_message });
+          self.debug ? console.log(error) : null;
+          self.loader = false;
+        },
+      });
+    },
+    getCategories() {
+      var self = this;
+      $.ajax({
+        type: "POST",
+        url: BASEURL + "admin/categorias/ajax_get_categorie_type",
+        data: {
+          categorie_type: "page",
+        },
+        dataType: "json",
+        success: function (response) {
+          self.debug
+            ? console.log("ajax_get_categorie_type: ", response)
+            : null;
+          if (response.code == 200) {
+            PageNewForm.categories = response.data;
+          }
+        },
+        error: function (error) {
+          self.debug ? console.log(error) : null;
+          self.loader = false;
+        },
+      });
+    },
+    getSubCategories() {
+      var self = this;
+      $.ajax({
+        type: "POST",
+        url: BASEURL + "admin/categorias/ajax_get_subcategorie_type",
+        data: {
+          categorie_type: "page",
+          parent_id: self.categorie,
+        },
+        dataType: "json",
+        success: function (response) {
+          console.log("ajax_get_subcategorie_type: ", response);
+          if (response.code == 200) {
+            self.subcategories = response.data;
+            PageNewForm.initSelects();
+          }
+        },
+        error: function (error) {
+          self.debug ? console.log(error) : null;
           self.loader = false;
         },
       });
@@ -204,12 +285,14 @@ var PageNewForm = new Vue({
           },
           dataType: "json",
           success: function (response) {
+            self.loader = false;
+            self.debug ? console.log("ajax_get_page: ", response) : null;
             if (response.code == 200) {
-              console.log(response);
               self.form.fields.title.value = response.data.title;
               self.form.fields.subtitle.value = response.data.subtitle;
               self.page_id = response.data.page_id;
-              self.status = !!response.data.status;
+              self.status = response.data.status == "1";
+              self.path = response.data.path;
               self.visibility = response.data.visibility;
               self.publishondate = !!response.data.date_publish;
               self.template = response.data.template;
@@ -220,7 +303,6 @@ var PageNewForm = new Vue({
                 self.content = response.data.content;
               }, 2000);
             }
-            self.loader = false;
             setTimeout(() => {
               M.updateTextFields();
             }, 1000);
@@ -233,46 +315,53 @@ var PageNewForm = new Vue({
       }
     },
     initPlugins() {
-            tinymce.init({
-              selector: "textarea",
-              plugins: ["link table code"],
-              setup: function (editor) {
-                editor.on("Change", function (e) {
-                  PageNewForm.content = tinymce.editors[
-                    "id_cazary"
-                  ].getContent();
-                });
-              },
-            });
-            setTimeout(() => {
-              var elems = document.querySelectorAll(".datepicker");
-              M.Datepicker.init(elems, {
-                format: "yyyy-mm-dd",
-                onClose: function () {
-                  PageNewForm.datepublish = document.getElementById(
-                    "datepublish"
-                  ).value;
-                },
-              });
-              var elems = document.querySelectorAll(".timepicker");
-              M.Timepicker.init(elems, {
-                twelveHour: false,
-                defaultTime: "now",
-                onCloseEnd: function () {
-                  PageNewForm.timepublish = document.getElementById(
-                    "timepublish"
-                  ).value;
-                },
-              });
-            }, 1000);
-    }
+      tinymce.init({
+        selector: "textarea",
+        plugins: ["link table code"],
+        setup: function (editor) {
+          editor.on("Change", function (e) {
+            PageNewForm.content = tinymce.editors["id_cazary"].getContent();
+          });
+        },
+      });
+      setTimeout(() => {
+        var elems = document.querySelectorAll(".datepicker");
+        M.Datepicker.init(elems, {
+          format: "yyyy-mm-dd",
+          onClose: function () {
+            PageNewForm.datepublish = document.getElementById(
+              "datepublish"
+            ).value;
+          },
+        });
+        var elems = document.querySelectorAll(".timepicker");
+        M.Timepicker.init(elems, {
+          twelveHour: false,
+          defaultTime: "now",
+          onCloseEnd: function () {
+            PageNewForm.timepublish = document.getElementById(
+              "timepublish"
+            ).value;
+          },
+        });
+        this.initSelects();
+      }, 1000);
+    },
+    initSelects() {
+      setTimeout(() => {
+        var elems = document.querySelectorAll("select");
+        var instances = M.FormSelect.init(elems, {});
+      }, 1000);
+    },
   },
   mounted: function () {
     this.$nextTick(function () {
-      console.log("mounted PageNewForm");
+      this.debug ? console.log("mounted PageNewForm") : null;
       this.loader = false;
-      this.initPlugins();
+      this.getPageTypes();
       this.checkEditMode();
+      this.getCategories();
+      this.initPlugins();
     });
   },
 });

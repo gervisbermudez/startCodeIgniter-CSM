@@ -177,7 +177,7 @@ body.sidenav-open {
   }
 
   .main {
-    padding: 60px 0 0 60px;
+    padding: 50px 0 0 60px;
   }
 
 }
@@ -462,8 +462,6 @@ span.level {
   }
 }
 
-.nav-top {}
-
 .main {
   padding: 60px 0 0 0;
 }
@@ -477,7 +475,7 @@ span.level {
   display: none;
 }
 
-nav {
+.main-navbar {
   .brand-logo {
     margin: 0px 0 0 -50px;
     position: absolute;
@@ -778,7 +776,7 @@ div.row.event a.dropdown-button.right {
     overflow-y: auto;
   }
 
-  nav .brand-logo {
+  .main-navbar .brand-logo {
     margin: 0 0 0 -40px;
     width: auto;
     -webkit-transform: initial;
@@ -794,14 +792,14 @@ div.row.event a.dropdown-button.right {
     width: 200px;
   }
 
-  nav .brand-logo {
+  .main-navbar .brand-logo {
     margin: 0;
     position: absolute;
     left: 50px;
   }
 
   .main {
-    padding: 60px 0 0 190px;
+    padding: 50px 0 0 190px;
   }
 
   .menu-spand {
@@ -1060,4 +1058,13 @@ div#dropnotify {
 
 .hidden {
   display: none !important;
+}
+
+.page-navbar {
+  background: $color3;
+  form {
+    height: 100%;
+    float: left;
+    width: 80%;
+  }
 }

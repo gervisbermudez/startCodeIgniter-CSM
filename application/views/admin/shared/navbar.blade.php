@@ -1,4 +1,4 @@
-<nav>
+<nav class="main-navbar">
 	<!-- navbar content here  -->
 	<div class="nav-wrapper">
 		<a href="{{ base_url('admin/') }}" class="brand-logo">Start CMS</a>
