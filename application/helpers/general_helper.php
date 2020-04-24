@@ -15,7 +15,7 @@ if (!function_exists('getThemePath')) {
         $ci = &get_instance();
         $config = $ci->Site_config->load_config();
 
-        if ($config->site_theme) {
+        if (isset($config->site_theme)) {
             defined('THEME_PATH') or define('THEME_PATH', FCPATH . 'themes\\' . $config->site_theme) . '\\';
             return THEME_PATH;
         }

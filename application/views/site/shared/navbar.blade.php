@@ -1,88 +1,50 @@
 <!-- Navigation -->
-<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark fixed-top">
 	<div class="container">
-		<!-- Brand and toggle get grouped for better mobile display -->
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-			<span class="sr-only">Toggle navigation</span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-			<span class="icon-bar"></span>
-			</button>
-			<a class="navbar-brand" href="<?php echo base_url(); ?>">Start Bootstrap</a>
-		</div>
-		<!-- Collect the nav links, forms, and other content for toggling -->
-		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-			<ul class="nav navbar-nav navbar-right">
-				<li>
-					<a href="pages/about.html">About</a>
+		<a class="navbar-brand" href="{{base_url()}}">Start CMS</a>
+		<button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse"
+			data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"
+			aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarResponsive">
+			<ul class="navbar-nav ml-auto">
+				<li class="nav-item">
+					<a class="nav-link" href="{{base_url('about')}}">About</a>
 				</li>
-				<li>
-					<a href="pages/services.html">Services</a>
+				<li class="nav-item">
+					<a class="nav-link" href="{{base_url('services')}}">Services</a>
 				</li>
-				<li>
-					<a href="pages/contact.html">Contact</a>
+				<li class="nav-item">
+					<a class="nav-link" href="{{base_url('contact')}}">Contact</a>
 				</li>
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown">Portfolio <b class="caret"></b></a>
-					<ul class="dropdown-menu">
-						<li>
-							<a href="pages/portfolio-1-col.html">1 Column Portfolio</a>
-						</li>
-						<li>
-							<a href="pages/portfolio-2-col.html">2 Column Portfolio</a>
-						</li>
-						<li>
-							<a href="pages/portfolio-3-col.html">3 Column Portfolio</a>
-						</li>
-						<li>
-							<a href="pages/portfolio-4-col.html">4 Column Portfolio</a>
-						</li>
-						<li>
-							<a href="pages/portfolio-item.html">Single Portfolio Item</a>
-						</li>
-					</ul>
+				<li class="nav-item dropdown">
+					<a class="nav-link" href="{{base_url('blog')}}">Blog</a>
 				</li>
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown">Blog <b class="caret"></b></a>
-					<ul class="dropdown-menu">
-						<li>
-							<a href="pages/blog-home-1.html">Blog Home 1</a>
-						</li>
-						<li>
-							<a href="pages/blog-home-2.html">Blog Home 2</a>
-						</li>
-						<li>
-							<a href="pages/blog-post.html">Blog Post</a>
-						</li>
-					</ul>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownPortfolio" data-toggle="dropdown"
+						aria-haspopup="true" aria-expanded="false">
+						Portfolio
+					</a>
+					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownPortfolio">
+						<a class="dropdown-item" href="portfolio">Portfolio</a>
+						<a class="dropdown-item" href="portfolio-item">Single Portfolio Item</a>
+					</div>
 				</li>
-				<li class="dropdown">
-					<a href="#" class="dropdown-toggle" data-toggle="dropdown">Other Pages <b class="caret"></b></a>
-					<ul class="dropdown-menu">
-						<li>
-							<a href="full-width.html">Full Width Page</a>
-						</li>
-						<li>
-							<a href="pages/sidebar.html">Sidebar Page</a>
-						</li>
-						<li>
-							<a href="pages/faq.html">FAQ</a>
-						</li>
-						<li>
-							<a href="pages/404.html">404</a>
-						</li>
-						<li>
-							<a href="pages/pricing.html">Pricing Table</a>
-						</li>
-					</ul>
-				</li>
-				<li>
-					<a href="<?=base_url('/admin');?>">Admin</a>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownBlog" data-toggle="dropdown"
+						aria-haspopup="true" aria-expanded="false">
+						Other Pages
+					</a>
+					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownBlog">
+						<a class="dropdown-item" href="full-width">Full Width Page</a>
+						<a class="dropdown-item" href="sidebar">Sidebar Page</a>
+						<a class="dropdown-item" href="{{base_url('faq')}}">FAQ</a>
+						<a class="dropdown-item" href="404">404</a>
+						<a class="dropdown-item" href="{{base_url('pricing')}}">Pricing Table</a>
+					</div>
 				</li>
 			</ul>
 		</div>
-		<!-- /.navbar-collapse -->
 	</div>
-	<!-- /.container -->
 </nav>

@@ -20,6 +20,7 @@ class PageController extends Base_Controller
 			$pageInfo = $pageInfo->first();
             $data['page'] = $pageInfo;
             $data['title'] = $pageInfo->title;
+            $data['template'] = $pageInfo->template == 'default' ? 'site' : $pageInfo->template;
             echo $this->blade->view("site.template", $data);
         } else {
             $this->error404();

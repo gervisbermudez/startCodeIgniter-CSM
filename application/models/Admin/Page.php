@@ -19,9 +19,11 @@ class Page extends MY_model
      */
     public function all()
     {
-        $sql = 'SELECT p.*, u.username, ug.name, ug.`level` FROM page p 
-                INNER JOIN user u ON p.author = u.user_id
-                INNER JOIN usergroup ug ON ug.usergroup_id = u.usergroup_id';
+        $sql = 'SELECT p.*, pt.page_type_name, u.username, ug.name, ug.`level`
+                FROM page p
+                INNER JOIN USER u ON p.author = u.user_id
+                INNER JOIN usergroup ug ON ug.usergroup_id = u.usergroup_id
+                INNER JOIN page_types pt ON pt.page_type_id = p.`type`';
         $query = $this->db->query($sql);
         if ($query->num_rows() > 0) {
             return new Collection($query->result());

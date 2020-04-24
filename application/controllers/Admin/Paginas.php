@@ -71,6 +71,7 @@ class Paginas extends MY_Controller
         $page->path = $this->input->post('path');
         $page->content = $this->input->post('content');
         $page->author = userdata('user_id');
+        $page->type = $this->input->post('type');
         $page->status = $this->input->post('status');
         $page->template = $this->input->post('template');
         $page->date_publish = !$this->input->post('publishondate') ? $this->input->post('date_publish') : null;
@@ -106,6 +107,34 @@ class Paginas extends MY_Controller
 
     }
 
+    public function ajax_get_pages()
+    {
+        $this->output->enable_profiler(false);
+        $page = new Page();
+        $pages = $page->all();
+        $response = array(
+            'code' => 200,
+            'data' => $pages ? $pages : [],
+        );
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    public function ajax_get_templates()
+    {
+        $this->output->enable_profiler(false);
+        $this->load->helper('directory');
+        $map = directory_map('./application/views/site/layouts', 1);
+        $response = array(
+            'code' => 200,
+            'data' => $map ? $map : [],
+        );
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
     public function ajax_get_page()
     {
         $this->output->enable_profiler(false);
@@ -133,11 +162,39 @@ class Paginas extends MY_Controller
 
     }
 
+    public function ajax_delete_page()
+    {
+        $this->output->enable_profiler(false);
+        $page = new Page();
+        $page->find($this->input->post('page_id'));
+        if ($page->delete()) {
+            $response = array(
+                'code' => 200,
+                'data' => $page,
+            );
+            $this->output
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
+        } else {
+            $error_message = 'Pagina no encontrada';
+            $response = array(
+                'code' => 404,
+                'error_message' => $error_message,
+                'data' => $_POST,
+            );
+            $this->output
+                ->set_status_header(404)
+                ->set_content_type('application/json')
+                ->set_output(json_encode($response));
+        }
+
+    }
+
     public function ajax_get_page_types()
     {
         $this->output->enable_profiler(false);
         $this->load->model('Admin/Page_types');
-        
+
         $page_types = new Page_types();
         $all_pages = $page_types->all();
         $response = array(

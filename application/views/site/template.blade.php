@@ -1,4 +1,4 @@
-@extends('site.layouts.site')
+@extends('site.layouts.' . $template)
 
 @section('title', $title)
 

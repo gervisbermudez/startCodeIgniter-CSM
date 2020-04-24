@@ -11,11 +11,22 @@ class BlogController extends Base_Controller
         $this->load->model('Admin/Page');
     }
 
+    public function list()
+    {
+        $data['title'] = "Modern Business - Blog";
+        if (getThemePath()) {
+            $this->blade->changePath(getThemePath());
+        }
+        echo $this->blade->view("site.blogList", $data);
+
+    }
+
     private function renderpage($pageInfo){
         if ($pageInfo) {
             $pageInfo = $pageInfo->first();
             $data['page'] = $pageInfo;
             $data['title'] = $pageInfo->title;
+            $data['template'] = $pageInfo->template == 'default' ? 'site' : $pageInfo->template;
             echo $this->blade->view("site.template", $data);
         } else {
             $this->error404();

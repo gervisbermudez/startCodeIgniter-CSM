@@ -1048,6 +1048,54 @@ div#dropnotify {
   }
 }
 
+.page-card {
+  .card-image:after {
+    background-color: rgba(0, 0, 0, 0.43);
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    top: 0px;
+  }
+
+  .card-image-container {
+    height: 215px;
+    overflow: hidden;
+  }
+
+  .card-info {
+    padding: 5px 0px 5px 0px;
+    color: #444;
+    position: relative;
+
+    .activator {
+      cursor: pointer;
+    }
+
+    ul {
+      margin: 0px;
+    }
+  }
+
+  .card-reveal {
+    ul {
+      margin: 0px;
+    }
+  }
+
+  .card-info .material-icons {
+    color: $color3;
+  }
+
+  .btn-floating {
+    background: $color3;
+    z-index: 3;
+    right: 10px;
+    top: 10px;
+  }
+}
+
 .btn-floating.btn-large {
   background: $color3 !important;
 }
@@ -1062,6 +1110,7 @@ div#dropnotify {
 
 .page-navbar {
   background: $color3;
+
   form {
     height: 100%;
     float: left;

@@ -140,10 +140,7 @@
             <br>
             <div class="input-field">
                 <select v-model="template" id="template" name="template">
-                    <option value="default">Default</option>
-                    @foreach ($templates as $template)
-                    <option value="2">{{ $template }}</option>
-                    @endforeach
+                    <option value="2" v-for="(template, index) in templates" :key="index" :value="template">@{{template}}</option>
                 </select>
                 <label>Layouts</label>
             </div>
