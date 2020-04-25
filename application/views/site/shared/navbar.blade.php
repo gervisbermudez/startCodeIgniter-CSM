@@ -9,26 +9,26 @@
 		</button>
 		<div class="collapse navbar-collapse" id="navbarResponsive">
 			<ul class="navbar-nav ml-auto">
-				<li class="nav-item">
+				<li class="nav-item {{isSectionActive('about', 1)}}">
 					<a class="nav-link" href="{{base_url('about')}}">About</a>
 				</li>
-				<li class="nav-item">
+				<li class="nav-item {{isSectionActive('services', 1)}}">
 					<a class="nav-link" href="{{base_url('services')}}">Services</a>
 				</li>
-				<li class="nav-item">
+				<li class="nav-item {{isSectionActive('contact', 1)}}">
 					<a class="nav-link" href="{{base_url('contact')}}">Contact</a>
 				</li>
-				<li class="nav-item dropdown">
+				<li class="nav-item {{isSectionActive('blog', 1)}}">
 					<a class="nav-link" href="{{base_url('blog')}}">Blog</a>
 				</li>
-				<li class="nav-item dropdown">
+				<li class="nav-item dropdown {{isSectionActive('portfolio', 1)}}">
 					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownPortfolio" data-toggle="dropdown"
 						aria-haspopup="true" aria-expanded="false">
 						Portfolio
 					</a>
 					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownPortfolio">
-						<a class="dropdown-item" href="portfolio">Portfolio</a>
-						<a class="dropdown-item" href="portfolio-item">Single Portfolio Item</a>
+						<a class="dropdown-item" href="{{base_url('portfolio')}}">Portfolio</a>
+						<a class="dropdown-item" href="{{base_url('portfolio-item')}}">Single Portfolio Item</a>
 					</div>
 				</li>
 				<li class="nav-item dropdown">

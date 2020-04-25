@@ -50,9 +50,14 @@ if (!function_exists('isSectionActive')) {
     {
         $ci = &get_instance();
         $url_array = $ci->uri->segment_array();
+        if (count($url_array) == 0) {
+            return '';
+        }
+
         if (count($url_array) < $position) {
             $position = 1;
         }
+
         if ($path == $url_array[$position]) {
             return $class;
         }
