@@ -48,17 +48,6 @@ class FileUploader
                 $zoomUrl = './uploads/' . $fileName;
                 return [
                     'chunkIndex' => $index, // the chunk index processed
-                    'initialPreview' => $targetUrl, // the thumbnail preview data (e.g. image)
-                    'initialPreviewConfig' => [
-                        [
-                            'type' => 'image', // check previewTypes (set it to 'other' if you want no content preview)
-                            'caption' => $fileName, // caption
-                            'key' => $fileId, // keys for deleting/reorganizing preview
-                            'fileId' => $fileId, // file identifier
-                            'size' => $fileSize, // file size
-                            'zoomData' => $zoomUrl, // separate larger zoom data
-                        ],
-                    ],
                     'append' => true,
                     'post' => $_POST,
                 ];

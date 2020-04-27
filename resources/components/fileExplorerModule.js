@@ -4,6 +4,7 @@ var fileExplorerModule = new Vue({
     root: "./",
     curDir: "",
     loader: false,
+    fileloader: false,
     files: [],
     recentlyFiles: [],
     backto: null,
@@ -54,6 +55,13 @@ var fileExplorerModule = new Vue({
       });
       return breadcrumb;
     },
+  },
+  watch: {
+    curDir: function (value) {
+      if ($("#input-100").data("fileinput")) {
+        $("#input-100").data("fileinput").uploadExtraData.curDir = value;
+      }
+    }
   },
   methods: {
     getFullFileName(item) {
@@ -182,7 +190,7 @@ var fileExplorerModule = new Vue({
           file = self.files[index];
           indexFile = index;
         }
-      });
+      }); 
       $.ajax({
         type: "POST",
         url: BASEURL + "admin/archivos/ajax_move_file",
@@ -194,7 +202,7 @@ var fileExplorerModule = new Vue({
         success: function (response) {
           if (response.code == 200) {
             html =
-              '<span>I am toast content</span><button class="btn-flat toast-action">Undo</button>';
+              '<span>Done! </span>';
             M.toast({ html: html });
 
             self.files[indexFile].file_path = newPath;
@@ -214,6 +222,23 @@ var fileExplorerModule = new Vue({
         );
       }
     },
+    reloadFileExplorer() {
+      var self = this;
+      self.fileloader = true;
+      self.files = [];
+      $.ajax({
+        type: "POST",
+        url: BASEURL + "admin/archivos/ajax_reload_file_explorer",
+        data: {
+          path: self.root,
+        },
+        dataType: "json",
+        success: function (response) {
+          self.navigateFiles(self.curDir);
+        },
+      });
+    },
+    toggleView() {},
     navigateFiles(path) {
       var self = this;
       self.backto = self.getBackPath;
@@ -221,7 +246,7 @@ var fileExplorerModule = new Vue({
       if (path == self.root) {
         self.backto = null;
       }
-
+      self.fileloader = true;
       $.ajax({
         type: "POST",
         url: BASEURL + "admin/archivos/ajax_get_files",
@@ -230,10 +255,13 @@ var fileExplorerModule = new Vue({
         },
         dataType: "json",
         success: function (response) {
+          self.fileloader = false;
           if (response.code == 200 && response.data.length) {
             self.files = response.data;
-            self.initMT();
+          } else {
+            self.files = [];
           }
+          self.initMT();
         },
       });
     },

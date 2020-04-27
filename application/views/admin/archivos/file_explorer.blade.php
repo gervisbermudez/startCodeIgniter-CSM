@@ -326,7 +326,7 @@
             },
             uploadExtraData: {
                 'uploadToken': 'SOME-TOKEN', // for access control / security 
-                'curDir': fileExplorerModule.curDir
+                'curDir': './uploads'
             },
             showCancel: true,
             initialPreview: [],
@@ -378,9 +378,9 @@
         progressPauseClass: 'determinate progress-bar bg-primary progress-bar-primary progress-bar-striped active',
         progressErrorClass: 'determinate progress-bar bg-danger progress-bar-danger',
         }).on('fileuploaded', function(event, previewId, index, fileId) {
-            setTimeout(() => {
-                $("#input-100").fileinput('reset');
-            }, 2000);
+            fileExplorerModule.reloadFileExplorer();
+            M.toast({ html: "File Uploaded!" });
+            M.Modal.getInstance($('#uploaderModal')[0]).close();
         });
     });
 </script>
