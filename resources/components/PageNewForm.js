@@ -32,6 +32,8 @@ var PageNewForm = new Vue({
     timepublish: "",
     template: "default",
     templates: [],
+    layout: "default",
+    layouts: [],
     categorie: "0",
     subcategorie: "0",
     pageTypes: [],
@@ -56,6 +58,11 @@ var PageNewForm = new Vue({
       return this.datepublish && this.timepublish
         ? this.datepublish + " " + this.timepublish + ":00"
         : null;
+    },
+    preview_link: function () {
+      return this.page_id
+        ? BASEURL + "admin/paginas/preview?page_id=" + this.page_id
+        : "";
     },
   },
   watch: {
@@ -89,8 +96,10 @@ var PageNewForm = new Vue({
   },
   methods: {
     autoSave() {
-      //@todo
-      this.debug ? console.log("running autosave...") : null;
+      if (!this.status) {
+        this.runSaveData();
+        this.debug ? console.log("running autosave...") : null;
+      }
     },
     setPath(value) {
       let addSubPath = this.pageType && this.pageType.page_type_id != "1";
@@ -135,35 +144,69 @@ var PageNewForm = new Vue({
       }
       return self.form.fields[field].valid;
     },
+    validateForm() {
+      this.form.validate();
+      let errors = true;
+      if (!this.publishondate && !this.datepublish && !this.timepublish) {
+        debugger;
+        error = false;
+      }
+
+      return this.form.errors.length == 0 && errors;
+    },
     save() {
       var self = this;
-      self.form.validate();
-      if (self.form.errors.length == 0) {
+      var callBack = function (response) {
+        if (response.data.status == 1) {
+          var toastHTML =
+            '<span>Page saved </span><a target="_blank" href="' +
+            BASEURL +
+            response.data.path +
+            '" class="btn-flat toast-action">View in site</a>';
+        } else {
+          var toastHTML =
+            '<span>Draf saved </span><a target="_blank" href="' +
+            BASEURL +
+            "admin/paginas/preview?page_id=" +
+            response.data.page_id +
+            '" class="btn-flat toast-action">Preview</a>';
+        }
+        M.toast({ html: toastHTML });
+      };
+      if (self.validateForm()) {
         this.loader = true;
-        $.ajax({
-          type: "POST",
-          url: BASEURL + "admin/paginas/ajax_save_page",
-          data: self.getData(),
-          dataType: "json",
-          success: function (response) {
-            if (response.code == 200) {
-              M.toast({ html: "Success!!" });
-              setTimeout(() => {
-                window.location = BASEURL + "admin/paginas/";
-              }, 2000);
-            } else {
-              M.toast({ html: response.responseJSON.error_message });
-              self.loader = false;
-            }
-          },
-          error: function (response) {
-            M.toast({ html: response.responseJSON.error_message });
-            self.loader = false;
-          },
-        });
+        this.runSaveData(callBack);
       } else {
         M.toast({ html: "Verifique todos los campos del formulario" });
       }
+    },
+    runSaveData(callBack) {
+      var self = this;
+      $.ajax({
+        type: "POST",
+        url: BASEURL + "admin/paginas/ajax_save_page",
+        data: self.getData(),
+        dataType: "json",
+        success: function (response) {
+          setTimeout(() => {
+            self.loader = false;
+          }, 1500);
+          if (response.code == 200) {
+            self.editMode = true;
+            self.page_id = response.data.page_id;
+            if (typeof callBack == "function") {
+              callBack(response);
+            }
+          } else {
+            M.toast({ html: response.responseJSON.error_message });
+            self.loader = false;
+          }
+        },
+        error: function (response) {
+          M.toast({ html: response.responseJSON.error_message });
+          self.loader = false;
+        },
+      });
     },
     getData: function () {
       return {
@@ -171,13 +214,14 @@ var PageNewForm = new Vue({
         subtitle: this.form.fields.subtitle.value || "",
         path: this.path || "",
         type: this.pageType.page_type_id || 1,
-        status: this.status ? 1 : 0,
+        status: this.status ? 1 : 2,
         content: this.content || "",
         page_id: this.page_id || null,
         publishondate: this.publishondate,
         date_publish: this.getDateTimePublish,
         visibility: this.visibility,
         template: this.template || "default",
+        layout: this.layout || "default",
         categorie: this.categorie || 0,
         subcategorie: this.subcategorie || 0,
       };
@@ -192,9 +236,13 @@ var PageNewForm = new Vue({
         success: function (response) {
           self.debug ? console.log("ajax_get_templates: ", response) : null;
           if (response.code == 200) {
-            self.templates = response.data.map(function (value, index) {
-              let template = value.split('.')[0];
-              return template == 'site' ? 'default' : template;
+            self.templates = response.data.templates.map(function (value) {
+              let template = value.split(".")[0];
+              return template == "template" ? "default" : template;
+            });
+            self.layouts = response.data.layouts.map(function (value) {
+              let layout = value.split(".")[0];
+              return layout == "site" ? "default" : layout;
             });
           }
         },

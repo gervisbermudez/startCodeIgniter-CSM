@@ -26,7 +26,7 @@
                 </div>
             </div>
         </div>
-        <div v-cloak v-if="!loader" class="col s12 m8 l9">
+        <div v-cloak v-show="!loader" class="col s12 m8 l9">
             <span class="header grey-text text-darken-2">Datos básicos <i
                     class="material-icons left">assignment</i></span>
             <div class="input-field">
@@ -55,7 +55,7 @@
             </div>
             <br>
         </div>
-        <div v-cloak v-if="!loader" class="col s12 m4 l3">
+        <div v-cloak v-show="!loader" class="col s12 m4 l3">
             <span class="header grey-text text-darken-2">Publicar Pagina <i
                     class="material-icons left">assignment_turned_in</i></span>
             <div class="input-field">
@@ -142,10 +142,17 @@
                 <select v-model="template" id="template" name="template">
                     <option value="2" v-for="(template, index) in templates" :key="index" :value="template">@{{template}}</option>
                 </select>
-                <label>Layouts</label>
+                <label>Internal Template</label>
+            </div>
+            <br>
+            <div class="input-field">
+                <select v-model="layout" id="layout" name="layout">
+                    <option value="2" v-for="(layout, index) in layouts" :key="index" :value="layout">@{{layout}}</option>
+                </select>
+                <label>Layout</label>
             </div>
         </div>
-        <div v-cloak v-if="!loader" class="col s12">
+        <div v-cloak v-show="!loader" class="col s12">
             <div class="input-field" id="buttons">
                 <a href="<?php echo base_url('admin/paginas/'); ?>" class="btn-flat">Cancelar</a>
                 <button type="submit" class="btn btn-primary" @click="save" :class="{disabled: !btnEnable}">
@@ -153,6 +160,9 @@
                     <span v-if="status && btnEnable"><i class="material-icons right">publish</i> Publicar</span>
                     <span v-if="status && !btnEnable"><i class="material-icons right">publish</i> Publicar</span>
                 </button>
+                <a  class="btn bg-color3" :href="preview_link" v-if="!status && editMode" :class="{disabled: !btnEnable}">
+                    <span><i class="material-icons right">launch</i> Preview</span>
+                </a>
             </div>
         </div>
     </div>

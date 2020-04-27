@@ -92,7 +92,7 @@
 								<ul :id='"dropdown" + page.page_id' class='dropdown-content'>
 									<li><a :href="base_url('admin/paginas/editar/' + page.page_id)">Editar</a></li>
 									<li><a href="#!" v-on:click="deletePage(page, index);">Borrar</a></li>
-									<li><a :href="base_url(page.path)" target="_blank">Preview</a></li>
+									<li v-if="page.status == 2"><a :href="base_url('admin/paginas/preview?page_id=' + page.page_id)" target="_blank">Preview</a></li>
 									<li><a :href="base_url(page.path)" target="_blank">Archivar</a></li>
 								</ul>
 							</td>
@@ -119,7 +119,7 @@
 							<ul :id='"dropdown" + page.page_id' class='dropdown-content'>
 								<li><a :href="base_url('admin/paginas/editar/' + page.page_id)">Editar</a></li>
 								<li><a href="#!" v-on:click="deletePage(page, index);">Borrar</a></li>
-								<li><a :href="base_url(page.path)" target="_blank">Preview</a></li>
+								<li v-if="page.status == 2"><a :href="base_url('admin/paginas/preview?page_id=' + page.page_id)" target="_blank">Preview</a></li>
 								<li><a :href="base_url(page.path)" target="_blank">Archivar</a></li>
 							</ul>
 						</div>
@@ -128,10 +128,10 @@
 								<div class="card-info">
 									<span class="activator right"><i class="material-icons">more_vert</i></span>
 									<ul>
-										<li>
+										<li class="truncate">
 											Path: <a :href="base_url(page.path)" target="_blank">@{{page.path}}</a>
 										</li>
-										<li>
+										<li class="truncate">
 											Author: <a :href="base_url('admin/usuarios/ver/' + page.author)">@{{page.username}}</a>
 										</li>
 									</ul>

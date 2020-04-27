@@ -21,6 +21,7 @@ var PagesLists = new Vue({
           self.pages = response.data;
           setTimeout(() => {
             self.loader = false;
+            self.initPlugins();
           }, 1000);
         },
         error: function (error) {
@@ -43,7 +44,10 @@ var PagesLists = new Vue({
           if (response.code == 200) {
             self.pages.splice(index, 1);
           }
-          self.loader = false;
+          setTimeout(() => {
+            self.loader = false;
+            self.initPlugins();
+          }, 1000);
         },
         error: function (error) {
           M.toast({ html: response.responseJSON.error_message });

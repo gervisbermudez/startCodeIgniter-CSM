@@ -61,13 +61,34 @@ class MY_model extends CI_Model
         return false;
     }
 
+    /**
+     * Search the primary key value specify into the table and map / fill the object with the properties founds
+     * @param string $primaryKey
+     * @return array or false on fail
+     */
+    public function find_with($where)
+    {
+        $this->db->where($where);
+        $query = $this->db->get($this->table);
+        if ($query->num_rows() > 0) {
+            $result = new Collection($query->result());
+            $result = $result->first();
+            $this->mapfields($result);
+            $this->retrieved();
+            return $result;
+        }
+        return false;
+    }
+
     public function mapfields($fields)
     {
+        $this->before_map();
         $this->map = true;
         foreach ($fields as $key => $value) {
             $this->fields[] = $key;
             $this->{$key} = $value;
         }
+        $this->after_map();
     }
 
     public function where($where)
@@ -114,17 +135,23 @@ class MY_model extends CI_Model
         if ($this->map) {
             $this->updating();
             $result = $this->update_data(array($this->primaryKey => $this->{$this->primaryKey}), $data);
-            $this->updated();
+            if($result){
+                $this->updated();
+            }
 
         } else {
             $this->creating();
             $result = $this->set_data($data);
-            $this->created();
+            if($result){
+                $this->{$this->primaryKey} = $this->db->insert_id();
+                $this->created();
+            }
         }
 
         if ($result) {
             $this->saved();
         }
+        
         return $result;
     }
 
@@ -281,6 +308,17 @@ class MY_model extends CI_Model
     /**
      * Events hook model's lifecycle
      */
+
+    public function before_map()
+    {
+        
+    }
+
+    public function after_map()
+    {
+        
+    }
+
     public function retrieved()
     {
 

@@ -53,6 +53,10 @@ $route['default_controller'] = 'SiteController';
 $route['404_override'] = 'PageController';
 $route['translate_uri_dashes'] = false;
 $route['admin'] = 'admin/admin';
+//Pages system
+$route['admin/paginas/preview'] = 'PageController/preview';
+
+//Blog pages
 $route['blog/(:any)'] = 'BlogController/get_blog/$1';
 $route['blog/(:any)/(:any)'] = 'BlogController/get_blog_categorie/$1/$2';
 $route['blog/(:any)/(:any)/(:any)'] = 'BlogController/get_blog_subcategorie/$1/$2/$3';

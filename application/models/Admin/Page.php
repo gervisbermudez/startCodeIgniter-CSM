@@ -8,6 +8,14 @@ class Page extends MY_model
 {
     public $primaryKey = 'page_id';
 
+    /**
+     * Page status:
+     * 0 => deleted 
+     * 1 => published
+     * 2 => draft
+     * 3 => archived
+     */
+
     public function __construct()
     {
         parent::__construct();

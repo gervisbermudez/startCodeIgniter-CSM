@@ -1,15 +1,11 @@
 
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<?php $meta = array(
-    array('name' => 'Content-type', 'content' => 'text/html; charset=utf-8', 'type' => 'equiv'),
-    array('name' => 'viewport', 'content' => 'width=device-width, initial-scale=1'),
-    array('name' => 'robots', 'content' => 'no-cache'),
-    array('name' => 'description', 'content' => 'My Great Site'),
-    array('name' => 'keywords', 'content' => 'love, passion, intrigue, deception'),
-);
-echo meta($meta);
-?>
-<title><?php echo $title; ?></title>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+@isset($meta)
+<?php echo meta($meta); ?>
+@endisset
+<title>{{$title}}</title>
 <!-- Bootstrap Core CSS -->
 <?php echo link_tag('public/bootstrap/css/bootstrap.min.css'); ?>
 <!-- Custom CSS -->

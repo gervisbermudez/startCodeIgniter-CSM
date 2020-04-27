@@ -45,8 +45,8 @@ class Paginas extends MY_Controller
     {
         $page = new Page();
         if ($page->find($page_id)) {
-            $data['title'] = "Admin | Nueva Paginas";
-            $data['h1'] = "Nueva Pagina";
+            $data['title'] = "Admin | Editar";
+            $data['h1'] = "Editar Pagina";
             $data['page_id'] = $page_id;
             $data['editMode'] = 'edit';
 
@@ -74,15 +74,21 @@ class Paginas extends MY_Controller
         $page->type = $this->input->post('type');
         $page->status = $this->input->post('status');
         $page->template = $this->input->post('template');
-        $page->date_publish = !$this->input->post('publishondate') ? $this->input->post('date_publish') : null;
+        $page->layout = $this->input->post('layout');
+
+        $page->date_publish = $this->input->post('publishondate') == 'true' ? date("Y-m-d H:i:s") : $this->input->post('date_publish');
+        $page->date_create = date("Y-m-d H:i:s");
+
         $page->visibility = $this->input->post('visibility');
         $page->categorie = $this->input->post('categorie');
-        $page->subcategories = $this->input->post('subcategories');
+        $page->subcategories = $this->input->post('subcategorie');
 
         if ($page->save()) {
+
             $response = array(
                 'code' => 200,
                 'data' => $page,
+                'request_data' => $_POST,
             );
 
             $this->output
@@ -125,10 +131,15 @@ class Paginas extends MY_Controller
     {
         $this->output->enable_profiler(false);
         $this->load->helper('directory');
-        $map = directory_map('./application/views/site/layouts', 1);
+        $layouts = directory_map('./application/views/site/layouts', 1);
+        $templates = directory_map('./application/views/site/templates', 1);
+
         $response = array(
             'code' => 200,
-            'data' => $map ? $map : [],
+            'data' => [
+                'layouts' => $layouts ? $layouts : [],
+                'templates' => $templates ? $templates : [],
+            ]
         );
         $this->output
             ->set_content_type('application/json')

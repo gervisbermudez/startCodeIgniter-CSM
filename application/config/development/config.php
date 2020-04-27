@@ -18,6 +18,7 @@
  */
 $config['base_url'] = 'http://localhost:8000/';
 $config['enable_profiler'] = false;
+$config['debug_mode'] = $config['enable_profiler'];
 
 /*
 |--------------------------------------------------------------------------
@@ -180,7 +181,7 @@ $config['directory_trigger'] = 'd'; // experimental not currently in use
 | your log files will fill up very fast.
 |
  */
-$config['log_threshold'] = 0;
+$config['log_threshold'] = 1;
 
 /*
 |--------------------------------------------------------------------------
