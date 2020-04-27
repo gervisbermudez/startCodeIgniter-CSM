@@ -29,22 +29,17 @@ class Files_model extends MY_Model
 
     public function map_files()
     {
-        echo '<pre>';
         $directorio = directory_map($this->current_dir . $this->current_folder);
         unset($directorio['node_modules\\']);
-        print_r($directorio);
-        echo '<br>';
-        echo '=====================================================';
-        echo '<br>';
         $this->delete_data(array('status' => 1), $this->table);
         $curdir = $this->current_dir . $this->current_folder;
         $this->save_dir($directorio, $curdir);
         $this->load->model('Admin/Site_config');
         
         if (!$this->Site_config->get_data(array('config_name' => 'map_dir', 'config_value' => $this->current_dir), 'site_config')) {
-            $this->Site_config->update_data(array('config_name' => 'map_dir'), array('config_value' => $this->current_dir), 'site_config');
+            return $this->Site_config->update_data(array('config_name' => 'map_dir'), array('config_value' => $this->current_dir), 'site_config');
         } else {
-            $this->Site_config->set_data(array('config_name' => 'map_dir', 'config_value' => $this->current_dir, 'user_id' => userdata('id')), 'site_config');
+            return $this->Site_config->set_data(array('config_name' => 'map_dir', 'config_value' => $this->current_dir, 'user_id' => userdata('user_id')), 'site_config');
         }
     }
 
@@ -54,8 +49,6 @@ class Files_model extends MY_Model
     private function save_dir($dir_maped, $curdir)
     {
         foreach ($dir_maped as $key => $value) {
-            print_r($value);
-            echo '<br />';
             $this->save_file($value, $key, $curdir);
             if (is_array($value)) {
                 $this->save_dir($value, $curdir . $key);
@@ -68,23 +61,15 @@ class Files_model extends MY_Model
     {
         $insert_array = array();
         if ($this->is_folder($value)) {
-            echo 'is folder: ';
-            echo '<br />';
             if (is_array($value)) {
                 $insert_array = $this->get_array_save_folder($key, $dir);
             } else {
                 $insert_array = $this->get_array_save_folder($value, $dir);
             }
         } else {
-            echo 'is file: ';
-            echo '<br />';
             $insert_array = $this->get_array_save_file($value, $dir);
 
         }
-        echo 'insert_array: ';
-        print_r($insert_array);
-        echo '<br />';
-
         if (!$this->get_data(array('file_name' => $insert_array['file_name'], 'file_path' => $insert_array['file_path']), $this->table, '', '')) {
             $this->set_data($insert_array, $this->table);
         }
@@ -135,8 +120,6 @@ class Files_model extends MY_Model
 
     public function get_array_save_folder($folder, $dir_name)
     {
-        echo $folder;
-        echo '<br />';
         $file_key = random_string('alnum', 16);
         $insert_array = array(
             'rand_key' => $file_key,
@@ -144,8 +127,8 @@ class Files_model extends MY_Model
             'file_path' => $this->get_file_path($dir_name),
             'file_type' => $this->get_substr_file_ext($folder),
             'parent_name' => $this->get_substr_file_parent_name($dir_name),
-            'user_id' => userdata('id'),
-            'shared_user_group_id' => userdata('usergroup'),
+            'user_id' => userdata('user_id'),
+            'shared_user_group_id' => userdata('usergroup_id'),
             'share_link' => "admin/archivos/shared_file/" . $file_key,
         );
 

@@ -5,6 +5,8 @@
 class Site_config extends MY_model
 {
 
+    public $primaryKey = 'site_config_id';
+
     public function __construct()
     {
         parent::__construct();

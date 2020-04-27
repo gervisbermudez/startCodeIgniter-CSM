@@ -1117,3 +1117,15 @@ div#dropnotify {
     width: 80%;
   }
 }
+
+#uploaderModal {
+  height: 80%;
+
+  .file-drop-zone {
+    overflow: hidden;
+  }
+
+  button.kv-file-zoom.btn.btn-sm.btn-kv.btn-default.btn-outline-secondary {
+    display: none;
+  }
+}
