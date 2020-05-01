@@ -14,11 +14,11 @@ class User extends MY_model
         parent::__construct();
     }
 
-    public function get_full_info($user_id = "")
+    public function get_full_info($user_id = null)
     {
         $where = "";
 
-        if ($user_id != '') {
+        if ($user_id) {
             $where = "WHERE u.user_id = $user_id";
         }
 
@@ -125,5 +125,10 @@ class User extends MY_model
         }
         $this->db->where($data);
         return $this->db->delete('user_data');
+    }
+
+    public function deleted()
+    {
+        $this->delete_user_data(array('user_id' => $this->user_id));
     }
 }

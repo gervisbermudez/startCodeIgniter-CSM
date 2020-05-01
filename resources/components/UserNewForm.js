@@ -47,7 +47,7 @@ var UserNewForm = new Vue({
         this.loader = true;
         $.ajax({
           type: "POST",
-          url: BASEURL + "admin/usuarios/ajax_save_user",
+          url: BASEURL + "api/v1/users/",
           data: self.getUserData(),
           dataType: "json",
           success: function (response) {
@@ -110,8 +110,8 @@ var UserNewForm = new Vue({
     getUsergroups() {
       var self = this;
       $.ajax({
-        type: "POST",
-        url: BASEURL + "admin/usuarios/ajax_get_usergroups",
+        type: "GET",
+        url: BASEURL + "api/v1/users/usergroups",
         data: {},
         dataType: "json",
         success: function (response) {
@@ -135,11 +135,9 @@ var UserNewForm = new Vue({
         var self = this;
         self.editMode = true;
         $.ajax({
-          type: "POST",
-          url: BASEURL + "admin/usuarios/ajax_get_users",
-          data: {
-            user_id: user_id
-          },
+          type: "GET",
+          url: BASEURL + "api/v1/users/" + user_id,
+          data: {},
           dataType: "json",
           success: function (response) {
             if (response.code == 200) {
@@ -172,8 +170,6 @@ var UserNewForm = new Vue({
       console.log("mounted UserNewForm");
       this.getUsergroups();
       this.checkEditMode();
-      /* this.form.fields.username.validateWith = this.validateField;
-      this.form.fields.email.validateWith = this.validateField; */
     });
   }
 });

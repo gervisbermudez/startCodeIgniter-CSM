@@ -26,7 +26,7 @@ Vue.component('usersCollection', {
             var self = this;
             $.ajax({
                 type: "GET",
-                url: BASEURL + 'admin/usuarios/ajax_get_users',
+                url: BASEURL + 'api/v1/users/',
                 data: {},
                 dataType: "json",
                 success: function (response) {

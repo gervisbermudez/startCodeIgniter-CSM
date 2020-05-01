@@ -1,0 +1,238 @@
+{
+	"info": {
+		"_postman_id": "5e9e723f-f59e-4a25-867d-3c872b26450a",
+		"name": "Start CMS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Usuarios",
+			"item": [
+				{
+					"name": "Usergroups",
+					"item": [
+						{
+							"name": "[GET] Usergroups",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASEURL}}/api/v1/users/usergroups",
+									"host": [
+										"{{BASEURL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"usergroups"
+									]
+								},
+								"description": "Obetner un listado de grupos de usuarios"
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "[GET] Obtener Usuarios",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/users/",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								""
+							]
+						},
+						"description": "ajax_save_user"
+					},
+					"response": []
+				},
+				{
+					"name": "[POST] Crear Usuario",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "gerber@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "ger77",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "HolaMundo123_",
+									"type": "text"
+								},
+								{
+									"key": "usergroup_id",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/users/",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								""
+							]
+						},
+						"description": "ajax_save_user"
+					},
+					"response": []
+				},
+				{
+					"name": "[GET] Obtener Usuario por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/users/{id}",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[DELETE] Eliminar Usuario",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/users/",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "[POST] Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "gerber",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "1245",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURL}}/admin/login/ajax_verify_auth",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"admin",
+								"login",
+								"ajax_verify_auth"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "c4edba8f-5fd3-4b9b-881b-35d5c7b02dab",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "18a8a892-ae5d-4ff9-a294-cb62ba4ddd7e",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "9817c2cf-a1cd-481f-b926-eaf33b5b02ba",
+			"key": "BASEURL",
+			"value": "http://localhost:8000/",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
