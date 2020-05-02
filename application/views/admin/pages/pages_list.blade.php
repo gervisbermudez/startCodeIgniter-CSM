@@ -23,13 +23,13 @@
 			</div>
 		</div>
 	</div>
-	<nav class="page-navbar" v-cloak v-if="!loader && pages.length > 0">
+	<nav class="page-navbar" v-cloak v-show="!loader && pages.length > 0">
 		<div class="nav-wrapper">
 			<form>
 				<div class="input-field">
-					<input id="search" type="search" required>
+					<input id="search" type="search" v-model="filter">
 					<label class="label-icon" for="search"><i class="material-icons">search</i></label>
-					<i class="material-icons">close</i>
+					<i class="material-icons" v-on:click="resetFilter();">close</i>
 				</div>
 			</form>
 			<ul class="right hide-on-med-and-down">
@@ -67,7 +67,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr v-for="(page, index) in pages" :key="index">
+						<tr v-for="(page, index) in filterPages" :key="index">
 							<td>@{{page.title}}</td>
 							<td><a :href="base_url(page.path)" target="_blank">@{{page.path}}</a></td>
 							<td><a :href="base_url('admin/usuarios/ver/' + page.author)">@{{page.username}}</a></td>
@@ -102,7 +102,7 @@
 			</div>
 		</div>
 		<div class="row" v-else>
-			<div class="col s12 m4" v-for="(page, index) in pages" :key="index">
+			<div class="col s12 m4" v-for="(page, index) in filterPages" :key="index">
 					<div class="card page-card">
 						<div class="card-image">
 							<div class="card-image-container">

@@ -4,11 +4,34 @@ var PagesLists = new Vue({
     pages: [],
     tableView: true,
     loader: true,
+    filter: "",
+  },
+  computed: {
+    filterPages: function () {
+      if (!!this.filter) {
+        let filterTerm = this.filter.toLowerCase();
+        return this.pages.filter((value, index) => {
+          let result =
+            value.subtitle.toLowerCase().indexOf(filterTerm) != -1 ||
+            value.title.toLowerCase().indexOf(filterTerm) != -1 ||
+            value.template.toLowerCase().indexOf(filterTerm) != -1 ||
+            value.username.toLowerCase().indexOf(filterTerm) != -1 ||
+            value.layout.toLowerCase().indexOf(filterTerm) != -1 ||
+            value.path.toLowerCase().indexOf(filterTerm) != -1;
+          return result;
+        });
+      } else {
+        return this.pages;
+      }
+    },
   },
   methods: {
     toggleView: function () {
       this.tableView = !this.tableView;
       this.initPlugins();
+    },
+    resetFilter: function () {
+      this.filter = "";
     },
     getPages: function () {
       var self = this;

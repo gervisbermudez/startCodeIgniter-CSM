@@ -160,7 +160,7 @@
                     <span v-if="status && btnEnable"><i class="material-icons right">publish</i> Publicar</span>
                     <span v-if="status && !btnEnable"><i class="material-icons right">publish</i> Publicar</span>
                 </button>
-                <a  class="btn bg-color3" :href="preview_link" v-if="!status && editMode" :class="{disabled: !btnEnable}">
+                <a  class="btn bg-color3" target="_blank" :href="preview_link" v-if="!status && editMode" :class="{disabled: !btnEnable}">
                     <span><i class="material-icons right">launch</i> Preview</span>
                 </a>
             </div>

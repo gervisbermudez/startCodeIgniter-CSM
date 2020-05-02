@@ -10,8 +10,6 @@
   <!-- Page Content -->
   <div class="container">
 
-    {{$page}}
-
     <!-- Page Heading/Breadcrumbs -->
     <h1 class="mt-4 mb-3">{{$page->title}}
       <small>by
