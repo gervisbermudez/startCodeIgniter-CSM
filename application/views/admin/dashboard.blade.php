@@ -6,12 +6,15 @@
 <link rel="stylesheet" href="<?= base_url('public/css/admin/dashboard.min.css') ?>">
 @endsection
 
-
 @section('content')
 <div class="container large dashboard" id="root" v-cloak>
-	<div class="row">
+	<div class="row" v-show="loader">
+		<div class="progress">
+		<div class="indeterminate"></div>
+	</div>
+	</div>
+	<div class="row" v-show="!loader">
 		<div class="col s8">
-			<h3>Bienvenido {{$ci->session->userdata('username')}}</h3>
 			<div class="row">
 				<div class="col s12">
 					<create-contents></create-contents>
@@ -19,7 +22,12 @@
 			</div>
 		</div>
 		<div class="col s4">
-			<users-collection></users-collection>	
+			<users-collection :users="users"></users-collection>
+		</div>
+	</div>
+	<div class="row" v-show="!loader">
+		<div class="col s4" v-for="(page, index) in filterPages" :key="index">
+		<page-card :page="page"></page-card>
 		</div>
 	</div>
 </div>
@@ -40,8 +48,10 @@
 				href="{{ base_url('admin/eventos/agregar/') }}"><i class="material-icons">assistant</i></a></li>
 	</ul>
 </div>
+@include('admin.components.pageCardComponent')
+@include('admin.components.userCollectionComponent')
 @endsection
 
 @section('footer_includes')
-<script src="<?= base_url('public/js/components/dashboardModule.min.js') ?>"></script>
+<script src="<?= base_url('public/js/components/dashboardBundle.min.js') ?>"></script>
 @endsection

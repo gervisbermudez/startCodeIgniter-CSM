@@ -23,7 +23,7 @@ Vue.component("userCard", {
   },
   mounted: function () {
     this.$nextTick(function () {});
-  },
+  }, 
 });
 
 var usersModule = new Vue({
@@ -31,26 +31,31 @@ var usersModule = new Vue({
   data: {
     users: [],
     loader: true,
-    tableView : false,
-    filter : "",
+    tableView: false,
+    filter: "",
   },
   computed: {
     filterUsers: function () {
       if (!!this.filter) {
         let filterTerm = this.filter.toLowerCase();
         return this.users.filter((value, index) => {
-          let result = value.username.toLowerCase().indexOf(filterTerm) != -1 || value.email.toLowerCase().indexOf(filterTerm) != -1 || value.role.toLowerCase().indexOf(filterTerm) != -1 || value.user_data.nombre.toLowerCase().indexOf(filterTerm) != -1 || value.user_data.apellido.toLowerCase().indexOf(filterTerm) != -1;
+          let result =
+            value.username.toLowerCase().indexOf(filterTerm) != -1 ||
+            value.email.toLowerCase().indexOf(filterTerm) != -1 ||
+            value.role.toLowerCase().indexOf(filterTerm) != -1 ||
+            value.user_data.nombre.toLowerCase().indexOf(filterTerm) != -1 ||
+            value.user_data.apellido.toLowerCase().indexOf(filterTerm) != -1;
           return result;
         });
       } else {
         return this.users;
       }
-    }
+    },
   },
   watch: {
     filter: function (value) {
       this.initPlugins();
-    }
+    },
   },
   methods: {
     toggleView: function () {
