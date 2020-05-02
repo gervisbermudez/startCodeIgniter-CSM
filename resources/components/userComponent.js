@@ -32,14 +32,16 @@ var usersModule = new Vue({
   methods: {
     getUsers() {
       var self = this;
+      self.loader = true;
+      self.users = [];
       $.ajax({
         type: "GET",
         url: BASEURL + "api/v1/users/",
         data: {},
         dataType: "json",
         success: function (response) {
-          self.users = response.data;
           self.loader = false;
+          self.users = response.data;
         },
         error: function (error) {
           M.toast({ html: response.responseJSON.error_message });

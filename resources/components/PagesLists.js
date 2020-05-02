@@ -14,7 +14,7 @@ var PagesLists = new Vue({
       var self = this;
       $.ajax({
         type: "GET",
-        url: BASEURL + "admin/paginas/ajax_get_pages",
+        url: BASEURL + "api/v1/pages/",
         data: {},
         dataType: "json",
         success: function (response) {
@@ -34,11 +34,9 @@ var PagesLists = new Vue({
       var self = this;
       self.loader = true;
       $.ajax({
-        type: "POST",
-        url: BASEURL + "admin/paginas/ajax_delete_page",
-        data: {
-          page_id: page.page_id,
-        },
+        type: "DELETE",
+        url: BASEURL + "api/v1/pages/" + page.page_id,
+        data: {},
         dataType: "json",
         success: function (response) {
           if (response.code == 200) {

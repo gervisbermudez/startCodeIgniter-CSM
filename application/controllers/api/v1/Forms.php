@@ -13,9 +13,20 @@ class Forms extends REST_Controller
     public function __construct()
     {
         parent::__construct();
+        $this->output->enable_profiler(false);
+        $this->lang->load('rest_lang', 'english');
+
+        if (!$this->session->userdata('logged_in')) {
+            $this->lang->load('login_lang', 'english');
+            $this->response([
+                'code' => REST_Controller::HTTP_UNAUTHORIZED,
+                'error_message' => lang('user_not_authenticated'),
+            ], REST_Controller::HTTP_UNAUTHORIZED);
+            exit();
+        }
+
         $this->load->database();
-        $this->check_token();
-        $this->load->model('Forms_model');
+        $this->load->model('Admin/Page');
     }
 
     /**

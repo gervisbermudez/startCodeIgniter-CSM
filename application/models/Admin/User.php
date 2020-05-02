@@ -29,7 +29,9 @@ class User extends MY_model
 		u.`usergroup_id`,
 		u.`status`, CONCAT('{', GROUP_CONCAT(s.data), '}') AS `user_data`,
 		g.name AS `role`,
-		g.`level`
+		g.`level`,
+		u.`date_create`,
+		u.`date_update`
 		FROM (
 		SELECT d.user_id, GROUP_CONCAT('\"', d._key, '\"', ':', '\"', d._value, '\"') AS `data`
 		FROM user_data d

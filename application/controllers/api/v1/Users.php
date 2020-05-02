@@ -61,7 +61,6 @@ class Users extends REST_Controller
      */
     public function index_post()
     {
-        $this->load->helper('language');
         $this->load->library('FormValidator');
 
         $form = new FormValidator();

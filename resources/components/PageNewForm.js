@@ -184,7 +184,7 @@ var PageNewForm = new Vue({
       var self = this;
       $.ajax({
         type: "POST",
-        url: BASEURL + "admin/paginas/ajax_save_page",
+        url: BASEURL + "api/v1/pages",
         data: self.getData(),
         dataType: "json",
         success: function (response) {
@@ -229,8 +229,8 @@ var PageNewForm = new Vue({
     getTemplates() {
       var self = this;
       $.ajax({
-        type: "POST",
-        url: BASEURL + "admin/paginas/ajax_get_templates",
+        type: "GET",
+        url: BASEURL + "api/v1/pages/templates",
         data: {},
         dataType: "json",
         success: function (response) {
@@ -279,8 +279,8 @@ var PageNewForm = new Vue({
     getPageTypes() {
       var self = this;
       $.ajax({
-        type: "POST",
-        url: BASEURL + "admin/paginas/ajax_get_page_types",
+        type: "GET",
+        url: BASEURL + "api/v1/pages/types",
         data: {},
         dataType: "json",
         success: function (response) {
@@ -348,11 +348,9 @@ var PageNewForm = new Vue({
         var self = this;
         self.editMode = true;
         $.ajax({
-          type: "POST",
-          url: BASEURL + "admin/paginas/ajax_get_page",
-          data: {
-            page_id: page_id,
-          },
+          type: "GET",
+          url: BASEURL + "api/v1/pages/" + page_id,
+          data: {},
           dataType: "json",
           success: function (response) {
             self.loader = false;
