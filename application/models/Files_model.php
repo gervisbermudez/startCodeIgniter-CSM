@@ -68,7 +68,6 @@ class Files_model extends MY_Model
             }
         } else {
             $insert_array = $this->get_array_save_file($value, $dir);
-
         }
         if (!$this->get_data(array('file_name' => $insert_array['file_name'], 'file_path' => $insert_array['file_path']), $this->table, '', '')) {
             $this->set_data($insert_array, $this->table);
@@ -209,11 +208,6 @@ class Files_model extends MY_Model
             return strpos($file, '.');
         }
         return false;
-    }
-
-    public function get_all()
-    {
-
     }
 
 }

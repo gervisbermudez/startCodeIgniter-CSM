@@ -9,7 +9,7 @@ class Archivos extends MY_Controller
     {
         parent::__construct();
         $this->load->model('Files_model');
-        
+
     }
 
     public function index()
@@ -24,7 +24,7 @@ class Archivos extends MY_Controller
     public function ajax_get_files()
     {
         $this->output->enable_profiler(false);
-        
+
         $file_path = $this->input->post('path');
 
         $where = array('file_path' => $file_path, 'status' => 1);
@@ -32,7 +32,7 @@ class Archivos extends MY_Controller
 
         $response = array(
             'code' => 200,
-            'data' => $result
+            'data' => $result,
         );
 
         $this->output
@@ -131,8 +131,8 @@ class Archivos extends MY_Controller
 
         $file = $this->input->post('file');
         $result = $this->Files_model->update_data(
-            array('rand_key' => $file['rand_key']), 
-            array('featured' => $file['featured']), 
+            array('rand_key' => $file['rand_key']),
+            array('featured' => $file['featured']),
             'files'
         );
 
@@ -155,14 +155,39 @@ class Archivos extends MY_Controller
         $newPath = $this->input->post('newPath');
 
         $result = $this->Files_model->update_data(
-            array('rand_key' => $file['rand_key']), 
-            array('file_path' => $newPath), 
+            array('rand_key' => $file['rand_key']),
+            array('file_path' => $newPath),
             'files'
         );
 
         $file_name = $file['file_name'] . '.' . $file['file_type'];
 
-        $rename = rename($file['file_path'] . $file_name , $newPath . $file_name);
+        $rename = rename($file['file_path'] . $file_name, $newPath . $file_name);
+
+        $response = array(
+            'code' => 200,
+            'data' => $result,
+        );
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+
+    }
+
+    public function ajax_copy_file()
+    {
+        $this->output->enable_profiler(false);
+
+        $file = $this->input->post('file');
+        $newPath = $this->input->post('newPath');
+        $file_name = $file['file_name'] . '.' . $file['file_type'];
+        $rename = copy($file['file_path'] . $file_name, $newPath . $file_name);
+        $result = $rename;
+        if ($rename) {
+            $insert_array = $this->Files_model->get_array_save_file($file_name, $newPath);
+            $result = $this->Files_model->set_data($insert_array, $this->Files_model->table);
+        }
 
         $response = array(
             'code' => 200,
@@ -181,9 +206,16 @@ class Archivos extends MY_Controller
 
         $this->load->library('FileUploader');
         $loaderClient = new FileUploader;
+        $result = $loaderClient->upload();
+        //persit on database
+        if (!isset($result['error'])) {
+            $insert_array = $this->Files_model->get_array_save_file($_POST['fileName'], $_POST['curDir']);
+            $this->Files_model->set_data($insert_array, $this->Files_model->table);
+        }
+
         $this->output
             ->set_content_type('application/json')
-            ->set_output(json_encode($loaderClient->upload()));
+            ->set_output(json_encode($result));
 
     }
 
@@ -193,11 +225,11 @@ class Archivos extends MY_Controller
         if ($folder != null) {
             $this->Files_model->current_folder = $folder . '/';
         }
-        
+
         $response = array(
             'code' => 200,
             'data' => [
-                'result' => $this->Files_model->map_files()
+                'result' => $this->Files_model->map_files(),
             ],
         );
 

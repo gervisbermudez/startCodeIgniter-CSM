@@ -77,6 +77,7 @@ var usersModule = new Vue({
         success: function (response) {
           self.loader = false;
           self.users = response.data;
+          self.initPlugins();
         },
         error: function (error) {
           M.toast({ html: response.responseJSON.error_message });

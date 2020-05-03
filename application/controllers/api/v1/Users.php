@@ -182,4 +182,44 @@ class Users extends REST_Controller
         $this->response([], REST_Controller::HTTP_OK);
     }
 
+    public function avatar_post()
+    {
+        $user_id = $this->input->post('user_id');
+        $avatar = $this->input->post('avatar');
+
+        $usuario = new User();
+        $result = false;
+
+        if ($usuario->find($user_id)) {
+
+            if(isset($usuario->user_data->avatar)){
+                $usuario->user_data->avatar = $avatar;
+                $result = $usuario->save();
+            }else{
+                $insert = array(
+                    'user_id' => $user_id,
+                    '_key' => 'avatar',
+                    '_value' => $avatar,
+                    'status' => 1,
+                );
+                $result = $usuario->set_user_data($insert);
+            }
+
+            if($result){
+                $response = array(
+                    'code' => REST_Controller::HTTP_OK,
+                    'data' => $result,
+                );
+                $this->response($response, REST_Controller::HTTP_OK);
+                return;
+            }
+        }
+
+        $response = array(
+            'code' => REST_Controller::HTTP_BAD_REQUEST,
+            'data' => $result,
+            'user' => $usuario
+        );
+        $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
+    }
 }

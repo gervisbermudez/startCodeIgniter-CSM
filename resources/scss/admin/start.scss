@@ -1129,3 +1129,61 @@ div#dropnotify {
     display: none;
   }
 }
+
+.fileSelector {
+  width: 80% !important;
+  height: 80% !important;
+  max-height: none;
+
+  .file-drop-zone {
+    overflow: hidden;
+  }
+
+  button.kv-file-zoom.btn.btn-sm.btn-kv.btn-default.btn-outline-secondary {
+    display: none;
+  }
+}
+
+#fileUploader {
+  .row.search {
+    height: 70px;
+    margin-bottom: 0px;
+  }
+
+  .search-nav {
+    background-color: $color4;
+  }
+
+  .breadcrumb-nav {
+    margin-left: 20px;
+  }
+
+  .file {
+    cursor: pointer;
+
+    label {
+      position: absolute;
+      right: 0px;
+      top: 5px;
+      z-index: 9;
+    }
+  }
+
+  .card-image.waves-effect.waves-block.waves-light {
+    height: 60px;
+  }
+
+  .file.icon.text-center {
+    text-align: center;
+    font-size: 30px;
+  }
+
+  .card .card-content {
+    padding: 10px;
+  }
+
+  .card-image {
+    height: 130px;
+    background-size: cover !important;
+  }
+}

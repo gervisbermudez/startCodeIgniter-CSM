@@ -27,7 +27,7 @@ class Usuarios extends MY_Controller
     {
         //get_user
         $user = $this->User->get_full_info($user_id);
-        if ($user) {
+        if ($user && $user_id) {
             $user = (object) $user->first();
             $data['title'] = "Admin | Usuario";
             $data['user'] = $user;

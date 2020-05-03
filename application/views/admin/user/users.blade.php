@@ -116,7 +116,7 @@
 					:src="getAvatarUrl()">
 				<img v-else src="https://materializecss.com/images/sample-1.jpg" />
 			</div>
-			<span class="card-title">@{{user.user_data.nombre + ' ' + user.user_data.apellido}}</span>
+			<span class="card-title"><a :href="base_url('admin/usuarios/ver/' + user.user_id)" class="white-text">@{{user.user_data.nombre + ' ' + user.user_data.apellido}}</a></span>
 				<a class='btn-floating halfway-fab waves-effect waves-light dropdown-trigger' href='#!' :data-target='"dropdown" + user.user_id'>
 					<i class="material-icons">more_vert</i></a>
 				<ul :id='"dropdown" + user.user_id' class='dropdown-content'>
