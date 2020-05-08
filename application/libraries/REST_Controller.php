@@ -401,6 +401,8 @@ abstract class REST_Controller extends \CI_Controller
         // At present the library is bundled with REST_Controller 2.5+, but will eventually be part of CodeIgniter (no citation)
         $this->load->library('format');
 
+        $this->load->helper(['jwt', 'authorization']);
+
         // Determine supported output formats from configuration
         $supported_formats = $this->config->item('rest_supported_formats');
 
@@ -575,6 +577,35 @@ abstract class REST_Controller extends \CI_Controller
         if ($this->config->item('rest_enable_logging') === true) {
             $this->_log_access_time();
         }
+    }
+
+    public function verify_request()
+    {
+        // Get all the headers
+        $headers = $this->input->request_headers();
+        // Extract the token
+        $token = isset($headers['Authorization']) ? $headers['Authorization'] : '';
+        if(!$token && userdata('logged_in')){
+            $token = userdata('token');
+        }
+        // Use try-catch
+        // JWT library throws exception if the token is not valid
+        try {
+            // Validate the token
+            // Successfull validation will return the decoded user data else returns false
+            return AUTHORIZATION::validateToken($token);
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public function failed_auth()
+    {
+            $this->lang->load('login_lang', 'english');
+            $this->response([
+                'code' => REST_Controller::HTTP_UNAUTHORIZED,
+                'error_message' => lang('user_not_authenticated'),
+            ], REST_Controller::HTTP_UNAUTHORIZED);
     }
 
     /**

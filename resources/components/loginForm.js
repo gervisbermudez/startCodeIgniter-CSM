@@ -5,6 +5,8 @@ var loginForm = new Vue({
     username: "",
     password: "",
     redirect: "",
+    remember_user: false,
+    userdata: null,
   },
   computed: {
     btnEnable: function () {
@@ -17,13 +19,17 @@ var loginForm = new Vue({
       this.loader = true;
       $.ajax({
         type: "POST",
-        url: BASEURL + "admin/login/ajax_verify_auth",
+        url: BASEURL + "/api/v1/login/",
         data: {
           username: this.username,
           password: this.password,
         },
         dataType: "json",
         success: function (response) {
+          if (self.remember_user) {
+            localStorage.removeItem('userdata');
+            localStorage.setItem('userdata', JSON.stringify(response.userdata[0]));
+          }
           window.location = self.redirect
             ? BASEURL + self.redirect
             : BASEURL + response.redirect;
@@ -33,6 +39,12 @@ var loginForm = new Vue({
           self.loader = false;
         },
       });
+    },
+    resetUserdata() {
+      this.userdata = null;
+      this.username = "";
+      this.password = "";
+      localStorage.removeItem('userdata');
     },
     getUrlParameter(sParam) {
       var sPageURL = window.location.search.substring(1),
@@ -48,11 +60,20 @@ var loginForm = new Vue({
         }
       }
     },
+    getRememberUserdata() {
+      let userdata = JSON.parse(localStorage.getItem('userdata'));
+      if (userdata) {
+        console.log(userdata);
+        this.userdata = userdata;
+        this.remember_user = !!userdata;
+      }   
+    }
   },
   mounted: function () {
     this.$nextTick(function () {
       console.log("mounted loginForm");
       this.loader = false;
+      this.getRememberUserdata();
       let redirectpath = this.getUrlParameter("redirect");
       this.redirect = redirectpath == "admin" ? "" : redirectpath;
     });

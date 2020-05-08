@@ -80,7 +80,7 @@ $autoload['helper'] = array('html', 'url', 'string', 'text', 'array', 'general',
 |
  */
 
-$autoload['config'] = array();
+$autoload['config'] = array('jwt');
 
 /*
 | -------------------------------------------------------------------

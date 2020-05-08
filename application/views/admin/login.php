@@ -9,10 +9,9 @@
     <div class="container ">
     <div class="row ">
         <div class="col s12 m3 l4 login">
-            
             <form class="card hoverable" role="form" action="<?php echo $base_url ?>index.php/Login/validar/" method="post">
-                <div class="card-panel light-blue center-align">
-                    <span class="card-title white-text ">Iniciar sesion</span>
+                <div class="card-panel center-align">
+                    <span class="card-title">Iniciar sesion</span>
                 </div>
                 <div class="card-content">
                     <p>
@@ -30,9 +29,6 @@
                         <input type="checkbox" id="test5" />
                         <label for="test5">Recordarme</label>
                         <br>
-                       
-                       
-                        
                     </p>
                     <?php if (isset($error)): ?>
                              <p class="red-text"><?php echo $error; ?></p>
