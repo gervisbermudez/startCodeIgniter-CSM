@@ -9,6 +9,7 @@
     </head>
     <body>
         @include('admin.shared.navbar')
+        @include('admin.shared.sidenav')
         <div class="main">
         @yield('header')
         @yield('content')
