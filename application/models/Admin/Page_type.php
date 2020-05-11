@@ -4,7 +4,7 @@
 
 use Tightenco\Collect\Support\Collection;
 
-class Page_types extends MY_model
+class Page_type extends MY_model
 {
     public $primaryKey = 'page_type_id';
 

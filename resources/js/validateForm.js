@@ -13,8 +13,11 @@ class VueForm {
         username: /^[A-Za-z]*[A-Za-z][A-Za-z0-9-_]{5,}$/,
         //Can contain numbers and letters 
         alphanumeric: /^[a-z0-9]+$/i,
+        phone: /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/,
+        //Adress
+        address: /^[#.0-9a-zA-ZáÁéÉíÍóÓúÚñÑ\s,-]+$/,
         // Password need to be a minimum of 8 characters include a special character and at least one capital letter
-        password: /^(?=.*?[0-9])(?=.*?[A-Z])(?=.*?[#?!@$%^&*\-_]).{8,}$/
+        password: /^(?=.*?[0-9])(?=.*?[A-Z])(?=.*?[.#?!@$%^&*\-_]).{8,}$/
     }
     constructor(fields) {
         this.generateForm(fields);

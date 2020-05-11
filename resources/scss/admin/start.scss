@@ -33,7 +33,14 @@ span.current-folder {
   font-size: 20px;
 }
 
+.dropdown-content li>a,
+.dropdown-content li>span {
+  color: #444;
+}
 
+.page-header {
+  color: #444;
+}
 
 .dropdown-trigger.right {
   img {

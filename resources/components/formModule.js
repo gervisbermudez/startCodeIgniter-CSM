@@ -39,7 +39,7 @@ Vue.component('formFieldTitle', {
 var formModule = new Vue({
     el: '#formModule',
     data: {
-        debug: true,
+        debug: DEBUGMODE,
         editMode: false,
         loader: true,
         tabs: [

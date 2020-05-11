@@ -9,6 +9,9 @@ class MY_model extends CI_Model
     public $timestamps = true;
     private $map = false;
     public $fields = array();
+    public $hasData = false;
+    public $hasOne = false;
+
     /**
      * The model's default values for attributes.
      *
@@ -135,14 +138,14 @@ class MY_model extends CI_Model
         if ($this->map) {
             $this->updating();
             $result = $this->update_data(array($this->primaryKey => $this->{$this->primaryKey}), $data);
-            if($result){
+            if ($result) {
                 $this->updated();
             }
 
         } else {
             $this->creating();
             $result = $this->set_data($data);
-            if($result){
+            if ($result) {
                 $this->{$this->primaryKey} = $this->db->insert_id();
                 $this->created();
             }
@@ -151,7 +154,7 @@ class MY_model extends CI_Model
         if ($result) {
             $this->saved();
         }
-        
+
         return $result;
     }
 
@@ -305,56 +308,140 @@ class MY_model extends CI_Model
         }
     }
 
+    public function get_primary()
+    {
+        return $this->{$this->primaryKey};
+    }
+
+    /**
+     * Events for table data
+     */
+    public function retrieved_data()
+    {
+        $foreing_id = $this->{$this->primaryKey};
+        $table_data_name = $this->table . '_data';
+        $sql = "SELECT d." . $this->primaryKey . ", CONCAT('{', GROUP_CONCAT('\"', d._key, '\"', ':', '\"', d._value, '\"'), '}')
+				AS `data` FROM " . $table_data_name . " d
+				WHERE " . $this->primaryKey . " = $foreing_id
+				GROUP BY " . $this->primaryKey;
+        $table_data = $this->get_query($sql);
+        if ($table_data) {
+            $table_data = json_decode($table_data->first()->data);
+        }
+        $this->{$table_data_name} = $table_data ? $table_data : [];
+    }
+
+    public function created_data()
+    {
+        $table_data_name = $this->table . '_data';
+        $foreing_id = $this->{$this->primaryKey};
+        $data = $this->{$table_data_name} ? $this->{$table_data_name} : [];
+        foreach ($data as $key => $value) {
+            $insert = array(
+                $this->primaryKey => $foreing_id,
+                '_key' => $key,
+                '_value' => $value,
+                'status' => 1,
+            );
+            $this->db->insert($table_data_name, $insert);
+        }
+        $this->find($this->user_id);
+    }
+
+    public function updated_data()
+    {
+        $table_data_name = $this->table . '_data';
+        $data = $this->{$table_data_name};
+        $foreing_id = $this->{$this->primaryKey};
+        foreach ($data as $key => $value) {
+            $update = array(
+                '_value' => $value,
+            );
+            $where = array($this->primaryKey => $foreing_id, '_key' => $key);
+            $this->db->where($where);
+            $this->db->update($table_data_name, $update);
+        }
+    }
+
+    public function deleted_data()
+    {
+        $table_data_name = $this->table . '_data';
+        $foreing_id = $this->{$this->primaryKey};
+        $data = array($this->primaryKey => $foreing_id);
+        if (!$data) {
+            return false;
+        }
+        $this->db->where($data);
+        return $this->db->delete($table_data_name);
+    }
+
     /**
      * Events hook model's lifecycle
      */
 
     public function before_map()
     {
-        
+
     }
 
     public function after_map()
     {
-        
+
     }
 
     public function retrieved()
     {
-
+        if ($this->hasData) {
+            $this->retrieved_data();
+        }
     }
+
     public function creating()
     {
 
     }
+
     public function created()
     {
-
+        if ($this->hasData) {
+            $this->created_data();
+        }
     }
+
     public function updating()
     {
 
     }
+
     public function updated()
     {
-
+        if ($this->hasData) {
+            $this->updated_data();
+        }
     }
+
     public function saving()
     {
 
     }
+
     public function saved()
     {
 
     }
+
     public function deleting()
     {
 
     }
+
     public function deleted()
     {
-
+        if ($this->hasData) {
+            $this->deleted_data();
+        }
     }
+
     public function restoring()
     {
 
@@ -362,5 +449,31 @@ class MY_model extends CI_Model
     public function restored()
     {
 
+    }
+
+    public function __get($name)
+    {
+        if (is_array($this->hasOne) && array_key_exists($name, $this->hasOne)) {
+            return $this->oneRelations($this->hasOne[$name]);
+        }
+        if (($result = parent::__get($name)) !== null) {
+            return $result;
+        }
+    }
+
+    /**
+     * Relations data events
+     */
+
+    public function oneRelations($value)
+    {
+        if ($this->map) {
+            $this->load->model($value[1]);
+            ${$value[2]} = new $value[2]();
+            ${$value[2]}->find($this->{$value[0]});
+            $this->{$value[2]} = ${$value[2]};
+            return $this->{$value[2]};
+        }
+        return null;
     }
 }

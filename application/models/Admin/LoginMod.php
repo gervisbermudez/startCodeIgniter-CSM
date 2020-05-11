@@ -13,10 +13,10 @@ class LoginMod extends MY_model
     public function isLoged($username, $password)
     {
 
-        $where = "WHERE u.`username` = '$username' AND u.`password` = '$password' AND u.`status` = 1";
-
+        $where = "WHERE u.`username` = '$username' AND u.`status` = 1";
         $sql = "SELECT u.`user_id`,
 				u.`username`,
+				u.`password`,
 				u.`email`,
 				u.`lastseen`,
 				u.`usergroup_id`,
@@ -36,11 +36,14 @@ class LoginMod extends MY_model
 
         if ($query->num_rows() > 0) {
             $data = $query->result_array();
+            if (!password_verify($password, $data[0]['password'])) {
+                return false;
+            }
             foreach ($data as $key => &$value) {
                 $data_values = json_decode($value['user_data']);
                 $value['user_data'] = $data_values;
             }
-
+            unset($data[0]['password']);
             return $data;
         }
         return false;

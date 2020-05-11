@@ -1,7 +1,7 @@
 <script>
-    const DEBUGMODE = <?=json_encode($ci->config->item('enable_profiler'))?>;
-	const BASEURL = <?= json_encode(base_url()) ?>;
-	const USERID = <?= json_encode(userdata('user_id')) ?>;
+const BASEURL = <?= json_encode(base_url()) ?>;
+const ENVIRONMENT = <?=json_encode(ENVIRONMENT)?>;
+const DEBUGMODE = <?=json_encode($ci->config->item('debug_mode'))?>;
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 <script src="{{base_url('public/js/jquery.js')}}"></script>

@@ -14,6 +14,7 @@ var fileUploaderModule = new Vue({
     multiple: true,
     allowed_files: null,
     doneSelection: false,
+    preventLoadFilesOnLoad: true,
   },
   computed: {
     getFolders() {
@@ -381,7 +382,9 @@ var fileUploaderModule = new Vue({
   mounted: function () {
     this.$nextTick(function () {
       var self = this;
-      this.navigateFiles(self.root);
+      if (!self.preventLoadFilesOnLoad) {
+        this.navigateFiles(self.root);
+      }
     });
   },
 });

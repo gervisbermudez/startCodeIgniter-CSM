@@ -31,7 +31,7 @@
 						@change="validateField('username')"
 						v-model="form.fields.username.value" 
 						:class="{ valid: form.fields.username.touched && form.fields.username.valid, invalid: !form.fields.username.valid }" 
-						autocomplete="none">
+						autocomplete="off">
 						<label>Username</label>
 						<span class="helper-text" :data-error="form.fields.username.errorText" data-success="Valid"></span>
 				</div>
@@ -40,7 +40,7 @@
 						@change="form.validateField('password')"
 						:class="{ valid: form.fields.password.touched && form.fields.password.valid, invalid: !form.fields.password.valid }" 
 						v-model="form.fields.password.value"
-						autocomplete="none"
+						autocomplete="off"
 						>
 					<label>Contraseña</label>
 					<span class="helper-text" :data-error="form.fields.password.errorText" data-success="Valid">Debe contener mayusculas, minuculas, numeros y un caracter especial</span>

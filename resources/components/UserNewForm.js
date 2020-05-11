@@ -1,19 +1,44 @@
 var UserNewForm = new Vue({
   el: "#root",
   data: {
+    debug: DEBUGMODE,
     loader: true,
     editMode: false,
     user_id: "",
     usergroups: [],
     form: new VueForm({
-      username: { value: null, required: true, type: 'username', maxLength: 15, minLength: 5 },
-      password: { value: null, required: true, type: 'password', maxLength: 25, minLength: 5 },
-      email: { value: '', required: true, type: 'email', maxLength: 150 },
-      usergroup_id: { value: '', required: true, type: 'number' },
-      nombre: { value: '', required: true, type: 'name', maxLength: 15, minLength: 3 },
-      apellido: { value: '', required: true, type: 'name', maxLength: 15, minLength: 3 },
-      telefono: { value: '', required: true, type: 'number', maxLength: 12 },
-      direccion: { value: '', required: true, type: 'alphanumeric', maxLength: 60 },
+      username: {
+        value: null,
+        required: true,
+        type: "username",
+        maxLength: 15,
+        minLength: 5,
+      },
+      password: {
+        value: null,
+        required: true,
+        type: "password",
+        maxLength: 25,
+        minLength: 5,
+      },
+      email: { value: "", required: true, type: "email", maxLength: 150 },
+      usergroup_id: { value: "", required: true, type: "number" },
+      nombre: {
+        value: "",
+        required: true,
+        type: "name",
+        maxLength: 15,
+        minLength: 3,
+      },
+      apellido: {
+        value: "",
+        required: true,
+        type: "name",
+        maxLength: 15,
+        minLength: 3,
+      },
+      telefono: { value: "", required: true, type: "phone", maxLength: 18 },
+      direccion: { value: "", required: true, type: "address", maxLength: 60 },
     }),
     status: true,
   },
@@ -29,7 +54,7 @@ var UserNewForm = new Vue({
         }
       }
       return result;
-    }
+    },
   },
   methods: {
     validateField(field) {
@@ -45,15 +70,18 @@ var UserNewForm = new Vue({
       self.form.validate();
       if (self.form.errors.length == 0) {
         this.loader = true;
+        var url = BASEURL + "api/v1/users/";
         $.ajax({
           type: "POST",
-          url: BASEURL + "api/v1/users/",
+          url: url,
           data: self.getUserData(),
           dataType: "json",
           success: function (response) {
+            self.debug ? console.log(url, response) : null;
             if (response.code == 200) {
               console.log(response);
-              window.location = BASEURL + 'admin/usuarios/ver/' + response.data.user_id;
+              window.location =
+                BASEURL + "admin/usuarios/ver/" + response.data.user_id;
             } else {
               M.toast({ html: response.responseJSON.error_message });
               self.loader = false;
@@ -62,10 +90,10 @@ var UserNewForm = new Vue({
           error: function (response) {
             M.toast({ html: response.responseJSON.error_message });
             self.loader = false;
-          }
+          },
         });
       } else {
-        M.toast({ html: 'Verifique todos los campos del formulario' });
+        M.toast({ html: "Verifique todos los campos del formulario" });
       }
     },
     getUserData() {
@@ -81,40 +109,45 @@ var UserNewForm = new Vue({
           apellido: form.apellido.value,
           direccion: form.direccion.value,
           telefono: form.telefono.value,
-        }
-      }
+        },
+      };
     },
     serverValidation(field) {
       var self = this;
+      var url = BASEURL + "admin/usuarios/ajax_check_field"
       $.ajax({
         type: "POST",
-        url: BASEURL + "admin/usuarios/ajax_check_field",
+        url: url,
         data: {
           field: field,
-          value: self.form.fields[field].value
+          value: self.form.fields[field].value,
         },
         dataType: "json",
         success: function (response) {
+          self.debug ? console.log(url, response) : null;
           if (response.code) {
             self.form.fields[field].valid = response.data;
             if (response.data) {
               self.form.markFieldAsValid(field);
-            }else {
-              self.form.fields[field].errorText = "The " + field + " is already registered";
+            } else {
+              self.form.fields[field].errorText =
+                "The " + field + " is already registered";
             }
             self.$forceUpdate();
           }
-        }
+        },
       });
     },
     getUsergroups() {
       var self = this;
+      var url = BASEURL + "api/v1/users/usergroups";
       $.ajax({
         type: "GET",
-        url: BASEURL + "api/v1/users/usergroups",
+        url: url,
         data: {},
         dataType: "json",
         success: function (response) {
+          self.debug ? console.log(url, response) : null;
           if (response.code == 200) {
             self.usergroups = response.data;
             setTimeout(() => {
@@ -127,19 +160,21 @@ var UserNewForm = new Vue({
         error: function (error) {
           M.toast({ html: response.responseJSON.error_message });
           self.loader = false;
-        }
+        },
       });
     },
     checkEditMode() {
       if (user_id) {
         var self = this;
         self.editMode = true;
+        var url = BASEURL + "api/v1/users/" + user_id;
         $.ajax({
           type: "GET",
-          url: BASEURL + "api/v1/users/" + user_id,
+          url: url,
           data: {},
           dataType: "json",
           success: function (response) {
+            self.debug ? console.log(url, response) : null;
             if (response.code == 200) {
               let data = response.data[0];
               self.user_id = data.user_id;
@@ -160,16 +195,16 @@ var UserNewForm = new Vue({
           error: function (error) {
             M.toast({ html: response.responseJSON.error_message });
             self.loader = false;
-          }
+          },
         });
       }
-    }
+    },
   },
   mounted: function () {
     this.$nextTick(function () {
-      console.log("mounted UserNewForm");
+      self.debug ? console.log("mounted UserNewForm") : null;
       this.getUsergroups();
       this.checkEditMode();
     });
-  }
+  },
 });

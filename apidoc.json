@@ -1,0 +1,7 @@
+{
+    "name": "Start CMS",
+    "version": "1.3.0",
+    "description": "apiDoc for Start CMS",
+    "title": "The Start CMS API",
+    "url" : "/api/v1"
+  }

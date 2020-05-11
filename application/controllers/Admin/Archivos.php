@@ -211,6 +211,7 @@ class Archivos extends MY_Controller
         if (!isset($result['error'])) {
             $insert_array = $this->Files_model->get_array_save_file($_POST['fileName'], $_POST['curDir']);
             $this->Files_model->set_data($insert_array, $this->Files_model->table);
+            $result['file_object'] = $this->Files_model->get_data(array('file_id' => $this->db->insert_id()));
         }
 
         $this->output
@@ -237,6 +238,22 @@ class Archivos extends MY_Controller
             ->set_content_type('application/json')
             ->set_output(json_encode($response));
 
+    }
+
+    public function ajax_get_last_created_file()
+    {
+        $this->output->enable_profiler(false);
+
+        $result = $this->Files_model->get_data('all', '1', array('file_id', 'DESC'));
+
+        $response = array(
+            'code' => 200,
+            'data' => $result,
+        );
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
     }
 
 }

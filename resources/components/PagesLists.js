@@ -26,6 +26,12 @@ var PagesLists = new Vue({
     },
   },
   methods: {
+    getcontentText: function (page) {
+      var span = document.createElement("span");
+      span.innerHTML = page.content;
+      let text = span.textContent || span.innerText;
+      return text.substring(0, 120) + "...";
+    },
     toggleView: function () {
       this.tableView = !this.tableView;
       this.initPlugins();

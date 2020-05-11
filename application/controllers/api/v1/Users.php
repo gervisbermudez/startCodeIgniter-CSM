@@ -15,15 +15,6 @@ class Users extends REST_Controller
         parent::__construct();
         $this->output->enable_profiler(false);
 
-        if (!$this->session->userdata('logged_in')) {
-            $this->lang->load('login_lang', 'english');
-            $this->response([
-                'code' => REST_Controller::HTTP_UNAUTHORIZED,
-                'error_message' => lang('user_not_authenticated'),
-            ], REST_Controller::HTTP_UNAUTHORIZED);
-            exit();
-        }
-
         $this->load->database();
         $this->load->model('Admin/User');
         $this->lang->load('users_lang', 'english');
@@ -31,12 +22,52 @@ class Users extends REST_Controller
     }
 
     /**
-     * Get All Data from this method.
      *
-     * @return Response
+     * @api {get} /users/:user_id Get a lists of users
+     * @apiName GetUser
+     * @apiGroup User
+     *
+     * @apiParam {Number} user_id <code>optional</code> User unique ID.
+     * @apiSuccessExample {json} Success-Response:
+     * HTTP/1.1 200 OK
+     * {
+     *    "code": 200,
+     *    "data": [
+     *        {
+     *            "user_id": "18",
+     *            "username": "gerber",
+     *            "email": "gerber@gmail.com",
+     *            "lastseen": "2016-09-03 03:22:31",
+     *            "usergroup_id": "2",
+     *            "status": "1",
+     *            "user_data": {
+     *                "nombre": "Gervis",
+     *                "apellido": "Mora",
+     *                "direccion": "Mara",
+     *                "telefono": "0414-1672173",
+     *                "create by": "gerber",
+     *                "avatar": "300_3.jpg"
+     *            },
+     *            "role": "Administrador",
+     *            "level": "2",
+     *            "date_create": "2020-03-01 16:11:25",
+     *            "date_update": "2020-03-01 16:11:25"
+     *        }
+     *    ]
+     * }
+     * @apiErrorExample {json} Error-Response:
+     *     HTTP/1.1 404 Not Found
+     *     {
+     *       "data": [],
+     *       "code": 404
+     *     }
      */
     public function index_get($user_id = null)
     {
+        if (!$this->verify_request()) {
+            $this->failed_auth(); return;
+        }
+
         $result = $this->User->get_full_info($user_id);
         if ($result) {
             $response = array(
@@ -55,19 +86,76 @@ class Users extends REST_Controller
     }
 
     /**
-     * Get All Data from this method.
      *
-     * @return Response
+     * @api {post} /users/ Create a new User
+     * @apiName PostUser
+     * @apiGroup User
+     *
+     * @apiParam {string} username The unique user username
+     * @apiParam {string} password The password
+     * @apiParam {string} email The email
+     * @apiParam {integer} usergroup_id The usergroup_id
+     * @apiParam {string} user_data[nombre] The user name
+     * @apiParam {string} user_data[apellido] The user lastname
+     * @apiParam {string} user_data[direccion] The user address
+     * @apiParam {string} user_data[telefono] The user phone
+     * 
+     * @apiSuccessExample {json} Success-Response:
+     * HTTP/1.1 200 OK
+     * {
+     *     "code": 200,
+     *     "data": {
+     *         "primaryKey": "user_id",
+     *         "user_data": {
+     *             "nombre": "Nestor",
+     *             "apellido": "Barroso",
+     *             "direccion": "Caseros",
+     *             "telefono": "112345678"
+     *         },
+     *         "table": "user",
+     *         "timestamps": true,
+     *         "fields": [
+     *             "user_id",
+     *             "username",
+     *             "password",
+     *             "email",
+     *             "lastseen",
+     *             "usergroup_id",
+     *             "status",
+     *             "date_create",
+     *             "date_update"
+     *         ],
+     *         "username": "nestor12",
+     *         "password": "Lamisu1234_",
+     *         "email": "nestor@gmail.com",
+     *         "lastseen": "2020-05-05 02:49:53",
+     *         "usergroup_id": "3",
+     *         "status": "1",
+     *         "user_id": "34",
+     *         "date_create": "2020-05-04 21:49:53",
+     *         "date_update": "2020-05-04 21:49:53"
+     *     }
+     * }
+     * @apiErrorExample {json} Error-Response:
+     *     HTTP/1.1 404 Not Found
+     *     {
+     *       "data": [],
+     *       "code": 404
+     *     }
      */
     public function index_post()
     {
+        if (!$this->verify_request()) {
+            $this->failed_auth(); return;
+        }
+
         $this->load->library('FormValidator');
 
         $form = new FormValidator();
 
         $config = array(
             array('field' => 'username', 'label' => 'username', 'rules' => 'required|min_length[5]|max_length[18]|alpha_numeric'),
-            array('field' => 'password', 'label' => 'password', 'rules' => 'required|min_length[5]|max_length[18]|regex_match[/^(?=.*?[0-9])(?=.*?[A-Z])(?=.*?[#?!@$%^&*\-_]).{8,}$/]'),
+            array('field' => 'password', 'label' => 'password', 'rules' => 'required|min_length[5]|max_length[18]|regex_match[/^(?=.*?[0-9])(?=.*?[A-Z])(?=.*?[#.?!@$%^&*\-_]).{8,}$/]'),
             array('field' => 'email', 'label' => 'email', 'rules' => 'required|valid_email'),
             array('field' => 'usergroup_id', 'label' => 'usergroup_id', 'rules' => 'required|integer|is_natural_no_zero'),
         );
@@ -88,7 +176,7 @@ class Users extends REST_Controller
         $usuario = new User();
         $this->input->post('user_id') ? $usuario->find($this->input->post('user_id')) : false;
         $usuario->username = $this->input->post('username');
-        $usuario->password = $this->input->post('password');
+        $usuario->password = password_hash($this->input->post('password'), PASSWORD_DEFAULT);
         $usuario->email = $this->input->post('email');
         $usuario->lastseen = date("Y-m-d H:i:s");
         $usuario->usergroup_id = $this->input->post('usergroup_id');
@@ -135,12 +223,15 @@ class Users extends REST_Controller
      */
     public function index_delete($id = null)
     {
-        $this->output->enable_profiler(false);
+        if (!$this->verify_request()) {
+            $this->failed_auth(); return;
+        }
+
         $usuario = new User();
         $usuario->find($id);
         if ($usuario->delete()) {
             $response = array(
-                'code' =>  REST_Controller::HTTP_OK,
+                'code' => REST_Controller::HTTP_OK,
                 'data' => $usuario,
             );
             $this->response($response, REST_Controller::HTTP_OK);
@@ -157,9 +248,13 @@ class Users extends REST_Controller
 
     public function usergroups_get()
     {
+        if (!$this->verify_request()) {
+            $this->failed_auth(); return;
+        }
+
         $this->load->model('Admin/Usergroup');
 
-        $result = $this->Usergroup->where(array('level >' => userdata('level')));
+        $result = $this->Usergroup->where(array('level >=' => userdata('level')));
 
         if ($result) {
             $response = array(
@@ -184,6 +279,10 @@ class Users extends REST_Controller
 
     public function avatar_post()
     {
+        if (!$this->verify_request()) {
+            $this->failed_auth(); return;
+        }
+
         $user_id = $this->input->post('user_id');
         $avatar = $this->input->post('avatar');
 
@@ -192,10 +291,10 @@ class Users extends REST_Controller
 
         if ($usuario->find($user_id)) {
 
-            if(isset($usuario->user_data->avatar)){
+            if (isset($usuario->user_data->avatar)) {
                 $usuario->user_data->avatar = $avatar;
                 $result = $usuario->save();
-            }else{
+            } else {
                 $insert = array(
                     'user_id' => $user_id,
                     '_key' => 'avatar',
@@ -205,7 +304,7 @@ class Users extends REST_Controller
                 $result = $usuario->set_user_data($insert);
             }
 
-            if($result){
+            if ($result) {
                 $response = array(
                     'code' => REST_Controller::HTTP_OK,
                     'data' => $result,
@@ -218,7 +317,7 @@ class Users extends REST_Controller
         $response = array(
             'code' => REST_Controller::HTTP_BAD_REQUEST,
             'data' => $result,
-            'user' => $usuario
+            'user' => $usuario,
         );
         $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
     }

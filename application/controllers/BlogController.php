@@ -21,13 +21,14 @@ class BlogController extends Base_Controller
 
     }
 
-    private function renderpage($pageInfo){
-        if ($pageInfo) {
-            $pageInfo = $pageInfo->first();
-            $data['page'] = $pageInfo;
-            $data['title'] = $pageInfo->title;
-            $data['template'] = $pageInfo->template == 'default' ? 'site' : $pageInfo->template;
-            echo $this->blade->view("site.template", $data);
+    private function renderpage($page){
+        if ($page) {
+            $data['page'] = $page;
+            $data['meta'] = $this->getPageMetas($page);
+            $data['title'] = $page->title;
+            $data['layout'] = $page->layout == 'default' ? 'site' : $page->layout;
+            $template = $page->template == 'default' ? 'template' : $page->template;
+            echo $this->blade->view("site.templates." . $template, $data);
         } else {
             $this->error404();
         }
@@ -36,22 +37,22 @@ class BlogController extends Base_Controller
     public function get_blog($path)
     {
         $pages = new Page();
-        $pageInfo = $pages->where(array('path' => 'blog/' . $path, 'status' => 1));
-        $this->renderpage($pageInfo);
+        $pages->find_with(array('path' => 'blog/' . $path, 'status' => 1));
+        $this->renderpage($pages);
     }
 
     public function get_blog_categorie($categorie, $path)
     {
         $pages = new Page();
-        $pageInfo = $pages->where(array('path' => 'blog/' . $categorie . '/' . $path, 'status' => 1));
-        $this->renderpage($pageInfo);
+        $pages->find_with(array('path' => 'blog/' . $categorie . '/' . $path, 'status' => 1));
+        $this->renderpage($pages);
     }
 
         public function get_blog_subcategorie($categorie, $subcategorie, $path)
     {
         $pages = new Page();
-        $pageInfo = $pages->where(array('path' => 'blog/' . $categorie . '/' . $subcategorie . '/' . $path, 'status' => 1));
-        $this->renderpage($pageInfo);
+        $pages->find_with(array('path' => 'blog/' . $categorie . '/' . $subcategorie . '/' . $path, 'status' => 1));
+        $this->renderpage($pages);
     }
 
 }

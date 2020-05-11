@@ -7,7 +7,7 @@ class SiteController extends Base_Controller
 
     public function index()
     {
-        $data['title'] = "Modern Business - Start Bootstrap Template";
+        $data['title'] = SITE_TITLE . " - Start Bootstrap Template";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
@@ -16,7 +16,7 @@ class SiteController extends Base_Controller
 
     public function about()
     {
-        $data['title'] = "Modern Business - About";
+        $data['title'] = SITE_TITLE . " - About";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
@@ -25,7 +25,7 @@ class SiteController extends Base_Controller
 
         public function services()
     {
-        $data['title'] = "Modern Business - Services";
+        $data['title'] = SITE_TITLE . " - Services";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
@@ -34,7 +34,7 @@ class SiteController extends Base_Controller
 
     public function contact()
     {
-        $data['title'] = "Modern Business - Contact";
+        $data['title'] = SITE_TITLE . " - Contact";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
@@ -43,7 +43,7 @@ class SiteController extends Base_Controller
 
     public function faq()
     {
-        $data['title'] = "Modern Business - FAQ";
+        $data['title'] = SITE_TITLE . " - FAQ";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
@@ -52,7 +52,7 @@ class SiteController extends Base_Controller
 
     public function pricing()
     {
-        $data['title'] = "Modern Business - FAQ";
+        $data['title'] = SITE_TITLE . " - FAQ";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
@@ -61,7 +61,7 @@ class SiteController extends Base_Controller
 
     public function sidebar()
     {
-        $data['title'] = "Modern Business - Sidebar";
+        $data['title'] = SITE_TITLE . " - Sidebar";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
@@ -70,7 +70,7 @@ class SiteController extends Base_Controller
 
     public function fullWidth()
     {
-        $data['title'] = "Modern Business - Full Width";
+        $data['title'] = SITE_TITLE . " - Full Width";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
@@ -79,7 +79,7 @@ class SiteController extends Base_Controller
 
     public function blogPost()
     {
-        $data['title'] = "Modern Business - Full Width";
+        $data['title'] = SITE_TITLE . " - Full Width";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
@@ -88,7 +88,7 @@ class SiteController extends Base_Controller
 
     public function portfolio()
     {
-        $data['title'] = "Modern Business - Portfolio";
+        $data['title'] = SITE_TITLE . " - Portfolio";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
@@ -97,7 +97,7 @@ class SiteController extends Base_Controller
 
     public function portfolioItem()
     {
-        $data['title'] = "Modern Business - Portfolio Item";
+        $data['title'] = SITE_TITLE . " - Portfolio Item";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }

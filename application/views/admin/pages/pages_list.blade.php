@@ -51,7 +51,7 @@
 			</ul>
 		</div>
 	</nav>
-	<div v-cloak v-if="!loader && pages.length > 0">
+	<div class="pages" v-cloak v-if="!loader && pages.length > 0">
 		<div class="row" v-if="tableView">
 			<div class="col s12">
 				<table>
@@ -70,7 +70,7 @@
 						<tr v-for="(page, index) in filterPages" :key="index">
 							<td>@{{page.title}}</td>
 							<td><a :href="base_url(page.path)" target="_blank">@{{page.path}}</a></td>
-							<td><a :href="base_url('admin/usuarios/ver/' + page.author)">@{{page.username}}</a></td>
+							<td><a :href="base_url('admin/usuarios/ver/' + page.user_id)">@{{page.username}}</a></td>
 							<td>
 								@{{page.date_publish ? page.date_publish : page.date_create}}
 							</td>
@@ -108,11 +108,7 @@
 							<div class="card-image-container">
 								<img src="https://materializecss.com/images/sample-1.jpg" />
 							</div>
-							<span class="card-title">@{{page.title}} <i v-if="page.visibility == 1" class="material-icons tooltipped"
-									data-position="left" data-delay="50" data-tooltip="Publico">public</i>
-								<i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
-									data-tooltip="Privado">lock</i>
-							</span>
+							
 							<a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href='#!'
 								:data-target='"dropdown" + page.page_id'>
 								<i class="material-icons">more_vert</i></a>
@@ -125,14 +121,19 @@
 						</div>
 						<div class="card-content">
 							<div>
+								<span class="card-title"><a :href="base_url(page.path)" target="_blank">@{{page.title}}</a> <i v-if="page.visibility == 1" class="material-icons tooltipped"
+										data-position="left" data-delay="50" data-tooltip="Publico">public</i>
+									<i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
+										data-tooltip="Privado">lock</i>
+								</span>
 								<div class="card-info">
+									<p>
+										@{{getcontentText(page)}}
+									</p>
 									<span class="activator right"><i class="material-icons">more_vert</i></span>
 									<ul>
 										<li class="truncate">
-											Path: <a :href="base_url(page.path)" target="_blank">@{{page.path}}</a>
-										</li>
-										<li class="truncate">
-											Author: <a :href="base_url('admin/usuarios/ver/' + page.author)">@{{page.username}}</a>
+											Author: <a :href="base_url('admin/usuarios/ver/' + page.user_id)">@{{page.username}}</a>
 										</li>
 									</ul>
 								</div>
