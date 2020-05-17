@@ -2,7 +2,7 @@
 
 use Tightenco\Collect\Support\Collection;
 
-class MY_model extends CI_Model
+class MY_model extends CI_Model implements JsonSerializable
 {
     public $table;
     public $primaryKey = 'id';
@@ -10,7 +10,9 @@ class MY_model extends CI_Model
     private $map = false;
     public $fields = array();
     public $hasData = false;
-    public $hasOne = false;
+    public $hasOne = [];
+    public $hasMany = [];
+    public $protectedFields = array();
 
     /**
      * The model's default values for attributes.
@@ -88,8 +90,10 @@ class MY_model extends CI_Model
         $this->before_map();
         $this->map = true;
         foreach ($fields as $key => $value) {
-            $this->fields[] = $key;
-            $this->{$key} = $value;
+            if (!in_array($key, $this->protectedFields)) {
+                $this->fields[] = $key;
+                $this->{$key} = $value;
+            }
         }
         $this->after_map();
     }
@@ -381,12 +385,11 @@ class MY_model extends CI_Model
 
     public function before_map()
     {
-
     }
 
     public function after_map()
     {
-
+        $this->mapRelations();
     }
 
     public function retrieved()
@@ -446,34 +449,69 @@ class MY_model extends CI_Model
     {
 
     }
+    
     public function restored()
     {
 
     }
 
-    public function __get($name)
-    {
-        if (is_array($this->hasOne) && array_key_exists($name, $this->hasOne)) {
-            return $this->oneRelations($this->hasOne[$name]);
-        }
-        if (($result = parent::__get($name)) !== null) {
-            return $result;
-        }
-    }
-
     /**
      * Relations data events
      */
-
-    public function oneRelations($value)
+    public function mapRelations()
     {
         if ($this->map) {
-            $this->load->model($value[1]);
-            ${$value[2]} = new $value[2]();
-            ${$value[2]}->find($this->{$value[0]});
-            $this->{$value[2]} = ${$value[2]};
-            return $this->{$value[2]};
+            foreach ($this->hasOne as $key => $value) {
+                $this->load->model($value[1]);
+                ${$value[2]} = new $value[2]();
+                ${$value[2]}->find($this->{$value[0]});
+                $this->{$value[2]} = ${$value[2]};
+            }
+            foreach ($this->hasMany as $key => $value) {
+                $this->load->model($value[1]);
+                ${$value[2]} = new $value[2]();
+                $this->{$value[2]} = ${$value[2]}->where(array($value[0] => $this->{$value[0]}));
+            }
         }
         return null;
+    }
+
+    public function jsonSerialize()
+    {
+        if ($this->map) {
+            $object = new StdClass();
+            foreach ($this->fields as $key => $value) {
+                $object->{$value} = $this->{$value};
+            }
+            foreach ($this->hasOne as $key => $value) {
+                if (isset($this->{$value[2]})) {
+                    $object->{$value[2]} = $this->{$value[2]};
+                }
+            }
+            if ($this->hasData) {
+                $object_data_name = $this->table . '_data';
+                $object->{$object_data_name} = $this->{$object_data_name};
+            }
+            return $object;
+        }
+    }
+
+    public function get_select_json($table_name = null)
+    {
+        $table_name = $table_name ? $table_name : $this->table;
+        $fields = $this->db->list_fields($table_name);
+        $str_fields_names = '';
+        foreach ($fields as $field) {
+            if (!in_array($field, $this->protectedFields)) {
+                $str_fields_names .= '\'\"' . $field . '\" : \"\',' . $field . ', \'\",\' ';
+            }
+        }
+        $pos = strrpos($str_fields_names, ',');
+
+        if ($pos !== false) {
+            $str_fields_names = substr_replace($str_fields_names, '', $pos, strlen(','));
+        }
+
+        return 'SELECT ' . $table_name . '.' . $table_name . '_id' . ', CONCAT(\'{\', GROUP_CONCAT(' . $str_fields_names . '), \'}\')  AS ' . $table_name . ' FROM ' . $table_name . ' GROUP BY ' . $table_name . '.' . $table_name . '_id';
     }
 }
