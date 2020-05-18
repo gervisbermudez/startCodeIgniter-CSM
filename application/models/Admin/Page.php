@@ -4,13 +4,14 @@
 
 use Tightenco\Collect\Support\Collection;
 
-class Page extends MY_model
+class Page extends MY_model 
 {
     public $primaryKey = 'page_id';
     public $hasData = true;
     public $hasOne = [
-        "user" => ['user_id', 'Admin/User', 'user'],
-        'pages_type' => ['page_type_id', 'Admin/Page_type', 'Page_type'],
+        'user' => ['user_id', 'Admin/User', 'user'],
+        'pages_type' => ['page_type_id', 'Admin/Page_type', 'page_type'],
+        'main_image' => ['mainImage', 'Files_model', 'Files_model'],
     ];
     public $page_data = [];
 
@@ -33,15 +34,20 @@ class Page extends MY_model
      */
     public function all()
     {
-        $sql = 'SELECT p.*, pt.`page_type_name`, u.`username`, ug.`name`, ug.`level`
+        $sql = 'SELECT p.*, pt.`page_type_name`, u.`username`, ug.`name`, ug.`level`, file_data.file as imagen_file
                 FROM page p
                 INNER JOIN USER u ON p.`user_id` = u.`user_id`
                 INNER JOIN usergroup ug ON ug.`usergroup_id` = u.`usergroup_id`
+                LEFT JOIN (' . $this->get_select_json('file') . ') file_data ON file_data.file_id = p.mainImage
                 INNER JOIN page_type pt ON pt.`page_type_id` = p.`page_type_id`';
-
         $query = $this->db->query($sql);
         if ($query->num_rows() > 0) {
-            return new Collection($query->result());
+            $data = $query->result_array();
+            foreach ($data as $key => &$value) {
+                $data_values = json_decode($value['imagen_file']);
+                $value['imagen_file'] = $data_values;
+            }
+            return new Collection($data);
         }
         return false;
     }

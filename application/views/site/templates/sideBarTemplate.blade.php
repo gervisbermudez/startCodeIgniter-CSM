@@ -21,14 +21,19 @@
       <li class="breadcrumb-item">
         <a href="{{base_url()}}">Home</a>
       </li>
-      <li class="breadcrumb-item active">Blog Home 2</li>
+      <li class="breadcrumb-item active"><a href="{{base_url('blog')}}">Blog</a></li>
     </ol>
 
     <div class="row">
 
       <!-- Post Content Column -->
       <div class="col-lg-8">
+      @if ($page->main_image)
+        <!-- Preview Image -->
+        <img class="img-fluid rounded" src="{{base_url($page->main_image->file_front_path)}}" alt="{{$page->title}}">
 
+        <hr>
+      @endif
         <!-- Date/Time -->
         <p>Posted on </p>
 

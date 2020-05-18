@@ -2,7 +2,7 @@ var PagesLists = new Vue({
   el: "#root",
   data: {
     pages: [],
-    tableView: true,
+    tableView: false,
     loader: true,
     filter: "",
   },
@@ -38,6 +38,18 @@ var PagesLists = new Vue({
     },
     resetFilter: function () {
       this.filter = "";
+    },
+    getPageImagePath(page) {
+      if (page.imagen_file) {
+        return (
+          BASEURL +
+          page.imagen_file.file_path.substr(2) +
+          page.imagen_file.file_name +
+          "." +
+          page.imagen_file.file_type
+        );
+      }
+      return "https://materializecss.com/images/sample-1.jpg";
     },
     getPages: function () {
       var self = this;

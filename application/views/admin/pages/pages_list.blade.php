@@ -106,7 +106,7 @@
 					<div class="card page-card">
 						<div class="card-image">
 							<div class="card-image-container">
-								<img src="https://materializecss.com/images/sample-1.jpg" />
+								<img :src="getPageImagePath(page)" />
 							</div>
 							
 							<a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href='#!'

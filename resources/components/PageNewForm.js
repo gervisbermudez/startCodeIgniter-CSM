@@ -34,10 +34,7 @@ var PageNewForm = new Vue({
     layout: "default",
     categorie_id: "0",
     subcategorie_id: "0",
-    pageType: {
-      page_type_id: "1",
-      page_type_name: "page",
-    },
+    page_type_id: "1",
     layouts: [],
     mainImage: [],
     templates: [],
@@ -67,13 +64,18 @@ var PageNewForm = new Vue({
     },
     getMainImagenPath() {
       if (this.mainImage.length > 0) {
-        return (
-          "/public/img/pages/" +
-          this.mainImage[0].file_path.substr(2) +
-          this.getFileImagenName(this.mainImage[0])
-        );
+        return this.mainImage[0].file_id;
       }
       return null;
+    },
+    getPagePath() {
+      let segments = this.getPathSegments().filter((value, index) => {
+        return value.length > 0;
+      });
+      segments = segments.map((value, index) => {
+        return this.string_to_slug(value);
+      });
+      return segments.join("/");
     },
   },
   watch: {
@@ -86,17 +88,6 @@ var PageNewForm = new Vue({
         this.timepublish = "";
       }
     },
-    pageType: function (newType, oldType) {
-      this.debug ? console.log(newType, oldType) : null;
-      if (this.path.indexOf(oldType.page_type_name + "/") != -1) {
-        let remplace = newType.page_type_name + "/";
-        if (newType.page_type_id == "1") {
-          remplace = "";
-        }
-        this.path = this.path.replace(oldType.page_type_name + "/", remplace);
-      }
-      this.setPath(this.path);
-    },
   },
   filters: {
     capitalize: function (value) {
@@ -106,6 +97,32 @@ var PageNewForm = new Vue({
     },
   },
   methods: {
+    getPathSegments() {
+      /**
+       * url path:
+       * pageType / Categorie / SubCategorie / pagePath
+       */
+      let type = "";
+      if (this.page_type_id == 1) {
+        type = "";
+      } else {
+        type = this.getSelectedPageType();
+        if (type.length) {
+          type = type[0].page_type_name;
+        } else {
+          type = "";
+        }
+      }
+
+      let categorie = this.getSelectedCategorie();
+      categorie = categorie[0] ? categorie[0]["name"] : "";
+      categorie = type == "" ? "" : categorie;
+      let subcategorie = this.getSelectedSubCategorie();
+      subcategorie = subcategorie[0] ? subcategorie[0]["name"] : "";
+      subcategorie = type == "" ? "" : subcategorie;
+      let pagePath = this.path;
+      return [type, categorie, subcategorie, pagePath];
+    },
     autoSave() {
       if (!this.status) {
         this.runSaveData();
@@ -127,19 +144,8 @@ var PageNewForm = new Vue({
       return file.file_name + "." + file.file_type;
     },
     setPath(value) {
-      let addSubPath = this.pageType && this.pageType.page_type_id != "1";
-      if (
-        addSubPath &&
-        value.indexOf(this.pageType.page_type_name + "/") != -1
-      ) {
-        value = value.replace(this.pageType.page_type_name + "/", "");
-      }
       let slug = this.string_to_slug(value);
-      if (addSubPath) {
-        this.path = this.pageType.page_type_name + "/" + slug;
-      } else {
-        this.path = slug;
-      }
+      this.path = slug;
     },
     string_to_slug: function (str) {
       if (str.length == 0) return "";
@@ -238,8 +244,8 @@ var PageNewForm = new Vue({
       return {
         title: this.form.fields.title.value || "",
         subtitle: this.form.fields.subtitle.value || "",
-        path: this.path || "",
-        page_type_id: this.pageType.page_type_id || 1,
+        path: this.getPagePath || "",
+        page_type_id: this.page_type_id || 1,
         status: this.status ? 1 : 2,
         content: this.content || "",
         page_id: this.page_id || null,
@@ -281,6 +287,21 @@ var PageNewForm = new Vue({
         },
       });
     },
+    getSelectedPageType() {
+      return this.pageTypes.filter((value, index) => {
+        return this.page_type_id == value.page_type_id;
+      });
+    },
+    getSelectedCategorie() {
+      return this.categories.filter((value, index) => {
+        return this.categorie_id == value.categorie_id;
+      });
+    },
+    getSelectedSubCategorie() {
+      return this.subcategories.filter((value, index) => {
+        return this.subcategorie_id == value.categorie_id;
+      });
+    },
     serverValidation(field) {
       var self = this;
       var url = BASEURL + "admin/usuarios/ajax_check_field";
@@ -319,12 +340,7 @@ var PageNewForm = new Vue({
           self.debug ? console.log(url, response) : null;
           self.loader = false;
           if (response.code == 200) {
-            self.pageTypes = response.data.map((value, index) => {
-              return {
-                page_type_id: value.page_type_id,
-                page_type_name: value.page_type_name,
-              };
-            });
+            self.pageTypes = response.data;
           }
         },
         error: function (error) {
@@ -335,13 +351,11 @@ var PageNewForm = new Vue({
     },
     getCategories() {
       var self = this;
-      var url = BASEURL + "admin/categorias/ajax_get_categorie_type";
+      var url = BASEURL + "api/v1/categorie/type/page";
       $.ajax({
-        type: "POST",
+        type: "GET",
         url: url,
-        data: {
-          categorie_type: "page",
-        },
+        data: {},
         dataType: "json",
         success: function (response) {
           self.loader = false;
@@ -358,14 +372,11 @@ var PageNewForm = new Vue({
     },
     getSubCategories() {
       var self = this;
-      var url = BASEURL + "admin/categorias/ajax_get_subcategorie_type";
+      var url = BASEURL + "api/v1/categorie/subcategorie/" + self.categorie_id;
       $.ajax({
-        type: "POST",
+        type: "GET",
         url: url,
-        data: {
-          categorie_type: "page",
-          parent_id: self.categorie,
-        },
+        data: {},
         dataType: "json",
         success: function (response) {
           self.debug ? console.log(url, response) : null;
@@ -407,12 +418,11 @@ var PageNewForm = new Vue({
               self.template = response.data.page.template;
               self.categorie_id = response.data.page.categorie_id || 0;
               self.subcategories_id = response.data.page.subcategories_id || 0;
-              self.pageTypes = response.data.page_types.map((value, index) => {
-                return {
-                  page_type_id: value.page_type_id,
-                  page_type_name: value.page_type_name,
-                };
-              });
+              self.pageTypes = response.data.page_types;
+              self.page_type_id = response.data.page.page_type_id;
+              if (response.data.page.main_image) {
+                self.mainImage.push(response.data.page.main_image);
+              }
               self.templates = response.data.templates.map(function (value) {
                 let template = value.split(".")[0];
                 return template == "template" ? "default" : template;
@@ -515,7 +525,7 @@ var PageNewForm = new Vue({
       fileUploaderModule.multiple = false;
       fileUploaderModule.callBakSelectedImagen = (selectedFiles) => {
         let file = selectedFiles[0];
-        PageNewForm.mainImage = file["file_name"] + "." + file["file_type"];
+        PageNewForm.mainImage.push(file);
       };
     });
   },

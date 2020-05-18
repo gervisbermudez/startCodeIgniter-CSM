@@ -13,11 +13,16 @@ function filter_dir($dir)
 
 class Files_model extends MY_Model
 {
-    public $table = 'files';
+    public $table = 'file';
     public $root_dir = './';
     public $current_dir = './';
     public $current_folder = '';
     public $primaryKey = 'file_id';
+    public $computed = array(
+        'file_full_path' => 'getFileFullPath',
+        'file_front_path' => 'getFileFrontPath',
+        'file_full_name' => 'getFileFullName'
+    );
 
     public function __construct()
     {
@@ -208,6 +213,30 @@ class Files_model extends MY_Model
             return strpos($file, '.');
         }
         return false;
+    }
+
+    public function getFileFullPath()
+    {
+        if ($this->map) {
+            return $this->file_path . $this->getFileFullName();
+        }
+        return '';
+    }
+
+    public function getFileFrontPath()
+    {
+        if ($this->map) {
+            return substr($this->file_path . $this->getFileFullName(), 2);
+        }
+        return '';
+    }
+
+    public function getFileFullName()
+    {
+        if ($this->map) {
+            return $this->file_name . '.' . $this->file_type;
+        }
+        return '';
     }
 
 }

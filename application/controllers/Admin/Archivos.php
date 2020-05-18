@@ -205,7 +205,7 @@ class Archivos extends MY_Controller
         $this->output->enable_profiler(false);
 
         $this->load->library('FileUploader');
-        $loaderClient = new FileUploader;
+        $loaderClient = new FileUploader();
         $result = $loaderClient->upload();
         //persit on database
         if (!isset($result['error'])) {

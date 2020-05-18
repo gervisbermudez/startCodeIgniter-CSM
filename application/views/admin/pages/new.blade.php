@@ -46,13 +46,15 @@
             </div>
             <div class="input-field">
                 <label for="path">Path:</label>
-                <input type="text" id="path" name="path" required="required" value="" v-model="path"
-                    @blur="setPath(path);">
+                <input type="text" id="path" name="path" required="required" value="" v-model="path" >
+                <br>
             </div>
-            <a v-if="!mainImage" href="#fileUploader" @click="loadFiles()" class="waves-effect waves-light btn modal-trigger"><i class="material-icons left">add_a_photo</i>Agregar Imagen</a>
+            <p>
+                <span><b>Full path:</b> @{{getPagePath}}</span>
+            </p>
+            <a href="#fileUploader" @click="loadFiles()" class="waves-effect waves-light btn modal-trigger"><i class="material-icons left">add_a_photo</i>Agregar Imagen</a>
             <div class="row" v-if="mainImage">
                 <div class="col s12">
-                    <h5>Large</h5>
                     <div class="card mainPageImage" v-for="(image, index) in mainImage" :key="index">
                         <div class="card-image">
                         <i class="material-icons right close tooltipped" data-position="left"
@@ -128,8 +130,8 @@
             <span class="header grey-text text-darken-2"><i class="material-icons left">list</i> Tipo</span>
             <br>
             <div class="input-field">
-                <select v-model="pageType" name="template">
-                    <option v-for="(item, index) in pageTypes" :key="index" :value="item">
+                <select v-model="page_type_id" name="template"  @blur="setPath();">
+                    <option v-for="(item, index) in pageTypes" :key="index" :value="item.page_type_id">
                         @{{item.page_type_name | capitalize}}</option>
                 </select>
                 <label>Tipo</label>
