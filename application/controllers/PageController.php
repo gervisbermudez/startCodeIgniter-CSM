@@ -49,20 +49,19 @@ class PageController extends Base_Controller
     public function preview()
     {
         $pages = new Page();
-        $pageInfo = $pages->where(array('page_id' => $this->input->get('page_id'), 'status' => 2));
+        $result = $pages->find_with(array('page_id' => $this->input->get('page_id'), 'status' => 2));
 
-        if (!$pageInfo) {
+        if (!$result) {
             //Not found Page
             $this->error404();
             return;
         }
         //Is the page published?
-        $pageInfo = $pageInfo->first();
-        $data['page'] = $pageInfo;
-        $data['meta'] = $this->getPageMetas($pageInfo);
-        $data['title'] = $pageInfo->title;
-        $data['layout'] = $pageInfo->layout == 'default' ? 'site' : $pageInfo->layout;
-        $template = $pageInfo->template == 'default' ? 'template' : $pageInfo->template;
+        $data['page'] = $pages;
+        $data['meta'] = $this->getPageMetas($pages);
+        $data['title'] = $pages->title;
+        $data['layout'] = $pages->layout == 'default' ? 'site' : $pages->layout;
+        $template = $pages->template == 'default' ? 'template' : $pages->template;
 
         echo $this->blade->view("site.templates." . $template, $data);
 
