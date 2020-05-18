@@ -40,6 +40,7 @@ class Pages extends REST_Controller
         $page = new Page();
         if ($page_id) {
             $result = $page->find($page_id);
+            $result = $result ? $page : [];
         } else {
             $result = $page->all();
         }
@@ -53,12 +54,19 @@ class Pages extends REST_Controller
             return;
         }
 
-        $response = array(
-            'code' => REST_Controller::HTTP_NOT_FOUND,
-            "error_message" => lang('not_found_error'),
-            'data' => [],
-        );
-        $this->response($response, REST_Controller::HTTP_NOT_FOUND);
+        if($page_id){
+            $response = array(
+                'code' => REST_Controller::HTTP_NOT_FOUND,
+                "error_message" => lang('not_found_error'),
+                'data' => [],
+            );
+        }else{
+            $response = array(
+                'code' => REST_Controller::HTTP_OK,
+                'data' => [],
+            );
+        }
+        $this->response($response, REST_Controller::HTTP_OK);
     }
 
     /**
@@ -73,7 +81,6 @@ class Pages extends REST_Controller
 
         $config = array(
             array('field' => 'title', 'label' => 'title', 'rules' => 'required|min_length[5]'),
-            array('field' => 'subtitle', 'label' => 'subtitle', 'rules' => 'min_length[5]'),
             array('field' => 'path', 'label' => 'path', 'rules' => 'required|min_length[5]'),
             array('field' => 'content', 'label' => 'content', 'rules' => 'required|min_length[5]'),
             array('field' => 'page_type_id', 'label' => 'page_type_id', 'rules' => 'integer|is_natural_no_zero'),
@@ -228,10 +235,10 @@ class Pages extends REST_Controller
         $result = false;
 
         if ($page_id) {
-            $page = $page->find($page_id);
+            $result = $page->find($page_id);
         }
 
-        if(!$page){
+        if(!$result){
             $response = array(
                 'code' => REST_Controller::HTTP_NOT_FOUND,
                 "error_message" => lang('not_found_error'),

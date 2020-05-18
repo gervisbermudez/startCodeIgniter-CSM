@@ -14,10 +14,19 @@ class Users extends REST_Controller
     {
         parent::__construct();
         $this->output->enable_profiler(false);
+        $this->lang->load('rest_lang', 'english');
+
+        if (!$this->session->userdata('logged_in')) {
+            $this->lang->load('login_lang', 'english');
+            $this->response([
+                'code' => REST_Controller::HTTP_UNAUTHORIZED,
+                'error_message' => lang('user_not_authenticated'),
+            ], REST_Controller::HTTP_UNAUTHORIZED);
+            exit();
+        }
 
         $this->load->database();
         $this->load->model('Admin/User');
-        $this->lang->load('users_lang', 'english');
 
     }
 
@@ -64,11 +73,13 @@ class Users extends REST_Controller
      */
     public function index_get($user_id = null)
     {
-        if (!$this->verify_request()) {
-            $this->failed_auth(); return;
+        $user = new User();
+        if($user_id){
+            $result = $user->find($user_id);
+            $result = $result ? $user : [];
+        }else{
+            $result = $this->User->get_full_info($user_id);
         }
-
-        $result = $this->User->get_full_info($user_id);
         if ($result) {
             $response = array(
                 'code' => 200,
@@ -145,10 +156,6 @@ class Users extends REST_Controller
      */
     public function index_post()
     {
-        if (!$this->verify_request()) {
-            $this->failed_auth(); return;
-        }
-
         $this->load->library('FormValidator');
 
         $form = new FormValidator();
@@ -223,10 +230,6 @@ class Users extends REST_Controller
      */
     public function index_delete($id = null)
     {
-        if (!$this->verify_request()) {
-            $this->failed_auth(); return;
-        }
-
         $usuario = new User();
         $usuario->find($id);
         if ($usuario->delete()) {
@@ -248,9 +251,6 @@ class Users extends REST_Controller
 
     public function usergroups_get()
     {
-        if (!$this->verify_request()) {
-            $this->failed_auth(); return;
-        }
 
         $this->load->model('Admin/Usergroup');
 
@@ -279,9 +279,6 @@ class Users extends REST_Controller
 
     public function avatar_post()
     {
-        if (!$this->verify_request()) {
-            $this->failed_auth(); return;
-        }
 
         $user_id = $this->input->post('user_id');
         $avatar = $this->input->post('avatar');
