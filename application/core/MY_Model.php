@@ -7,13 +7,13 @@ class MY_model extends CI_Model implements JsonSerializable
     public $table;
     public $primaryKey = 'id';
     public $timestamps = true;
-    private $map = false;
+    public $map = false;
     public $fields = array();
     public $hasData = false;
     public $hasOne = [];
     public $hasMany = [];
     public $protectedFields = array();
-
+    public $computed = array();
     /**
      * The model's default values for attributes.
      *
@@ -465,12 +465,15 @@ class MY_model extends CI_Model implements JsonSerializable
                 $this->load->model($value[1]);
                 ${$value[2]} = new $value[2]();
                 ${$value[2]}->find($this->{$value[0]});
-                $this->{$value[2]} = ${$value[2]};
+                $this->{$key} = ${$value[2]};
             }
             foreach ($this->hasMany as $key => $value) {
                 $this->load->model($value[1]);
                 ${$value[2]} = new $value[2]();
                 $this->{$value[2]} = ${$value[2]}->where(array($value[0] => $this->{$value[0]}));
+            }
+            foreach ($this->computed as $key => $value) {
+                $this->{$key} = $this->{$value}();
             }
         }
         return null;
@@ -484,8 +487,13 @@ class MY_model extends CI_Model implements JsonSerializable
                 $object->{$value} = $this->{$value};
             }
             foreach ($this->hasOne as $key => $value) {
-                if (isset($this->{$value[2]})) {
-                    $object->{$value[2]} = $this->{$value[2]};
+                if (isset($this->{$key})) {
+                    $object->{$key} = $this->{$key};
+                }
+            }
+            foreach ($this->computed as $key => $value) {
+                if (isset($this->{$key})) {
+                    $object->{$key} = $this->{$key};
                 }
             }
             if ($this->hasData) {
