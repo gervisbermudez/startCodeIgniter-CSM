@@ -13,7 +13,7 @@ class Videos extends MY_Controller
 
     public function index()
     {
-        $data['title'] = "Admin | Videos";
+        $data['title'] = ADMIN_TITLE . " | Videos";
         $data['h1'] = "Videos";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['videos'] = $this->Video->all();
@@ -24,7 +24,7 @@ class Videos extends MY_Controller
 
     public function categorias($categoria = 'all')
     {
-        $data['title'] = "Admin | Videos";
+        $data['title'] = ADMIN_TITLE . " | Videos";
         $data['h1'] = "Categorias de Videos";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['categorias'] = $this->Video->get_categoria(array('tipo' => 'video'));
@@ -43,7 +43,7 @@ class Videos extends MY_Controller
 
             if ($data['video']) {
 
-                $data['title'] = "Admin | Videos";
+                $data['title'] = ADMIN_TITLE . " | Videos";
                 $data['h1'] = $data['video']['nombre'];
                 $data['header'] = $this->load->view('admin/header', $data, true);
                 $data['categorias'] = $this->Video->get_video_categoria_rel(array('`video-categoria`.`id_video`' => $id));
@@ -77,7 +77,7 @@ class Videos extends MY_Controller
     {
         $this->load->helper('array');
 
-        $data['title'] = "Admin | Videos - Nuevo";
+        $data['title'] = ADMIN_TITLE . " | Nuevo";
         $data['h1'] = "Videos";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['video'] = array();
@@ -133,7 +133,7 @@ class Videos extends MY_Controller
         if ($data['video']) {
             $this->load->helper('array');
 
-            $data['title'] = "Admin | Videos";
+            $data['title'] = ADMIN_TITLE . " | Videos";
             $data['h1'] = "Videos";
             $data['header'] = $this->load->view('admin/header', $data, true);
             $data['action'] = 'admin/videos/update';

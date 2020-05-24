@@ -1,5 +1,6 @@
 <nav class="main-navbar">
 	<div class="nav-wrapper">
+		<a href="#" data-target="slide-out" class="sidenav-trigger show-on-medium-and-down"><i class="material-icons">menu</i></a>
 		<a class='dropdown-trigger right' href='#' data-target='dropdown1'>
 			@if ($ci->session->userdata('avatar'))
 			<img src="{{base_url(IMGPROFILEPATH) . $ci->session->userdata('username') . '/' . $ci->session->userdata('avatar') }}"

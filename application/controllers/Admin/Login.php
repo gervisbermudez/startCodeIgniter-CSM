@@ -13,7 +13,7 @@ class Login extends CI_Controller
     public function index()
     {
         $this->session->sess_destroy();
-        $data['title'] = "Login";
+        $data['title'] = ADMIN_TITLE . " | Login";
         echo $this->blade->view("admin.login", $data);
     }
 

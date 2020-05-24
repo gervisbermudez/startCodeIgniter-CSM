@@ -15,7 +15,7 @@ class Categorias extends MY_Controller
     {
         $data['h1'] = "Todas las Categorias";
         $data['categorias'] = $this->Categories->all();
-        $data['title'] = "Admin | Categorias";
+        $data['title'] = ADMIN_TITLE . " | Categorias";
         $data['header'] = $this->load->view('admin/header', $data, true);
         echo $this->blade->view("admin.categorias.categorias_list", $data);
 
@@ -31,7 +31,7 @@ class Categorias extends MY_Controller
 
         }
         if ($data['categorias']) {
-            $data['title'] = "Admin | Categorias";
+            $data['title'] = ADMIN_TITLE . " | Categorias";
             $data['header'] = $this->load->view('admin/header', $data, true);
             $this->load->view('admin/head', $data);
             $this->load->view('admin/navbar', $data);
@@ -45,7 +45,7 @@ class Categorias extends MY_Controller
     {
         $this->load->helper('array');
 
-        $data['title'] = "Admin | Categorias";
+        $data['title'] = ADMIN_TITLE . " | Categorias";
         $data['h1'] = "Nueva Categoria";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['action'] = base_url('admin/categorias/save/');
@@ -64,7 +64,7 @@ class Categorias extends MY_Controller
 
     public function save()
     {
-        $data['title'] = "Admin | Categorias";
+        $data['title'] = ADMIN_TITLE . " | Categorias";
         $data['h1'] = "Categorias";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['categorias'] = $this->ModCategorias->get_categoria('all');
@@ -112,7 +112,7 @@ class Categorias extends MY_Controller
     {
         $this->load->helper('array');
 
-        $data['title'] = "Admin | Categorias";
+        $data['title'] = ADMIN_TITLE . " | Categorias";
         $data['h1'] = "Editar Categoria";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['action'] = base_url('admin/categorias/update/');

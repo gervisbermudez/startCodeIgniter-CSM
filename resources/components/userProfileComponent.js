@@ -1,10 +1,11 @@
 var userProfile = new Vue({
   el: "#root",
   data: {
+    debug: DEBUGMODE,
+    loader: true,
     user: {
       user_id: null,
     },
-    loader: true,
   },
   watch: {
     "user.user_id": function (value) {
@@ -21,14 +22,16 @@ var userProfile = new Vue({
       self.users = [];
       var user_id = window.location.pathname.split("/")[4];
       if (user_id) {        
+        var url = BASEURL + "api/v1/users/" + user_id;
         $.ajax({
           type: "GET",
-          url: BASEURL + "api/v1/users/" + user_id,
+          url: url,
           data: {},
           dataType: "json",
           success: function (response) {
+            self.debug ? console.log(url, response) : null;
             self.loader = false;
-            self.user = response.data[0];
+            self.user = response.data;
           },
           error: function (error) {
             M.toast({ html: response.responseJSON.error_message });

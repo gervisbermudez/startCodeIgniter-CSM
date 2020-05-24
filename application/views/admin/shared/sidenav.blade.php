@@ -1,7 +1,6 @@
 <div class="sidemenu">
-		<a href="{{ base_url('admin/') }}" class="brand-logo">Start CMS</a>
+		<a href="{{ base_url('admin/') }}" class="brand-logo">{{ADMIN_BRAND_NAME}}</a>
 		<a href="#" class="sidenav-trigger-lg hide-on-med-and-down"><i class="material-icons">menu</i></a>
-		<a href="#" data-target="slide-out" class="sidenav-trigger hide-on-med-and-up"><i class="material-icons">menu</i></a>
 		<ul id="slide-out" class="sidenav">
 		<li class="{{isSectionActive('usuarios')}}">
 			<a class="waves-effect" href="{{ base_url('admin/usuarios/') }}"><i class="material-icons">perm_identity</i>

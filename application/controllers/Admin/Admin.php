@@ -13,7 +13,7 @@ class Admin extends MY_Controller
     public function index()
     {
         $data['username'] = $this->session->userdata('username');
-        $data['title'] = "Admin";
+        $data['title'] = ADMIN_TITLE . ' | Dashboard';
         $data['h1'] = "";
         $data['header'] = "";
 

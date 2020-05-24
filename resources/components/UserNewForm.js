@@ -176,7 +176,7 @@ var UserNewForm = new Vue({
           success: function (response) {
             self.debug ? console.log(url, response) : null;
             if (response.code == 200) {
-              let data = response.data[0];
+              let data = response.data;
               self.user_id = data.user_id;
               self.form.fields.username.value = data.username;
               self.form.fields.email.value = data.email;

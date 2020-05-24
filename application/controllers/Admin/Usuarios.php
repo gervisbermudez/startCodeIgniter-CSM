@@ -14,7 +14,7 @@ class Usuarios extends MY_Controller
     public function index()
     {
         $data['base_url'] = $this->config->base_url();
-        $data['title'] = "Admin | Usuarios";
+        $data['title'] = ADMIN_TITLE . " | Usuarios";
         $data['h1'] = "Usuarios";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['username'] = $this->session->userdata('username');
@@ -29,7 +29,7 @@ class Usuarios extends MY_Controller
         $user = $this->User->get_full_info($user_id);
         if ($user && $user_id) {
             $user = (object) $user->first();
-            $data['title'] = "Admin | Usuario";
+            $data['title'] = ADMIN_TITLE . " | " . $user->user_data->nombre . ' ' . $user->user_data->apellido;
             $data['user'] = $user;
             //Make the menu options
             $data['dropdown_id'] = 'dropdown' . random_string('alnum', 16);
@@ -74,8 +74,8 @@ class Usuarios extends MY_Controller
         $data['userdata'] = $this->User->find($id);
         if ($data['userdata']) {
             $data['action'] = 'Admin/User/save/';
-            $data['title'] = "Admin | Nuevo Usuario";
-            $data['h1'] = "Nuevo Usuario";
+            $data['title'] = ADMIN_TITLE . " | Editar Usuario";
+            $data['h1'] = "Editar Usuario";
             $data['header'] = $this->load->view('admin/header', $data, true);
             $data['mode'] = 'new';
             $data['footer_includes'] = array(
@@ -93,7 +93,7 @@ class Usuarios extends MY_Controller
         $this->load->model('Admin/Usergroup');
         // set the url base
         $data['action'] = 'Admin/User/save/';
-        $data['title'] = "Admin | Nuevo Usuario";
+        $data['title'] = ADMIN_TITLE . " | Nuevo Usuario";
         $data['h1'] = "Nuevo Usuario";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['userdata'] = false;

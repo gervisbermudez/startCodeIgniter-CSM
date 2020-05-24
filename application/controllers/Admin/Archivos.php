@@ -14,7 +14,7 @@ class Archivos extends MY_Controller
 
     public function index()
     {
-        $data['title'] = "Admin | Archivos";
+        $data['title'] = ADMIN_TITLE . " | Archivos";
         $data['h1'] = "";
 
         echo $this->blade->view("admin.archivos.file_explorer", $data);

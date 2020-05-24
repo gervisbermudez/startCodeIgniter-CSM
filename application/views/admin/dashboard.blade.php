@@ -14,19 +14,19 @@
 	</div>
 	</div>
 	<div class="row" v-show="!loader">
-		<div class="col s8">
+		<div class="col m8 s12">
 			<div class="row">
 				<div class="col s12">
 					<create-contents></create-contents>
 				</div>
 			</div>
 		</div>
-		<div class="col s4">
+		<div class="col m4 s12">
 			<users-collection :users="users"></users-collection>
 		</div>
 	</div>
 	<div class="row" v-show="!loader">
-		<div class="col s4" v-for="(page, index) in filterPages" :key="index">
+		<div class="col s6 m4" v-for="(page, index) in filterPages" :key="index">
 		<page-card :page="page"></page-card>
 		</div>
 	</div>

@@ -14,7 +14,7 @@ class Galeria extends MY_Controller
     public function index()
     {
         $data['albumes'] = $this->Album->all();
-        $data['title'] = "Admin | Galería";
+        $data['title'] = ADMIN_TITLE . " | Galería";
         $data['h1'] = "Galería de Imagenes";
         $data['header'] = $this->load->view('admin/header', $data, true);
         echo $this->blade->view("admin.galeria.albumes_list", $data);
@@ -32,7 +32,7 @@ class Galeria extends MY_Controller
                 $data['album'] = $album;
                 $data['items'] = $this->StModel->get_data(array('id_album' => $albumid), 'album_items');
 
-                $data['title'] = "Admin | Galeria";
+                $data['title'] = ADMIN_TITLE . " | Galeria";
                 $data['h1'] = $album[0]['nombre'];
                 $data['header'] = $this->load->view('admin/header', $data, true);
 
@@ -153,7 +153,7 @@ class Galeria extends MY_Controller
 
     public function crearalbum()
     {
-        $data['title'] = "Admin | Nuevo Album";
+        $data['title'] = ADMIN_TITLE . " | Nuevo Album";
         $data['h1'] = "Agregar nuevo Album";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['footer_includes'] = array(
@@ -166,7 +166,7 @@ class Galeria extends MY_Controller
 
     public function editaralbum($albumid)
     {
-        $data['title'] = "Admin | Editar album";
+        $data['title'] = ADMIN_TITLE . " | Editar album";
         $data['h1'] = "Editar album";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['album'] = $this->Album->get_album($albumid);

@@ -16,7 +16,7 @@ class Configuracion extends MY_Controller
     public function index()
     {
         $data['base_url'] = $this->config->base_url();
-        $data['title'] = "Admin | Configuracion";
+        $data['title'] = ADMIN_TITLE . " | Configuracion";
         $data['h1'] = "Configuracion";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['username'] = $this->session->userdata('username');
@@ -37,7 +37,7 @@ class Configuracion extends MY_Controller
         );
         $this->Site_config->save_config($data);
         $data['base_url'] = $this->config->base_url();
-        $data['title'] = "Admin | Configuracion";
+        $data['title'] = ADMIN_TITLE . " | Configuracion";
         $data['h1'] = "Configuracion";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['username'] = $this->session->userdata('username');

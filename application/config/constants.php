@@ -95,3 +95,7 @@ defined('IMGPROFILEPATH')      OR define('IMGPROFILEPATH', IMGPATH.'profile/');
 //Define the currente site version 
 defined('SITEVERSION')      OR define('SITEVERSION', '1.3.2');
 defined('SITE_TITLE')       OR define('SITE_TITLE', 'Modern Business');
+defined('SITE_BRAND')       OR define('SITE_BRAND', 'Modern Business');
+defined('ADMIN_TITLE')       OR define('ADMIN_TITLE', 'Start CMS');
+defined('ADMIN_BRAND_NAME')       OR define('ADMIN_BRAND_NAME', 'Start CMS');
+defined('ADMIN_BRAND_SORT_NAME')       OR define('ADMIN_BRAND_SORT_NAME', 'Start');

@@ -19,10 +19,10 @@ class Paginas extends MY_Controller
     {
         $this->output->enable_profiler(true);
 
-        $data['h1'] = "Todas las Paginas";
+        $data['h1'] = "";
         $pages = new Page();
         $data['paginas'] = $pages->all();
-        $data['title'] = "Admin | Paginas";
+        $data['title'] = ADMIN_TITLE . " | Paginas";
         $data['header'] = $this->load->view('admin/header', $data, true);
         echo $this->blade->view("admin.pages.pages_list", $data);
     }
@@ -30,7 +30,7 @@ class Paginas extends MY_Controller
     public function nueva()
     {
 
-        $data['title'] = "Admin | Nueva Paginas";
+        $data['title'] = ADMIN_TITLE . " | Nueva Paginas";
         $data['h1'] = "Nueva Pagina";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['action'] = base_url('admin/paginas/save/');
@@ -45,7 +45,7 @@ class Paginas extends MY_Controller
     {
         $page = new Page();
         if ($page->find($page_id)) {
-            $data['title'] = "Admin | Editar";
+            $data['title'] = ADMIN_TITLE . " | Editar";
             $data['h1'] = "Editar Pagina";
             $data['page_id'] = $page_id;
             $data['editMode'] = 'edit';

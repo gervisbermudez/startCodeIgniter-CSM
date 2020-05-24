@@ -138,6 +138,10 @@ a.brand-logo {
   color: #646b7f;
   font-family: "Coda";
   letter-spacing: 1px;
+
+  @media all and (max-width: 992px) {
+    display: none;
+  }
 }
 
 .sidemenu {
@@ -147,9 +151,13 @@ a.brand-logo {
   left: 0px;
   -webkit-transition: .3s ease all;
   transition: .3s ease all;
-  z-index: 10;
+  z-index: 999;
   height: 100%;
   background-color: white;
+
+  @media all and (max-width: 992px) {
+    width: 0px;
+  }
 
   .sidenav {
     transform: none;
@@ -194,7 +202,45 @@ a.brand-logo {
 }
 
 .main-navbar .nav-wrapper {
+  a.sidenav-trigger {
+    height: 50px;
+    line-height: 50px;
+    height: 50px;
+    line-height: 50px;
+    background-color: #fb9678;
+    border-radius: 50px;
+    height: 40px;
+    width: 40px;
+    display: none;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    padding: 0;
+    border-radius: 50%;
+    -webkit-transition: background-color .3s;
+    transition: background-color .3s;
+    cursor: pointer;
+    vertical-align: middle;
+    text-align: center;
+    webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+    margin: 4px 0px 0px 10px;
+  }
+
+  a.sidenav-trigger i {
+    height: 40px;
+    line-height: 40px;
+  }
+
   margin-left: 190px;
+
+  @media all and (max-width: 992px) {
+    margin: auto;
+  }
 }
 
 

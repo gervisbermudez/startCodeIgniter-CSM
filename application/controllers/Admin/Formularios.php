@@ -13,7 +13,7 @@ class Formularios extends MY_Controller
 
     public function index()
     {
-        $data['title'] = "Admin | Formularios";
+        $data['title'] = ADMIN_TITLE . " | Formularios";
         $data['h1'] = "Formularios";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['forms_list'] = $this->Forms_model->get_all();
@@ -23,7 +23,7 @@ class Formularios extends MY_Controller
     public function data()
     {
         $data['base_url'] = $this->config->base_url();
-        $data['title'] = "Admin | Content";
+        $data['title'] = ADMIN_TITLE . " | Content";
         $data['h1'] = "Content";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['username'] = $this->session->userdata('username');
@@ -33,7 +33,7 @@ class Formularios extends MY_Controller
 
     function new () {
         $data['base_url'] = $this->config->base_url();
-        $data['title'] = "Admin | Formularios";
+        $data['title'] = ADMIN_TITLE . " | Formularios";
         $data['h1'] = "Formularios";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['username'] = $this->session->userdata('username');
@@ -46,7 +46,7 @@ class Formularios extends MY_Controller
     public function editForm($form_id)
     {
         $data['base_url'] = $this->config->base_url();
-        $data['title'] = "Admin | Formularios";
+        $data['title'] = ADMIN_TITLE . " | Formularios";
         $data['h1'] = "Formularios";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['username'] = $this->session->userdata('username');
@@ -60,7 +60,7 @@ class Formularios extends MY_Controller
     public function addData($form_id)
     {
         $data['base_url'] = $this->config->base_url();
-        $data['title'] = "Admin | Formularios";
+        $data['title'] = ADMIN_TITLE . " | Formularios";
         $data['h1'] = "Formularios";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['username'] = $this->session->userdata('username');
@@ -76,7 +76,7 @@ class Formularios extends MY_Controller
     public function editData($form_id, $form_content_id)
     {
         $data['base_url'] = $this->config->base_url();
-        $data['title'] = "Admin | Formularios";
+        $data['title'] = ADMIN_TITLE . " | Formularios";
         $data['h1'] = "Formularios";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['username'] = $this->session->userdata('username');
