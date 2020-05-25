@@ -13,10 +13,12 @@
 
 
 -- Volcando estructura de base de datos para start_cms
+DROP DATABASE IF EXISTS `start_cms`;
 CREATE DATABASE IF NOT EXISTS `start_cms` /*!40100 DEFAULT CHARACTER SET latin1 */;
 USE `start_cms`;
 
 -- Volcando estructura para tabla start_cms.album
+DROP TABLE IF EXISTS `album`;
 CREATE TABLE IF NOT EXISTS `album` (
   `album_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(75) NOT NULL,
@@ -36,6 +38,7 @@ DELETE FROM `album`;
 /*!40000 ALTER TABLE `album` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.album_items
+DROP TABLE IF EXISTS `album_items`;
 CREATE TABLE IF NOT EXISTS `album_items` (
   `album_item_id` int(11) NOT NULL AUTO_INCREMENT,
   `album_id` int(11) NOT NULL,
@@ -54,6 +57,7 @@ DELETE FROM `album_items`;
 /*!40000 ALTER TABLE `album_items` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.categories
+DROP TABLE IF EXISTS `categories`;
 CREATE TABLE IF NOT EXISTS `categories` (
   `categorie_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(250) NOT NULL,
@@ -71,18 +75,19 @@ CREATE TABLE IF NOT EXISTS `categories` (
 DELETE FROM `categories`;
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
 INSERT INTO `categories` (`categorie_id`, `name`, `description`, `type`, `parent_id`, `date_publish`, `date_create`, `date_update`, `status`) VALUES
-	(4, 'Categoria 1', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 0, '2020-04-19 10:36:10', '2020-04-19 10:36:14', '2020-04-19 10:40:20', 1),
-	(5, 'Categoria 2', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 0, '2020-04-19 10:36:10', '2020-04-19 10:36:14', '2020-04-19 10:40:28', 1),
-	(6, 'Categoria 3', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 0, '2020-04-19 10:36:10', '2020-04-19 10:36:14', '2020-04-19 10:40:34', 1),
+	(4, 'Web Design', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 0, '2020-04-19 10:36:10', '2020-04-19 10:36:14', '2020-05-25 11:52:01', 1),
+	(5, 'Tutorials', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 0, '2020-04-19 10:36:10', '2020-04-19 10:36:14', '2020-05-25 11:52:02', 1),
+	(6, 'Programing languages', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 0, '2020-04-19 10:36:10', '2020-04-19 10:36:14', '2020-05-25 11:52:29', 1),
 	(7, 'Sub Categoria 1', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 4, '2020-04-19 10:36:10', '2020-04-19 10:36:14', '2020-04-19 12:46:49', 1),
 	(8, 'Sub Categoria 2', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 4, '2020-04-19 10:36:10', '2020-04-19 10:36:14', '2020-04-19 12:46:51', 1),
 	(9, 'Sub Categoria 3', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 4, '2020-04-19 10:36:10', '2020-04-19 10:36:14', '2020-04-19 12:46:52', 1),
-	(10, 'Sub Categoria 4', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 5, '2020-04-19 10:36:10', '2020-04-19 10:36:14', '2020-04-19 14:14:03', 1),
-	(11, 'Sub Categoria 5', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 5, '2020-04-19 10:36:10', '2020-04-19 10:36:14', '2020-04-19 14:14:11', 1),
-	(12, 'Sub Categoria 6', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 5, '2020-04-19 10:36:10', '2020-04-19 10:36:14', '2020-04-19 14:14:15', 1);
+	(10, 'Sub Categoria 1', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 5, '2020-04-19 10:36:10', '2020-04-19 10:36:14', '2020-05-25 11:51:27', 1),
+	(11, 'Sub Categoria 2', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 5, '2020-04-19 10:36:10', '2020-04-19 10:36:14', '2020-05-25 11:51:30', 1),
+	(12, 'Sub Categoria 3', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 5, '2020-04-19 10:36:10', '2020-04-19 10:36:14', '2020-05-25 11:51:33', 1);
 /*!40000 ALTER TABLE `categories` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.contacts
+DROP TABLE IF EXISTS `contacts`;
 CREATE TABLE IF NOT EXISTS `contacts` (
   `contact_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
@@ -100,6 +105,7 @@ DELETE FROM `contacts`;
 /*!40000 ALTER TABLE `contacts` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.contacts_data
+DROP TABLE IF EXISTS `contacts_data`;
 CREATE TABLE IF NOT EXISTS `contacts_data` (
   `contacts_data_id` int(11) NOT NULL AUTO_INCREMENT,
   `contact_id` int(11) NOT NULL,
@@ -118,6 +124,7 @@ DELETE FROM `contacts_data`;
 /*!40000 ALTER TABLE `contacts_data` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.events
+DROP TABLE IF EXISTS `events`;
 CREATE TABLE IF NOT EXISTS `events` (
   `event_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(70) NOT NULL,
@@ -141,6 +148,7 @@ DELETE FROM `events`;
 /*!40000 ALTER TABLE `events` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.file
+DROP TABLE IF EXISTS `file`;
 CREATE TABLE IF NOT EXISTS `file` (
   `file_id` int(11) NOT NULL AUTO_INCREMENT,
   `rand_key` varchar(250) DEFAULT NULL,
@@ -165,6 +173,7 @@ DELETE FROM `file`;
 /*!40000 ALTER TABLE `file` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.form_content
+DROP TABLE IF EXISTS `form_content`;
 CREATE TABLE IF NOT EXISTS `form_content` (
   `form_content_id` int(11) NOT NULL AUTO_INCREMENT,
   `form_custom_id` int(11) NOT NULL DEFAULT 0,
@@ -173,7 +182,7 @@ CREATE TABLE IF NOT EXISTS `form_content` (
   `user_id` int(11) DEFAULT NULL,
   `status` tinyint(4) DEFAULT 1,
   PRIMARY KEY (`form_content_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
 -- Volcando datos para la tabla start_cms.form_content: ~0 rows (aproximadamente)
 DELETE FROM `form_content`;
@@ -181,6 +190,7 @@ DELETE FROM `form_content`;
 /*!40000 ALTER TABLE `form_content` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.form_content_data
+DROP TABLE IF EXISTS `form_content_data`;
 CREATE TABLE IF NOT EXISTS `form_content_data` (
   `form_custom_data_id` int(11) NOT NULL AUTO_INCREMENT,
   `form_content_id` int(11) DEFAULT NULL,
@@ -191,7 +201,7 @@ CREATE TABLE IF NOT EXISTS `form_content_data` (
   `status` tinyint(4) DEFAULT 1,
   PRIMARY KEY (`form_custom_data_id`),
   KEY `form_id` (`form_content_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
 -- Volcando datos para la tabla start_cms.form_content_data: ~0 rows (aproximadamente)
 DELETE FROM `form_content_data`;
@@ -199,27 +209,27 @@ DELETE FROM `form_content_data`;
 /*!40000 ALTER TABLE `form_content_data` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.form_custom
+DROP TABLE IF EXISTS `form_custom`;
 CREATE TABLE IF NOT EXISTS `form_custom` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `form_custom_id` int(11) NOT NULL AUTO_INCREMENT,
   `form_name` varchar(250) DEFAULT NULL,
+  `form_description` varchar(250) DEFAULT NULL,
   `date_create` timestamp NULL DEFAULT current_timestamp(),
   `date_update` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `user_id` int(11) DEFAULT NULL,
   `status` tinyint(4) DEFAULT 1,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+  PRIMARY KEY (`form_custom_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
 
--- Volcando datos para la tabla start_cms.form_custom: ~2 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.form_custom: ~0 rows (aproximadamente)
 DELETE FROM `form_custom`;
 /*!40000 ALTER TABLE `form_custom` DISABLE KEYS */;
-INSERT INTO `form_custom` (`id`, `form_name`, `date_create`, `date_update`, `user_id`, `status`) VALUES
-	(1, 'Twitter Post', '2020-05-08 17:30:38', '2020-05-08 17:30:38', NULL, 1),
-	(2, NULL, '2020-05-08 17:30:53', '2020-05-08 17:30:53', NULL, NULL);
 /*!40000 ALTER TABLE `form_custom` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.form_fields
+DROP TABLE IF EXISTS `form_fields`;
 CREATE TABLE IF NOT EXISTS `form_fields` (
-  `field_id` int(11) NOT NULL AUTO_INCREMENT,
+  `form_field_id` int(11) NOT NULL AUTO_INCREMENT,
   `form_tab_id` int(11) DEFAULT NULL,
   `field_name` varchar(250) DEFAULT NULL,
   `displayName` varchar(250) DEFAULT NULL,
@@ -228,52 +238,54 @@ CREATE TABLE IF NOT EXISTS `form_fields` (
   `date_create` timestamp NULL DEFAULT current_timestamp(),
   `date_update` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `status` tinyint(4) DEFAULT 1,
-  PRIMARY KEY (`field_id`),
+  PRIMARY KEY (`form_field_id`) USING BTREE,
   KEY `form_tab_id` (`form_tab_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 
--- Volcando datos para la tabla start_cms.form_fields: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.form_fields: ~1 rows (aproximadamente)
 DELETE FROM `form_fields`;
 /*!40000 ALTER TABLE `form_fields` DISABLE KEYS */;
 /*!40000 ALTER TABLE `form_fields` ENABLE KEYS */;
 
--- Volcando estructura para tabla start_cms.form_field_config
-CREATE TABLE IF NOT EXISTS `form_field_config` (
+-- Volcando estructura para tabla start_cms.form_fields_data
+DROP TABLE IF EXISTS `form_fields_data`;
+CREATE TABLE IF NOT EXISTS `form_fields_data` (
   `form_field_config_id` int(11) NOT NULL AUTO_INCREMENT,
   `form_field_id` int(11) DEFAULT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `config_name` varchar(200) DEFAULT NULL,
-  `config_value` varchar(200) DEFAULT NULL,
+  `_key` varchar(200) DEFAULT NULL,
+  `_value` varchar(200) DEFAULT NULL,
   `date_create` timestamp NULL DEFAULT current_timestamp(),
   `date_update` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `status` tinyint(4) DEFAULT 1,
   PRIMARY KEY (`form_field_config_id`),
   KEY `form_id` (`form_field_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
 
--- Volcando datos para la tabla start_cms.form_field_config: ~0 rows (aproximadamente)
-DELETE FROM `form_field_config`;
-/*!40000 ALTER TABLE `form_field_config` DISABLE KEYS */;
-/*!40000 ALTER TABLE `form_field_config` ENABLE KEYS */;
+-- Volcando datos para la tabla start_cms.form_fields_data: ~4 rows (aproximadamente)
+DELETE FROM `form_fields_data`;
+/*!40000 ALTER TABLE `form_fields_data` DISABLE KEYS */;
+/*!40000 ALTER TABLE `form_fields_data` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.form_tabs
+DROP TABLE IF EXISTS `form_tabs`;
 CREATE TABLE IF NOT EXISTS `form_tabs` (
   `form_tab_id` int(11) NOT NULL AUTO_INCREMENT,
-  `form_id` int(11) DEFAULT NULL,
+  `form_custom_id` int(11) DEFAULT NULL,
   `tab_name` varchar(200) DEFAULT NULL,
   `date_create` timestamp NULL DEFAULT current_timestamp(),
   `date_update` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `status` tinyint(4) DEFAULT 1,
   PRIMARY KEY (`form_tab_id`),
-  KEY `form_id` (`form_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
+  KEY `form_id` (`form_custom_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
 
--- Volcando datos para la tabla start_cms.form_tabs: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.form_tabs: ~1 rows (aproximadamente)
 DELETE FROM `form_tabs`;
 /*!40000 ALTER TABLE `form_tabs` DISABLE KEYS */;
 /*!40000 ALTER TABLE `form_tabs` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.mailfolder
+DROP TABLE IF EXISTS `mailfolder`;
 CREATE TABLE IF NOT EXISTS `mailfolder` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `namefolder` varchar(60) NOT NULL,
@@ -297,6 +309,7 @@ INSERT INTO `mailfolder` (`id`, `namefolder`, `description`, `status`) VALUES
 /*!40000 ALTER TABLE `mailfolder` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.messages
+DROP TABLE IF EXISTS `messages`;
 CREATE TABLE IF NOT EXISTS `messages` (
   `messages_id` int(11) NOT NULL AUTO_INCREMENT,
   `_from` text NOT NULL,
@@ -320,6 +333,7 @@ DELETE FROM `messages`;
 /*!40000 ALTER TABLE `messages` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.messages_data
+DROP TABLE IF EXISTS `messages_data`;
 CREATE TABLE IF NOT EXISTS `messages_data` (
   `messages_data_id` int(11) NOT NULL AUTO_INCREMENT,
   `id_mensaje` int(11) NOT NULL,
@@ -338,6 +352,7 @@ DELETE FROM `messages_data`;
 /*!40000 ALTER TABLE `messages_data` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.notificacions
+DROP TABLE IF EXISTS `notificacions`;
 CREATE TABLE IF NOT EXISTS `notificacions` (
   `notificacion_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
@@ -356,6 +371,7 @@ DELETE FROM `notificacions`;
 /*!40000 ALTER TABLE `notificacions` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.page
+DROP TABLE IF EXISTS `page`;
 CREATE TABLE IF NOT EXISTS `page` (
   `page_id` int(11) NOT NULL AUTO_INCREMENT,
   `path` varchar(2048) DEFAULT NULL,
@@ -382,12 +398,10 @@ CREATE TABLE IF NOT EXISTS `page` (
 -- Volcando datos para la tabla start_cms.page: ~0 rows (aproximadamente)
 DELETE FROM `page`;
 /*!40000 ALTER TABLE `page` DISABLE KEYS */;
-INSERT INTO `page` (`page_id`, `path`, `template`, `title`, `subtitle`, `content`, `page_type_id`, `user_id`, `visibility`, `categorie_id`, `subcategorie_id`, `status`, `layout`, `mainImage`, `date_publish`, `date_update`, `date_create`) VALUES
-	(64, 'blog/categoria-1/10-best-css-frameworks-for-front-end-developers', 'sideBarTemplate', '10 Best CSS Frameworks for Front-End Developers', '', '<ol>\n<li>Bootstrap</li>\n<li>Foundation</li>\n<li>Bulma</li>\n<li>UIkit</li>\n<li>Semantic UI</li>\n<li>Susy</li>\n<li>Materialize</li>\n<li>Pure</li>\n<li>Skeleton</li>\n<li>Milligra</li>\n</ol>\n<h3>So, which CSS framework is the best?</h3>\n<p>Admit it, you&rsquo;ve asked similar questions before and received the following disappointing answer: none. Selection of a framework (or a tool, or even a person in your life, for that matter) depends on a lot of factors. If you want my advice, here it is: Cut out the noise. Just because people are going crazy over something new and shiny doesn&rsquo;t mean you have to learn it or you&rsquo;ll be left behind. Trying out new things is great, but running around in circles in search of the perfect tool is, well, a waste.</p>\n<p>So, which of these frameworks have you tried? Or perhaps something is astonishing out there that I&rsquo;ve just missed? Let me know in the comments, please. Love, hate, random hi&rsquo;s, all are welcome!</p>', 2, 18, 1, 4, 0, 1, 'default', 24649, '2020-05-18 04:59:57', '2020-05-17 23:07:04', '2020-05-18 04:59:57'),
-	(65, 'blog/what-is-deno', 'sideBarTemplate', 'What is Deno?', '', '<h2>Deno is built in TypeScript</h2>\n<p>One of the biggest advantage of Deno is it has TypeScript support. You dont have to manually configure your environment to work in TypeScript, you can use it right out of the box with Deno have compiler and everything built-in so you dont have to worry about any TypeScript configuration.&nbsp;It\'s all there for you!</p>', 2, 18, 1, 0, 0, 1, 'default', 24651, '2020-05-18 04:54:36', '2020-05-17 23:42:59', '2020-05-18 04:54:36');
 /*!40000 ALTER TABLE `page` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.page_data
+DROP TABLE IF EXISTS `page_data`;
 CREATE TABLE IF NOT EXISTS `page_data` (
   `page_data_id` int(11) NOT NULL AUTO_INCREMENT,
   `page_id` int(11) NOT NULL,
@@ -403,12 +417,10 @@ CREATE TABLE IF NOT EXISTS `page_data` (
 -- Volcando datos para la tabla start_cms.page_data: ~2 rows (aproximadamente)
 DELETE FROM `page_data`;
 /*!40000 ALTER TABLE `page_data` DISABLE KEYS */;
-INSERT INTO `page_data` (`page_data_id`, `page_id`, `_key`, `_value`, `status`, `date_create`, `date_update`) VALUES
-	(126, 64, 'twitter:card', 'summary', 1, '2020-05-12 20:43:22', '2020-05-12 20:43:22'),
-	(127, 64, 'twitter:title', 'How to write a different PHP?', 1, '2020-05-12 20:43:22', '2020-05-12 20:43:22');
 /*!40000 ALTER TABLE `page_data` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.page_type
+DROP TABLE IF EXISTS `page_type`;
 CREATE TABLE IF NOT EXISTS `page_type` (
   `page_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `page_type_name` varchar(250) DEFAULT NULL,
@@ -428,6 +440,7 @@ INSERT INTO `page_type` (`page_type_id`, `page_type_name`, `date_create`, `date_
 /*!40000 ALTER TABLE `page_type` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.relations
+DROP TABLE IF EXISTS `relations`;
 CREATE TABLE IF NOT EXISTS `relations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
@@ -444,6 +457,7 @@ DELETE FROM `relations`;
 /*!40000 ALTER TABLE `relations` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.site_config
+DROP TABLE IF EXISTS `site_config`;
 CREATE TABLE IF NOT EXISTS `site_config` (
   `site_config_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL DEFAULT 0,
@@ -462,6 +476,7 @@ DELETE FROM `site_config`;
 /*!40000 ALTER TABLE `site_config` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.suscriptions
+DROP TABLE IF EXISTS `suscriptions`;
 CREATE TABLE IF NOT EXISTS `suscriptions` (
   `suscriptions_id` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(75) NOT NULL,
@@ -479,6 +494,7 @@ DELETE FROM `suscriptions`;
 /*!40000 ALTER TABLE `suscriptions` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.user
+DROP TABLE IF EXISTS `user`;
 CREATE TABLE IF NOT EXISTS `user` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(25) NOT NULL,
@@ -496,12 +512,12 @@ CREATE TABLE IF NOT EXISTS `user` (
 DELETE FROM `user`;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
 INSERT INTO `user` (`user_id`, `username`, `password`, `email`, `lastseen`, `usergroup_id`, `status`, `date_create`, `date_update`) VALUES
-	(18, 'gerber', '$2y$10$r0DE7OWmcoEsziRfl.qor.PhSYpYq.p0K6C.xY4oDoF10W5JCPbiq', 'gerber@gmail.com', '2020-05-10 15:41:04', 2, 1, '2020-03-01 16:11:25', '2020-05-09 11:11:58'),
-	(19, 'yduran', '$2y$10$.Rd9Ke7opDn2zvjc70DESuilWjm2mIMB9R2qyHyKTQbYQRYxGI6A2', 'yduran@gmail.com', '2017-03-05 17:12:06', 3, 1, '2020-03-01 16:11:25', '2020-05-09 11:12:00'),
-	(34, 'nestor12', '$2y$10$.Rd9Ke7opDn2zvjc70DESuilWjm2mIMB9R2qyHyKTQbYQRYxGI6A2', 'nestor@gmail.com', '2020-05-05 02:49:53', 3, 1, '2020-05-04 21:49:53', '2020-05-09 11:12:01');
+	(1, 'gerber', '$2y$10$r0DE7OWmcoEsziRfl.qor.PhSYpYq.p0K6C.xY4oDoF10W5JCPbiq', 'gerber@gmail.com', '2020-05-10 15:41:04', 1, 1, '2020-03-01 16:11:25', '2020-05-25 11:53:20'),
+	(2, 'yduran', '$2y$10$.Rd9Ke7opDn2zvjc70DESuilWjm2mIMB9R2qyHyKTQbYQRYxGI6A2', 'yduran@gmail.com', '2017-03-05 17:12:06', 3, 1, '2020-03-01 16:11:25', '2020-05-25 11:47:36');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.userdatapermisions
+DROP TABLE IF EXISTS `userdatapermisions`;
 CREATE TABLE IF NOT EXISTS `userdatapermisions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `usergroup_id` int(11) NOT NULL,
@@ -516,6 +532,7 @@ DELETE FROM `userdatapermisions`;
 /*!40000 ALTER TABLE `userdatapermisions` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.usergroup
+DROP TABLE IF EXISTS `usergroup`;
 CREATE TABLE IF NOT EXISTS `usergroup` (
   `usergroup_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(25) NOT NULL,
@@ -539,6 +556,7 @@ INSERT INTO `usergroup` (`usergroup_id`, `name`, `level`, `description`, `status
 /*!40000 ALTER TABLE `usergroup` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.user_data
+DROP TABLE IF EXISTS `user_data`;
 CREATE TABLE IF NOT EXISTS `user_data` (
   `user_data_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
@@ -555,25 +573,22 @@ CREATE TABLE IF NOT EXISTS `user_data` (
 DELETE FROM `user_data`;
 /*!40000 ALTER TABLE `user_data` DISABLE KEYS */;
 INSERT INTO `user_data` (`user_data_id`, `user_id`, `_key`, `_value`, `status`, `date_create`, `date_update`) VALUES
-	(43, 18, 'nombre', 'Gervis', 1, '2020-03-01 16:31:46', '2020-03-01 16:31:46'),
-	(44, 18, 'apellido', 'Mora', 1, '2020-03-01 16:31:46', '2020-03-01 16:31:46'),
-	(45, 18, 'direccion', 'Mara', 1, '2020-03-01 16:31:46', '2020-03-01 16:31:46'),
-	(46, 18, 'telefono', '0414-1672173', 1, '2020-03-01 16:31:46', '2020-03-01 16:31:46'),
-	(47, 18, 'create by', 'gerber', 1, '2020-03-01 16:31:46', '2020-03-01 16:31:46'),
-	(84, 18, 'avatar', '300_3.jpg', 1, '2020-03-01 16:31:46', '2020-05-02 23:12:26'),
-	(85, 19, 'nombre', 'Yule', 1, '2020-03-01 16:31:46', '2020-03-01 16:31:46'),
-	(86, 19, 'apellido', 'Duran', 1, '2020-03-01 16:31:46', '2020-03-01 16:31:46'),
-	(87, 19, 'direccion', 'Mara', 1, '2020-03-01 16:31:46', '2020-03-01 16:31:46'),
-	(88, 19, 'telefono', '0412-9873920', 1, '2020-03-01 16:31:46', '2020-03-01 16:31:46'),
-	(89, 19, 'create by', 'gerber', 1, '2020-03-01 16:31:46', '2020-03-01 16:31:46'),
-	(118, 19, 'avatar', '300_4.jpg', 1, '2020-05-02 19:21:05', '2020-05-02 23:07:11'),
-	(119, 34, 'nombre', 'Nestor', 1, '2020-05-04 21:49:53', '2020-05-04 21:49:53'),
-	(120, 34, 'apellido', 'Barroso', 1, '2020-05-04 21:49:53', '2020-05-04 21:49:53'),
-	(121, 34, 'direccion', 'Caseros', 1, '2020-05-04 21:49:53', '2020-05-04 21:49:53'),
-	(122, 34, 'telefono', '112345678', 1, '2020-05-04 21:49:53', '2020-05-04 21:49:53');
+	(1, 1, 'nombre', 'Gervis', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:30'),
+	(2, 1, 'apellido', 'Mora', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:34'),
+	(3, 1, 'direccion', 'Mara', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:35'),
+	(4, 1, 'telefono', '0414-1672173', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:36'),
+	(5, 1, 'create by', 'gerber', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:38'),
+	(6, 1, 'avatar', '300_3.jpg', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:40'),
+	(7, 2, 'nombre', 'Yule', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:40'),
+	(8, 2, 'apellido', 'Duran', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:42'),
+	(9, 2, 'direccion', 'Mara', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:43'),
+	(10, 2, 'telefono', '0412-9873920', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:46'),
+	(11, 2, 'create by', 'gerber', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:48'),
+	(12, 2, 'avatar', '300_4.jpg', 1, '2020-05-02 19:21:05', '2020-05-25 11:48:50');
 /*!40000 ALTER TABLE `user_data` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.video
+DROP TABLE IF EXISTS `video`;
 CREATE TABLE IF NOT EXISTS `video` (
   `video_id` int(11) NOT NULL AUTO_INCREMENT,
   `nam` varchar(250) NOT NULL,
@@ -595,6 +610,7 @@ DELETE FROM `video`;
 /*!40000 ALTER TABLE `video` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.video-categoria
+DROP TABLE IF EXISTS `video-categoria`;
 CREATE TABLE IF NOT EXISTS `video-categoria` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_video` int(11) NOT NULL,
