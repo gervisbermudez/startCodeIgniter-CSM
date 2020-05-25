@@ -208,11 +208,9 @@ var formModule = new Vue({
             });
         },
         saveData() {
-            this.loader = true;
             $('html, body').animate({ scrollTop: 0 }, 600);
-
+            this.loader = true;
             this.debug ? console.log('saveData trigger') : null;
-
             this.getfieldsData();
             let data = {
                 form_name: this.form_name,
@@ -228,36 +226,46 @@ var formModule = new Vue({
                     fields: element.fields
                 }
             });
-
-
             if (this.editMode) {
                 data.form_id = form_id;
+                var url = BASEURL + "admin/formularios/updateForm";
                 $.ajax({
                     type: "POST",
-                    url: BASEURL + "admin/formularios/updateForm",
+                    url: url,
                     data: {
                         data: JSON.stringify(data)
                     },
                     dataType: "json",
                     success: function (response) {
+                        self.debug ? console.log(url, response) : null;
                         if (response.data) {
                             window.location = BASEURL + 'admin/formularios/';
                         }
+                    },
+                    error: function (response) {
+                        self.loader = false;
+                        M.toast({ html: 'Ha ocurrido un error' });
                     }
                 });
             } else {
+                var url = BASEURL + "admin/formularios/saveForm"
                 $.ajax({
                     type: "POST",
-                    url: BASEURL + "admin/formularios/saveForm",
+                    url: url,
                     data: {
                         data: JSON.stringify(data)
                     },
                     dataType: "json",
                     success: function (response) {
+                        self.debug ? console.log(url, response) : null;
                         if (response.data) {
                             window.location = BASEURL + 'admin/formularios/';
                         }
-                    }
+                    },
+                    error: function (response) {
+                        self.loader = false;
+                        M.toast({ html: response.responseJSON.error_message });
+                      }
                 });
             }
         },

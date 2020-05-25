@@ -2,9 +2,17 @@
     exit('No direct script access allowed');
 }
 
-class Forms_model extends MY_Model
+class Form_custom extends MY_Model
 {
-    public $table = 'form_custom';
+    public $primaryKey = 'form_custom_id';
+
+    public $hasOne = [
+        'user' => ['user_id', 'Admin/User', 'User'],
+    ];
+
+    public $hasMany = [
+        'tabs' => ['form_custom_id', 'Admin/Form_tabs', 'Form_tabs'],
+    ];
 
     public function __construct()
     {
@@ -22,7 +30,7 @@ class Forms_model extends MY_Model
     public function get_form_types()
     {
         $sql = "SELECT DISTINCT(f.form_name),
-        f.id, f.date_create, f.date_update,
+        f.form_custom_id, f.date_create, f.date_update,
         f.user_id, f.`status`, u.username
         FROM form_custom f
         INNER JOIN USER u ON u.user_id = f.user_id";
@@ -37,7 +45,7 @@ class Forms_model extends MY_Model
             (
             SELECT form_id, JSON_OBJECT(form_key, form_value) AS 'form_data'
             FROM form_custom_data) sq1
-            INNER JOIN form_custom fc ON fc.id = sq1.form_id
+            INNER JOIN form_custom fc ON fc.form_custom_id = sq1.form_id
             INNER JOIN USER u ON u.user_id = fc.user_id
             $where
             GROUP BY form_id
@@ -66,22 +74,18 @@ class Forms_model extends MY_Model
         SELECT *
         FROM (
         SELECT form_tab_id, CONCAT('[', GROUP_CONCAT(fields_data), ']') AS fields_data
-        FROM
-        (
-        SELECT *,
-        JSON_OBJECT('field_name', field_name, 'displayName', displayName, 'icon', icon,
-        'component', component, 'dataconfigs', dataconfigs
-        ) AS 'fields_data'
+        FROM (
+        SELECT ff.*, JSON_OBJECT('field_name', field_name, 'displayName', displayName, 'icon', icon, 'component', component, 'dataconfigs', dataconfigs) AS 'fields_data'
         FROM (
         SELECT form_field_id, CONCAT('{', GROUP_CONCAT(dataconfigs), '}') AS dataconfigs
         FROM (
-        SELECT form_field_id, CONCAT('"', config_name, '":"', config_value, '"') AS dataconfigs
-        FROM form_field_config) sq1
+        SELECT form_field_id, CONCAT('"', _key, '":"', _value, '"') AS dataconfigs
+        FROM form_fields_data) sq1
         GROUP BY form_field_id) sq2
-        INNER JOIN form_fields ff ON sq2.form_field_id = ff.field_id) sq3
+        INNER JOIN form_fields ff ON sq2.form_field_id = ff.form_field_id) sq3
         GROUP BY form_tab_id) sq4
         INNER JOIN form_tabs t ON t.form_tab_id = sq4.form_tab_id
-        INNER JOIN form_custom fc ON t.form_id = fc.id
+        INNER JOIN form_custom fc ON t.form_custom_id = fc.form_custom_id
         $where
 EOD;
         return $this->get_query($sql);
@@ -95,12 +99,11 @@ EOD;
     {
         $insert = array(
             'form_name' => $data->form_name,
-            'user_id' => $this->session->userdata('id'),
+            'user_id' => userdata('user_id'),
             'status' => $data->form_status,
         );
 
         $result = $this->set_data($insert, $this->table);
-
         if ($result) {
             $form_id = $this->db->insert_id();
             //Guardar Tabs
@@ -109,7 +112,7 @@ EOD;
                     'form_id' => $form_id,
                     'tab_name' => $tab->tab_name,
                 );
-                $this->set_data($insert_tab, 'form_tabs');
+                $this->db->insert('form_tabs', $insert_tab);
                 $tab_id = $this->db->insert_id();
                 //Guardar fields
                 foreach ($tab->fields as $field) {
@@ -120,18 +123,17 @@ EOD;
                         'icon' => $field->icon,
                         'component' => $field->component,
                     );
-                    $this->set_data($insert_field, 'form_fields');
+                    $this->db->insert('form_fields', $insert_field);
                     $field_id = $this->db->insert_id();
 
                     foreach ($field->data as $index => $value) {
                         $field_config = array(
                             'form_field_id' => $field_id,
-                            'config_name' => $index,
-                            'config_value' => $value,
-                            'user_id' => $this->session->userdata('id'),
+                            '_key' => $index,
+                            '_value' => $value,
+                            'user_id' => userdata('user_id'),
                         );
-                        $this->set_data($field_config, 'form_field_config');
-
+                        $this->db->insert('form_fields_data', $field_config);
                     }
                 }
 
@@ -153,7 +155,7 @@ EOD;
             'form_custom_id' => $form_id,
             'user_id' => $this->session->userdata('id'),
         );
-        $this->set_data($form_content, 'form_content');
+        $this->db->insert('form_content', $form_content);
         $form_content_id = $this->db->insert_id();
 
         foreach ($data->tabs as $tab) {
@@ -163,7 +165,7 @@ EOD;
                     'form_key' => $field->data->fielApiID,
                     'form_value' => $field->data->data->fieldValue,
                 );
-                $this->set_data($field_config, 'form_content_data');
+                $this->db->insert('form_content_data', $field_config);
             }
 
             return $form_id;
@@ -197,27 +199,28 @@ EOD;
     public function update_form($data)
     {
         $where = array(
-            'id' => $data->form_id,
+            'form_custom_id' => $data->form_id,
         );
 
-        $insert = array(
+        $update = array(
             'form_name' => $data->form_name,
-            'user_id' => $this->session->userdata('id'),
+            'user_id' => userdata('user_id'),
             'status' => $data->form_status,
         );
 
-        $result = $this->update_data($where, $insert, $this->table);
+        $this->db->where($where);
+        $result = $this->db->update('form_custom', $update);
 
         if ($result) {
             $form_id = $data->form_id;
-            $this->delete_data(array('form_id' => $form_id), 'form_tabs');
-            //Guardar Tabs
+            $this->db->where(array('form_custom_id' => $form_id));
+            $this->db->delete('form_tabs');
             foreach ($data->tabs as $tab) {
                 $insert_tab = array(
-                    'form_id' => $form_id,
+                    'form_custom_id' => $form_id,
                     'tab_name' => $tab->tab_name,
                 );
-                $this->set_data($insert_tab, 'form_tabs');
+                $this->db->insert('form_tabs', $insert_tab);
                 $tab_id = $this->db->insert_id();
                 //Guardar fields
                 foreach ($tab->fields as $field) {
@@ -228,16 +231,16 @@ EOD;
                         'icon' => $field->icon,
                         'component' => $field->component,
                     );
-                    $this->set_data($insert_field, 'form_fields');
+                    $this->db->insert('form_fields', $insert_field);
                     $field_id = $this->db->insert_id();
 
                     foreach ($field->data as $index => $value) {
                         $field_config = array(
                             'form_field_id' => $field_id,
-                            'config_name' => $index,
-                            'config_value' => $value,
+                            '_key' => $index,
+                            '_value' => $value,
                         );
-                        $this->set_data($field_config, 'form_field_config');
+                        $this->db->insert('form_fields_data', $field_config);
 
                     }
                 }
@@ -252,6 +255,20 @@ EOD;
     public function delete_form($form_id)
     {
         return $this->delete_data(array('id' => $form_id), $this->table);
+    }
+
+    public function filter_results($collection = [])
+    {
+        $this->load->model('Admin/User');
+        foreach ($collection as $key => &$value) {
+            if (isset($value->user_id)) {
+                $user = new User();
+                $user->find($value->user_id);
+                $value->{'user'} = $user->as_data();
+            }
+        }
+
+        return $collection;
     }
 
 }

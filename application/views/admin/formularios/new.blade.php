@@ -21,12 +21,16 @@
             </div>
           </div>
     </div>
-    <div v-cloak v-if="!loader">
+    <div v-cloak v-show="!loader">
         <div class="row">
             <div class="col s12">
                 <div class="input-field col s12">
                     <input placeholder="Form Name" v-model="form_name" id="form_name" type="text" class="validate">
                     <label for="form_name" class="active">Form Name</label>
+                </div>
+                <div class="input-field col s12">
+                    <input placeholder="Form Name" id="form_description" type="text" class="validate">
+                    <label for="form_description" class="active">Form Desription</label>
                 </div>
             </div>
             <div class="col s9">

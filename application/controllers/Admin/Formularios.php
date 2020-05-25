@@ -8,7 +8,7 @@ class Formularios extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('Admin/Forms_model');
+        $this->load->model('Admin/Form_custom');
     }
 
     public function index()
@@ -16,7 +16,7 @@ class Formularios extends MY_Controller
         $data['title'] = ADMIN_TITLE . " | Formularios";
         $data['h1'] = "Formularios";
         $data['header'] = $this->load->view('admin/header', $data, true);
-        $data['forms_list'] = $this->Forms_model->get_all();
+        $data['forms_list'] = $this->Form_custom->get_all();
         echo $this->blade->view("admin.formularios.formularios_list", $data);
     }
 
@@ -90,7 +90,7 @@ class Formularios extends MY_Controller
 
     public function deleteForm($form_id)
     {
-        $this->Forms_model->delete_form($form_id);
+        $this->Form_custom->delete_form($form_id);
         redirect('admin/formularios');
 
     }
@@ -98,11 +98,10 @@ class Formularios extends MY_Controller
     public function saveForm()
     {
         $this->output->enable_profiler(false);
-        //print_r(json_decode($_POST['data']));
         $data = (json_decode($_POST['data']));
         $response = array(
             'code' => 200,
-            'data' => json_encode($this->Forms_model->save_form($data)),
+            'data' => json_encode($this->Form_custom->save_form($data)),
         );
 
         $this->output
@@ -117,7 +116,7 @@ class Formularios extends MY_Controller
         $data = (json_decode($_POST['data']));
         $response = array(
             'code' => 200,
-            'data' => json_encode($this->Forms_model->save_data_form($data)),
+            'data' => json_encode($this->Form_custom->save_data_form($data)),
         );
 
         $this->output
@@ -132,11 +131,11 @@ class Formularios extends MY_Controller
         //Update last data
         $update_where = array('form_content_id' => $data->form_content_id);
         $update_data = array('status' => 2);
-        $this->Forms_model->update_data($update_where, $update_data, 'form_content_data');
+        $this->Form_custom->update_data($update_where, $update_data, 'form_content_data');
 
         $response = array(
             'code' => 200,
-            'data' => $this->Forms_model->save_data_form($data),
+            'data' => $this->Form_custom->save_data_form($data),
         );
 
         $this->output
@@ -147,11 +146,10 @@ class Formularios extends MY_Controller
     public function updateForm()
     {
         $this->output->enable_profiler(false);
-        //print_r(json_decode($_POST['data']));
         $data = (json_decode($_POST['data']));
         $response = array(
             'code' => 200,
-            'data' => json_encode($this->Forms_model->update_form($data)),
+            'data' => json_encode($this->Form_custom->update_form($data)),
         );
 
         $this->output
@@ -162,15 +160,15 @@ class Formularios extends MY_Controller
     public function get_form_info($form_id)
     {
         $this->output->enable_profiler(false);
-        $result = $data['forms_list'] = $this->Forms_model->get_forms(
-            'where id =' . $form_id
+        $result = $data['forms_list'] = $this->Form_custom->get_forms(
+            'where fc.form_custom_id =' . $form_id
         );
 
         foreach ($result as $key => &$value) {
-            $value['fields_data'] = str_replace('\"', '"', $value['fields_data']);
-            $value['fields_data'] = str_replace('"{', '{', $value['fields_data']);
-            $value['fields_data'] = str_replace('}"', '}', $value['fields_data']);
-            $value['fields_data'] = json_decode($value['fields_data']);
+            $value->fields_data = str_replace('\"', '"', $value->fields_data);
+            $value->fields_data = str_replace('"{', '{', $value->fields_data);
+            $value->fields_data = str_replace('}"', '}', $value->fields_data);
+            $value->fields_data = json_decode($value->fields_data);
         }
 
         $response = array(
@@ -186,7 +184,7 @@ class Formularios extends MY_Controller
     public function ajax_get_forms_types()
     {
         $this->output->enable_profiler(false);
-        $result = $data['forms_list'] = $this->Forms_model->get_form_types();
+        $result = $data['forms_list'] = $this->Form_custom->get_form_types();
 
         $response = array(
             'code' => 200,
@@ -203,7 +201,7 @@ class Formularios extends MY_Controller
     {
         $this->output->enable_profiler(false);
 
-        $result = $this->Forms_model->get_all();
+        $result = $this->Form_custom->get_all();
         if ($result) {
             $response = array(
                 'code' => 200,
