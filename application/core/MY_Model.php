@@ -149,9 +149,11 @@ class MY_model extends CI_Model implements JsonSerializable
 
         } else {
             $this->creating();
-            $result = $this->set_data($data);
+            $result = $this->db->insert($this->table, $data);
+            $insert_id = $this->db->insert_id();
             if ($result) {
-                $this->{$this->primaryKey} = $this->db->insert_id();
+                $this->mapfields($data);
+                $this->{$this->primaryKey} = $insert_id;
                 $this->created();
             }
         }
@@ -470,7 +472,7 @@ class MY_model extends CI_Model implements JsonSerializable
                 }else{
                     ${$value[2]}->find($this->{$value[0]});
                 }
-                $this->{$key} = ${$value[2]};
+                $this->{$key} = ${$value[2]}->map ? ${$value[2]} : null;
             }
             foreach ($this->hasMany as $key => $value) {
                 $this->load->model($value[1]);
