@@ -11,8 +11,7 @@ class BlogController extends Base_Controller
         $this->load->model('Admin/Page');
     }
 
-    public function list()
-    {
+    function list() {
         $data['title'] = "Modern Business - Blog";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
@@ -21,8 +20,9 @@ class BlogController extends Base_Controller
 
     }
 
-    private function renderpage($page){
-        if ($page) {
+    private function renderpage($page)
+    {
+        if ($page->map) {
             $data['page'] = $page;
             $data['meta'] = $this->getPageMetas($page);
             $data['title'] = $page->title;
@@ -48,7 +48,7 @@ class BlogController extends Base_Controller
         $this->renderpage($pages);
     }
 
-        public function get_blog_subcategorie($categorie, $subcategorie, $path)
+    public function get_blog_subcategorie($categorie, $subcategorie, $path)
     {
         $pages = new Page();
         $pages->find_with(array('path' => 'blog/' . $categorie . '/' . $subcategorie . '/' . $path, 'status' => 1));
