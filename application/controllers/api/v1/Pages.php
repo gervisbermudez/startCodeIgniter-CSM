@@ -119,11 +119,8 @@ class Pages extends REST_Controller
         $page->visibility = $this->input->post('visibility');
         $page->categorie_id = $this->input->post('categorie_id');
         $page->subcategorie_id = $this->input->post('subcategorie_id');
-        $page->mainImage = $this->input->post('mainImage');
-        $page->page_data = array(
-            "twitter:card" => "summary",
-            "twitter:title" => "How to write a different PHP?"
-        );
+        $page->mainImage = $this->input->post('mainImage') ? $this->input->post('mainImage') : null;
+        $page->page_data = array();
         if ($page->save()) {
             $response = array(
                 'code' => REST_Controller::HTTP_OK,
