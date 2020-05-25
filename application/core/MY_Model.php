@@ -41,7 +41,8 @@ class MY_model extends CI_Model implements JsonSerializable
         $this->db->select($this->getFieldsSelectCompile());
         $query = $this->db->get($this->table);
         if ($query->num_rows() > 0) {
-            return new Collection($query->result());
+
+            return new Collection($this->filter_results($query->result()));
         }
 
         return false;
@@ -103,7 +104,7 @@ class MY_model extends CI_Model implements JsonSerializable
         $this->db->where($where);
         $query = $this->db->get($this->table);
         if ($query->num_rows() > 0) {
-            $result = new Collection($query->result());
+            $result = new Collection($this->filter_results($query->result()));
             return $result;
         }
         return false;
@@ -464,13 +465,21 @@ class MY_model extends CI_Model implements JsonSerializable
             foreach ($this->hasOne as $key => $value) {
                 $this->load->model($value[1]);
                 ${$value[2]} = new $value[2]();
-                ${$value[2]}->find($this->{$value[0]});
+                if(isset($value[3]) && $value[3] == 'delay'){
+                    ${$value[2]} = ${$value[2]};
+                }else{
+                    ${$value[2]}->find($this->{$value[0]});
+                }
                 $this->{$key} = ${$value[2]};
             }
             foreach ($this->hasMany as $key => $value) {
                 $this->load->model($value[1]);
-                ${$value[2]} = new $value[2]();
-                $this->{$value[2]} = ${$value[2]}->where(array($value[0] => $this->{$value[0]}));
+                ${$key} = new $value[2]();
+                if(isset($value[3]) && $value[3] == 'delay'){
+                    $this->{$key} = ${$key};
+                }else{
+                    $this->{$key} = ${$key}->where(array($value[0] => $this->{$value[0]}));
+                }
             }
             foreach ($this->computed as $key => $value) {
                 $this->{$key} = $this->{$value}();
@@ -487,6 +496,11 @@ class MY_model extends CI_Model implements JsonSerializable
                 $object->{$value} = $this->{$value};
             }
             foreach ($this->hasOne as $key => $value) {
+                if (isset($this->{$key})) {
+                    $object->{$key} = $this->{$key};
+                }
+            }
+            foreach ($this->hasMany as $key => $value) {
                 if (isset($this->{$key})) {
                     $object->{$key} = $this->{$key};
                 }
@@ -521,5 +535,16 @@ class MY_model extends CI_Model implements JsonSerializable
         }
 
         return 'SELECT ' . $table_name . '.' . $table_name . '_id' . ', CONCAT(\'{\', GROUP_CONCAT(' . $str_fields_names . '), \'}\')  AS ' . $table_name . ' FROM ' . $table_name . ' GROUP BY ' . $table_name . '.' . $table_name . '_id';
+    }
+
+    public function as_data()
+    {
+        $data = json_encode($this);
+        return json_decode($data);
+    }
+
+    public function filter_results($collection = [])
+    {
+        return $collection;
     }
 }
