@@ -61,7 +61,7 @@ Vue.component("createContents", {
   mounted: function () {
     this.$nextTick(function () {
       this.debug ? console.log("mounted: createContents") : null;
-      this.getDataFromServe();
+      //this.getDataFromServe();
     });
   },
 });

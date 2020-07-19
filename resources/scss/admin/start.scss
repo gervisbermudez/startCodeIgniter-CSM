@@ -755,7 +755,7 @@ div.row.event a.dropdown-button.right {
   height: auto;
 }
 
-#formModule {
+.formModule {
   li.indicator {
     display: none;
   }
@@ -841,6 +841,10 @@ div.row.event a.dropdown-button.right {
     border-bottom: dotted 1px #777;
     border-top: dotted 1px #777;
   }
+}
+
+.formFieldTitle ul.collapsible {
+  background-color: white;
 }
 
 @media (max-width: 640px) {

@@ -325,17 +325,22 @@ class MY_model extends CI_Model implements JsonSerializable
      */
     public function retrieved_data()
     {
-        $foreing_id = $this->{$this->primaryKey};
         $table_data_name = $this->table . '_data';
-        $sql = "SELECT d." . $this->primaryKey . ", CONCAT('{', GROUP_CONCAT('\"', d._key, '\"', ':', '\"', d._value, '\"'), '}')
+        $this->{$table_data_name} = $this->search_for_data($this->{$this->primaryKey}, $this->primaryKey);
+    }
+
+    public function search_for_data($primaryKey, $primaryKeyFieldName)
+    {
+        $table_data_name = $this->table . '_data';
+        $sql = "SELECT d." . $primaryKeyFieldName . ", CONCAT('{', GROUP_CONCAT('\"', d._key, '\"', ':', '\"', d._value, '\"'), '}')
 				AS `data` FROM " . $table_data_name . " d
-				WHERE " . $this->primaryKey . " = $foreing_id
-				GROUP BY " . $this->primaryKey;
+				WHERE " . $primaryKeyFieldName . " = $primaryKey
+				GROUP BY " . $primaryKeyFieldName;
         $table_data = $this->get_query($sql);
         if ($table_data) {
             $table_data = json_decode($table_data->first()->data);
         }
-        $this->{$table_data_name} = $table_data ? $table_data : [];
+        return $table_data ? $table_data : [];
     }
 
     public function created_data()

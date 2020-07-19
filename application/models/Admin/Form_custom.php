@@ -88,7 +88,15 @@ class Form_custom extends MY_Model
         INNER JOIN form_custom fc ON t.form_custom_id = fc.form_custom_id
         $where
 EOD;
-        return $this->get_query($sql);
+        $result = $this->get_query($sql);
+        foreach ($result as $key => &$value) {
+            $value->fields_data = str_replace('\"', '"', $value->fields_data);
+            $value->fields_data = str_replace('"{', '{', $value->fields_data);
+            $value->fields_data = str_replace('}"', '}', $value->fields_data);
+            $value->fields_data = json_decode($value->fields_data);
+        }
+
+        return $this->filter_results($result);
     }
 
     /**
@@ -99,26 +107,27 @@ EOD;
     {
         $insert = array(
             'form_name' => $data->form_name,
+            'form_description' => $data->form_description,
             'user_id' => userdata('user_id'),
-            'status' => $data->form_status,
+            'status' => $data->status,
         );
 
         $result = $this->set_data($insert, $this->table);
         if ($result) {
-            $form_id = $this->db->insert_id();
+            $form_custom_id = $this->db->insert_id();
             //Guardar Tabs
             foreach ($data->tabs as $tab) {
                 $insert_tab = array(
-                    'form_id' => $form_id,
+                    'form_custom_id' => $form_custom_id,
                     'tab_name' => $tab->tab_name,
                 );
                 $this->db->insert('form_tabs', $insert_tab);
                 $tab_id = $this->db->insert_id();
                 //Guardar fields
-                foreach ($tab->fields as $field) {
+                foreach ($tab->form_fields as $field) {
                     $insert_field = array(
                         'form_tab_id' => $tab_id,
-                        'field_name' => $field->name,
+                        'field_name' => $field->field_name,
                         'displayName' => $field->displayName,
                         'icon' => $field->icon,
                         'component' => $field->component,
@@ -131,44 +140,13 @@ EOD;
                             'form_field_id' => $field_id,
                             '_key' => $index,
                             '_value' => $value,
-                            'user_id' => userdata('user_id'),
                         );
                         $this->db->insert('form_fields_data', $field_config);
                     }
                 }
 
             }
-            return $form_id;
-        }
-
-        return false;
-    }
-
-    /**
-     * @param object $form_name Form data to be saved
-     * @return int id form id or null
-     */
-    public function save_data_form($data)
-    {
-        $form_id = $data->form_id;
-        $form_content = array(
-            'form_custom_id' => $form_id,
-            'user_id' => $this->session->userdata('id'),
-        );
-        $this->db->insert('form_content', $form_content);
-        $form_content_id = $this->db->insert_id();
-
-        foreach ($data->tabs as $tab) {
-            foreach ($tab->fields as $field) {
-                $field_config = array(
-                    'form_content_id' => $form_content_id,
-                    'form_key' => $field->data->fielApiID,
-                    'form_value' => $field->data->data->fieldValue,
-                );
-                $this->db->insert('form_content_data', $field_config);
-            }
-
-            return $form_id;
+            return $form_custom_id;
         }
 
         return false;
@@ -199,34 +177,34 @@ EOD;
     public function update_form($data)
     {
         $where = array(
-            'form_custom_id' => $data->form_id,
+            'form_custom_id' => $data->form_custom_id,
         );
 
         $update = array(
             'form_name' => $data->form_name,
             'user_id' => userdata('user_id'),
-            'status' => $data->form_status,
+            'status' => $data->status,
         );
 
         $this->db->where($where);
         $result = $this->db->update('form_custom', $update);
 
         if ($result) {
-            $form_id = $data->form_id;
-            $this->db->where(array('form_custom_id' => $form_id));
+            $form_custom_id = $data->form_custom_id;
+            $this->db->where(array('form_custom_id' => $form_custom_id));
             $this->db->delete('form_tabs');
             foreach ($data->tabs as $tab) {
                 $insert_tab = array(
-                    'form_custom_id' => $form_id,
+                    'form_custom_id' => $form_custom_id,
                     'tab_name' => $tab->tab_name,
                 );
                 $this->db->insert('form_tabs', $insert_tab);
                 $tab_id = $this->db->insert_id();
                 //Guardar fields
-                foreach ($tab->fields as $field) {
+                foreach ($tab->form_fields as $field) {
                     $insert_field = array(
                         'form_tab_id' => $tab_id,
-                        'field_name' => $field->name,
+                        'field_name' => $field->field_name,
                         'displayName' => $field->displayName,
                         'icon' => $field->icon,
                         'component' => $field->component,
@@ -246,7 +224,7 @@ EOD;
                 }
 
             }
-            return $form_id;
+            return $form_custom_id;
         }
 
         return false;

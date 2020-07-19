@@ -7,11 +7,17 @@ class SiteController extends Base_Controller
 
     public function index()
     {
-        $data['title'] = SITE_TITLE . " - Start Bootstrap Template";
-        if (getThemePath()) {
-            $this->blade->changePath(getThemePath());
-        }
-        echo $this->blade->view("site.home", $data);
+       
+       $this->load->model('Admin/Form_custom');
+       $form = new Form_custom();
+       $form->find(22);
+
+       
+       echo "<pre>";
+       print_r ($form->as_data());
+       echo "</pre>";
+       
+       
     }
 
     public function about()

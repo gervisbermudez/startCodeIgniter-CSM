@@ -73,8 +73,3 @@ $route['blog-post'] = 'SiteController/blogPost';
 $route['blog'] = 'BlogController/list';
 $route['portfolio'] = 'SiteController/portfolio';
 $route['portfolio-item'] = 'SiteController/portfolioItem';
-
-
-//Formularios
-$route['admin/formularios'] = 'Admin/Formularios';
-$route['admin/content'] = 'Admin/Formularios/data';

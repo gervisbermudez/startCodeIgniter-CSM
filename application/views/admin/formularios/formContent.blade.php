@@ -24,27 +24,14 @@
     <div v-cloak v-show="!loader">
         <div class="row">
             <div class="col s12">
-                <div class="input-field col s12">
-                    <input placeholder="Form Name" v-model="form_name" id="form_name" type="text" class="validate">
-                    <label for="form_name" class="active">Form Name</label>
-                </div>
-                <div class="input-field col s12">
-                    <input placeholder="Form Name" v-model="form_description" id="form_description" type="text" class="validate">
-                    <label for="form_description" class="active">Form Desription</label>
-                </div>
-            </div>
-            <div class="col s9">
                 <div class="row">
                     <div class="col s12">
                         <ul class="vtabs">
                             <li class="vtab col s3" v-for="(tab, index) in tabs" :id="index" :class="{active : tab.active}">
                                 <a :href="'#' + tab.tabID" @click="setActive(index)" v-if="!tab.edited">@{{tab.tab_name}}</a>
-                                <i class="material-icons right" v-if="!tab.edited && index != 0"
-                                    @click="deleteTab(index)">delete</i>
                                 <input type="text" :id="'input' + index" v-model="tab.tab_name"
                                     v-on:keyup.enter="saveTab(index)" v-on:blur="saveTab(index)" v-if="tab.edited">
                             </li>
-                            <li class="vtab col s3"><a href="#tab1" @click="addTab()">New Tab +</a></li>
                         </ul>
                     </div>
                 </div>
@@ -53,12 +40,12 @@
                         <div class="row" v-for="(field, index) in tab.form_fields">
                             <div class="col s12 component">
                                 <component 
-                                    :serve-data = "field.data"
-                                    :is = "field.component" 
-                                    :tab-parent = "tab" 
-                                    :field-ref-index = "index"
-                                    :field-ref =" field" 
-                                    :configurable = "true"
+                                    :serve-data="field.data"
+                                    :is="field.component" 
+                                    :tab-parent="tab" 
+                                    :field-ref-index="index"
+                                    :field-ref="field" 
+                                    :configurable = "false"
                                     ref="field.component"
                                     >
                                 </component>
@@ -67,33 +54,16 @@
                     </div>
                 </div>
             </div>
-            <div class="col s3 formsElements">
-                <div class="row">
-                    <div class="col s12">
-                        <ul class="collection with-header">
-                            <li class="collection-header">
-                                <h5>Campos</h5>
-                            </li>
-                            <li class="collection-item" v-for="(formsElement, index) in formsElements">
-                                <div>@{{formsElement.displayName}}
-                                    <a href="#!" class="secondary-content" @click="addField(formsElement)"><i
-                                            class="material-icons">@{{formsElement.icon}}</i></a>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
         </div>
         <div class="row">
             <div class="form-group">
-                Activar Formulario
+                Publicar Data
                 <div class="switch">
                     <label>
-                        No activo
+                        No Publicado
                         <input type="checkbox" checked v-model="status" name="status" value="on">
                         <span class="lever"></span>
-                        Activo
+                        Publicado
                     </label>
                 </div>
             </div>
@@ -106,13 +76,14 @@
     </div>
 </div>
 @include('admin.formularios.formsFields')
-@isset($form_custom_id)
+@isset($form_content_id)
     <script>
+        const form_content_id = <?= json_encode($form_content_id); ?>;
         const form_custom_id = <?= json_encode($form_custom_id); ?>;
     </script>
 @endisset
 @endsection
 
 @section('footer_includes')
-<script src="{{base_url('public/js/components/FormNewModuleBundle.min.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('public/js/components/FormContentNewModuleBundle.min.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

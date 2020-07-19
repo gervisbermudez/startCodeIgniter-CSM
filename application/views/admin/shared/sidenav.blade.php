@@ -1,7 +1,7 @@
 <div class="sidemenu">
-		<a href="{{ base_url('admin/') }}" class="brand-logo">{{ADMIN_BRAND_NAME}}</a>
-		<a href="#" class="sidenav-trigger-lg hide-on-med-and-down"><i class="material-icons">menu</i></a>
-		<ul id="slide-out" class="sidenav">
+	<a href="{{ base_url('admin/') }}" class="brand-logo">{{ADMIN_BRAND_NAME}}</a>
+	<a href="#" class="sidenav-trigger-lg hide-on-med-and-down"><i class="material-icons">menu</i></a>
+	<ul id="slide-out" class="sidenav">
 		<li class="{{isSectionActive('usuarios')}}">
 			<a class="waves-effect" href="{{ base_url('admin/usuarios/') }}"><i class="material-icons">perm_identity</i>
 				Usuarios</a>
@@ -22,7 +22,7 @@
 		</li>
 		<li class="{{isSectionActive('formularios')}}">
 			<a class="waves-effect" href="{{ base_url('admin/formularios/') }}"><i class="material-icons">web</i>
-				Api Forms</a>
+				Formularios</a>
 			<ul>
 				<li>
 					<a href="{{ base_url('admin/formularios/new') }}">Nuevo</a>
@@ -30,7 +30,7 @@
 			</ul>
 		</li>
 		<li class="{{isSectionActive('content')}}">
-			<a class="waves-effect" href="{{ base_url('admin/content') }}"><i class="material-icons">insert_chart</i>
+			<a class="waves-effect" href="{{ base_url('admin/formularios/content') }}"><i class="material-icons">insert_chart</i>
 				Forms Content</a>
 		</li>
 		<li class="{{isSectionActive('mensajes')}}">
@@ -42,7 +42,8 @@
 					class="material-icons">supervisor_account</i> Suscriptores</a>
 		</li>
 		<li class="{{isSectionActive('archivos')}}">
-			<a class="waves-effect" href="{{ base_url('admin/archivos') }}"><i class="material-icons">markunread_mailbox</i>
+			<a class="waves-effect" href="{{ base_url('admin/archivos') }}"><i
+					class="material-icons">markunread_mailbox</i>
 				Archivos</a>
 		</li>
 		<li class="{{isSectionActive('categorias')}}">
