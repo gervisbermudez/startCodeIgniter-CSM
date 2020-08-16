@@ -65,7 +65,9 @@ var loginForm = new Vue({
       if (userdata) {
         console.log(userdata);
         this.userdata = userdata;
+        this.username = userdata.username;
         this.remember_user = !!userdata;
+        
       }   
     }
   },
