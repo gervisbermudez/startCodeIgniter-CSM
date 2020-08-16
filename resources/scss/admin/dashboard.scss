@@ -480,6 +480,12 @@ body {
             .m-widget19__body {
                 font-size: 1rem;
                 text-align: justify;
+                color: #898b96 !important;
+                & *{
+                    font-size: 1rem;
+                    text-align: justify;
+                    margin: 0;
+                }
             }
         }
 
