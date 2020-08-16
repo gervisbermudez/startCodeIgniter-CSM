@@ -13,6 +13,7 @@ class Page extends MY_model
         'pages_type' => ['page_type_id', 'Admin/Page_type', 'page_type'],
         'main_image' => ['mainImage', 'Files_model', 'Files_model'],
     ];
+
     public $page_data = [];
 
     /**
@@ -36,7 +37,7 @@ class Page extends MY_model
     {
         $sql = 'SELECT p.*, pt.`page_type_name`, u.`username`, ug.`name`, ug.`level`, file_data.file as imagen_file
                 FROM page p
-                INNER JOIN USER u ON p.`user_id` = u.`user_id`
+                INNER JOIN user u ON p.`user_id` = u.`user_id`
                 INNER JOIN usergroup ug ON ug.`usergroup_id` = u.`usergroup_id`
                 LEFT JOIN (' . $this->get_select_json('file') . ') file_data ON file_data.file_id = p.mainImage
                 INNER JOIN page_type pt ON pt.`page_type_id` = p.`page_type_id`';
@@ -47,8 +48,22 @@ class Page extends MY_model
                 $data_values = json_decode($value['imagen_file']);
                 $value['imagen_file'] = $data_values;
             }
-            return new Collection($data);
+            return $this->filter_results(new Collection($data));
         }
         return false;
+    }
+
+    public function filter_results($collection = [])
+    {
+        $this->load->model('Admin/User');
+        foreach ($collection as $key => &$value) {
+            if (isset($value['user_id']) && $value['user_id']) {
+                $user = new User();
+                $user->find($value['user_id']);
+                $value['user'] = $user->as_data();
+            }
+        }
+
+        return $collection;
     }
 }

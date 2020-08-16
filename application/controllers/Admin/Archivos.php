@@ -110,7 +110,7 @@ class Archivos extends MY_Controller
         if ($result) {
             rename(
                 $file['file_path'] . $file['file_name'] . '.' . $file['file_type'],
-                $file['file_path'] . $file['new_name'] . '.' . $file['file_type'],
+                $file['file_path'] . $file['new_name'] . '.' . $file['file_type']
             );
         }
 
