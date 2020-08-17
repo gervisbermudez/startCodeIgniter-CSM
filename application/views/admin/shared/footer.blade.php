@@ -1,5 +1,6 @@
 <script>
 const BASEURL = <?= json_encode(base_url()) ?>;
+const ADMIN_VERSION = <?= json_encode(ADMIN_VERSION) ?>;
 const ENVIRONMENT = <?=json_encode(ENVIRONMENT)?>;
 const DEBUGMODE = <?=json_encode($ci->config->item('debug_mode'))?>;
 </script>
