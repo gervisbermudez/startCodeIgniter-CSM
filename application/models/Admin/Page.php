@@ -64,6 +64,19 @@ class Page extends MY_model
             }
         }
 
+
+        $this->load->model('Files_model');
+        foreach ($collection as $key => &$value) {
+            if (isset($value['mainImage']) && $value['mainImage']) {
+                $Files_model = new Files_model();
+                $Files_model->find($value['mainImage']);
+                $value["imagen_file"] = $Files_model->as_data();
+                $value["imagen_file"]->{'file_front_path'} = $Files_model->getFileFrontPath();
+            }
+        }
+
+
+
         return $collection;
     }
 }

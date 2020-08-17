@@ -13,7 +13,7 @@
 					<div class="m-widget19__pic m-portlet-fit--top m-portlet-fit--sides"
 						style="min-height-: 286px">
 
-						<img :src="page.imagen_file.file_path + '/' + page.imagen_file.file_name + '.' + page.imagen_file.file_type"
+						<img :src="'/' + page.imagen_file.file_front_path"
 						alt="">
 						<h3 class="m-widget19__title m--font-light truncate">
 							@{{page.title}}
