@@ -25,11 +25,9 @@ var FormContentList = new Vue({
     getcontentText: function (content) {
       let data = content.data;
       let text = '';
-      for (const key in data) {
-        if (data.hasOwnProperty(key)) {
-          const element = data[key];
-          text += `${key[0].toUpperCase()}${key.slice(1)}` + ': ' + element + '. ';
-        }
+      for (const key in data[0][0]) {
+          debugger;
+              text += "";
       }
       return text.substring(0, 90) + "...";
     },

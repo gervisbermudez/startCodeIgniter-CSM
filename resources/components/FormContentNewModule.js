@@ -209,12 +209,14 @@ var FormNewModule = new Vue({
             self.form_custom_id = response.data.form_custom_id;
             self.editMode = true;
             self.loader = false;
-            M.toast({ html: 'Formulario Guardado' });
+            M.toast({ html: 'Datos Guardados' });
           }
         },
         error: function (response) {
           self.loader = false;
-          M.toast({ html: response.responseJSON.error_message });
+          console.log(response);
+          M.toast({ html: 'Ocurrió un error' });
+
         },
       });
     },

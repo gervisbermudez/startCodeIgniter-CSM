@@ -22,7 +22,6 @@ class Forms extends REST_Controller
 
         $this->load->database();
         $this->load->model('Admin/Form_custom');
-
     }
 
     /**
@@ -163,7 +162,6 @@ class Forms extends REST_Controller
             );
 
             $this->response($response, REST_Controller::HTTP_OK);
-
         } else {
             $response = array(
                 'code' => REST_Controller::HTTP_BAD_REQUEST,
@@ -172,7 +170,6 @@ class Forms extends REST_Controller
             );
 
             $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
-
         }
     }
 
@@ -185,7 +182,6 @@ class Forms extends REST_Controller
     {
         $data = array();
         $this->response($data, REST_Controller::HTTP_NOT_FOUND);
-
     }
 
     /**
@@ -220,7 +216,8 @@ class Forms extends REST_Controller
         $this->load->model('Admin/Form_content');
         $Form_conten = new Form_content();
         if ($form_id) {
-            $result = $Form_conten->find($form_id);
+            $result = $Form_conten->where(['form_content_id' => $form_id]);
+            $result = $result ? $result : [];
         } else {
             $result = $Form_conten->all();
         }
@@ -234,7 +231,7 @@ class Forms extends REST_Controller
             return;
         } else {
             $response = array(
-                'code' => REST_Controller::HTTP_OK,
+                'code' => REST_Controller::HTTP_NOT_FOUND,
                 'data' => [],
             );
         }
@@ -253,10 +250,9 @@ class Forms extends REST_Controller
         $Form_conten = new Form_content();
         $data = $_POST['data'];
         if (isset($data->form_content_id) && $data->form_content_id) {
-            //Update Form
             $result = $this->Form_custom->update_data($data);
         } else {
-            $result = $this->Form_content->save_data_form((Object) $data);
+            $result = $this->Form_content->save_data_form((object) $data);
         }
         if ($result) {
             $response = array(
@@ -282,7 +278,6 @@ class Forms extends REST_Controller
     public function data_put($id)
     {
         $this->response([], REST_Controller::HTTP_OK);
-
     }
 
     /**
@@ -294,5 +289,4 @@ class Forms extends REST_Controller
     {
         $this->response([], REST_Controller::HTTP_OK);
     }
-
 }
