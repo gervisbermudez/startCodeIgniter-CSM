@@ -13,6 +13,6 @@ jQuery(document).ready(function ($) {
 if ("serviceWorker" in navigator) {
   // Use the window load event to keep the page load performant
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/public/js/service-worker.min.js");
+    navigator.serviceWorker.register("/service-worker.min.js");
   });
 }
