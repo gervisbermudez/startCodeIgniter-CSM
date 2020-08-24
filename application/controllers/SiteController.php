@@ -8,16 +8,11 @@ class SiteController extends Base_Controller
     public function index()
     {
        
-       $this->load->model('Admin/Form_custom');
-       $form = new Form_custom();
-       $form->find(22);
-
-       
-       echo "<pre>";
-       print_r ($form->as_data());
-       echo "</pre>";
-       
-       
+        $data['title'] = SITE_TITLE . " - About";
+        if (getThemePath()) {
+            $this->blade->changePath(getThemePath());
+        }
+        echo $this->blade->view("site.about", $data);
     }
 
     public function about()

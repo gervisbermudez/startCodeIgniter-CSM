@@ -2,7 +2,7 @@
   "name": "Start CSM",
   "short_name": "Start CSM",
   "lang": "es-US",
-  "start_url": "/",
+  "start_url": "/admin/",
   "display": "standalone",
   "theme_color": "#646b7f",
   "background_color": "#646b7f",

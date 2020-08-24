@@ -12,7 +12,9 @@
 				<div class="m-widget19">
 					<div class="m-widget19__pic m-portlet-fit--top m-portlet-fit--sides"
 						style="min-height-: 286px">
-						<img src="/public/img/blog1.jpg" alt="">
+
+						<img :src="'/' + page.imagen_file.file_front_path"
+						alt="">
 						<h3 class="m-widget19__title m--font-light truncate">
 							@{{page.title}}
 						</h3>
@@ -21,14 +23,14 @@
 					<div class="m-widget19__content">
 						<div class="m-widget19__header">
 							<div class="m-widget19__user-img">
-								<img class="m-widget19__img" src="/public/img/user1.jpg" alt="">
+								<img class="m-widget19__img" :src="'/public/img/profile/' + page.user.username + '/' + page.user.user_data.avatar" alt="">
 							</div>
 							<div class="m-widget19__info">
 								<span class="m-widget19__username">
-								@{{page.username}}
+								@{{page.user.user_data.nombre + ' ' +page.user.user_data.apellido}}
 								</span><br>
 								<span class="m-widget19__time">
-								@{{page.name}}
+								@{{page.user.usergroup.name}}
 								</span>
 							</div>
 							<div class="m-widget19__stats">

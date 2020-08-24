@@ -33,7 +33,7 @@ class Form_custom extends MY_Model
         f.form_custom_id, f.date_create, f.date_update,
         f.user_id, f.`status`, u.username
         FROM form_custom f
-        INNER JOIN USER u ON u.user_id = f.user_id";
+        INNER JOIN user u ON u.user_id = f.user_id";
         return $this->get_query($sql);
 
     }
@@ -46,7 +46,7 @@ class Form_custom extends MY_Model
             SELECT form_id, JSON_OBJECT(form_key, form_value) AS 'form_data'
             FROM form_custom_data) sq1
             INNER JOIN form_custom fc ON fc.form_custom_id = sq1.form_id
-            INNER JOIN USER u ON u.user_id = fc.user_id
+            INNER JOIN user u ON u.user_id = fc.user_id
             $where
             GROUP BY form_id
             ";
