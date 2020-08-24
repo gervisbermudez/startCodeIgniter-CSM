@@ -17,8 +17,6 @@ class Paginas extends MY_Controller
      */
     public function index()
     {
-        $this->output->enable_profiler(true);
-
         $data['h1'] = "";
         $pages = new Page();
         $data['paginas'] = $pages->all();
