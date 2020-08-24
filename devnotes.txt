@@ -1,3 +1,5 @@
+npm i
+composer install
 Iniciar serve
 php -S localhost:8000 -t ./
 gulp watch_resources
