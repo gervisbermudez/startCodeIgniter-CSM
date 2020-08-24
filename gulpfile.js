@@ -20,7 +20,7 @@ gulp.task('concat_widgets', function () {
             path.basename += ".min";
             path.extname = ".js";
         }))
-        //.pipe(terser())
+        .pipe(terser())
         .pipe(gulp.dest(public + '/js/components/'));
 });
 
@@ -34,7 +34,7 @@ gulp.task('compress_js_components', function () {
             path.basename += ".min";
             path.extname = ".js";
         }))
-        //.pipe(terser())
+        .pipe(terser())
         .pipe(gulp.dest(public + '/js/components/'));
 }
 );
@@ -47,7 +47,7 @@ gulp.task('compress_js', function () {
             path.basename += ".min";
             path.extname = ".js";
         }))
-        //.pipe(terser())
+        .pipe(terser())
         .pipe(gulp.dest(public + '/js/'));
 }
 );
@@ -90,7 +90,7 @@ gulp.task('concat_form_components', function () {
             path.basename += ".min";
             path.extname = ".js";
         }))
-        //.pipe(terser())
+        .pipe(terser())
         .pipe(gulp.dest(public + '/js/components/'));
 });
 
@@ -107,7 +107,7 @@ gulp.task('concat_form_content_components', function () {
             path.basename += ".min";
             path.extname = ".js";
         }))
-        //.pipe(terser())
+        .pipe(terser())
         .pipe(gulp.dest(public + '/js/components/'));
 });
 

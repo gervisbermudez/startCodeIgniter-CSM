@@ -2,6 +2,10 @@
 	<a href="{{ base_url('admin/') }}" class="brand-logo">{{ADMIN_BRAND_NAME}}</a>
 	<a href="#" class="sidenav-trigger-lg hide-on-med-and-down"><i class="material-icons">menu</i></a>
 	<ul id="slide-out" class="sidenav">
+		<li class="show-on-medium-and-down">
+			<a class="waves-effect" href="{{ base_url('admin') }}"><i class="material-icons">dashboard</i>
+				Dashboard</a>
+		</li>
 		<li class="{{isSectionActive('usuarios')}}">
 			<a class="waves-effect" href="{{ base_url('admin/usuarios/') }}"><i class="material-icons">perm_identity</i>
 				Usuarios</a>

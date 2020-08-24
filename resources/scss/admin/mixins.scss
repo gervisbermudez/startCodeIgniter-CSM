@@ -1,0 +1,49 @@
+/** Breakpoins **/
+$xs: 0px;
+$sm: 576px;
+$md: 768px;
+$lg: 992px;
+$xl: 1200px;
+$xxl: 1800px;
+
+@mixin respond-between($min, $max) {
+  @media (min-width: $min) and (max-width: $max) {
+    @content;
+  }
+}
+
+@mixin respond-down($max) {
+  @media (max-width: $max) {
+    @content;
+  }
+}
+
+@mixin phone-only {
+  @media (max-width: $sm) {
+    @content;
+  }
+}
+
+@mixin tablet-portrait-up {
+  @media (min-width: $sm) and (max-width: $md) {
+    @content;
+  }
+}
+
+@mixin tablet-landscape-up {
+  @media (min-width: $md) and (max-width: $lg) {
+    @content;
+  }
+}
+
+@mixin desktop-up {
+  @media (min-width: $xl) {
+    @content;
+  }
+}
+
+@mixin big-desktop-up {
+  @media (min-width: $xxl) {
+    @content;
+  }
+}
