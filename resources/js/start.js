@@ -7,6 +7,16 @@ jQuery(document).ready(function ($) {
   });
 
   $("#slide-out").niceScroll();
+
+  window.addEventListener("online", () => {
+    // Set hasNetwork to online when they change to online.
+    M.toast({ html: "Network detected!" });
+  });
+
+  window.addEventListener("offline", () => {
+    // Set hasNetwork to offline when they change to offline.
+    M.toast({ html: "You are offline!" });
+  });
 });
 
 // Check that service workers are supported
