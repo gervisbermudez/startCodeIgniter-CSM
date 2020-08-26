@@ -77,10 +77,10 @@
 								@{{content.date_publish ? content.date_publish : content.date_create}}
 							</td>
 							<td>
-								<a class='dropdown-trigger' href='#!' :data-target='"dropdown_" + content.form_custom_id'><i class="material-icons">more_vert</i></a>
-								<ul :id='"dropdown_" + content.form_custom_id' class='dropdown-content'>
+								<a class='dropdown-trigger' href='#!' :data-target='"dropdown_" + content.form_content_id'><i class="material-icons">more_vert</i></a>
+								<ul :id='"dropdown_" + content.form_content_id' class='dropdown-content'>
 									<li><a :href="base_url('admin/formularios/editData/' + content.form_custom_id + '/' + content.form_content_id)"> Editar</a></li>
-									<li><a :href="base_url(content.form_content_id + '/' )"> Borrar</a></li>
+									<li><a href="#!" @click="deleteContent(content);"> Borrar</a></li>
 								</ul>
 							</td>
 						</tr>

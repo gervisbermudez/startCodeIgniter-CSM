@@ -157,7 +157,7 @@ class Forms extends REST_Controller
             $response = array(
                 'code' => REST_Controller::HTTP_OK,
                 'data' => [
-                    'form_custom_id' => $result
+                    'form_custom_id' => $result,
                 ],
             );
 
@@ -249,8 +249,8 @@ class Forms extends REST_Controller
         $this->load->model('Admin/Form_content');
         $Form_conten = new Form_content();
         $data = $_POST['data'];
-        if (isset($data->form_content_id) && $data->form_content_id) {
-            $result = $this->Form_custom->update_data($data);
+        if (isset($data['form_content_id']) && $data['form_content_id']) {
+            $result = $Form_conten->update_data_form($data);
         } else {
             $result = $this->Form_content->save_data_form((object) $data);
         }
@@ -285,8 +285,24 @@ class Forms extends REST_Controller
      *
      * @return Response
      */
-    public function data_delete($form_id = null)
+    public function data_delete($form_content_id = null)
     {
-        $this->response([], REST_Controller::HTTP_OK);
+        $this->load->model('Admin/Form_content');
+        $Form_conten = new Form_content();
+        $Form_conten->find($form_content_id);
+        $result = $Form_conten->delete();
+        if ($result) {
+            $response = array(
+                'code' => REST_Controller::HTTP_OK,
+                'data' => [],
+            );
+        } else {
+            $response = array(
+                'code' => REST_Controller::HTTP_NOT_FOUND,
+                "error_message" => lang('not_found_error'),
+                'data' => [],
+            );
+        }
+        $this->response($response, REST_Controller::HTTP_OK);
     }
 }

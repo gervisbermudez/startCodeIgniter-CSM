@@ -1,6 +1,13 @@
 Vue.component("formFieldTitle", {
   template: "#formFieldTitle-template",
-  props: ["tab-parent", "field-ref", "field-ref-index", "serveData", "configurable"],
+  props: [
+    "tab-parent",
+    "field-ref",
+    "field-ref-index",
+    "serveData",
+    "configurable",
+    "fieldData",
+  ],
   data: function () {
     return {
       fieldPlaceholder: "",
@@ -9,6 +16,7 @@ Vue.component("formFieldTitle", {
       fieldName: "",
       fielApiID: "",
       title: null,
+      form_custom_data_id: null,
     };
   },
   methods: {
@@ -37,6 +45,7 @@ Vue.component("formFieldTitle", {
         fieldID: this.fieldID,
         fieldName: this.fieldName,
         fielApiID: this.fielApiID,
+        form_custom_data_id: this.form_custom_data_id,
       };
     },
     getContentData() {
@@ -52,6 +61,11 @@ Vue.component("formFieldTitle", {
           const element = this.serveData[key];
           this[key] = element;
         }
+      }
+      if (this.fieldData) {
+        this.form_field_id = this.fieldData.form_field_id;
+        this.form_custom_data_id = this.fieldData.form_custom_data_id;
+        this.title = this.fieldData.form_value.title;
       }
     });
   },

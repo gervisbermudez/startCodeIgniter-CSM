@@ -12,8 +12,8 @@ var FormContentList = new Vue({
         let filterTerm = this.filter.toLowerCase();
         return this.contents.filter((value, index) => {
           let result =
-            value.form_custom.form_name.toLowerCase().indexOf(filterTerm) != -1 ||
-            value.user.username.toLowerCase().indexOf(filterTerm) != -1;
+            value.form_custom.form_name.toLowerCase().indexOf(filterTerm) !=
+              -1 || value.user.username.toLowerCase().indexOf(filterTerm) != -1;
           return result;
         });
       } else {
@@ -24,11 +24,7 @@ var FormContentList = new Vue({
   methods: {
     getcontentText: function (content) {
       let data = content.data;
-      let text = '';
-      for (const key in data[0][0]) {
-          debugger;
-              text += "";
-      }
+      let text = Object.values(data).join(" ");
       return text.substring(0, 90) + "...";
     },
     toggleView: function () {
@@ -75,7 +71,7 @@ var FormContentList = new Vue({
       self.loader = true;
       $.ajax({
         type: "DELETE",
-        url: BASEURL + "api/v1/contents/" + content.content_id,
+        url: BASEURL + "api/v1/forms/data/" + content.form_content_id,
         data: {},
         dataType: "json",
         success: function (response) {

@@ -3,7 +3,7 @@
 @section('title', $title)
 
 @section('head_includes')
-<link rel="stylesheet" href="<?= base_url('public/css/admin/dashboard.min.css') ?>">
+<link rel="stylesheet" href="<?=base_url('public/css/admin/dashboard.min.css')?>">
 @endsection
 
 @section('content')
@@ -64,8 +64,9 @@
 </div>
 @include('admin.components.pageCardComponent')
 @include('admin.components.userCollectionComponent')
+@include('admin.components.createContentsComponent')
 @endsection
 
 @section('footer_includes')
-<script src="<?= base_url('public/js/components/dashboardBundle.min.js?v=' . ADMIN_VERSION) ?>"></script>
+<script src="<?=base_url('public/js/components/dashboardBundle.min.js?v=' . ADMIN_VERSION)?>"></script>
 @endsection

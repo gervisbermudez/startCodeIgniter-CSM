@@ -209,14 +209,13 @@ var FormNewModule = new Vue({
             self.form_custom_id = response.data.form_custom_id;
             self.editMode = true;
             self.loader = false;
-            M.toast({ html: 'Datos Guardados' });
+            M.toast({ html: "Datos Guardados" });
           }
         },
         error: function (response) {
           self.loader = false;
           console.log(response);
-          M.toast({ html: 'Ocurrió un error' });
-
+          M.toast({ html: "Ocurrió un error" });
         },
       });
     },
@@ -225,9 +224,14 @@ var FormNewModule = new Vue({
         //cargar datos del formulario
         this.editMode = true;
         this.form_custom_id = form_custom_id;
+        this.form_content_id = form_content_id || null;
         console.log("editMode", this.editMode);
         var self = this;
-        var url = BASEURL + "api/v1/forms/" + form_custom_id;
+        if (form_content_id) {
+          var url = BASEURL + "api/v1/forms/data/" + form_content_id;
+        } else {
+          var url = BASEURL + "api/v1/forms/" + form_custom_id;
+        }
         $.ajax({
           type: "GET",
           url: url,
@@ -236,12 +240,16 @@ var FormNewModule = new Vue({
           success: function (response) {
             self.debug ? console.log(url, response) : null;
             if (response.code == "200") {
-              self.updateFormData(response.data);
+              if (form_content_id) {
+                self.updateFormData(response.data[0].form_custom);
+              } else {
+                self.updateFormData(response.data);
+              }
             }
           },
           error: function (response) {
             self.loader = false;
-            M.toast({ html: 'Ocurrió un error' });
+            M.toast({ html: "Ocurrió un error" });
           },
         });
       } else {

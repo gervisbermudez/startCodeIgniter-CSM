@@ -39,12 +39,13 @@
                     <div id="simple-list">
                         <div class="row" v-for="(field, index) in tab.form_fields">
                             <div class="col s12 component">
-                                <component 
+                                <component
                                     :serve-data="field.data"
-                                    :is="field.component" 
-                                    :tab-parent="tab" 
+                                    :field-data="field.field_data"
+                                    :is="field.component"
+                                    :tab-parent="tab"
                                     :field-ref-index="index"
-                                    :field-ref="field" 
+                                    :field-ref="field"
                                     :configurable = "false"
                                     ref="field.component"
                                     >
@@ -78,8 +79,8 @@
 @include('admin.formularios.formsFields')
 @isset($form_content_id)
     <script>
-        const form_content_id = <?= json_encode($form_content_id); ?>;
-        const form_custom_id = <?= json_encode($form_custom_id); ?>;
+        const form_content_id = <?=json_encode($form_content_id);?>;
+        const form_custom_id = <?=json_encode($form_custom_id);?>;
     </script>
 @endisset
 @endsection

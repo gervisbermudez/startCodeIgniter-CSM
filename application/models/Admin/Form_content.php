@@ -41,12 +41,12 @@ class Form_content extends MY_Model
         foreach ($collection as $key => &$value) {
             $value->{'data'} = [];
             if (isset($value->form_custom->tabs)) {
-                foreach ($value->form_custom->tabs as $index => &$tab) {
-                    $value->{'data'}[$index] = [];
-                    foreach ($tab->form_fields as &$form_field) {
+                foreach ($value->form_custom->tabs as $index => $tab) {
+                    foreach ($tab->form_fields as $form_field) {
                         $Form_content_data = new Form_content_data();
-                        $form_field->{'field_data'} = $Form_content_data->where(["form_content_id" => $value->form_content_id, "form_field_id" => $form_field->form_field_id]);
-                        $value->{'data'}[$index][] = $form_field->{'field_data'}->first();
+                        $form_field->{'field_data'} = $Form_content_data->where(["form_content_id" => $value->form_content_id, "form_field_id" => $form_field->form_field_id])->first();
+                        $form_value = (Array) $form_field->field_data->form_value;
+                        $value->data[$form_field->data->fielApiID] = $form_value[$form_field->field_name];
                     }
                 }
             }
@@ -74,9 +74,34 @@ class Form_content extends MY_Model
                 $form_field_data = array(
                     "form_content_id" => $form_content_id,
                     "form_field_id" => $form_field['form_field_id'],
-                    "form_value" => json_encode($form_field['data'])
+                    "form_value" => json_encode($form_field['data']),
                 );
                 $this->db->insert('form_content_data', $form_field_data);
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @param object $form_name Form data to be saved
+     * @return int id form id or null
+     */
+    public function update_data_form($data)
+    {
+        $data = (Object) $data;
+        $form_content_id = $data->form_content_id;
+        foreach ($data->tabs as $tab) {
+            foreach ($tab['form_fields'] as $key => $form_field) {
+                $form_field_data = array(
+                    "form_value" => json_encode($form_field['data']),
+                );
+
+                $this->db->where(array(
+                    "form_content_id" => $form_content_id,
+                    "form_field_id" => $form_field['form_field_id'],
+                ));
+                $this->db->update('form_content_data', $form_field_data);
+
             }
         }
         return true;

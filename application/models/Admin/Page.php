@@ -4,7 +4,7 @@
 
 use Tightenco\Collect\Support\Collection;
 
-class Page extends MY_model 
+class Page extends MY_model
 {
     public $primaryKey = 'page_id';
     public $hasData = true;
@@ -18,7 +18,7 @@ class Page extends MY_model
 
     /**
      * Page status:
-     * 0 => deleted 
+     * 0 => deleted
      * 1 => published
      * 2 => draft
      * 3 => archived
@@ -43,10 +43,10 @@ class Page extends MY_model
                 INNER JOIN page_type pt ON pt.`page_type_id` = p.`page_type_id`';
         $query = $this->db->query($sql);
         if ($query->num_rows() > 0) {
-            $data = $query->result_array();
+            $data = $query->result();
             foreach ($data as $key => &$value) {
-                $data_values = json_decode($value['imagen_file']);
-                $value['imagen_file'] = $data_values;
+                $data_values = json_decode($value->imagen_file);
+                $value->imagen_file = $data_values;
             }
             return $this->filter_results(new Collection($data));
         }
@@ -57,26 +57,21 @@ class Page extends MY_model
     {
         $this->load->model('Admin/User');
         foreach ($collection as $key => &$value) {
-            if (isset($value['user_id']) && $value['user_id']) {
+            if (isset($value->user_id)) {
                 $user = new User();
-                $user->find($value['user_id']);
-                $value['user'] = $user->as_data();
+                $user->find($value->user_id);
+                $value->{'user'} = $user;
             }
         }
-
-
         $this->load->model('Files_model');
         foreach ($collection as $key => &$value) {
-            if (isset($value['mainImage']) && $value['mainImage']) {
+            if (isset($value->mainImage) && $value->mainImage) {
                 $Files_model = new Files_model();
-                $Files_model->find($value['mainImage']);
-                $value["imagen_file"] = $Files_model->as_data();
-                $value["imagen_file"]->{'file_front_path'} = $Files_model->getFileFrontPath();
+                $Files_model->find($value->mainImage);
+                $value->imagen_file = $Files_model->as_data();
+                $value->imagen_file->{'file_front_path'} = $Files_model->getFileFrontPath();
             }
         }
-
-
-
         return $collection;
     }
 }
