@@ -48,8 +48,16 @@ if (!function_exists('isDir')) {
 if (!function_exists('isSectionActive')) {
     function isSectionActive($path = '', $position = 2, $class = 'active')
     {
+        if ($position === 'match') {
+            if ($path == uri_string()) {
+                return $class;
+            }
+            return '';
+        }
+
         $ci = &get_instance();
         $url_array = $ci->uri->segment_array();
+
         if (count($url_array) == 0) {
             return '';
         }

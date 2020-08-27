@@ -23,6 +23,14 @@ var FormNewModule = new Vue({
         data: {},
       },
       {
+        field_name: "text",
+        displayName: "Texto",
+        icon: "short_text",
+        component: "formFieldTextArea",
+        status: "1",
+        data: {},
+      },
+      {
         field_name: "formatText",
         displayName: "Texto con formato",
         icon: "format_size",

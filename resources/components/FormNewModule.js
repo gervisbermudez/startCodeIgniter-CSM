@@ -22,6 +22,14 @@ var FormNewModule = new Vue({
         data: {},
       },
       {
+        field_name: "text",
+        displayName: "Texto",
+        icon: "short_text",
+        component: "formFieldTextArea",
+        status: "1",
+        data: {},
+      },
+      {
         field_name: "formatText",
         displayName: "Texto con formato",
         icon: "format_size",
@@ -206,7 +214,7 @@ var FormNewModule = new Vue({
             self.form_custom_id = response.data.form_custom_id;
             self.editMode = true;
             self.loader = false;
-            M.toast({ html: 'Formulario Guardado' });
+            M.toast({ html: "Formulario Guardado" });
           }
         },
         error: function (response) {
@@ -236,7 +244,7 @@ var FormNewModule = new Vue({
           },
           error: function (response) {
             self.loader = false;
-            M.toast({ html: 'Ocurrió un error' });
+            M.toast({ html: "Ocurrió un error" });
           },
         });
       } else {

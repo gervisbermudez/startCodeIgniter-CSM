@@ -24,7 +24,7 @@
 				</li>
 			</ul>
 		</li>
-		<li class="{{isSectionActive('formularios')}}">
+		<li class="{{isSectionActive('admin/formularios', 'match')}}">
 			<a class="waves-effect" href="{{ base_url('admin/formularios/') }}"><i class="material-icons">web</i>
 				Formularios</a>
 			<ul>
@@ -33,7 +33,7 @@
 				</li>
 			</ul>
 		</li>
-		<li class="{{isSectionActive('content')}}">
+		<li class="{{isSectionActive('admin/formularios/content', 'match')}}">
 			<a class="waves-effect" href="{{ base_url('admin/formularios/content') }}"><i class="material-icons">insert_chart</i>
 				Forms Content</a>
 		</li>
