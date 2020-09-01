@@ -1,6 +1,7 @@
 var FormContentList = new Vue({
   el: "#root",
   data: {
+    debug: DEBUGMODE,
     contents: [],
     tableView: true,
     loader: true,

@@ -1,6 +1,7 @@
 var loginForm = new Vue({
   el: "#root",
   data: {
+    debug: DEBUGMODE,
     loader: true,
     username: "",
     password: "",
@@ -27,8 +28,11 @@ var loginForm = new Vue({
         dataType: "json",
         success: function (response) {
           if (self.remember_user) {
-            localStorage.removeItem('userdata');
-            localStorage.setItem('userdata', JSON.stringify(response.userdata[0]));
+            localStorage.removeItem("userdata");
+            localStorage.setItem(
+              "userdata",
+              JSON.stringify(response.userdata[0])
+            );
           }
           window.location = self.redirect
             ? BASEURL + self.redirect
@@ -44,7 +48,7 @@ var loginForm = new Vue({
       this.userdata = null;
       this.username = "";
       this.password = "";
-      localStorage.removeItem('userdata');
+      localStorage.removeItem("userdata");
     },
     getUrlParameter(sParam) {
       var sPageURL = window.location.search.substring(1),
@@ -61,15 +65,14 @@ var loginForm = new Vue({
       }
     },
     getRememberUserdata() {
-      let userdata = JSON.parse(localStorage.getItem('userdata'));
+      let userdata = JSON.parse(localStorage.getItem("userdata"));
       if (userdata) {
         console.log(userdata);
         this.userdata = userdata;
         this.username = userdata.username;
         this.remember_user = !!userdata;
-        
-      }   
-    }
+      }
+    },
   },
   mounted: function () {
     this.$nextTick(function () {

@@ -1,6 +1,7 @@
 var PagesLists = new Vue({
   el: "#root",
   data: {
+    debug: DEBUGMODE,
     pages: [],
     tableView: false,
     loader: true,

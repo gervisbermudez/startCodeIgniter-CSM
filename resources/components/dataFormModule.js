@@ -3,6 +3,7 @@ Vue.component("formFieldTitle", {
   props: ["tab-parent", "field-ref", "field-ref-index", "serve-data"],
   data: function () {
     return {
+      debug: DEBUGMODE,
       fieldPlaceholder: "",
       fieldID: this.makeid(10),
       fieldName: "",
@@ -263,10 +264,10 @@ var dataFormModule = new Vue({
         success: function (response) {
           debugger;
           if (response.code == 200) {
-            this.form_content_id = response.data
+            this.form_content_id = response.data;
             M.toast({ html: "Datos guardados!" });
             setTimeout(() => {
-              window.location = BASEURL + 'admin/formularios/content';
+              window.location = BASEURL + "admin/formularios/content";
             }, 3000);
           } else {
             M.toast({ html: "Ocurrio un error" });

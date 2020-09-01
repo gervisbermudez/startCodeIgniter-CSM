@@ -2,7 +2,9 @@ Vue.component("userCard", {
   template: "#user-card-template",
   props: ["user"],
   data: function () {
-    return {};
+    return {
+      debug: DEBUGMODE,
+    };
   },
   methods: {
     getAvatarUrl() {
@@ -23,12 +25,13 @@ Vue.component("userCard", {
   },
   mounted: function () {
     this.$nextTick(function () {});
-  }, 
+  },
 });
 
 var usersModule = new Vue({
   el: "#root",
   data: {
+    debug: DEBUGMODE,
     users: [],
     loader: true,
     tableView: false,

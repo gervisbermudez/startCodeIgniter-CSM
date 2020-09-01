@@ -1,6 +1,7 @@
 var fileExplorerModule = new Vue({
   el: "#root",
   data: {
+    debug: DEBUGMODE,
     root: "./",
     curDir: "",
     loader: false,
@@ -61,7 +62,7 @@ var fileExplorerModule = new Vue({
       if ($("#input-100").data("fileinput")) {
         $("#input-100").data("fileinput").uploadExtraData.curDir = value;
       }
-    }
+    },
   },
   methods: {
     getFullFileName(item) {
@@ -190,7 +191,7 @@ var fileExplorerModule = new Vue({
           file = self.files[index];
           indexFile = index;
         }
-      }); 
+      });
       $.ajax({
         type: "POST",
         url: BASEURL + "admin/archivos/ajax_move_file",
@@ -201,8 +202,7 @@ var fileExplorerModule = new Vue({
         dataType: "json",
         success: function (response) {
           if (response.code == 200) {
-            html =
-              '<span>Done! </span>';
+            html = "<span>Done! </span>";
             M.toast({ html: html });
 
             self.files[indexFile].file_path = newPath;

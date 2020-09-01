@@ -1,6 +1,7 @@
 var fileUploaderModule = new Vue({
   el: "#fileUploader",
   data: {
+    debug: DEBUGMODE,
     root: "./",
     curDir: "",
     loader: false,
