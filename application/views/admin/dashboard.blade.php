@@ -42,13 +42,11 @@
 			</div>
 		</div>
 		<div class="col m4 s12">
-			<users-collection :users="users"></users-collection>
+			<users-collection></users-collection>
 		</div>
 	</div>
 	<div class="row" v-show="!loader">
-		<div class="col s6 m4" v-for="(page, index) in filterPages" :key="index">
-			<page-card :page="page"></page-card>
-		</div>
+		<page-card></page-card>
 	</div>
 </div>
 <div class="fixed-action-btn">

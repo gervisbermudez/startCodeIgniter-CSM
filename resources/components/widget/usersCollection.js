@@ -1,31 +1,33 @@
 Vue.component("usersCollection", {
   template: "#user-collection-template",
-  props: ["users"],
   data: function () {
     return {
-      debug: false,
+      debug: DEBUGMODE,
+      users: [],
     };
   },
   methods: {
-    getUserAvatar(user) {
-      if (user.user_data.avatar) {
-        return (
-          BASEURL +
-          "public/img/profile/" +
-          user.username +
-          "/" +
-          user.user_data.avatar
-        );
-      } else {
-        return "https://materializecss.com/images/sample-1.jpg";
-      }
-    },
-    getUserLink(user) {
-      return BASEURL + "admin/usuarios/ver/" + user.user_id;
+    getUsers() {
+      var self = this;
+      $.ajax({
+        type: "GET",
+        url: BASEURL + "api/v1/users/",
+        data: {},
+        dataType: "json",
+        success: function (response) {
+          this.debug ? console.log(response) : null;
+          let users = response.data;
+          self.users = users.map((user) => new User(user));
+        },
+        error: function (error) {
+          console.error(error);
+        },
+      });
     },
   },
   mounted: function () {
     this.$nextTick(function () {
+      this.getUsers();
       this.debug ? console.log("mounted: usersCollection") : null;
     });
   },

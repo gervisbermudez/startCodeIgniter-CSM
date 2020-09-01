@@ -14,7 +14,7 @@
 		</ul>
 	</div>
 	<div class="content row">
-		<div class="col s4" v-for="(item, index) in content" :key="index">
+		<div class="col s12 m4" v-for="(item, index) in content" :key="index" v-if="index < 3">
 			<div class="card">
 				<ul class="collection">
 					<li class="collection-item" v-for="(value, key) in Object.values(item.data)" :key="key" v-if="key < 3">@{{ value }}</li>

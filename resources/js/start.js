@@ -26,3 +26,55 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/service-worker.min.js");
   });
 }
+
+class User {
+  user_id = null;
+  username = "";
+  email;
+  lastseen;
+  level;
+  role;
+  status;
+  usergroup_id;
+  user_data = {
+    nombre: "",
+    apellido: "",
+    direccion: "",
+    telefono: "",
+    "create by": "",
+  };
+
+  constructor(params) {
+    for (const param in params) {
+      if (params.hasOwnProperty(param)) {
+        this[param] = params[param];
+      }
+    }
+  }
+
+  get_fullname = () => {
+    try {
+      return this.user_data.nombre + " " + this.user_data.apellido;
+    } catch (error) {
+      return "";
+    }
+  };
+
+  get_profileurl = () => {
+    return BASEURL + "admin/usuarios/ver/" + this.user_id;
+  };
+
+  get_avatarurl = () => {
+    try {
+      return (
+        BASEURL +
+        "/public/img/profile/" +
+        this.username +
+        "/" +
+        this.user_data.avatar
+      );
+    } catch (error) {
+      return "";
+    }
+  };
+}

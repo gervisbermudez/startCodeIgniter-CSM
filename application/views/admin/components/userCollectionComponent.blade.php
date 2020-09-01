@@ -4,9 +4,9 @@
 		<h5>Usuarios</h5>
 	</li>
 	<li class="collection-item avatar" v-for="(user, index) in users" :key="index">
-		<a :href="getUserLink(user)">
-			<img :src="getUserAvatar(user)" alt="" class="circle">
-			<span class="title">@{{user.user_data.nombre + ' ' +user.user_data.apellido}}</span>
+		<a :href="user.get_profileurl()">
+			<img :src="user.get_avatarurl()" alt="" class="circle">
+			<span class="title">@{{user.get_fullname()}}</span>
 			<p>@{{user.role}}</p>
 		</a>
 	</li>

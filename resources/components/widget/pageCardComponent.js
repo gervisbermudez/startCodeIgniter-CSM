@@ -1,31 +1,55 @@
 Vue.component("pageCard", {
   template: "#page-card-template",
-  props: ["page"],
   data: function () {
     return {
-      debug: false,
+      debug: DEBUGMODE,
+      pages: [],
     };
   },
   computed: {
-    contentText: function () {
+    /*filterPages: function () {
+       if (this.pages.length > 3) {
+        return this.pages.slice(0, 3);
+      } 
+      return this.pages;
+    },*/
+  },
+  methods: {
+    contentText: function (page) {
       var span = document.createElement("span");
-      span.innerHTML = this.page.content;
+      span.innerHTML = page.content;
       let text = span.textContent || span.innerText;
       return text.substring(0, 220) + "...";
     },
-  },
-  methods: {
-    getUserAvatar: function (user_id) {
-      return "/public/img/user1.jpg";
+    getPages: function () {
+      var self = this;
+      $.ajax({
+        type: "GET",
+        url: BASEURL + "api/v1/pages/",
+        data: {},
+        dataType: "json",
+        success: function (response) {
+          let pages = response.data;
+          self.pages = pages.map((page) => {
+            page.user = new User(page.user);
+            return page;
+          });
+        },
+        error: function (error) {
+          console.error(error);
+        },
+      });
     },
-    getPageFullPath: function (path) {
-      if (this.page.status == 1) {
-        return BASEURL + path;
+    getPageFullPath: function (page) {
+      if (page.status == 1) {
+        return BASEURL + page.path;
       }
-      return BASEURL + "admin/paginas/editar/" + this.page.page_id;
+      return BASEURL + "admin/paginas/editar/" + page.page_id;
     },
   },
   mounted: function () {
-    this.$nextTick(function () {});
+    this.$nextTick(function () {
+      this.getPages();
+    });
   },
 });
