@@ -1,196 +1,194 @@
 @import "components/palette";
 
 .main-navbar {
-    box-shadow: none;
+  box-shadow: none;
 }
 
 .main::before {
-    content: '';
-    width: 100%;
-    height: 120px;
-    display: block;
-    background-color: #646b7f;
+  content: "";
+  width: 100%;
+  height: 120px;
+  display: block;
+  background-color: #646b7f;
 }
 
 .explorer {
-    padding: 0px 10px;
-    width: 95%;
-    background-color: $white;
-    margin-top: 20px;
-    border-radius: 5px;
-    border: solid 1px #ccc;
-    overflow: hidden;
-    top: -120px;
+  padding: 0px 10px;
+  width: 95%;
+  background-color: $white;
+  margin-top: 20px;
+  border-radius: 5px;
+  border: solid 1px #ccc;
+  overflow: hidden;
+  top: -120px;
+  position: relative;
+
+  nav {
     position: relative;
+    background-color: $white;
+    z-index: auto;
+    box-shadow: none;
 
-    nav {
-        position: relative;
-        background-color: $white;
-        z-index: auto;
-        box-shadow: none;
-
-        i {
-            color: #000;
-            height: 50px;
-            line-height: 50px;
-        }
-
-        .input-field label.label-icon i {
-            color: #000 !important;
-            height: 50px;
-            line-height: 50px;
-        }
-
-        a.breadcrumb {
-            color: black;
-        }
-
-        .breadcrumb:before {
-            color: black;
-        }
-
-        a.brand-logo {
-            position: relative;
-            float: left;
-            left: 0px;
-            text-align: center;
-            width: 40px;
-        }
-
-        a.brand-logo i {
-            margin: 0 !important;
-            float: none !important;
-        }
-
-        .col.s12.breadcrumb-nav {
-            width: auto;
-        }
-
-        .breadcrumb:last-child {
-            color: #009688;
-        }
-
-        form {
-            float: left;
-            width: 80%;
-        }
-
+    i {
+      color: #000;
+      height: 50px;
+      line-height: 50px;
     }
 
-    .files {
-        .search>div {
-            padding: 0px !important;
-        }
-
-        .folder {
-            cursor: pointer;
-
-            .card-panel {
-                overflow: hidden;
-                border-radius: 5px;
-            }
-
-            .card-icon {
-                float: left;
-            }
-
-            .card-content {
-                float: left;
-                padding-left: 10px;
-            }
-        }
-
-        .filelist {
-            padding: 0px 20px 0px 0px;
-        }
-
+    .input-field label.label-icon i {
+      color: #000 !important;
+      height: 50px;
+      line-height: 50px;
     }
 
-    .file {
-        .card {
-            border-radius: 5px;
-        }
-
-        .card .card-image {
-            position: relative;
-            z-index: 1;
-            max-height: 90px;
-            overflow: hidden;
-            background-color: rgba(0, 0, 0, 0.14);
-            border-top-left-radius: 5px;
-            border-top-right-radius: 5px;
-        }
-
-        span.grey-text.text-darken-4 {
-            position: relative;
-        }
-
-        a.grey-text.text-darken-4.dropdown-trigger {
-            position: absolute;
-            right: 0px;
-            z-index: 9;
-            height: 32px;
-        }
-
-        .dropdown-content {
-            left: auto !important;
-            right: 0px !important;
-            width: 130px !important;
-
-            i {
-                float: none;
-                width: auto;
-                margin: auto;
-            }
-        }
+    a.breadcrumb {
+      color: black;
     }
 
-    .file.icon {
-        font-size: 30px;
-        display: flex;
-        align-content: center;
-        align-items: center;
-        height: 60px;
-        justify-content: center;
+    .breadcrumb:before {
+      color: black;
     }
 
-    .tree {
-        padding: 0px !important;
-
-        ul.collapsible {
-            .collapsible-header {
-                border-bottom: none;
-            }
-
-            li {
-                padding: 5px 0px;
-            }
-        }
-
-        ul.collapsible li a {
-            color: #444;
-        }
-
-        ul.collapsible .collapsible-body {
-            padding: 10px 15px;
-        }
-
-        .sidenav {
-            transform: none;
-            width: auto;
-            left: 0px;
-            position: relative;
-            margin: 0px;
-            z-index: auto;
-            box-shadow: none;
-
-            &>a {
-                margin: 10px 0px 0px;
-            }
-
-            i {
-                margin-right: 0px;
-            }
-        }
+    a.brand-logo {
+      position: relative;
+      float: left;
+      left: 0px;
+      text-align: center;
+      width: 40px;
     }
+
+    a.brand-logo i {
+      margin: 0 !important;
+      float: none !important;
+    }
+
+    .col.s12.breadcrumb-nav {
+      width: auto;
+    }
+
+    .breadcrumb:last-child {
+      color: #009688;
+    }
+
+    form {
+      float: left;
+      width: 80%;
+    }
+  }
+
+  .files {
+    .search > div {
+      padding: 0px !important;
+    }
+
+    .folder {
+      cursor: pointer;
+
+      .card-panel {
+        overflow: hidden;
+        border-radius: 5px;
+      }
+
+      .card-icon {
+        float: left;
+      }
+
+      .card-content {
+        float: left;
+        padding-left: 10px;
+      }
+    }
+
+    .filelist {
+      padding: 0px 20px 0px 0px;
+    }
+  }
+
+  .file {
+    .card {
+      border-radius: 5px;
+    }
+
+    .card .card-image {
+      position: relative;
+      z-index: 1;
+      max-height: 90px;
+      overflow: hidden;
+      background-color: rgba(0, 0, 0, 0.14);
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
+    }
+
+    span.grey-text.text-darken-4 {
+      position: relative;
+    }
+
+    a.grey-text.text-darken-4.dropdown-trigger {
+      position: absolute;
+      right: 0px;
+      z-index: 9;
+      height: 32px;
+    }
+
+    .dropdown-content {
+      left: auto !important;
+      right: 0px !important;
+      width: 130px !important;
+
+      i {
+        float: none;
+        width: auto;
+        margin: auto;
+      }
+    }
+  }
+
+  .file.icon {
+    font-size: 30px;
+    display: flex;
+    align-content: center;
+    align-items: center;
+    height: 60px;
+    justify-content: center;
+  }
+
+  .tree {
+    padding: 0px !important;
+
+    ul.collapsible {
+      .collapsible-header {
+        border-bottom: none;
+      }
+
+      li {
+        padding: 5px 0px;
+      }
+    }
+
+    ul.collapsible li a {
+      color: #444;
+    }
+
+    ul.collapsible .collapsible-body {
+      padding: 10px 15px;
+    }
+
+    .sidenav {
+      transform: none;
+      width: auto;
+      left: 0px;
+      position: relative;
+      margin: 0px;
+      z-index: auto;
+      box-shadow: none;
+
+      & > a {
+        margin: 10px 0px 0px;
+      }
+
+      i {
+        margin-right: 0px;
+      }
+    }
+  }
 }

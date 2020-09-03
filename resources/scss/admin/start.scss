@@ -838,6 +838,13 @@ div.row.event a.dropdown-button.right {
   }
 }
 
+.form-user-component {
+  border: 0;
+  & * {
+    color: #444;
+  }
+}
+
 .formFieldTitle ul.collapsible {
   background-color: white;
 }

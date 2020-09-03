@@ -66,7 +66,7 @@
 						<tr v-for="(categorie, index) in filterCategories" :key="index">
 							<td>@{{categorie.name}}</td>
 							<td>@{{categorie.type}}</td>
-							<td><a :href="base_url('admin/usuarios/ver/' + categorie.user_id)">@{{categorie.user.user_data.nombre}} @{{categorie.user.user_data.apellido}}</a></td>
+							<td><a :href="base_url('admin/usuarios/ver/' + categorie.user_id)">@{{categorie.user.get_fullname()}}</a></td>
 							<td>
 								@{{categorie.date_publish ? categorie.date_publish : categorie.date_create}}
 							</td>
@@ -80,9 +80,9 @@
 								<a class='dropdown-trigger' href='#!' :data-target='"dropdown" + categorie.categorie_id'><i
 										class="material-icons">more_vert</i></a>
 								<ul :id='"dropdown" + categorie.categorie_id' class='dropdown-content'>
-									<li><a :href="base_url('admin/paginas/editar/' + categorie.categorie_id)">Editar</a></li>
+									<li><a :href="base_url('admin/categorias/editar/' + categorie.categorie_id)">Editar</a></li>
 									<li><a href="#!" v-on:click="deletePage(page, index);">Borrar</a></li>
-									<li v-if="categorie.status == 2"><a :href="base_url('admin/paginas/preview?categorie_id=' + categorie.categorie_id)" target="_blank">Preview</a></li>
+									<li v-if="categorie.status == 2"><a :href="base_url('admin/categorias/preview?categorie_id=' + categorie.categorie_id)" target="_blank">Preview</a></li>
 									<li><a :href="base_url(categorie.path)" target="_blank">Archivar</a></li>
 								</ul>
 							</td>
@@ -98,14 +98,14 @@
 							<div class="card-image-container">
 								<img :src="getPageImagePath(categorie)" />
 							</div>
-							
+
 							<a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href='#!'
 								:data-target='"dropdown" + categorie.categorie_id'>
 								<i class="material-icons">more_vert</i></a>
 							<ul :id='"dropdown" + categorie.categorie_id' class='dropdown-content'>
-								<li><a :href="base_url('admin/paginas/editar/' + categorie.categorie_id)">Editar</a></li>
+								<li><a :href="base_url('admin/categorias/editar/' + categorie.categorie_id)">Editar</a></li>
 								<li><a href="#!" v-on:click="deletePage(page, index);">Borrar</a></li>
-								<li v-if="categorie.status == 2"><a :href="base_url('admin/paginas/preview?categorie_id=' + categorie.categorie_id)" target="_blank">Preview</a></li>
+								<li v-if="categorie.status == 2"><a :href="base_url('admin/categorias/preview?categorie_id=' + categorie.categorie_id)" target="_blank">Preview</a></li>
 								<li><a :href="base_url(categorie.path)" target="_blank">Archivar</a></li>
 							</ul>
 						</div>

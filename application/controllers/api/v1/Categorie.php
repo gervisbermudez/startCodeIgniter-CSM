@@ -81,7 +81,8 @@ class Categorie extends REST_Controller
     {
         $categorie = new Categories();
         if ($categorie_id) {
-            $result = $categorie->find_with(array('parent_id' => '0', 'categorie_id' => $categorie_id));
+            $result = $categorie->where(array('parent_id' => '0', 'categorie_id' => $categorie_id));
+            $result = $result ? $result->first() : [];
         } else {
             $result = $categorie->where(array('parent_id' => '0'));
         }
@@ -118,8 +119,61 @@ class Categorie extends REST_Controller
      */
     public function index_post()
     {
-        $data = array();
-        $this->response($data, REST_Controller::HTTP_NOT_FOUND);
+        $this->load->library('FormValidator');
+        $form = new FormValidator();
+
+        $config = array(
+            array('field' => 'name', 'label' => 'name', 'rules' => 'required|min_length[1]'),
+            array('field' => 'description', 'label' => 'description', 'rules' => 'required|min_length[1]'),
+            array('field' => 'type', 'label' => 'type', 'rules' => 'required|min_length[1]'),
+            array('field' => 'parent_id', 'label' => 'parent_id', 'rules' => 'integer|is_natural'),
+            array('field' => 'status', 'label' => 'status', 'rules' => 'required|integer|is_natural_no_zero'),
+        );
+
+        $form->set_rules($config);
+
+        if (!$form->run()) {
+            $response = array(
+                'code' => REST_Controller::HTTP_BAD_REQUEST,
+                'error_message' => lang('validations_error'),
+                'errors' => $form->_error_array,
+                'request_data' => $_POST,
+            );
+            $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
+            return;
+        }
+
+        $categorie = new Categories();
+
+        $this->input->post('categorie_id') ? $categorie->find($this->input->post('categorie_id')) : false;
+        $categorie->name = $this->input->post('name');
+        $categorie->description = $this->input->post('description');
+        $categorie->type = $this->input->post('type');
+        $categorie->user_id = userdata('user_id');
+        $categorie->type = $this->input->post('type');
+        $categorie->status = $this->input->post('status');
+        $categorie->date_create = date("Y-m-d H:i:s");
+        $categorie->date_publish = date("Y-m-d H:i:s");
+        $categorie->parent_id = $this->input->post('parent_id');
+        if ($categorie->save()) {
+            $response = array(
+                'code' => REST_Controller::HTTP_OK,
+                'data' => $categorie,
+            );
+
+            $this->response($response, REST_Controller::HTTP_OK);
+
+        } else {
+            $response = array(
+                'code' => REST_Controller::HTTP_BAD_REQUEST,
+                "error_message" => lang('unexpected_error'),
+                'data' => $_POST,
+                'request_data' => $_POST,
+            );
+
+            $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
+        }
+
     }
 
     /**
@@ -197,7 +251,8 @@ class Categorie extends REST_Controller
     {
         $categorie = new Categories();
         if ($subcategorie_id) {
-            $result = $categorie->find_with(array('parent_id' => $categorie_id, 'categorie_id' => $subcategorie_id));
+            $result = $categorie->where(array('parent_id' => $categorie_id, 'categorie_id' => $subcategorie_id));
+            $result = $result ? $result->first() : [];
         } else {
             $result = $categorie->where(array('parent_id' => $categorie_id));
         }
@@ -321,18 +376,11 @@ class Categorie extends REST_Controller
             return;
         }
 
-        if ($categorie_id) {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                'error_message' => lang('not_found_error'),
-                'data' => [],
-            );
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => [],
-            );
-        }
+        $response = array(
+            'code' => REST_Controller::HTTP_OK,
+            'data' => [],
+        );
+
         $this->response($response, REST_Controller::HTTP_OK);
     }
 
@@ -385,7 +433,7 @@ class Categorie extends REST_Controller
      */
     public function filter_get()
     {
-               
+
         $categorie = new Categories();
         $result = $categorie->where(
             $_GET
@@ -397,12 +445,12 @@ class Categorie extends REST_Controller
                 'data' => $result,
             );
         } else {
-                $response = array(
-                    'code' => REST_Controller::HTTP_NOT_FOUND,
-                    'error_message' => lang('not_found_error'),
-                    'data' => [],
-                    'filters' => $_GET
-                );
+            $response = array(
+                'code' => REST_Controller::HTTP_NOT_FOUND,
+                'error_message' => lang('not_found_error'),
+                'data' => [],
+                'filters' => $_GET
+            );
         }
         $this->response($response, REST_Controller::HTTP_OK);
     }

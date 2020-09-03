@@ -13,7 +13,7 @@ var CategoriesLists = new Vue({
         return this.categories.filter((value, index) => {
           let result =
             value.name.toLowerCase().indexOf(filterTerm) != -1 ||
-            value.type.toLowerCase().indexOf(filterTerm) != -1
+            value.type.toLowerCase().indexOf(filterTerm) != -1;
           return result;
         });
       } else {
@@ -44,7 +44,7 @@ var CategoriesLists = new Vue({
       }
       return "https://materializecss.com/images/sample-1.jpg";
     },
-    getPages: function () {
+    getCategories: function () {
       var self = this;
       $.ajax({
         type: "GET",
@@ -52,7 +52,13 @@ var CategoriesLists = new Vue({
         data: {},
         dataType: "json",
         success: function (response) {
-          self.categories = response.data;
+          let categories = response.data;
+          for (const key in categories) {
+            if (categories.hasOwnProperty(key)) {
+              categories[key].user = new User(categories[key].user);
+            }
+          }
+          self.categories = categories;
           setTimeout(() => {
             self.loader = false;
             self.initPlugins();
@@ -101,7 +107,7 @@ var CategoriesLists = new Vue({
   },
   mounted: function () {
     this.$nextTick(function () {
-      this.getPages();
+      this.getCategories();
       this.initPlugins();
     });
   },
