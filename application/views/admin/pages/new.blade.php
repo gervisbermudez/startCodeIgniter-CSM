@@ -2,19 +2,21 @@
 
 @section('title', $title)
 
-@section('header')
-@include('admin.shared.header')
-@endsection
-
 @section('head_includes')
-<link rel="stylesheet" href="<?= base_url('public/js/fileinput-master/css/fileinput.min.css') ?>">
-<link rel="stylesheet" href="<?= base_url('public/font-awesome/css/all.min.css') ?>">
+<link rel="stylesheet" href="<?=base_url('public/js/fileinput-master/css/fileinput.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/font-awesome/css/all.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/css/admin/form.min.css')?>">
 @endsection
 
 @section('content')
-<div class="container" id="root">
+<div class="container form" id="root">
     <input type="hidden" name="editMode" id="editMode" value="{{$editMode}}">
     <input type="hidden" name="page_id" id="page_id" value="{{$page_id}}">
+    <div class="row">
+		<div class="col s12">
+			<h3 class="page-header">{{$h1}}</h3>
+		</div>
+	</div>
     <div class="row" id="form">
         <div class="col s12 center" v-bind:class="{ hide: !loader }">
             <div class="preloader-wrapper big active">
@@ -172,6 +174,20 @@
                 </select>
                 <label>Layout</label>
             </div>
+            <div v-if="user">
+                <p>
+    				<b>Creado por</b>:
+    		    </p>
+    			<ul class="collection form-user-component">
+    				<li class="collection-item avatar">
+    					<a :href="user.get_profileurl()">
+    						<img :src="user.get_avatarurl()" alt="" class="circle">
+    						<span class="title">@{{user.get_fullname()}}</span>
+    						<p>@{{user.usergroup.name}}</p>
+    					</a>
+    				</li>
+    			</ul>
+            </div>
         </div>
         <div v-cloak v-show="!loader" class="col s12">
             <div class="input-field" id="buttons">
@@ -192,13 +208,13 @@
 @endsection
 
 @section('footer_includes')
-<script src="<?= base_url('public/js/components/fileUploaderModule.min.js'); ?>"></script>
+<script src="<?=base_url('public/js/components/fileUploaderModule.min.js');?>"></script>
 <script src="{{base_url('public/js/tinymce/js/tinymce/tinymce.min.js')}}"></script>
 <script src="{{base_url('public/js/validateForm.min.js')}}"></script>
 <script src="{{base_url('public/js/components/PageNewForm.min.js')}}"></script>
-<script src="<?= base_url('public/js/fileinput-master/js/fileinput.min.js'); ?>"></script>
-<script src="<?= base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js'); ?>"></script>
-<script src="<?= base_url('public/js/fileinput-master/js/locales/es.js'); ?>"></script>
+<script src="<?=base_url('public/js/fileinput-master/js/fileinput.min.js');?>"></script>
+<script src="<?=base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js');?>"></script>
+<script src="<?=base_url('public/js/fileinput-master/js/locales/es.js');?>"></script>
 <script>
     fileUploaderModule.preventLoadFilesOnLoad = true;
 	$(document).on('ready', function () {

@@ -5,6 +5,7 @@ var PageNewForm = new Vue({
     loader: true,
     editMode: false,
     page_id: null,
+    user: null,
     form: new VueForm({
       title: {
         value: null,
@@ -420,6 +421,7 @@ var PageNewForm = new Vue({
               self.subcategories_id = response.data.page.subcategories_id || 0;
               self.pageTypes = response.data.page_types;
               self.page_type_id = response.data.page.page_type_id;
+              self.user = new User(response.data.page.user);
               if (response.data.page.main_image) {
                 self.mainImage.push(response.data.page.main_image);
               }
