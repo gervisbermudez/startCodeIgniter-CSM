@@ -85,7 +85,7 @@
 								<ul :id='"dropdown_" + form.form_custom_id' class='dropdown-content'>
 									<li><a :href="base_url('admin/formularios/addData/' + form.form_custom_id)"> Agregar data</a></li>
 									<li><a :href="base_url('admin/formularios/editForm/' + form.form_custom_id)"> Editar</a></li>
-									<li><a :href="base_url('admin/formularios/deleteForm/' + form.form_custom_id)"> Borrar</a></li>
+									<li><a href="#!" v-on:click="deleteForm(form, index)"> Borrar</a></li>
 								</ul>
 							</td>
 						</tr>
@@ -100,14 +100,14 @@
 							<div class="card-image-container">
 								<img :src="getPageImagePath(form)" />
 							</div>
-							
+
 							<a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href='#!'
 								:data-target='"dropdown" + form.form_custom_id'>
 								<i class="material-icons">more_vert</i></a>
 								<ul :id='"dropdown" + form.form_custom_id' class='dropdown-content'>
 									<li><a :href="base_url('admin/formularios/addData/' + form.form_custom_id)"> Agregar data</a></li>
 									<li><a :href="base_url('admin/formularios/editForm/' + form.form_custom_id)"> Editar</a></li>
-									<li><a :href="base_url('admin/formularios/deleteForm/' + form.form_custom_id)"> Borrar</a></li>
+									<li><a href="#!" v-on:click="deleteForm(form, index)"> Borrar</a></li>
 								</ul>
 						</div>
 						<div class="card-content">

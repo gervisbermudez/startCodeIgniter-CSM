@@ -230,9 +230,9 @@ EOD;
         return false;
     }
 
-    public function delete_form($form_id)
+    public function delete_form($form_custom_id)
     {
-        return $this->delete_data(array('id' => $form_id), $this->table);
+        return $this->delete_data(array('form_custom_id' => $form_custom_id), $this->table);
     }
 
     public function filter_results($collection = [])

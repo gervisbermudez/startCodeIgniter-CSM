@@ -68,12 +68,12 @@ var CustomFormLists = new Vue({
         },
       });
     },
-    deletePage: function (page, index) {
+    deleteForm: function (form, index) {
       var self = this;
       self.loader = true;
       $.ajax({
         type: "DELETE",
-        url: BASEURL + "api/v1/forms/" + page.page_id,
+        url: BASEURL + "api/v1/forms/" + form.form_custom_id,
         data: {},
         dataType: "json",
         success: function (response) {

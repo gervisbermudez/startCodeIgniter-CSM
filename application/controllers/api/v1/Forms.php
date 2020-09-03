@@ -204,6 +204,9 @@ class Forms extends REST_Controller
                 'data' => [],
             );
         }
+
+        $this->response($response, REST_Controller::HTTP_OK);
+
     }
 
     /**
