@@ -144,9 +144,11 @@ a.brand-logo {
   }
 }
 
+$sidemenuWidth: 210px;
+
 .sidemenu {
   position: fixed;
-  width: 190px;
+  width: $sidemenuWidth;
   top: 0px;
   left: 0px;
   -webkit-transition: 0.3s ease all;
@@ -161,21 +163,37 @@ a.brand-logo {
 
   .sidenav {
     transform: none;
-    width: 190px;
+    width: $sidemenuWidth;
     margin: 50px 0px 0px;
     -webkit-transition: 0.3s ease all;
     transition: 0.3s ease all;
+    i.material-icons {
+      color: rgba(0, 0, 0, 0.54);
+    }
+    li {
+      position: relative;
+      & > a {
+        padding: 0 15px;
 
-    li > a {
-      padding: 0 15px;
-
-      i.material-icons {
-        margin: 0 15px 0 0;
+        i.material-icons {
+          margin: 0 15px 0 0;
+        }
       }
     }
 
-    li.active {
-      background-color: $color3;
+    li.current {
+      background-color: rgba(0, 0, 0, 0.05);
+
+      &:before {
+        background-color: $color3;
+        content: "";
+        width: 5px;
+        height: 48px;
+        display: block;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+      }
 
       & > a {
         color: $white !important;
@@ -186,13 +204,9 @@ a.brand-logo {
       }
 
       ul {
-        background-color: #e3e3e3;
+        background-color: rgba(0, 0, 0, 0.05);
         display: block;
       }
-    }
-
-    ul {
-      display: none;
     }
 
     @media all and (max-width: 992px) {
@@ -238,7 +252,7 @@ a.brand-logo {
     line-height: 40px;
   }
 
-  margin-left: 190px;
+  margin-left: $sidemenuWidth;
 
   @media all and (max-width: 992px) {
     margin: auto;
@@ -882,7 +896,7 @@ div.row.event a.dropdown-button.right {
   }
 
   .main {
-    padding: 50px 0 0 190px;
+    padding: 50px 0 0 $sidemenuWidth;
   }
 
   .menu-spand {

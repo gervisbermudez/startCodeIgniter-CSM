@@ -46,7 +46,7 @@ if (!function_exists('isDir')) {
 }
 
 if (!function_exists('isSectionActive')) {
-    function isSectionActive($path = '', $position = 2, $class = 'active')
+    function isSectionActive($path = '', $position = 2, $class = 'current')
     {
         if ($position === 'match') {
             if ($path == uri_string()) {

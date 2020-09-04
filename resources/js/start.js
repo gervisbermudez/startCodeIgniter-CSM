@@ -6,7 +6,7 @@ jQuery(document).ready(function ($) {
     $("#slide-out").removeAttr("style");
   });
 
-  $("#slide-out").niceScroll();
+  $(".sidenav").niceScroll();
 
   window.addEventListener("online", () => {
     // Set hasNetwork to online when they change to online.
