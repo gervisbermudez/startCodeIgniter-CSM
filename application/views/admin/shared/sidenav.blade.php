@@ -39,7 +39,7 @@
         </li>
         <li class="{{isSectionActive('admin/formularios', 'match')}}">
             <div class="collapsible-header">
-                <i class="material-icons">web</i>
+                <i class="material-icons">assignment</i>
                 <span>Formularios</span>
             </div>
             <div class="collapsible-body">
