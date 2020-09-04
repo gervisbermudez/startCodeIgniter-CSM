@@ -169,6 +169,11 @@ $sidemenuWidth: 210px;
     transition: 0.3s ease all;
     i.material-icons {
       color: rgba(0, 0, 0, 0.54);
+      width: 2rem;
+      font-size: 1.6rem;
+      display: inline-block;
+      text-align: center;
+      margin-right: 1rem;
     }
     li {
       position: relative;
@@ -193,14 +198,6 @@ $sidemenuWidth: 210px;
         position: absolute;
         left: 0px;
         top: 0px;
-      }
-
-      & > a {
-        color: $white !important;
-
-        i.material-icons {
-          color: $white !important;
-        }
       }
 
       ul {
@@ -274,6 +271,9 @@ body.sidenav-open {
 
   .sidenav {
     width: 50px;
+    & .sidenav:hover {
+      width: 210px;
+    }
   }
 
   .sidenav li > a {
