@@ -2,12 +2,17 @@
 
 @section('title', $title)
 
-@section('header')
-@include('admin.shared.header')
+@section('head_includes')
+<link rel="stylesheet" href="<?=base_url('public/css/admin/form.min.css')?>">
 @endsection
 
 @section('content')
-<div class="container" id="root">
+<div class="container form" id="root">
+	<div class="row">
+			<div class="col s12">
+			<h3 class="page-header">{{$h1}}</h3>
+			</div>
+		</div>
 	<div class="row">
 		<div class="col s12 center" v-bind:class="{ hide: !loader }">
 			<div class="preloader-wrapper big active">
@@ -29,8 +34,8 @@
 				<div class="input-field">
 					<input maxlength="25" type="text" id="username" name="username" value=""
 						@change="validateField('username')"
-						v-model="form.fields.username.value" 
-						:class="{ valid: form.fields.username.touched && form.fields.username.valid, invalid: !form.fields.username.valid }" 
+						v-model="form.fields.username.value"
+						:class="{ valid: form.fields.username.touched && form.fields.username.valid, invalid: !form.fields.username.valid }"
 						autocomplete="off">
 						<label>Username</label>
 						<span class="helper-text" :data-error="form.fields.username.errorText" data-success="Valid"></span>
@@ -38,7 +43,7 @@
 				<div class="input-field ">
 					<input maxlength="25" id="password" name="password" value="" type="password"
 						@change="form.validateField('password')"
-						:class="{ valid: form.fields.password.touched && form.fields.password.valid, invalid: !form.fields.password.valid }" 
+						:class="{ valid: form.fields.password.touched && form.fields.password.valid, invalid: !form.fields.password.valid }"
 						v-model="form.fields.password.value"
 						autocomplete="off"
 						>
@@ -48,8 +53,8 @@
 				<div class="input-field">
 					<input id="email" type="email" name="email" maxlength="255"
 					@change="validateField('email')"
-					:class="{ valid: form.fields.email.touched && form.fields.email.valid, invalid: !form.fields.email.valid }" 
-					v-model="form.fields.email.value" 
+					:class="{ valid: form.fields.email.touched && form.fields.email.valid, invalid: !form.fields.email.valid }"
+					v-model="form.fields.email.value"
 					autocomplete="off">
 					<label >Email</label>
 					<span class="helper-text" :data-error="form.fields.email.errorText" data-success="Valid"></span>
@@ -114,9 +119,9 @@
 					<div class="col s12" id="buttons">
 						<a href="<?php echo base_url('admin/usuarios/'); ?>"
 							class="btn btn-default waves-effect waves-teal btn-flat">Cancelar</a>
-						<button 
+						<button
 							type="submit"
-							class="btn btn-primary waves-effect waves-teal" 
+							class="btn btn-primary waves-effect waves-teal"
 							@click="save();">Guardar</button>
 					</div>
 				</div>
@@ -134,6 +139,6 @@
 	</div>
 </div>
 <script>
-	const user_id = <?= json_encode($userdata ? $userdata->user_id : false); ?>;
+	const user_id = <?=json_encode($userdata ? $userdata->user_id : false);?>;
 </script>
 @endsection

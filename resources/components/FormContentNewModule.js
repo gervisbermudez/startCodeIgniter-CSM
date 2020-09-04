@@ -33,6 +33,7 @@ var FormNewModule = new Vue({
       {
         field_name: "formatText",
         displayName: "Texto con formato",
+        component: "formTextFormat",
         icon: "format_size",
         status: "1",
         data: {},

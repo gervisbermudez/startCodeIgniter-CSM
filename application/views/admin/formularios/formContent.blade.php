@@ -6,6 +6,11 @@
 @include('admin.shared.header')
 @endsection
 
+@section('head_includes')
+<link rel="stylesheet" href="<?=base_url('public/js/fileinput-master/css/fileinput.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/font-awesome/css/all.min.css')?>">
+@endsection
+
 @section('content')
 <div class="container formModule" id="root">
     <div class="col s12 center" v-bind:class="{ hide: !loader }">
@@ -86,5 +91,6 @@
 @endsection
 
 @section('footer_includes')
+<script src="{{base_url('public/js/tinymce/js/tinymce/tinymce.min.js')}}"></script>
 <script src="{{base_url('public/js/components/FormContentNewModuleBundle.min.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

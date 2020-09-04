@@ -6,6 +6,11 @@
 @include('admin.shared.header')
 @endsection
 
+@section('head_includes')
+<link rel="stylesheet" href="<?=base_url('public/js/fileinput-master/css/fileinput.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/font-awesome/css/all.min.css')?>">
+@endsection
+
 @section('content')
 <div class="container formModule" id="root">
     <div class="col s12 center" v-bind:class="{ hide: !loader }">
@@ -52,12 +57,14 @@
                     <div id="simple-list">
                         <div class="row" v-for="(field, index) in tab.form_fields">
                             <div class="col s12 component">
-                                <component 
+                                <a class="waves-effect waves-light btn right red darken-2 tooltipped" data-position="left" data-tooltip="Remove Field" @click="removeField(i, index)"><i class="material-icons">delete</i></a>
+                                <br>
+                                <component
                                     :serve-data = "field.data"
-                                    :is = "field.component" 
-                                    :tab-parent = "tab" 
+                                    :is = "field.component"
+                                    :tab-parent = "tab"
                                     :field-ref-index = "index"
-                                    :field-ref =" field" 
+                                    :field-ref =" field"
                                     :configurable = "true"
                                     ref="field.component"
                                     >
@@ -67,7 +74,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col s3 formsElements">
+            <div class="col s12 m3 formsElements">
                 <div class="row">
                     <div class="col s12">
                         <ul class="collection with-header">
@@ -108,11 +115,12 @@
 @include('admin.formularios.formsFields')
 @isset($form_custom_id)
     <script>
-        const form_custom_id = <?= json_encode($form_custom_id); ?>;
+        const form_custom_id = <?=json_encode($form_custom_id);?>;
     </script>
 @endisset
 @endsection
 
 @section('footer_includes')
+<script src="{{base_url('public/js/tinymce/js/tinymce/tinymce.min.js')}}"></script>
 <script src="{{base_url('public/js/components/FormNewModuleBundle.min.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

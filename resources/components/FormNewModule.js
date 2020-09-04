@@ -32,6 +32,7 @@ var FormNewModule = new Vue({
       {
         field_name: "formatText",
         displayName: "Texto con formato",
+        component: "formTextFormat",
         icon: "format_size",
         status: "1",
         data: {},
@@ -40,13 +41,6 @@ var FormNewModule = new Vue({
         field_name: "image",
         displayName: "Imagen",
         icon: "image",
-        status: "1",
-        data: {},
-      },
-      {
-        field_name: "link",
-        displayName: "Link",
-        icon: "insert_link",
         status: "1",
         data: {},
       },
@@ -154,7 +148,23 @@ var FormNewModule = new Vue({
       setTimeout(() => {
         var elems = document.querySelectorAll(".collapsible");
         M.Collapsible.init(elems, {});
+        var elems = document.querySelectorAll(".tooltipped");
+        var instances = M.Tooltip.init(elems, {});
+        M.AutoInit();
       }, 2000);
+    },
+    removeField(tabindex, fieldindex) {
+      if (
+        this.tabs[tabindex].form_fields[fieldindex].component ==
+        "formTextFormat"
+      ) {
+        this.getfieldsData();
+        editor = this.tabs[tabindex].form_fields[fieldindex].data;
+        tinymce.editors[editor.fieldID].destroy();
+        this.tabs[tabindex].form_fields.splice(fieldindex, 1);
+      } else {
+        this.tabs[tabindex].form_fields.splice(fieldindex, 1);
+      }
     },
     getfieldsData() {
       this.debug ? console.log("getfieldsData trigger") : null;
