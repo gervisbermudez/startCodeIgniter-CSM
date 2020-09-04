@@ -189,6 +189,9 @@ class Users extends REST_Controller
         $usuario->usergroup_id = $this->input->post('usergroup_id');
         $usuario->status = 1;
         $usuario->user_data = $this->input->post('user_data');
+        if(!$this->input->post('user_id')){
+            $usuario->user_data['create_by_id'] = userdata('user_id');
+        }
 
         if ($usuario->save()) {
             $response = array(
