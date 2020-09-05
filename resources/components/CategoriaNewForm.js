@@ -88,7 +88,6 @@ var CategoriaNewForm = new Vue({
     runSaveData(callBack) {
       var self = this;
       var url = BASEURL + "api/v1/categorie";
-
       $.ajax({
         type: "POST",
         url: url,

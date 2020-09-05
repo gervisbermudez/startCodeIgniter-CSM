@@ -13,11 +13,22 @@ if (!function_exists('getThemePath')) {
     function getThemePath()
     {
         $ci = &get_instance();
-        $config = $ci->Site_config->load_config();
-
+        $config = new stdClass();
         if (isset($config->site_theme)) {
             defined('THEME_PATH') or define('THEME_PATH', FCPATH . 'themes\\' . $config->site_theme) . '\\';
             return THEME_PATH;
+        }
+        return '';
+    }
+}
+
+if (!function_exists("config")) {
+    function config($config_name)
+    {
+        $ci = &get_instance();
+        $config = $ci->config->item($config_name);
+        if ($config) {
+            return $config;
         }
         return '';
     }
@@ -27,14 +38,11 @@ if (!function_exists('getThemePublicPath')) {
     function getThemePublicPath()
     {
         $ci = &get_instance();
-        $config = $ci->Site_config->load_config();
-
+        $config = new stdClass();
         if ($config->site_theme) {
             return 'themes/' . $config->site_theme . '/public/';
         }
-
         return '';
-
     }
 }
 

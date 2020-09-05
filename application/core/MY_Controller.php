@@ -9,7 +9,7 @@ class MY_Controller extends CI_Controller
     {
         parent::__construct();
         if (!$this->session->userdata('logged_in')) {
-            $uri = urlencode (uri_string());
+            $uri = urlencode(uri_string());
             redirect('admin/login/?redirect=' . $uri);
         }
         if ($this->config->item('enable_profiler')) {
@@ -55,6 +55,10 @@ class Base_Controller extends CI_Controller
     {
         parent::__construct();
 
+        $config = $this->Site_config->all();
+        foreach ($config as $value) {
+            $this->config->set_item($value->config_name, $value->config_value);
+        }
     }
 
     public function getPageMetas($page)

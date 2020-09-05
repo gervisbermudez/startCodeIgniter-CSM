@@ -7,13 +7,17 @@ class Site_config extends MY_model
 
     public $primaryKey = 'site_config_id';
 
+    public $hasOne = [
+        'user' => ['user_id', 'Admin/User', 'user'],
+    ];
+
     public function __construct()
     {
         parent::__construct();
     }
 
     /**
-     * Update all config data 
+     * Update all config data
      */
     public function update_config($data)
     {
@@ -26,22 +30,18 @@ class Site_config extends MY_model
         }
     }
 
-    /**
-     * Return a object with the current site config
-     * @return json object
-     */
-    public function load_config()
+    public function filter_results($collection = [])
     {
-        $sql = "SELECT CONCAT('{', GROUP_CONCAT(config), '}') AS 'all_config'
-                FROM (
-                SELECT CONCAT('\"', site_config.config_name, '\" : \"', site_config.config_value, '\"') AS config
-                FROM site_config) c";
-        $result = $this->get_query($sql);
-        if ($result) {
-            $result = $result->first();
-            return json_decode($result->all_config);
+        $this->load->model('Admin/User');
+        foreach ($collection as $key => &$value) {
+            if (isset($value->user_id) && $value->user_id) {
+                $user = new User();
+                $user->find($value->user_id);
+                $value->{'user'} = $user->as_data();
+            }
         }
-        return json_decode(array());
+
+        return $collection;
     }
 
 }

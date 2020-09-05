@@ -1,7 +1,8 @@
-
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="{{config('SITE_DESCRIPTION')}}">
+<meta name="author" content="{{config('SITE_AUTHOR')}}">
 @isset($meta)
 <?php echo meta($meta); ?>
 @endisset

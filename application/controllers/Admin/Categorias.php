@@ -14,7 +14,6 @@ class Categorias extends MY_Controller
     public function index()
     {
         $data['h1'] = "Todas las Categorias";
-        $data['categorias'] = $this->Categories->all();
         $data['title'] = ADMIN_TITLE . " | Categorias";
         $data['header'] = $this->load->view('admin/header', $data, true);
         echo $this->blade->view("admin.categorias.categorias_list", $data);

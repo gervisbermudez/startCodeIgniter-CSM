@@ -61,11 +61,11 @@ string_to_slug = function (str) {
 class User {
   user_id = null;
   username = "";
-  email;
-  lastseen;
-  level;
-  role;
-  status;
+  email = "";
+  lastseen = "";
+  level = "";
+  role = "";
+  status = "";
   usergroup_id;
   user_data = {
     nombre: "",
@@ -78,7 +78,7 @@ class User {
   constructor(params) {
     for (const param in params) {
       if (params.hasOwnProperty(param)) {
-        this[param] = params[param];
+        this[param] = params[param] || "";
       }
     }
   }

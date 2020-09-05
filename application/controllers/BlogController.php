@@ -12,7 +12,7 @@ class BlogController extends Base_Controller
     }
 
     function list() {
-        $data['title'] = "Modern Business - Blog";
+        $data['title'] = config("SITE_TITLE") . " - Blog";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
@@ -25,7 +25,7 @@ class BlogController extends Base_Controller
         if ($page->map) {
             $data['page'] = $page;
             $data['meta'] = $this->getPageMetas($page);
-            $data['title'] = $page->title;
+            $data['title'] = config("SITE_TITLE") . " - " . $page->title;
             $data['layout'] = $page->layout == 'default' ? 'site' : $page->layout;
             $template = $page->template == 'default' ? 'template' : $page->template;
             echo $this->blade->view("site.templates." . $template, $data);

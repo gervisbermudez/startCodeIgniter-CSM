@@ -7,8 +7,8 @@ class SiteController extends Base_Controller
 
     public function index()
     {
-       
-        $data['title'] = SITE_TITLE . " - About";
+
+        $data['title'] = config("SITE_TITLE") . " - About";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
@@ -17,16 +17,16 @@ class SiteController extends Base_Controller
 
     public function about()
     {
-        $data['title'] = SITE_TITLE . " - About";
+        $data['title'] = config("SITE_TITLE") . " - About";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
         echo $this->blade->view("site.about", $data);
     }
 
-        public function services()
+    public function services()
     {
-        $data['title'] = SITE_TITLE . " - Services";
+        $data['title'] = config("SITE_TITLE") . " - Services";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
@@ -35,7 +35,7 @@ class SiteController extends Base_Controller
 
     public function contact()
     {
-        $data['title'] = SITE_TITLE . " - Contact";
+        $data['title'] = config("SITE_TITLE") . " - Contact";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
@@ -44,7 +44,7 @@ class SiteController extends Base_Controller
 
     public function faq()
     {
-        $data['title'] = SITE_TITLE . " - FAQ";
+        $data['title'] = config("SITE_TITLE") . " - FAQ";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
@@ -53,7 +53,7 @@ class SiteController extends Base_Controller
 
     public function pricing()
     {
-        $data['title'] = SITE_TITLE . " - FAQ";
+        $data['title'] = config("SITE_TITLE") . " - FAQ";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
@@ -62,7 +62,7 @@ class SiteController extends Base_Controller
 
     public function sidebar()
     {
-        $data['title'] = SITE_TITLE . " - Sidebar";
+        $data['title'] = config("SITE_TITLE") . " - Sidebar";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
@@ -71,7 +71,7 @@ class SiteController extends Base_Controller
 
     public function fullWidth()
     {
-        $data['title'] = SITE_TITLE . " - Full Width";
+        $data['title'] = config("SITE_TITLE") . " - Full Width";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
@@ -80,7 +80,7 @@ class SiteController extends Base_Controller
 
     public function blogPost()
     {
-        $data['title'] = SITE_TITLE . " - Full Width";
+        $data['title'] = config("SITE_TITLE") . " - Full Width";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
@@ -89,7 +89,7 @@ class SiteController extends Base_Controller
 
     public function portfolio()
     {
-        $data['title'] = SITE_TITLE . " - Portfolio";
+        $data['title'] = config("SITE_TITLE") . " - Portfolio";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
@@ -98,7 +98,7 @@ class SiteController extends Base_Controller
 
     public function portfolioItem()
     {
-        $data['title'] = SITE_TITLE . " - Portfolio Item";
+        $data['title'] = config("SITE_TITLE") . " - Portfolio Item";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
