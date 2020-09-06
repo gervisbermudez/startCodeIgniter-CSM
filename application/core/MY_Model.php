@@ -457,7 +457,7 @@ class MY_model extends CI_Model implements JsonSerializable
     {
 
     }
-    
+
     public function restored()
     {
 
@@ -472,9 +472,9 @@ class MY_model extends CI_Model implements JsonSerializable
             foreach ($this->hasOne as $key => $value) {
                 $this->load->model($value[1]);
                 ${$value[2]} = new $value[2]();
-                if(isset($value[3]) && $value[3] == 'delay'){
+                if (isset($value[3]) && $value[3] == 'delay') {
                     ${$value[2]} = ${$value[2]};
-                }else{
+                } else {
                     ${$value[2]}->find($this->{$value[0]});
                 }
                 $this->{$key} = ${$value[2]}->map ? ${$value[2]} : null;
@@ -482,9 +482,9 @@ class MY_model extends CI_Model implements JsonSerializable
             foreach ($this->hasMany as $key => $value) {
                 $this->load->model($value[1]);
                 ${$key} = new $value[2]();
-                if(isset($value[3]) && $value[3] == 'delay'){
+                if (isset($value[3]) && $value[3] == 'delay') {
                     $this->{$key} = ${$key};
-                }else{
+                } else {
                     $this->{$key} = ${$key}->where(array($value[0] => $this->{$value[0]}));
                 }
             }
@@ -547,7 +547,8 @@ class MY_model extends CI_Model implements JsonSerializable
     public function as_data()
     {
         $data = json_encode($this);
-        return json_decode($data);
+        $result = json_decode($data);
+        return $result ? $result : new stdClass();
     }
 
     public function filter_results($collection = [])

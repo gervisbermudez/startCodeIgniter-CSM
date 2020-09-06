@@ -21,7 +21,7 @@ class Files_model extends MY_Model
     public $computed = array(
         'file_full_path' => 'getFileFullPath',
         'file_front_path' => 'getFileFrontPath',
-        'file_full_name' => 'getFileFullName'
+        'file_full_name' => 'getFileFullName',
     );
 
     public function __construct()
@@ -36,11 +36,13 @@ class Files_model extends MY_Model
     {
         $directorio = directory_map($this->current_dir . $this->current_folder);
         unset($directorio['node_modules\\']);
+        unset($directorio['vendor\\']);
+
         $this->delete_data(array('status' => 1), $this->table);
         $curdir = $this->current_dir . $this->current_folder;
         $this->save_dir($directorio, $curdir);
         $this->load->model('Admin/Site_config');
-        
+
         if (!$this->Site_config->get_data(array('config_name' => 'map_dir', 'config_value' => $this->current_dir), 'site_config')) {
             return $this->Site_config->update_data(array('config_name' => 'map_dir'), array('config_value' => $this->current_dir), 'site_config');
         } else {

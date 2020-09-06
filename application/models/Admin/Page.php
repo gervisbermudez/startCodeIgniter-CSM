@@ -69,6 +69,7 @@ class Page extends MY_model
                 $Files_model = new Files_model();
                 $Files_model->find($value->mainImage);
                 $value->imagen_file = $Files_model->as_data();
+                $value->imagen_file->{'file_front_path'} = new stdClass();
                 $value->imagen_file->{'file_front_path'} = $Files_model->getFileFrontPath();
             }
         }
