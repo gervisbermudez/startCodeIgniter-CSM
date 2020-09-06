@@ -1334,3 +1334,39 @@ div#dropnotify {
   cursor: pointer;
   color: #ffffffde;
 }
+
+.configurations {
+  margin-top: 20px;
+}
+
+.collapsible.configuration-component + .configuration-component {
+  border-bottom: 0;
+}
+
+.collapsible.configuration-component {
+  margin: 0;
+  li {
+    position: relative;
+  }
+  .switch {
+    position: absolute;
+    right: 20px;
+  }
+  .collapsible-header .current {
+    position: absolute;
+    right: 20px;
+  }
+  .collapsible-body-hidden {
+    display: none !important;
+  }
+}
+
+.collapsible .collapsible-header .arrow {
+  transition: transform 0.2s;
+  position: absolute;
+  right: 20px;
+  top: 20px;
+}
+.collapsible .active .arrow {
+  transform: rotate(90deg);
+}

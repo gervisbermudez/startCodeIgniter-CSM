@@ -26,36 +26,49 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/service-worker.min.js");
   });
 }
-makeid = function (length) {
-  var result = "";
-  var characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  var charactersLength = characters.length;
-  for (var i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-};
 
-string_to_slug = function (str) {
-  if (str.length == 0) return "";
+var mixins = {
+  filters: {
+    capitalize: function (value) {
+      if (!value) return "";
+      value = value.toString();
+      return value.charAt(0).toUpperCase() + value.slice(1);
+    },
+  },
+  methods: {
+    makeid: function (length) {
+      var result = "";
+      var characters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      var charactersLength = characters.length;
+      for (var i = 0; i < length; i++) {
+        result += characters.charAt(
+          Math.floor(Math.random() * charactersLength)
+        );
+      }
+      return result;
+    },
+    string_to_slug: function (str) {
+      if (str.length == 0) return "";
 
-  str = str.replace(/^\s+|\s+$/g, ""); // trim
-  str = str.toLowerCase();
+      str = str.replace(/^\s+|\s+$/g, ""); // trim
+      str = str.toLowerCase();
 
-  // remove accents, swap ñ for n, etc
-  var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
-  var to = "aaaaeeeeiiiioooouuuunc------";
-  for (var i = 0, l = from.length; i < l; i++) {
-    str = str.replace(new RegExp(from.charAt(i), "g"), to.charAt(i));
-  }
+      // remove accents, swap ñ for n, etc
+      var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
+      var to = "aaaaeeeeiiiioooouuuunc------";
+      for (var i = 0, l = from.length; i < l; i++) {
+        str = str.replace(new RegExp(from.charAt(i), "g"), to.charAt(i));
+      }
 
-  str = str
-    .replace(/[^a-z0-9 -]/g, "") // remove invalid chars
-    .replace(/\s+/g, "-") // collapse whitespace and replace by -
-    .replace(/-+/g, "-"); // collapse dashes
+      str = str
+        .replace(/[^a-z0-9 -]/g, "") // remove invalid chars
+        .replace(/\s+/g, "-") // collapse whitespace and replace by -
+        .replace(/-+/g, "-"); // collapse dashes
 
-  return str;
+      return str;
+    },
+  },
 };
 
 class User {
@@ -108,4 +121,36 @@ class User {
       return "";
     }
   };
+}
+
+class Config_data {
+  type_value = "string";
+  validate_as = "text";
+  max_lenght = "120";
+  min_lenght = "0";
+  handle_as = "input";
+  input_type = "text";
+  perm_values = null;
+
+  constructor(params) {
+    for (const param in params) {
+      if (params.hasOwnProperty(param)) {
+        this[param] = params[param];
+      }
+    }
+
+    switch (this.type_value) {
+      case "boolean":
+        this.handle_as = "switch";
+        break;
+
+      case "number":
+        this.handle_as = "input";
+        this.input_type = "number";
+        break;
+
+      default:
+        break;
+    }
+  }
 }

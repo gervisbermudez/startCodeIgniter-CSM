@@ -4,6 +4,7 @@
 @endsection
 @section('content')
 <div id="root">
+
     <div class="col s12 center" v-bind:class="{ hide: !loader }">
         <br><br>
         <div class="preloader-wrapper big active">
@@ -30,6 +31,8 @@
                 </div>
             </form>
             <ul class="right hide-on-med-and-down">
+                <li><a href="#!" v-on:click="toggleView();"><i class="material-icons">view_module</i></a></li>
+
                 <li><a href="#!" v-on:click="getPages();"><i class="material-icons">refresh</i></a></li>
                 <li>
                     <a href="#!" class='dropdown-trigger' data-target='dropdown-options'><i class="material-icons">more_vert</i></a>
@@ -66,7 +69,7 @@
                             <td>@{{configuration.config_name}}</td>
                             <td>
                                 <div class="input-field" v-if="configuration.editable">
-                                    <input id="last_name" type="text" class="validate" v-model="configuration.config_value" v-on:blur="saveConfig(index);">
+                                    <input id="last_name" type="text" class="validate" v-model="configuration.config_value" v-on:blur="saveConfig(configuration);">
                                 </div>
                                 <div v-else>
                                     @{{configuration.config_value}}
@@ -84,10 +87,8 @@
                             <td>
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + configuration.site_config_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + configuration.site_config_id' class='dropdown-content'>
-                                    <li><a href="#!" v-on:click="toggleEddit(index);">Editar</a></li>
-                                    <li><a href="#!" v-on:click="deletePage(page, index);">Borrar</a></li>
-                                    <li v-if="configuration.status == 2"><a :href="base_url('admin/categorias/preview?site_config_id=' + configuration.site_config_id)" target="_blank">Preview</a></li>
-                                    <li><a :href="base_url(configuration.path)" target="_blank">Archivar</a></li>
+                                    <li><a href="#!" v-on:click="toggleEddit(configuration);">Editar</a></li>
+                                    <li><a href="#!" v-on:click="deletePage(configuration, index);">Borrar</a></li>
                                 </ul>
                             </td>
                         </tr>
@@ -95,19 +96,21 @@
                 </table>
             </div>
         </div>
+        <div class="row" v-else>
+            <div class="col s12">
+                <configuration v-for="(configuration, index) in filterConfigurations" :key="index" :configuration="configuration"></configuration>
+            </div>
+        </div>
     </div>
     <div class="container" v-if="!loader && configurations.length == 0" v-cloak>
         <h4>No hay Configuraciones</h4>
     </div>
 </div>
-<div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Crear categoria" href="<?php echo base_url('admin/categorias/nueva/') ?>">
-        <i class="large material-icons">add</i>
-    </a>
-</div>
+@include('admin.components.configurationcomponent')
 @endsection
 
 @section('footer_includes')
-<script src="{{base_url('public/js/components/ConfiguracionList.min.js')}}"></script>
-
+<script src="{{base_url('public/js/validateForm.min.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('public/js/components/configurationComponent.min.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('public/js/components/ConfiguracionList.min.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

@@ -2,7 +2,7 @@ var ConfiguracionList = new Vue({
   el: "#root",
   data: {
     configurations: [],
-    tableView: true,
+    tableView: false,
     loader: true,
     filter: "",
   },
@@ -33,104 +33,117 @@ var ConfiguracionList = new Vue({
     },
   },
   methods: {
-    toggleEddit(index) {
-      this.configurations[index].editable = !this.configurations[index]
-        .editable;
-      this.$forceUpdate();
-    },
-    getcontentText: function (categorie) {
-      return categorie.description.substring(0, 50) + "...";
-    },
     toggleView: function () {
       this.tableView = !this.tableView;
       this.initPlugins();
     },
+    toggleEddit(configuration) {
+      configuration.editable = !configuration.editable;
+      this.$forceUpdate();
+    },
     resetFilter: function () {
       this.filter = "";
     },
-    saveConfig(index, callBack) {
-      this.toggleEddit(index);
+    initPlugins: function () {
+      setTimeout(() => {
+        var elems = document.querySelectorAll(".tooltipped");
+        M.Tooltip.init(elems, {});
+        var elems = document.querySelectorAll(".dropdown-trigger");
+        M.Dropdown.init(elems, {});
+        var elems = document.querySelectorAll(".collapsible");
+        M.Collapsible.init(elems, {});
+        var elems = document.querySelectorAll("select");
+        M.FormSelect.init(elems, {});
+      }, 3000);
+    },
+    saveConfig(configuration) {
+      var self = this;
+      this.toggleEddit(configuration);
+      if (configuration.config_data != "boolean") {
+        let form = new VueForm({
+          field: {
+            value: configuration.config_value,
+            required: true,
+            type: configuration.config_data.validate_as,
+            maxLength: configuration.config_data.max_lenght,
+            minLength: configuration.config_data.min_lenght,
+          },
+        });
+        form.validate();
+        if (form.errors.length > 0) {
+          configuration.validate = false;
+          M.toast({ html: "Verificar la configuracion del campo" });
+        } else {
+          configuration.validate = true;
+          this.runSave(configuration);
+        }
+      } else {
+        this.runSave(configuration);
+      }
+    },
+    runSave(configuration) {
       var self = this;
       var url = BASEURL + "api/v1/config";
       $.ajax({
         type: "POST",
         url: url,
-        data: self.configurations[index],
+        data: configuration,
         dataType: "json",
         success: function (response) {
           self.debug ? console.log(url, response) : null;
-          setTimeout(() => {
-            self.loader = false;
-          }, 1500);
           if (response.code == 200) {
             if (typeof callBack == "function") {
               callBack(response);
             }
-          } else {
             M.toast({ html: "Config Saved!" });
-            self.loader = false;
+          } else {
+            M.toast({ html: response.responseJSON.error_message });
           }
         },
         error: function (response) {
           M.toast({ html: response.responseJSON.error_message });
-          self.loader = false;
         },
       });
     },
-    getPageImagePath(categorie) {
-      if (categorie.imagen_file) {
-        return (
-          BASEURL +
-          categorie.imagen_file.file_path.substr(2) +
-          categorie.imagen_file.file_name +
-          "." +
-          categorie.imagen_file.file_type
-        );
-      }
-      return "https://materializecss.com/images/sample-1.jpg";
-    },
     getconfigurations: function () {
       var self = this;
-      $.ajax({
-        type: "GET",
-        url: BASEURL + "api/v1/config/",
-        data: {},
-        dataType: "json",
-        success: function (response) {
+      var url = BASEURL + "api/v1/config/";
+      fetch(url)
+        .then((response) => response.json())
+        .then((response) => {
           let configurations = response.data;
           for (const key in configurations) {
             if (configurations.hasOwnProperty(key)) {
               configurations[key].user = new User(configurations[key].user);
+              try {
+                configurations[key].config_data = JSON.parse(
+                  configurations[key].config_data
+                );
+              } catch (error) {
+                configurations[key].config_data = {};
+              }
             }
           }
           self.configurations = configurations;
-          setTimeout(() => {
-            self.loader = false;
-            self.initPlugins();
-          }, 1000);
-        },
-        error: function (error) {
+          self.loader = false;
+        })
+        .catch((response) => {
           M.toast({ html: response.responseJSON.error_message });
           self.loader = false;
-        },
-      });
+        });
     },
-    deletePage: function (categorie, index) {
+    deleteConfiguration: function (configuration, index) {
       var self = this;
       self.loader = true;
       $.ajax({
         type: "DELETE",
-        url: BASEURL + "api/v1/categorie/" + categorie.categorie_id,
+        url: BASEURL + "api/v1/configuration/" + configuration.configuration_id,
         data: {},
         dataType: "json",
         success: function (response) {
           if (response.code == 200) {
             self.configurations.splice(index, 1);
           }
-          setTimeout(() => {
-            self.loader = false;
-            self.initPlugins();
-          }, 1000);
         },
         error: function (error) {
           M.toast({ html: response.responseJSON.error_message });
@@ -141,19 +154,10 @@ var ConfiguracionList = new Vue({
     base_url: function (path) {
       return BASEURL + path;
     },
-    initPlugins: function () {
-      setTimeout(() => {
-        var elems = document.querySelectorAll(".tooltipped");
-        var instances = M.Tooltip.init(elems, {});
-        var elems = document.querySelectorAll(".dropdown-trigger");
-        var instances = M.Dropdown.init(elems, {});
-      }, 3000);
-    },
   },
   mounted: function () {
     this.$nextTick(function () {
       this.getconfigurations();
-      this.initPlugins();
     });
   },
 });

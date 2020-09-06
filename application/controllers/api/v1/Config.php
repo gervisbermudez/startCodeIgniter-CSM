@@ -124,9 +124,7 @@ class Config extends REST_Controller
         $this->input->post('site_config_id') ? $configuration->find($this->input->post('site_config_id')) : false;
         $configuration->config_name = $this->input->post('config_name');
         $configuration->config_value = $this->input->post('config_value');
-        $configuration->perm_values = $this->input->post('perm_values');
         $configuration->user_id = userdata('user_id');
-        $configuration->config_type = $this->input->post('config_type');
         $configuration->status = $this->input->post('status');
         $configuration->date_create = date("Y-m-d H:i:s");
 
