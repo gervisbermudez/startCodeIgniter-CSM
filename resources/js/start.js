@@ -123,6 +123,47 @@ class User {
   };
 }
 
+class ExplorerFile {
+  date_create = "";
+  date_update = "";
+  featured = "";
+  file_id = "";
+  file_name = "";
+  file_path = "";
+  file_type = "";
+  parent_name = "";
+  rand_key = "";
+  share_link = "";
+  shared_user_group_id = "";
+  status = "";
+  user_id = "";
+  user = new User();
+
+  constructor(params) {
+    for (const param in params) {
+      if (params.hasOwnProperty(param)) {
+        this[param] = params[param] || "";
+      }
+    }
+  }
+
+  get_filename = () => {
+    try {
+      return this.file_name + "." + this.file_type;
+    } catch (error) {
+      return "";
+    }
+  };
+
+  getFullFilePath = () => {
+    return BASEURL + this.file_path + this.get_filename();
+  };
+
+  getFullSharePath = () => {
+    return BASEURL + this.share_link;
+  };
+}
+
 class Config_data {
   type_value = "string";
   validate_as = "text";

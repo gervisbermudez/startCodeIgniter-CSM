@@ -92,9 +92,7 @@ class Files_model extends MY_Model
         if ($query->num_rows() > 0) {
             return $query->result_array();
         }
-
         return array();
-
     }
 
     public function get_array_save_file($file_name, $dir_name)

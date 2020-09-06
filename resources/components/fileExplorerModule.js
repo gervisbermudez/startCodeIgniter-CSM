@@ -324,7 +324,6 @@ var fileExplorerModule = new Vue({
         success: function (response) {
           if (response.code == 200) {
             self.files = response.data;
-            self.initMT();
           }
         },
       });
@@ -332,7 +331,7 @@ var fileExplorerModule = new Vue({
     initMT() {
       setTimeout(() => {
         var elems = document.querySelectorAll(".dropdown-trigger");
-        var instances = M.Dropdown.init(elems, {});
+        M.Dropdown.init(elems, {});
       }, 2000);
     },
   },
