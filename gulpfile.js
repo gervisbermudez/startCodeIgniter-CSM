@@ -7,18 +7,24 @@ const rename = require("gulp-rename");
 const resources = './resources/';
 const public = './public/';
 
-/**
- * Compilar cotizador AP: cotizador-ap.min.js
- */
 gulp.task('concat_widgets', function () {
     return gulp.src(
         [
             resources + 'components/widget/*.js',
             resources + 'components/dashboardModule.js',
         ])
-        .pipe(concat('dashboardModule.js'))
-        .pipe(gulp.dest(resources + 'components/'));
+        .pipe(concat('dashboardBundle.js'))
+        .pipe(rename(function (path) {
+            // Updates the object in-place
+            path.dirname += "";
+            path.basename += ".min";
+            path.extname = ".js";
+        }))
+        .pipe(terser())
+        .pipe(gulp.dest(public + '/js/components/'));
 });
+
+
 
 gulp.task('compress_js_components', function () {
     return gulp.src(resources + 'components/*.js')
@@ -63,4 +69,50 @@ gulp.task('task_series', gulp.series('compress_js', 'compress_js_components', 'c
 
 gulp.task("watch_resources", function () {
     gulp.watch([resources + '**/*.js', resources + '**/*.scss', '!' + resources + 'components/*.scss'], gulp.series('task_series'));
+});
+
+gulp.task('widget_task_series', gulp.series('concat_widgets', 'compile_sass'));
+
+gulp.task("watch_widget", function () {
+    gulp.watch([resources + '**/*.js', resources + 'components/dashboardModule.js', resources + '**/*.scss', '!' + resources + 'components/*.scss'], gulp.series('widget_task_series'));
+});
+
+gulp.task('concat_form_components', function () {
+    return gulp.src(
+        [
+            resources + 'components/formComponents/*.js',
+            resources + 'components/FormNewModule.js',
+        ])
+        .pipe(concat('FormNewModuleBundle.js'))
+        .pipe(rename(function (path) {
+            // Updates the object in-place
+            path.dirname += "";
+            path.basename += ".min";
+            path.extname = ".js";
+        }))
+        .pipe(terser())
+        .pipe(gulp.dest(public + '/js/components/'));
+});
+
+gulp.task('concat_form_content_components', function () {
+    return gulp.src(
+        [
+            resources + 'components/formComponents/*.js',
+            resources + 'components/FormContentNewModule.js',
+        ])
+        .pipe(concat('FormContentNewModuleBundle.js'))
+        .pipe(rename(function (path) {
+            // Updates the object in-place
+            path.dirname += "";
+            path.basename += ".min";
+            path.extname = ".js";
+        }))
+        .pipe(terser())
+        .pipe(gulp.dest(public + '/js/components/'));
+});
+
+gulp.task('form_task_series', gulp.series('concat_form_components', 'concat_form_content_components'));
+
+gulp.task("watch_form", function () {
+    gulp.watch([resources + 'components/FormNewModule.js', resources + 'components/FormContentNewModule.js', resources + '**/*.scss', '!' + resources + 'components/*.scss'], gulp.series('form_task_series'));
 });

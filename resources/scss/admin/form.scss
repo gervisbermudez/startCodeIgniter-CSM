@@ -1,0 +1,78 @@
+@import "components/palette";
+
+.main-navbar {
+  box-shadow: none;
+}
+
+.main::before {
+  content: "";
+  width: 100%;
+  height: 120px;
+  display: block;
+  background-color: #646b7f;
+}
+
+.form {
+  padding: 0px 10px;
+  width: 95%;
+  background-color: $white;
+  margin-top: 20px;
+  border-radius: 5px;
+  border: solid 1px #ccc;
+  overflow: hidden;
+  top: -120px;
+  position: relative;
+
+  nav {
+    position: relative;
+    background-color: $white;
+    z-index: auto;
+    box-shadow: none;
+
+    i {
+      color: #000;
+      height: 50px;
+      line-height: 50px;
+    }
+
+    .input-field label.label-icon i {
+      color: #000 !important;
+      height: 50px;
+      line-height: 50px;
+    }
+
+    a.breadcrumb {
+      color: black;
+    }
+
+    .breadcrumb:before {
+      color: black;
+    }
+
+    a.brand-logo {
+      position: relative;
+      float: left;
+      left: 0px;
+      text-align: center;
+      width: 40px;
+    }
+
+    a.brand-logo i {
+      margin: 0 !important;
+      float: none !important;
+    }
+
+    .col.s12.breadcrumb-nav {
+      width: auto;
+    }
+
+    .breadcrumb:last-child {
+      color: #009688;
+    }
+
+    form {
+      float: left;
+      width: 80%;
+    }
+  }
+}

@@ -13,7 +13,7 @@ class Suscriptores extends MY_Controller
 
     public function index()
     {
-        $data['title'] = "Admin | Suscriptores";
+        $data['title'] = ADMIN_TITLE . " | Suscriptores";
         $data['h1'] = "Suscritos";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['Suscriptores'] = $this->Suscriptions->all();

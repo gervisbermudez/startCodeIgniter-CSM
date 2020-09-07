@@ -3,6 +3,12 @@
 @section('header')
 @include('admin.shared.header')
 @endsection
+
+@section('head_includes')
+<link rel="stylesheet" href="<?= base_url('public/js/fileinput-master/css/fileinput.min.css') ?>">
+<link rel="stylesheet" href="<?= base_url('public/js/lightbox2-master/dist/css/lightbox.min.css') ?>">
+@endsection
+
 @section('content')
 <div class="container">
 	<div class="row">
@@ -54,7 +60,7 @@
 						<div class="card-content">
 							<span class="grey-text text-darken-4 truncate"><?php echo $value; ?></span>
 							<!-- Dropdown Trigger -->
-							<?php if (3 > $this->session->userdata('level')): ?>
+							<?php if (3 > $ci->session->userdata('level')): ?>
 							<a class='dropdown-button right' href='#' data-activates='<?php echo $ddmid ?>'>
 								<i class="material-icons">more_vert</i></a>
 							<!-- Dropdown Structure -->
@@ -151,4 +157,10 @@
 		<a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
 	</div>
 </div>
+@endsection
+
+@section('footer_includes')
+<script src="<?= base_url('public/js/fileinput-master/js/fileinput.js') ?>"></script>
+<script src="<?= base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js') ?>"></script>
+<script src="<?= base_url('public/js/lightbox2-master/dist/js/lightbox.min.js') ?>"></script>
 @endsection

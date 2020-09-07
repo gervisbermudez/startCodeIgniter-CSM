@@ -13,11 +13,22 @@ if (!function_exists('getThemePath')) {
     function getThemePath()
     {
         $ci = &get_instance();
-        $config = $ci->Site_config->load_config();
-
-        if ($config->site_theme) {
+        $config = new stdClass();
+        if (isset($config->site_theme)) {
             defined('THEME_PATH') or define('THEME_PATH', FCPATH . 'themes\\' . $config->site_theme) . '\\';
             return THEME_PATH;
+        }
+        return '';
+    }
+}
+
+if (!function_exists("config")) {
+    function config($config_name)
+    {
+        $ci = &get_instance();
+        $config = $ci->config->item($config_name);
+        if ($config) {
+            return $config;
         }
         return '';
     }
@@ -27,14 +38,11 @@ if (!function_exists('getThemePublicPath')) {
     function getThemePublicPath()
     {
         $ci = &get_instance();
-        $config = $ci->Site_config->load_config();
-
+        $config = new stdClass();
         if ($config->site_theme) {
             return 'themes/' . $config->site_theme . '/public/';
         }
-
         return '';
-
     }
 }
 
@@ -46,13 +54,26 @@ if (!function_exists('isDir')) {
 }
 
 if (!function_exists('isSectionActive')) {
-    function isSectionActive($path = '', $position = 2, $class = 'active')
+    function isSectionActive($path = '', $position = 2, $class = 'current')
     {
+        if ($position === 'match') {
+            if ($path == uri_string()) {
+                return $class;
+            }
+            return '';
+        }
+
         $ci = &get_instance();
         $url_array = $ci->uri->segment_array();
+
+        if (count($url_array) == 0) {
+            return '';
+        }
+
         if (count($url_array) < $position) {
             $position = 1;
         }
+
         if ($path == $url_array[$position]) {
             return $class;
         }
@@ -95,6 +116,15 @@ if (!function_exists('slugify')) {
         }
 
         return $text;
+    }
+
+}
+
+if (!function_exists('userdata')) {
+    function userdata($text)
+    {
+        $ci = &get_instance();
+        return $ci->session->userdata($text);
     }
 
 }

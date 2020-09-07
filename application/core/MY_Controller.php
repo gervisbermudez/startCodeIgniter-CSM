@@ -9,8 +9,8 @@ class MY_Controller extends CI_Controller
     {
         parent::__construct();
         if (!$this->session->userdata('logged_in')) {
-            $uri = str_replace('/', '_', uri_string());
-            redirect('admin/login/index/' . $uri);
+            $uri = urlencode(uri_string());
+            redirect('admin/login/?redirect=' . $uri);
         }
         if ($this->config->item('enable_profiler')) {
             $this->output->enable_profiler(true);
@@ -55,10 +55,36 @@ class Base_Controller extends CI_Controller
     {
         parent::__construct();
 
+        $config = $this->Site_config->all();
+        foreach ($config as $value) {
+            $this->config->set_item($value->config_name, $value->config_value);
+        }
+    }
+
+    public function getPageMetas($page)
+    {
+        return array(
+            array('name' => 'keywords', 'content' => $page->title),
+            array('name' => 'description', 'content' => $page->title),
+            array('name' => 'ROBOTS', 'content' => 'NOODP'),
+            array('name' => 'GOOGLEBOT', 'content' => 'INDEX, FOLLOW'),
+            array('property' => 'og:title', 'content' => $page->title),
+            array('property' => 'og:description', 'content' => $page->title),
+            array('property' => 'og:site_name', 'content' => $page->title),
+            array('property' => 'og:url', 'content' => $page->title),
+            array('property' => 'og:image', 'content' => $page->title),
+            array('property' => 'og:type', 'content' => $page->title),
+            array('name' => 'twitter:card', 'content' => 'summary'),
+            array('name' => 'twitter:title', 'content' => $page->title),
+            array('name' => 'twitter:description', 'content' => $page->title),
+            array('name' => 'twitter:image', 'content' => $page->title),
+        );
+
     }
 
     public function error404()
     {
+        $this->output->set_status_header(404);
         $data['base_url'] = $this->config->base_url();
         $data['title'] = "404";
         $url = uri_string();

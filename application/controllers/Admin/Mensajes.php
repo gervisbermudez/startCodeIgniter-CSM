@@ -14,7 +14,7 @@ class Mensajes extends MY_Controller
     public function index($folder = 'Inbox')
     {
         $data['username'] = $this->session->userdata('username');
-        $data['title'] = "Admin | Mensajes";
+        $data['title'] = ADMIN_TITLE . " | Mensajes";
         $data['folder'] = $folder;
         $data['h1'] = "";
         $data['header'] = '';
@@ -30,7 +30,7 @@ class Mensajes extends MY_Controller
     {
         $this->load->helper('text');
         $data['username'] = $this->session->userdata('username');
-        $data['title'] = "Admin | Mensajes";
+        $data['title'] = ADMIN_TITLE . " | Mensajes";
         $data['h1'] = "";
         $data['header'] = '';
         $data['folder'] = $folder;
@@ -66,7 +66,7 @@ class Mensajes extends MY_Controller
         $data['base_url'] = $this->config->base_url();
         $this->load->helper('text');
         $data['username'] = $this->session->userdata('username');
-        $data['title'] = "Admin | Mensajes";
+        $data['title'] = ADMIN_TITLE . " | Mensajes";
         $data['h1'] = "";
         $data['header'] = ''; //$this->load->view('admin/header', $data, TRUE);
         $this->load->view('admin/head', $data);

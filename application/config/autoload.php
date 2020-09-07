@@ -65,7 +65,7 @@ $autoload['libraries'] = array('database', 'session', 'Blade');
 |    $autoload['helper'] = array('url', 'file');
  */
 
-$autoload['helper'] = array('html', 'url', 'string', 'text', 'array', 'general', 'file', 'form');
+$autoload['helper'] = array('html', 'url', 'string', 'text', 'array', 'general', 'file', 'form', 'language');
 
 /*
 | -------------------------------------------------------------------
@@ -80,7 +80,7 @@ $autoload['helper'] = array('html', 'url', 'string', 'text', 'array', 'general',
 |
  */
 
-$autoload['config'] = array();
+$autoload['config'] = array('jwt');
 
 /*
 | -------------------------------------------------------------------

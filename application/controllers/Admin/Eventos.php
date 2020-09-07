@@ -13,7 +13,7 @@ class Eventos extends MY_Controller
 
     public function index()
     {
-        $data['title'] = "Admin | Eventos";
+        $data['title'] = ADMIN_TITLE . " | Eventos";
         $data['h1'] = "Eventos";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['eventos'] = $this->Events->all();
@@ -46,7 +46,7 @@ class Eventos extends MY_Controller
             }
             $data['options'] = $this->menu->get_menu($links);
             $data['evento'] = $array[0];
-            $data['title'] = "Admin | Evento";
+            $data['title'] = ADMIN_TITLE . " | Evento";
             $data['h1'] = "Detalles de un evento";
             $data['header'] = $this->load->view('admin/header', $data, true);
             // Load the views
@@ -60,7 +60,7 @@ class Eventos extends MY_Controller
     public function Agregar()
     {
         $data['base_url'] = $this->config->base_url();
-        $data['title'] = "Admin | Nuevo Evento";
+        $data['title'] = ADMIN_TITLE . " | Nuevo Evento";
         $data['h1'] = "Agregar nuevo Evento";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['footer_includes'] = array('tinymce' => '<script src="' . base_url('public/js/tinymce/js/tinymce/tinymce.min.js') . '"></script>',
@@ -71,7 +71,6 @@ class Eventos extends MY_Controller
 
     public function save()
     {
-        // set the url base
         $data['base_url'] = $this->config->base_url();
         if ($this->input->post('nombre')) {
             if (!$this->Events->setEventData()) {
@@ -94,7 +93,7 @@ class Eventos extends MY_Controller
             $array = $this->Events->get_event(array('id' => $id), '');
             if ($array) {
                 $data['eventdata'] = $array[0];
-                $data['title'] = "Admin | Editar Evento";
+                $data['title'] = ADMIN_TITLE . " | Editar Evento";
                 $data['h1'] = "Editar un evento";
                 $data['header'] = $this->load->view('admin/header', $data, true);
                 $data['footer_includes'] = array('tinymce' => '<script src="' . base_url('public/js/tinymce/js/tinymce/tinymce.min.js') . '"></script>',

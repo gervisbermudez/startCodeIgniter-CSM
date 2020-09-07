@@ -49,11 +49,28 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | Examples:    my-controller/index    -> my_controller/index
 |        my-controller/my-method    -> my_controller/my_method
  */
-$route['default_controller'] = 'Welcome';
-$route['404_override'] = 'Page';
+$route['default_controller'] = 'SiteController';
+$route['404_override'] = 'PageController';
 $route['translate_uri_dashes'] = false;
 $route['admin'] = 'admin/admin';
+$route['admin/offline'] = 'admin/admin/offline';
+//Pages system
+$route['admin/paginas/preview'] = 'PageController/preview';
 
-//Formularios
-$route['admin/formularios'] = 'Admin/Formularios';
-$route['admin/content'] = 'Admin/Formularios/data';
+//Blog pages
+$route['blog/(:any)'] = 'BlogController/get_blog/$1';
+$route['blog/(:any)/(:any)'] = 'BlogController/get_blog_categorie/$1/$2';
+$route['blog/(:any)/(:any)/(:any)'] = 'BlogController/get_blog_subcategorie/$1/$2/$3';
+
+//Site Pages
+$route['about'] = 'SiteController/about';
+$route['services'] = 'SiteController/services';
+$route['contact'] = 'SiteController/contact';
+$route['faq'] = 'SiteController/faq';
+$route['pricing'] = 'SiteController/pricing';
+$route['sidebar'] = 'SiteController/sidebar';
+$route['full-width'] = 'SiteController/fullWidth';
+$route['blog-post'] = 'SiteController/blogPost';
+$route['blog'] = 'BlogController/list';
+$route['portfolio'] = 'SiteController/portfolio';
+$route['portfolio-item'] = 'SiteController/portfolioItem';

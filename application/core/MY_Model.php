@@ -2,13 +2,18 @@
 
 use Tightenco\Collect\Support\Collection;
 
-class MY_model extends CI_Model
+class MY_model extends CI_Model implements JsonSerializable
 {
     public $table;
     public $primaryKey = 'id';
     public $timestamps = true;
-    private $map = false;
+    public $map = false;
     public $fields = array();
+    public $hasData = false;
+    public $hasOne = [];
+    public $hasMany = [];
+    public $protectedFields = array();
+    public $computed = array();
     /**
      * The model's default values for attributes.
      *
@@ -36,7 +41,8 @@ class MY_model extends CI_Model
         $this->db->select($this->getFieldsSelectCompile());
         $query = $this->db->get($this->table);
         if ($query->num_rows() > 0) {
-            return new Collection($query->result());
+
+            return new Collection($this->filter_results($query->result()));
         }
 
         return false;
@@ -61,13 +67,36 @@ class MY_model extends CI_Model
         return false;
     }
 
+    /**
+     * Search the primary key value specify into the table and map / fill the object with the properties founds
+     * @param string $primaryKey
+     * @return array or false on fail
+     */
+    public function find_with($where)
+    {
+        $this->db->where($where);
+        $query = $this->db->get($this->table);
+        if ($query->num_rows() > 0) {
+            $result = new Collection($query->result());
+            $result = $result->first();
+            $this->mapfields($result);
+            $this->retrieved();
+            return $result;
+        }
+        return false;
+    }
+
     public function mapfields($fields)
     {
+        $this->before_map();
         $this->map = true;
         foreach ($fields as $key => $value) {
-            $this->fields[] = $key;
-            $this->{$key} = $value;
+            if (!in_array($key, $this->protectedFields)) {
+                $this->fields[] = $key;
+                $this->{$key} = $value;
+            }
         }
+        $this->after_map();
     }
 
     public function where($where)
@@ -75,7 +104,7 @@ class MY_model extends CI_Model
         $this->db->where($where);
         $query = $this->db->get($this->table);
         if ($query->num_rows() > 0) {
-            $result = new Collection($query->result());
+            $result = new Collection($this->filter_results($query->result()));
             return $result;
         }
         return false;
@@ -114,17 +143,25 @@ class MY_model extends CI_Model
         if ($this->map) {
             $this->updating();
             $result = $this->update_data(array($this->primaryKey => $this->{$this->primaryKey}), $data);
-            $this->updated();
+            if ($result) {
+                $this->updated();
+            }
 
         } else {
             $this->creating();
-            $result = $this->set_data($data);
-            $this->created();
+            $result = $this->db->insert($this->table, $data);
+            $insert_id = $this->db->insert_id();
+            if ($result) {
+                $this->mapfields($data);
+                $this->{$this->primaryKey} = $insert_id;
+                $this->created();
+            }
         }
 
         if ($result) {
             $this->saved();
         }
+
         return $result;
     }
 
@@ -278,51 +315,244 @@ class MY_model extends CI_Model
         }
     }
 
+    public function get_primary()
+    {
+        return $this->{$this->primaryKey};
+    }
+
+    /**
+     * Events for table data
+     */
+    public function retrieved_data()
+    {
+        $table_data_name = $this->table . '_data';
+        $this->{$table_data_name} = $this->search_for_data($this->{$this->primaryKey}, $this->primaryKey);
+    }
+
+    public function search_for_data($primaryKey, $primaryKeyFieldName)
+    {
+        $table_data_name = $this->table . '_data';
+        $sql = "SELECT d." . $primaryKeyFieldName . ", CONCAT('{', GROUP_CONCAT('\"', d._key, '\"', ':', '\"', d._value, '\"'), '}')
+				AS `data` FROM " . $table_data_name . " d
+				WHERE " . $primaryKeyFieldName . " = $primaryKey
+				GROUP BY " . $primaryKeyFieldName;
+        $table_data = $this->get_query($sql);
+        if ($table_data) {
+            $table_data = json_decode($table_data->first()->data);
+        }
+        return $table_data ? $table_data : [];
+    }
+
+    public function created_data()
+    {
+        $table_data_name = $this->table . '_data';
+        $foreing_id = $this->{$this->primaryKey};
+        $data = $this->{$table_data_name} ? $this->{$table_data_name} : [];
+        foreach ($data as $key => $value) {
+            $insert = array(
+                $this->primaryKey => $foreing_id,
+                '_key' => $key,
+                '_value' => $value,
+                'status' => 1,
+            );
+            $this->db->insert($table_data_name, $insert);
+        }
+        $this->find($this->user_id);
+    }
+
+    public function updated_data()
+    {
+        $table_data_name = $this->table . '_data';
+        $data = $this->{$table_data_name};
+        $foreing_id = $this->{$this->primaryKey};
+        foreach ($data as $key => $value) {
+            $update = array(
+                '_value' => $value,
+            );
+            $where = array($this->primaryKey => $foreing_id, '_key' => $key);
+            $this->db->where($where);
+            $this->db->update($table_data_name, $update);
+        }
+    }
+
+    public function deleted_data()
+    {
+        $table_data_name = $this->table . '_data';
+        $foreing_id = $this->{$this->primaryKey};
+        $data = array($this->primaryKey => $foreing_id);
+        if (!$data) {
+            return false;
+        }
+        $this->db->where($data);
+        return $this->db->delete($table_data_name);
+    }
+
     /**
      * Events hook model's lifecycle
      */
+
+    public function before_map()
+    {
+    }
+
+    public function after_map()
+    {
+        $this->mapRelations();
+    }
+
     public function retrieved()
     {
-
+        if ($this->hasData) {
+            $this->retrieved_data();
+        }
     }
+
     public function creating()
     {
 
     }
+
     public function created()
     {
-
+        if ($this->hasData) {
+            $this->created_data();
+        }
     }
+
     public function updating()
     {
 
     }
+
     public function updated()
     {
-
+        if ($this->hasData) {
+            $this->updated_data();
+        }
     }
+
     public function saving()
     {
 
     }
+
     public function saved()
     {
 
     }
+
     public function deleting()
     {
 
     }
+
     public function deleted()
     {
-
+        if ($this->hasData) {
+            $this->deleted_data();
+        }
     }
+
     public function restoring()
     {
 
     }
+
     public function restored()
     {
 
+    }
+
+    /**
+     * Relations data events
+     */
+    public function mapRelations()
+    {
+        if ($this->map) {
+            foreach ($this->hasOne as $key => $value) {
+                $this->load->model($value[1]);
+                ${$value[2]} = new $value[2]();
+                if (isset($value[3]) && $value[3] == 'delay') {
+                    ${$value[2]} = ${$value[2]};
+                } else {
+                    ${$value[2]}->find($this->{$value[0]});
+                }
+                $this->{$key} = ${$value[2]}->map ? ${$value[2]} : null;
+            }
+            foreach ($this->hasMany as $key => $value) {
+                $this->load->model($value[1]);
+                ${$key} = new $value[2]();
+                if (isset($value[3]) && $value[3] == 'delay') {
+                    $this->{$key} = ${$key};
+                } else {
+                    $this->{$key} = ${$key}->where(array($value[0] => $this->{$value[0]}));
+                }
+            }
+            foreach ($this->computed as $key => $value) {
+                $this->{$key} = $this->{$value}();
+            }
+        }
+        return null;
+    }
+
+    public function jsonSerialize()
+    {
+        if ($this->map) {
+            $object = new StdClass();
+            foreach ($this->fields as $key => $value) {
+                $object->{$value} = $this->{$value};
+            }
+            foreach ($this->hasOne as $key => $value) {
+                if (isset($this->{$key})) {
+                    $object->{$key} = $this->{$key};
+                }
+            }
+            foreach ($this->hasMany as $key => $value) {
+                if (isset($this->{$key})) {
+                    $object->{$key} = $this->{$key};
+                }
+            }
+            foreach ($this->computed as $key => $value) {
+                if (isset($this->{$key})) {
+                    $object->{$key} = $this->{$key};
+                }
+            }
+            if ($this->hasData) {
+                $object_data_name = $this->table . '_data';
+                $object->{$object_data_name} = $this->{$object_data_name};
+            }
+            return $object;
+        }
+    }
+
+    public function get_select_json($table_name = null)
+    {
+        $table_name = $table_name ? $table_name : $this->table;
+        $fields = $this->db->list_fields($table_name);
+        $str_fields_names = '';
+        foreach ($fields as $field) {
+            if (!in_array($field, $this->protectedFields)) {
+                $str_fields_names .= '\'\"' . $field . '\" : \"\',' . $field . ', \'\",\' ';
+            }
+        }
+        $pos = strrpos($str_fields_names, ',');
+
+        if ($pos !== false) {
+            $str_fields_names = substr_replace($str_fields_names, '', $pos, strlen(','));
+        }
+
+        return 'SELECT ' . $table_name . '.' . $table_name . '_id' . ', CONCAT(\'{\', GROUP_CONCAT(' . $str_fields_names . '), \'}\')  AS ' . $table_name . ' FROM ' . $table_name . ' GROUP BY ' . $table_name . '.' . $table_name . '_id';
+    }
+
+    public function as_data()
+    {
+        $data = json_encode($this);
+        $result = json_decode($data);
+        return $result ? $result : new stdClass();
+    }
+
+    public function filter_results($collection = [])
+    {
+        return $collection;
     }
 }

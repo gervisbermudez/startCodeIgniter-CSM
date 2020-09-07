@@ -10,16 +10,10 @@ class Login extends CI_Controller
         $this->load->model('Admin/LoginMod');
     }
 
-    public function index($continue = '')
+    public function index()
     {
         $this->session->sess_destroy();
-        $data['title'] = "Login";
-        if ($continue !== '') {
-            $data['continue'] = str_replace('_', '/', $continue);
-        }
-        $data['base_url'] = $this->config->base_url();
-        $data['footer_includes'] = array("<script src=" . base_url('public/js/components/loginForm.min.js?v=' . SITEVERSION) . "></script>");
-
+        $data['title'] = ADMIN_TITLE . " | Login";
         echo $this->blade->view("admin.login", $data);
     }
 
