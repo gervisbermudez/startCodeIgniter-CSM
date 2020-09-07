@@ -1,4 +1,8 @@
+![startCodeigneiter CSM](https://repository-images.githubusercontent.com/233129678/7ad83200-f12e-11ea-8538-ab49ede15585)
+
 # startCodeigneiter CSM
+
+startCodeIgniter CSM is a Lightweight Content Managemant System based on Codeigneiter Framework and Vuejs
 
 ### Installation
 
@@ -7,8 +11,8 @@ startCodeigneiter requires [Composer](https://getcomposer.org/).
 Install the dependencies and devDependencies and start the server.
 
 ```sh
-$ git clone https://github.com/gervisbermudez/LoanAdmin.git
-$ cd ./LoanAdmin
+$ git clone https://github.com/gervisbermudez/startCodeIgniter-CSM.git
+$ cd ./startCodeIgniter-CSM
 $ composer install
 $ npm install
 $ php -S localhost:8000 -t ./
