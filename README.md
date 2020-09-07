@@ -2,11 +2,41 @@
 
 # startCodeigneiter CSM
 
-startCodeIgniter CSM is a Lightweight Content Managemant System based on Codeigneiter Framework and Vuejs
+startCodeIgniter CSM is a Lightweight Content Managemant System based on Codeigneiter Framework and Vuejs: cloud-enabled, mobile-ready, offline-storage and HTML5 editor.
+
+- Create custom pages, blogs
+- Manage your files and folders
+- Manage events, videos and photos
+- Create User with levels acces
+- Create categories/ subcategories
+
+# New Features!
+
+- Dinamic Forms contents
+- New dashboard witgeds addeds
+  You can also:
+- Use the API to consume the data created in the interface
+- Import the postman collection with some examples of use
+- Change de configuration and theme of yor website
+
+### Tech
+
+startCodeIgniter CSM uses a number of open source projects to work properly:
+
+- [VueJS] - HTML enhanced for web apps!
+- [tinymce] - awesome web-based text editor
+- [Materialize] - great UI boilerplate for modern web apps
+- [MySQL] - the popular database for the storage
+- [Codeigneiter] - fast PHP app framework
+- [Gulp] - the streaming build system
+- [jQuery] - duh
+
+And of course startCodeIgniter CSM itself is open source with a [public repository][startcodeigniter]
+on GitHub.
 
 ### Installation
 
-startCodeigneiter requires [Composer](https://getcomposer.org/).
+startCodeIgniter CSM requires [Composer](https://getcomposer.org/).
 
 Install the dependencies and devDependencies and start the server.
 
@@ -18,33 +48,50 @@ $ npm install
 $ php -S localhost:8000 -t ./
 ```
 
-### What is CodeIgniter
-CodeIgniter is an Application Development Framework - a toolkit - for people who build web sites using PHP. Its goal is to enable you to develop projects much faster than you could if you were writing code from scratch, by providing a rich set of libraries for commonly needed tasks, as well as a simple interface and logical structure to access these libraries. CodeIgniter lets you creatively focus on your project by minimizing the amount of code needed for a given task.
+• startCodeIgniter CSM private panel admin will be in [/admin](https://localhost:8000/admin/).
+• startCodeIgniter CSM public website will be in [/](https://localhost:8000/).
 
-### Release Information
-This repo contains in-development code for future releases. To download the latest stable release please visit the CodeIgniter Downloads page.
+### Development
 
-### Changelog and New Features
-You can find a list of all changes for each release in the user guide change log.
+Want to contribute? Great!
 
-### Server Requirements
-PHP version 5.6 or newer is recommended.
+startCodeIgniter CSM uses Gulp for fast developing.
+Make a change in your file and instantaneously see your updates!
 
-It should work on 5.4.8 as well, but we strongly advise you NOT to run such old versions of PHP, because of potential security and performance issues, as well as missing features.
+Open your favorite Terminal and run these commands.
 
-### Installation
-Please see the installation section of the CodeIgniter User Guide.
+First Tab:
 
-### License
-Please see the license agreement.
+```sh
+$ php -S localhost:8000 -t ./
+```
 
-### Resources
-User Guide
-Language File Translations
-Community Forums
-Community Wiki
-Community Slack Channel
-Report security issues to our Security Panel or via our page on HackerOne, thank you.
+Second Tab:
 
-### Acknowledgement
-The CodeIgniter team would like to thank EllisLab, all the contributors to the CodeIgniter project and you, the CodeIgniter user.
+```sh
+$ gulp watch_resources
+```
+
+### Todos
+
+- Write MORE Tests
+- Add Night Mode
+
+## License
+
+MIT
+
+**Free Software, Hell Yeah!**
+
+[//]: # "These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax"
+[startcodeigniter]: https://github.com/gervisbermudez/startCodeIgniter-CSM
+[git-repo-url]: https://github.com/gervisbermudez/startCodeIgniter-CSM.git
+[df1]: http://daringfireball.net/projects/markdown/
+[codeigneiter]: https://github.com/bcit-ci/CodeIgniter
+[node.js]: http://nodejs.org
+[twitter bootstrap]: http://twitter.github.com/bootstrap/
+[jquery]: http://jquery.com
+[@tjholowaychuk]: http://twitter.com/tjholowaychuk
+[vuejs]: https://github.com/vuejs/vue
+[gulp]: http://gulpjs.com
+[materialize]: https://github.com/Dogfalo/materialize
