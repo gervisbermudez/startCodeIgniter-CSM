@@ -42,7 +42,7 @@ var CategoriesLists = new Vue({
           categorie.imagen_file.file_type
         );
       }
-      return "https://materializecss.com/images/sample-1.jpg";
+      return BASEURL + "public/img/default.jpg";
     },
     getCategories: function () {
       var self = this;

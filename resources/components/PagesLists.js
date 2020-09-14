@@ -51,7 +51,7 @@ var PagesLists = new Vue({
           page.imagen_file.file_type
         );
       }
-      return "https://materializecss.com/images/sample-1.jpg";
+      return BASEURL + "public/img/default.jpg";
     },
     getPages: function () {
       var self = this;
