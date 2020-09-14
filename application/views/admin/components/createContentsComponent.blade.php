@@ -1,11 +1,11 @@
 <?php $dropdownid = random_string('alpha', 16)?>
 <script type="text/x-template" id="create-contents-template">
-<div class="panel">
+    <div class="panel">
 	<div class="title">
 		<h5>Contenidos Creados</h5>
         <a data-position="left" data-delay="50" data-tooltip="Crear contenido"
             class='tooltipped dropdown-trigger btn right btn-floating halfway-fab waves-effect waves-light'
-			href="{{base_url('admin/formularios/new')}}" data-target='{{$dropdownid}}'>
+			href="{{base_url('admin/formularios/nuevo')}}" data-target='{{$dropdownid}}'>
 			<i class="large material-icons">add</i>
 		</a>
 		<ul id='{{$dropdownid}}' class='dropdown-content'>

@@ -48,7 +48,7 @@
                         <a class="waves-effect" href="{{ base_url('admin/formularios/') }}">Todos</a>
                     </li>
                     <li>
-                        <a href="{{ base_url('admin/formularios/new') }}">Nuevo</a>
+                        <a href="{{ base_url('admin/formularios/nuevo') }}">Nuevo</a>
                     </li>
                 </ul>
             </div>
