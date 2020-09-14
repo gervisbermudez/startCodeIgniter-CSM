@@ -76,7 +76,7 @@
             <div class="row">
                 <div class="col s12">
                     <ul class="tabs" id="user-tabs">
-                        <li class="tab col s12 m4"><a class="active" href="#test1"> <i class="material-icons">view_day</i> Actividad</a></li>
+                        <li class="tab col s12 m4"><a class="active" href="#test1"> <i class="material-icons">view_day</i> <span>Actividad</span></a></li>
                     </ul>
                 </div>
                 <div id="test1" class="col s12">
@@ -183,7 +183,6 @@
         </div>
         </div>
 </script>
-
 <script type="text/x-template" id="form-custom-template">
     <div>
         <div class="timeline-body">
