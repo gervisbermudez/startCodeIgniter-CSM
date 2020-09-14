@@ -46,7 +46,7 @@ var CustomFormLists = new Vue({
           page.imagen_file.file_type
         );
       }
-      return "https://materializecss.com/images/sample-1.jpg";
+      return BASEURL + "public/img/default.jpg";
     },
     getForms: function () {
       var self = this;

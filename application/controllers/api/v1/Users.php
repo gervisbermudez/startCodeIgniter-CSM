@@ -74,10 +74,10 @@ class Users extends REST_Controller
     public function index_get($user_id = null)
     {
         $user = new User();
-        if($user_id){
+        if ($user_id) {
             $result = $user->find($user_id);
             $result = $result ? $user : [];
-        }else{
+        } else {
             $result = $this->User->get_full_info($user_id);
         }
         if ($result) {
@@ -110,7 +110,7 @@ class Users extends REST_Controller
      * @apiParam {string} user_data[apellido] The user lastname
      * @apiParam {string} user_data[direccion] The user address
      * @apiParam {string} user_data[telefono] The user phone
-     * 
+     *
      * @apiSuccessExample {json} Success-Response:
      * HTTP/1.1 200 OK
      * {
@@ -189,7 +189,7 @@ class Users extends REST_Controller
         $usuario->usergroup_id = $this->input->post('usergroup_id');
         $usuario->status = 1;
         $usuario->user_data = $this->input->post('user_data');
-        if(!$this->input->post('user_id')){
+        if (!$this->input->post('user_id')) {
             $usuario->user_data['create_by_id'] = userdata('user_id');
         }
 
@@ -278,6 +278,97 @@ class Users extends REST_Controller
     public function usergroups_post()
     {
         $this->response([], REST_Controller::HTTP_OK);
+    }
+
+    /**
+     *
+     * @api {get} /users/timeline/:user_id Get a lists of users
+     * @apiName GetUser
+     * @apiGroup User
+     *
+     * @apiParam {Number} user_id <code>required</code> User unique ID.
+     * @apiSuccessExample {json} Success-Response:
+     * HTTP/1.1 200 OK
+     * {
+     * "code": 200,
+     * "data": [
+     *   {
+     *     "page_id": "68",
+     *     "path": "collections",
+     *     "template": "default",
+     *     "title": "Collections",
+     *     "subtitle": "",
+     *     "content": "",
+     *     "page_type_id": "1",
+     *     "user_id": "1",
+     *     "visibility": "1",
+     *     "categorie_id": "0",
+     *     "subcategorie_id": "0",
+     *     "status": "1",
+     *     "layout": "default",
+     *     "mainImage": null,
+     *     "date_publish": "2020-09-13 23:31:39",
+     *     "date_update": "2020-09-13 11:20:05",
+     *     "date_create": "2020-09-13 23:31:39",
+     *     "user": {
+     *       "user_id": "1",
+     *       "username": "gerber",
+     *       "email": "gerber@gmail.com",
+     *       "lastseen": "2020-09-14 16:35:23",
+     *       "usergroup_id": "1",
+     *       "status": "1",
+     *       "date_create": "2020-03-01 16:11:25",
+     *       "date_update": "2020-09-09 14:56:41",
+     *       "usergroup": {
+     *         "usergroup_id": "1",
+     *         "name": "root",
+     *         "level": "1",
+     *         "description": "All permisions allowed",
+     *         "status": "1",
+     *         "date_create": "2016-08-27 09:22:22",
+     *         "date_update": "2020-03-01 16:10:01"
+     *       },
+     *       "user_data": {
+     *         "nombre": "Gervis",
+     *         "apellido": "Mora",
+     *         "direccion": "Mara",
+     *         "telefono": "0414-1672173",
+     *         "create by": "gerber",
+     *         "avatar": "300_3.jpg"
+     *       }
+     *     },
+     *     "model_type": "page"
+     *   },
+     * ]
+     *
+     * @apiErrorExample {json} Error-Response:
+     *     HTTP/1.1 404 Not Found
+     *     {
+     *       "data": [],
+     *       "code": 404
+     *     }
+     */
+    public function timeline_get($user_id = null)
+    {
+        $user = new User();
+        if ($user_id) {
+            $result = $user->find($user_id);
+            $result = $result ? $user : [];
+            if ($result) {
+                $response = array(
+                    'code' => 200,
+                    'data' => $user->get_timeline($user_id),
+                );
+                $this->response($response, REST_Controller::HTTP_OK);
+                return;
+            }
+        }
+
+        $response = array(
+            'code' => REST_Controller::HTTP_NOT_FOUND,
+            'data' => [],
+        );
+        $this->response($response, REST_Controller::HTTP_NOT_FOUND);
     }
 
     public function avatar_post()

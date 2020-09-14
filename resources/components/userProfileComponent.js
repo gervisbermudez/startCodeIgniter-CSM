@@ -1,12 +1,67 @@
+Vue.component("formCustom", {
+  template: "#form-custom-template",
+  props: ["form"],
+  data: function () {
+    return {
+      debug: DEBUGMODE,
+    };
+  },
+  mixins: [mixins],
+  methods: {},
+  mounted: function () {
+    this.$nextTick(function () {});
+  },
+});
+
+Vue.component("pageCard", {
+  template: "#page-card-template",
+  props: ["page"],
+  data: function () {
+    return {
+      debug: DEBUGMODE,
+    };
+  },
+  mixins: [mixins],
+  methods: {
+    getcontentText: function (page) {
+      var span = document.createElement("span");
+      span.innerHTML = page.content;
+      let text = span.textContent || span.innerText;
+      return text.substring(0, 220) + "...";
+    },
+    getPageImagePath() {
+      if (this.imagen_file) {
+        return (
+          BASEURL +
+          this.imagen_file.file_path.substr(2) +
+          this.imagen_file.file_name +
+          "." +
+          this.imagen_file.file_type
+        );
+      }
+      return BASEURL + "public/img/default.jpg";
+    },
+    getPageFullPath: function (page) {
+      if (page.status == 1) {
+        return BASEURL + page.path;
+      }
+      return BASEURL + "admin/paginas/editar/" + page.page_id;
+    },
+  },
+  mounted: function () {
+    this.$nextTick(function () {});
+  },
+});
+
 var userProfile = new Vue({
   el: "#root",
   data: {
     debug: DEBUGMODE,
     loader: true,
-    user: {
-      user_id: null,
-    },
+    user: new User(),
+    timelineData: [],
   },
+  mixins: [mixins],
   watch: {
     "user.user_id": function (value) {
       if ($("#input-100").data("fileinput")) {
@@ -15,29 +70,64 @@ var userProfile = new Vue({
       }
     },
   },
+  filters: {
+    shortDate: function (value) {
+      return value.split("at")[0];
+    },
+  },
   methods: {
     getUser() {
       var self = this;
       self.loader = true;
       self.users = [];
       var user_id = window.location.pathname.split("/")[4];
-      if (user_id) {        
+      if (user_id) {
         var url = BASEURL + "api/v1/users/" + user_id;
-        $.ajax({
-          type: "GET",
-          url: url,
-          data: {},
-          dataType: "json",
-          success: function (response) {
+        fetch(url)
+          .then((response) => response.json())
+          .then((response) => {
             self.debug ? console.log(url, response) : null;
             self.loader = false;
-            self.user = response.data;
-          },
-          error: function (error) {
+            self.user = new User(response.data);
+          })
+          .catch((response) => {
             M.toast({ html: response.responseJSON.error_message });
             self.loader = false;
-          },
-        });
+          });
+      }
+    },
+    getUserTimeline() {
+      var self = this;
+      self.timelineData = [];
+      var user_id = window.location.pathname.split("/")[4];
+      if (user_id) {
+        var url = BASEURL + "/api/v1/users/timeline/" + user_id;
+        fetch(url)
+          .then((response) => response.json())
+          .then((response) => {
+            self.debug ? console.log(url, response) : null;
+            self.loader = false;
+            let timelineData = response.data.map((item, index) => {
+              switch (item.model_type) {
+                case "page":
+                  return new Page(item);
+              }
+              return item;
+            });
+            let timelineGroups = {};
+            timelineData.forEach((element) => {
+              let date = element.date_create.split(" ")[0] + " 00:00:00";
+              if (timelineGroups[date] == undefined) {
+                timelineGroups[date] = [];
+              }
+              timelineGroups[date].push(element);
+            });
+            self.timelineData = timelineGroups;
+          })
+          .catch((error) => {
+            M.toast({ html: response.responseJSON.error_message });
+            self.loader = false;
+          });
       }
     },
     updateAvatar() {
@@ -69,17 +159,19 @@ var userProfile = new Vue({
       );
     },
     initPlugins: function () {
+      M.Tabs.init(document.getElementById("user-tabs"), {});
       setTimeout(() => {
         var elems = document.querySelectorAll(".tooltipped");
-        var instances = M.Tooltip.init(elems, {});
+        M.Tooltip.init(elems, {});
         var elems = document.querySelectorAll(".dropdown-trigger");
-        var instances = M.Dropdown.init(elems, {});
-      }, 3000);
+        M.Dropdown.init(elems, {});
+      }, 4000);
     },
   },
   mounted: function () {
     this.$nextTick(function () {
       this.getUser();
+      this.getUserTimeline();
       this.initPlugins();
       window.uploadCallback = (event, previewId, index, fileId) => {
         console.log(fileId);
@@ -93,14 +185,19 @@ var userProfile = new Vue({
       fileUploaderModule.callBakSelectedImagen = (selectedFiles) => {
         console.log(selectedFiles);
         let file = selectedFiles[0];
-        userProfile.user.user_data.avatar = file['file_name'] + '.' + file['file_type'];
-        fileUploaderModule.copyFileTo(selectedFiles[0], './public/img/profile/' + this.user.username + '/', function (response) {
-          if (response.code == 200) {
+        userProfile.user.user_data.avatar =
+          file["file_name"] + "." + file["file_type"];
+        fileUploaderModule.copyFileTo(
+          selectedFiles[0],
+          "./public/img/profile/" + this.user.username + "/",
+          function (response) {
+            if (response.code == 200) {
               userProfile.updateAvatar();
               M.toast({ html: "<span>Done! </span>" });
             }
-        });
-      }
+          }
+        );
+      };
     });
   },
 });

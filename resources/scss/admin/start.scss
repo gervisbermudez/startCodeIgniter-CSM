@@ -472,11 +472,6 @@ ul.tabs {
     right: 10px;
     top: 10px;
   }
-
-  .card-content {
-    padding-left: 160px;
-    padding-top: 10px;
-  }
 }
 
 span.level {
@@ -540,35 +535,6 @@ span.level {
 
 .event .card-action {
   height: 60px;
-}
-
-.banner {
-  .card-image {
-    max-height: 225px;
-    overflow: hidden;
-  }
-
-  .avatar {
-    position: relative;
-    height: 0;
-    width: auto;
-
-    i {
-      position: absolute;
-      top: -56px;
-      left: 20px;
-      font-size: 94px;
-      padding: 10px;
-    }
-
-    img {
-      width: 120px;
-      height: 120px;
-      position: absolute;
-      top: -60px;
-      left: 20px;
-    }
-  }
 }
 
 .main {

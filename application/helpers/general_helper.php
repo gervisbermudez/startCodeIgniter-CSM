@@ -136,3 +136,39 @@ if (!function_exists('script')) {
     }
 
 }
+
+if (!function_exists("time_ago")) {
+    function time_ago($datetime, $full = false)
+    {
+        $now = new DateTime;
+
+        $ago = DateTime::createFromFormat('Y-m-d H:i:s', $datetime);
+        $diff = $now->diff($ago);
+
+        $diff->w = floor($diff->d / 7);
+        $diff->d -= $diff->w * 7;
+
+        $string = array(
+            'y' => 'year',
+            'm' => 'month',
+            'w' => 'week',
+            'd' => 'day',
+            'h' => 'hour',
+            'i' => 'minute',
+            's' => 'second',
+        );
+        foreach ($string as $k => &$v) {
+            if ($diff->$k) {
+                $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+            } else {
+                unset($string[$k]);
+            }
+        }
+
+        if (!$full) {
+            $string = array_slice($string, 0, 1);
+        }
+
+        return $string ? implode(', ', $string) . ' ago' : 'just now';
+    }
+}

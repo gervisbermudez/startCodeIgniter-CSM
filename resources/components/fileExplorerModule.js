@@ -302,8 +302,6 @@ var fileExplorerModule = new Vue({
       this.navigateFiles(this.root);
     },
     searchfiles() {
-      debugger;
-
       if (this.search) {
         this.getFilterFiles("file_name", [this.search]);
       } else {

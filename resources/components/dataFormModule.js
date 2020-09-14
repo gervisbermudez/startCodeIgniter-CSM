@@ -262,7 +262,6 @@ var dataFormModule = new Vue({
         },
         dataType: "json",
         success: function (response) {
-          debugger;
           if (response.code == 200) {
             this.form_content_id = response.data;
             M.toast({ html: "Datos guardados!" });

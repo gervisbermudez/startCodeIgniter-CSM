@@ -61,4 +61,52 @@ class User extends MY_model
         return false;
     }
 
+    /**
+     * Gets the user timeline, activities, models created by the user_id
+     * @return Collection
+     */
+    public function get_timeline($user_id = null)
+    {
+        if ($user_id == null) {
+            $user_id = $this->{$this->primaryKey};
+        }
+
+        if ($user_id == null) {
+            return false;
+        }
+
+        $this->load->model('Admin/Page');
+        $this->load->model('Admin/Form_content');
+        $this->load->model('Admin/Form_custom');
+
+        $pages = new Page();
+        $pages = $pages->where(["user_id" => $user_id]);
+        $pages = $pages ? $pages->all() : [];
+
+        $Form_content = new Form_content();
+        $Form_content = $Form_content->where(["user_id" => $user_id]);
+        $Form_content = $Form_content ? $Form_content->all() : [];
+
+        $Form_custom = new Form_custom();
+        $Form_custom = $Form_custom->where(["user_id" => $user_id]);
+        $Form_custom = $Form_custom ? $Form_custom->all() : [];
+
+        $time_line_collection = array_merge($pages, $Form_custom, $Form_content);
+
+        function sortFunction($a, $b)
+        {
+            $time_a = DateTime::createFromFormat('Y-m-d H:i:s', $a->date_create);
+            $time_b = DateTime::createFromFormat('Y-m-d H:i:s', $b->date_create);
+            if ($time_a == $time_b) {
+                return 0;
+            }
+
+            return $time_a > $time_b ? -1 : 1;
+        }
+
+        usort($time_line_collection, "sortFunction");
+
+        return new Collection($time_line_collection);
+    }
+
 }

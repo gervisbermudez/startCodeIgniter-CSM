@@ -7,6 +7,7 @@ var PagesLists = new Vue({
     loader: true,
     filter: "",
   },
+  mixins: [mixins],
   computed: {
     filterPages: function () {
       if (!!this.filter) {
@@ -50,7 +51,7 @@ var PagesLists = new Vue({
           page.imagen_file.file_type
         );
       }
-      return "https://materializecss.com/images/sample-1.jpg";
+      return BASEURL + "public/img/default.jpg";
     },
     getPages: function () {
       var self = this;
@@ -95,15 +96,12 @@ var PagesLists = new Vue({
         },
       });
     },
-    base_url: function (path) {
-      return BASEURL + path;
-    },
     initPlugins: function () {
       setTimeout(() => {
         var elems = document.querySelectorAll(".tooltipped");
-        var instances = M.Tooltip.init(elems, {});
+        M.Tooltip.init(elems, {});
         var elems = document.querySelectorAll(".dropdown-trigger");
-        var instances = M.Dropdown.init(elems, {});
+        M.Dropdown.init(elems, {});
       }, 3000);
     },
   },

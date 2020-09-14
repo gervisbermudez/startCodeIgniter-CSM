@@ -45,8 +45,8 @@
             <users-collection></users-collection>
         </div>
     </div>
+    <page-card v-show="!loader"></page-card>
     <div class="row" v-show="!loader">
-        <page-card></page-card>
         <div class="col m6 s12">
             <file-explorer-collection></file-explorer-collection>
         </div>
