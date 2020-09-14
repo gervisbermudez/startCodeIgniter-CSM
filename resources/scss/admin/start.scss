@@ -472,11 +472,6 @@ ul.tabs {
     right: 10px;
     top: 10px;
   }
-
-  .card-content {
-    padding-left: 160px;
-    padding-top: 10px;
-  }
 }
 
 span.level {
@@ -540,35 +535,6 @@ span.level {
 
 .event .card-action {
   height: 60px;
-}
-
-.banner {
-  .card-image {
-    max-height: 225px;
-    overflow: hidden;
-  }
-
-  .avatar {
-    position: relative;
-    height: 0;
-    width: auto;
-
-    i {
-      position: absolute;
-      top: -56px;
-      left: 20px;
-      font-size: 94px;
-      padding: 10px;
-    }
-
-    img {
-      width: 120px;
-      height: 120px;
-      position: absolute;
-      top: -60px;
-      left: 20px;
-    }
-  }
 }
 
 .main {
@@ -1127,7 +1093,7 @@ div#dropnotify {
     content: "";
     position: absolute;
     width: 100%;
-    height: 100%;
+    height: calc(100% + 20px);
     z-index: 2;
     top: 0px;
   }
@@ -1178,7 +1144,7 @@ div#dropnotify {
       content: "";
       position: absolute;
       width: 100%;
-      height: 100%;
+      height: calc(100% + 20px);
       z-index: 2;
       top: 0px;
       border-radius: 8px;
@@ -1194,7 +1160,7 @@ div#dropnotify {
       top: -20px;
       position: relative;
       padding-bottom: 0px;
-      padding-top: 10px;
+      padding-top: 20px;
 
       .card-title a {
         color: #646b7f;

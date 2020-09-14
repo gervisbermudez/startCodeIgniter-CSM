@@ -243,6 +243,7 @@ EOD;
                 $user = new User();
                 $user->find($value->user_id);
                 $value->{'user'} = $user->as_data();
+                $value->{'model_type'} = "form_custom";
             }
         }
 

@@ -71,7 +71,10 @@ class Login extends REST_Controller
                     }
                 }
                 $this->load->model('Admin/User');
-                $this->load->helper('string');
+                $user = new User();
+                $user->find_with(["username" => $username]);
+                $user->lastseen = date("Y-m-d H:i:s");
+                $user->save();
                 $rand_key = random_string('alnum', 16);
                 // Check if valid user
                 // Create a token from the user data and send it as reponse
@@ -79,7 +82,7 @@ class Login extends REST_Controller
                 $this->session->set_userdata('token', $token);
                 // Prepare the response
                 $status = parent::HTTP_OK;
-                $response = ['status' => $status, 'userdata' => $login_data,  'token' => $token, 'auth' => 'valid', 'redirect' => 'admin'];
+                $response = ['status' => $status, 'userdata' => $login_data, 'token' => $token, 'auth' => 'valid', 'redirect' => 'admin'];
                 $this->response($response, $status);
                 //$this->response($data, REST_Controller::HTTP_OK);
             } else {

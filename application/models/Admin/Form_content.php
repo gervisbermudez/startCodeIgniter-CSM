@@ -27,6 +27,7 @@ class Form_content extends MY_Model
                 $user = new User();
                 $user->find($value->user_id);
                 $value->{'user'} = $user->as_data();
+                $value->{'model_type'} = "form_content";
             }
         }
 

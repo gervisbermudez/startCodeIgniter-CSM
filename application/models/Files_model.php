@@ -46,7 +46,7 @@ class Files_model extends MY_Model
         if (!$this->Site_config->get_data(array('config_name' => 'map_dir', 'config_value' => $this->current_dir), 'site_config')) {
             return $this->Site_config->update_data(array('config_name' => 'map_dir'), array('config_value' => $this->current_dir), 'site_config');
         } else {
-            return $this->Site_config->set_data(array('config_name' => 'map_dir', 'config_value' => $this->current_dir, 'user_id' => userdata('user_id')), 'site_config');
+            return $this->Site_config->set_data(array('config_name' => 'map_dir', 'config_value' => $this->current_dir, 'user_id' => 0), 'site_config');
         }
     }
 

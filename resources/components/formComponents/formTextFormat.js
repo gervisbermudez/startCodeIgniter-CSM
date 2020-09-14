@@ -52,7 +52,6 @@ Vue.component("formTextFormat", {
       };
     },
     init() {
-      debugger;
       tinymce.init({
         selector: "#" + this.fieldID,
         plugins: ["link table code"],

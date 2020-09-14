@@ -61,6 +61,7 @@ class Page extends MY_model
                 $user = new User();
                 $user->find($value->user_id);
                 $value->{'user'} = $user;
+                $value->{'model_type'} = "page";
             }
         }
         $this->load->model('Files_model');
