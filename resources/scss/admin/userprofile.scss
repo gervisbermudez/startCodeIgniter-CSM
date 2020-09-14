@@ -339,6 +339,19 @@ a {
           top: 0;
         }
       }
+      .pages {
+        .card-image:after {
+          height: calc(100% + 20px);
+        }
+        .card .card-content .card-title i {
+          position: relative;
+          top: 5px;
+        }
+
+        .card .card-content .card-title {
+          margin-top: 10px;
+        }
+      }
     }
 
     .time-label > span {
