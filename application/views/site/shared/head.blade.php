@@ -4,7 +4,7 @@
 <meta name="description" content="{{config('SITE_DESCRIPTION')}}">
 <meta name="author" content="{{config('SITE_AUTHOR')}}">
 @isset($meta)
-<?php echo meta($meta); ?>
+<?php echo page_meta($meta); ?>
 @endisset
 <title>{{$title}}</title>
 <!-- Bootstrap Core CSS -->

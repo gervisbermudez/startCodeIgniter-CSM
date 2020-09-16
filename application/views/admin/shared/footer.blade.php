@@ -1,8 +1,9 @@
 <script>
-const BASEURL = <?= json_encode(base_url()) ?>;
-const ADMIN_VERSION = <?= json_encode(ADMIN_VERSION) ?>;
-const ENVIRONMENT = <?=json_encode(ENVIRONMENT)?>;
-const DEBUGMODE = <?=json_encode($ci->config->item('debug_mode'))?>;
+const BASEURL = <?php echo json_encode(base_url()) ?>;
+const ADMIN_VERSION = <?php echo json_encode(ADMIN_VERSION) ?>;
+const SITE_TITLE = <?php echo json_encode(SITE_TITLE) ?>;
+const ENVIRONMENT = <?php echo json_encode(ENVIRONMENT) ?>;
+const DEBUGMODE = <?php echo json_encode($ci->config->item('debug_mode')) ?>;
 </script>
 @if (ENVIRONMENT == 'production'):
 	<script src="{{base_url(JSPATH . 'vue/vue.min.js?v=' . ADMIN_VERSION)}}"></script>
@@ -15,6 +16,6 @@ const DEBUGMODE = <?=json_encode($ci->config->item('debug_mode'))?>;
 <script src="{{base_url(JSPATH . 'start.min.js?v=' . ADMIN_VERSION)}}"></script>
 @isset($footer_includes)
 	@foreach($footer_includes as $include)
-	<?php echo $include ?>
+	{{  $include }}
 	@endforeach
 @endisset

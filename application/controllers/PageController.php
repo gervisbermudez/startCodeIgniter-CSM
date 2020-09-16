@@ -15,8 +15,8 @@ class PageController extends Base_Controller
 
     public function index()
     {
-        $pages = new Page();
-        $pageInfo = $pages->where(array('path' => $this->uri->uri_string(), 'status' => 1));
+        $pageInfo = new Page();
+        $pageInfo->find_with(array('path' => $this->uri->uri_string(), 'status' => 1));
 
         if (!$pageInfo) {
             //Not found Page
@@ -25,7 +25,6 @@ class PageController extends Base_Controller
         }
 
         //Is the page published?
-        $pageInfo = $pageInfo->first();
         $date_now = new DateTime();
         $pagePublishTime = DateTime::createFromFormat('Y-m-d H:i:s', $pageInfo->date_publish);
 

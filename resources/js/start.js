@@ -21,6 +21,12 @@ var mixins = {
     base_url: function (path) {
       return BASEURL + path;
     },
+    getcontentText: function (html, length = 120) {
+      var span = document.createElement("span");
+      span.innerHTML = html;
+      let text = span.textContent || span.innerText;
+      return text.substring(0, length) + "...";
+    },
     makeid: function (length) {
       var result = "";
       var characters =

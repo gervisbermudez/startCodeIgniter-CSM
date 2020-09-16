@@ -455,6 +455,7 @@ i.material-icons.circle.cyan.medium {
 ul.tabs {
   width: auto !important;
   overflow: hidden;
+  margin-bottom: 20px;
 }
 
 .userform {
@@ -721,6 +722,19 @@ div.row.event a.dropdown-button.right {
   top: 10px;
   z-index: 9;
   cursor: pointer;
+}
+
+ul.tabs li a span {
+  display: inline-block;
+  line-height: 48px;
+  vertical-align: top;
+  margin: 0px 10px;
+}
+
+ul.tabs li a i {
+  display: inline-block;
+  line-height: 48px;
+  vertical-align: top;
 }
 
 .card .card-image .card-title {
@@ -1174,6 +1188,10 @@ div#dropnotify {
 
       .activator {
         cursor: pointer;
+      }
+
+      p {
+        min-height: 70px;
       }
 
       ul {
