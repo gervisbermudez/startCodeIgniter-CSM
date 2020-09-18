@@ -44,8 +44,17 @@ var PageNewForm = new Vue({
     pageTypes: [],
     categories: [],
     subcategories: [],
-    page_data: {},
+    page_data: {
+      title: "",
+    },
+    customMetas: [],
     metas: [
+      {
+        name: "author",
+        content: new User(
+          JSON.parse(localStorage.getItem("userdata"))
+        ).get_fullname(),
+      },
       {
         name: "keywords",
         content: "",
@@ -160,6 +169,19 @@ var PageNewForm = new Vue({
     },
   },
   methods: {
+    addCustomMeta() {
+      this.customMetas.push({
+        name: "",
+        content: "",
+      });
+    },
+    removeMeta(index, is_custom = true) {
+      if (is_custom) {
+        this.customMetas.splice(index, 1);
+      } else {
+        this.metas.splice(index, 1);
+      }
+    },
     setMetaContent(strValue, strProperty, index) {
       if (index !== undefined) {
         this.metas[index].content = strValue;
@@ -199,6 +221,7 @@ var PageNewForm = new Vue({
       return [type, categorie, subcategorie, pagePath];
     },
     onChangeTitle(title) {
+      this.page_data.title = title;
       this.setMetaContent(title, "og:title");
       this.setMetaContent(title, "twitter:title");
       this.setMetaContent(title, "keywords");
@@ -346,7 +369,10 @@ var PageNewForm = new Vue({
         mainImage: this.getMainImagenPath,
         page_data: {
           tags: this.getPageTags(),
-          meta: this.metas,
+          title: this.page_data.title,
+          footer_includes: this.page_data.footer_includes,
+          headers_includes: this.page_data.headers_includes,
+          meta: [...this.metas, ...this.customMetas],
         },
       };
     },
@@ -573,6 +599,7 @@ var PageNewForm = new Vue({
           editor.on("Change", (e) => {
             PageNewForm.content = tinymce.editors["id_cazary"].getContent();
             let content = this.getcontentText(PageNewForm.content, 200);
+            content = content.replace(/(\r\n|\n|\r)/gm, "");
             this.setMetaContent(content, "description");
             this.setMetaContent(content, "og:description");
             this.setMetaContent(content, "twitter:description");

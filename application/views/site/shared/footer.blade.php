@@ -5,3 +5,9 @@
     </div>
     <!-- /.container -->
 </footer>
+
+@section('footer_includes')
+@isset($footer_includes)
+<?php echo $footer_includes ?>
+@endisset
+@endsection

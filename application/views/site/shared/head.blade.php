@@ -1,8 +1,6 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="description" content="{{config('SITE_DESCRIPTION')}}">
-<meta name="author" content="{{config('SITE_AUTHOR')}}">
 @isset($meta)
 <?php echo page_meta($meta); ?>
 @endisset
@@ -19,3 +17,8 @@
 <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
 <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 <![endif]-->
+@section('headers_includes')
+@isset($headers_includes)
+<?php echo $headers_includes ?>
+@endisset
+@endsection

@@ -108,8 +108,7 @@
 @include('admin.formularios.formsFields')
 @isset($form_custom_id)
 <script>
-    const form_custom_id = < ? = json_encode($form_custom_id); ? > ;
-
+    const form_custom_id = <?php echo json_encode($form_custom_id); ?> ;
 </script>
 @endisset
 @endsection

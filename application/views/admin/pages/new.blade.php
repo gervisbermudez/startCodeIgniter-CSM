@@ -207,6 +207,10 @@
             <br />
             <div class="row" v-cloak v-show="!loader">
                 <div class="input-field col s12">
+                    <textarea id="title" v-model="page_data.title" class="materialize-textarea"></textarea>
+                    <label for="title">Page title</label>
+                </div>
+                <div class="input-field col s12">
                     <textarea id="headers_includes" v-model="page_data.headers_includes" class="materialize-textarea"></textarea>
                     <label for="headers_includes">headers includes</label>
                 </div>
@@ -217,14 +221,28 @@
             </div>
             <div class="row" v-cloak v-show="!loader">
                 <div class="col s12">
-                    <span class="header grey-text text-darken-2"><i class="material-icons left">layers</i> Page Metas</span>
+                    <span class="header grey-text text-darken-2"><i class="material-icons left">layers</i> Page Metas <a class="waves-effect waves-light btn right" href="#!" @click="addCustomMeta();">Agregar meta +</a></span>
                     <br />
                     <ul class="collapsible" id="pageMetas">
+                        <li v-for="(meta, index) in customMetas">
+                            <div class="collapsible-header">
+                                <i class="material-icons">filter_drama</i>
+                                <input placeholder="name" v-model="meta.name" type="text" class="validate">
+                                <i class="material-icons right remove" @click="removeMeta(index, true);">do_not_disturb_on</i>
+                            </div>
+                            <div class="collapsible-body">
+                                <span v-if="meta.content">@{{meta.content}}</span>
+                                <div class="input-field">
+                                    <input placeholder="content" v-model="meta.content" type="text" class="validate">
+                                </div>
+                            </div>
+                        </li>
                         <li v-for="(meta, index) in metas">
                             <div class="collapsible-header">
                                 <i class="material-icons">filter_drama</i>
                                 <span v-if="meta.name">@{{meta.name}}</span>
                                 <span v-if="meta.property">@{{meta.property}}</span>
+                                <i class="material-icons right remove" @click="removeMeta(index, false);">do_not_disturb_on</i>
                             </div>
                             <div class="collapsible-body">
                                 <span v-if="meta.content">@{{meta.content}}</span>

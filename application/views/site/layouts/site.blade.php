@@ -2,7 +2,7 @@
 <html lang="{{config('SITE_LANGUAGE')}}">
 <head>
     @include('site.shared.head')
-    @yield('header_includes')
+    @yield('headers_includes')
 </head>
 <body>
     @include('site.shared.navbar')

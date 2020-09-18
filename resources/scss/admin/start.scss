@@ -1354,3 +1354,14 @@ div#dropnotify {
 .collapsible .active .arrow {
   transform: rotate(90deg);
 }
+
+span.header {
+  display: block;
+  overflow: hidden;
+}
+
+i.material-icons.right.remove {
+  position: absolute;
+  right: 20px;
+  cursor: pointer;
+}

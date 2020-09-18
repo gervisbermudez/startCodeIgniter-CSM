@@ -16,6 +16,6 @@ const DEBUGMODE = <?php echo json_encode($ci->config->item('debug_mode')) ?>;
 <script src="{{base_url(JSPATH . 'start.min.js?v=' . ADMIN_VERSION)}}"></script>
 @isset($footer_includes)
 	@foreach($footer_includes as $include)
-	{{  $include }}
+	<?php echo $include ?>
 	@endforeach
 @endisset

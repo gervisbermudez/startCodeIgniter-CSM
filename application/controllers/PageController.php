@@ -16,9 +16,9 @@ class PageController extends Base_Controller
     public function index()
     {
         $pageInfo = new Page();
-        $pageInfo->find_with(array('path' => $this->uri->uri_string(), 'status' => 1));
+        $result = $pageInfo->find_with(array('path' => $this->uri->uri_string(), 'status' => 1));
 
-        if (!$pageInfo) {
+        if (!$result) {
             //Not found Page
             $this->error404();
             return;
@@ -36,9 +36,10 @@ class PageController extends Base_Controller
 
         $data['page'] = $pageInfo;
         $data['meta'] = $this->getPageMetas($pageInfo);
-
-        $data['title'] = $pageInfo->title;
+        $data['title'] = $pageInfo->page_data["title"] ? $pageInfo->page_data["title"] : $pageInfo->title;
         $data['layout'] = $pageInfo->layout == 'default' ? 'site' : $pageInfo->layout;
+        $data['headers_includes'] = $pageInfo->page_data["headers_includes"] ? $pageInfo->page_data["headers_includes"] : "";
+        $data['footer_includes'] = $pageInfo->page_data["footer_includes"] ? $pageInfo->page_data["footer_includes"] : "";
         $template = $pageInfo->template == 'default' ? 'template' : $pageInfo->template;
 
         echo $this->blade->view("site.templates." . $template, $data);
@@ -47,20 +48,23 @@ class PageController extends Base_Controller
 
     public function preview()
     {
-        $pages = new Page();
-        $result = $pages->find_with(array('page_id' => $this->input->get('page_id'), 'status' => 2));
+        $pageInfo = new Page();
+        $result = $pageInfo->find_with(array('page_id' => $this->input->get('page_id'), 'status' => 2));
 
         if (!$result) {
             //Not found Page
             $this->error404();
             return;
         }
-        //Is the page published?
-        $data['page'] = $pages;
-        $data['meta'] = $this->getPageMetas($pages);
-        $data['title'] = $pages->title;
-        $data['layout'] = $pages->layout == 'default' ? 'site' : $pages->layout;
-        $template = $pages->template == 'default' ? 'template' : $pages->template;
+
+        $data['page'] = $pageInfo;
+        $data['meta'] = $this->getPageMetas($pageInfo);
+
+        $data['title'] = $pageInfo->page_data["title"] ? $pageInfo->page_data["title"] : $pageInfo->title;
+        $data['headers_includes'] = $pageInfo->page_data["headers_includes"] ? $pageInfo->page_data["headers_includes"] : "";
+        $data['footer_includes'] = $pageInfo->page_data["footer_includes"] ? $pageInfo->page_data["footer_includes"] : "";
+        $data['layout'] = $pageInfo->layout == 'default' ? 'site' : $pageInfo->layout;
+        $template = $pageInfo->template == 'default' ? 'template' : $pageInfo->template;
 
         echo $this->blade->view("site.templates." . $template, $data);
 

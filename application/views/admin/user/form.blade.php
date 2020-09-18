@@ -108,7 +108,6 @@
     </div>
 </div>
 <script>
-    const user_id = < ? = json_encode($userdata ? $userdata - > user_id : false); ? > ;
-
+    const user_id = <?php echo json_encode($userdata ? $userdata->user_id : false); ?> ;
 </script>
 @endsection
