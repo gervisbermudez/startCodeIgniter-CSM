@@ -7,6 +7,23 @@ jQuery(document).ready(function ($) {
   });
 
   $(".sidenav").niceScroll();
+
+  $("#darkmode-switch").change(function (e) {
+    e.preventDefault();
+    $("html").toggleClass("dark-mode");
+    if ($(this).is(":checked")) {
+      localStorage.setItem("dark-mode", "dark-mode");
+    } else {
+      localStorage.removeItem("dark-mode", "dark-mode");
+    }
+  });
+
+  $("#darkmode-switch").prop("checked", false);
+
+  if (localStorage.getItem("dark-mode")) {
+    $("html").toggleClass("dark-mode");
+    $("#darkmode-switch").prop("checked", true);
+  }
 });
 
 var mixins = {

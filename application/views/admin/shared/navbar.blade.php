@@ -8,6 +8,15 @@
             <i class="material-icons circle grey lighten-5 profile z-depth-1">account_circle</i>
             @endif
         </a>
+        <!-- Switch -->
+        <div class="switch right darkmode-switch">
+            <label>
+                <input type="checkbox" id="darkmode-switch">
+                <span class="lever">
+                    <i class="material-icons">brightness_4</i>
+                </span>
+            </label>
+        </div>
         <div id="user_dropdown" class="dropdown-content user-dropdown">
             <div class="user-view">
                 <div class="background">
