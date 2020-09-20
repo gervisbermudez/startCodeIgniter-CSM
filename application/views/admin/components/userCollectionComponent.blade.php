@@ -1,5 +1,5 @@
 <script type="text/x-template" id="user-collection-template">
-<ul class="collection">
+    <ul class="collection">
 	<li class="collection-header collection-item avatar">
 		<h5>Usuarios</h5>
 	</li>

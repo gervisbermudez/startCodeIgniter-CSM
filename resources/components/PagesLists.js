@@ -62,6 +62,10 @@ var PagesLists = new Vue({
         dataType: "json",
         success: function (response) {
           self.pages = response.data;
+          self.pages.map((element) => {
+            element.user = new User(element.user);
+            return element;
+          });
           setTimeout(() => {
             self.loader = false;
             self.initPlugins();

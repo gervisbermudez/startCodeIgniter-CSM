@@ -1590,3 +1590,16 @@ i.material-icons.right.remove {
     color: #fff;
   }
 }
+
+.user-info-inline {
+  margin: 0;
+  display: inline-block;
+
+  .collection-item.avatar {
+    min-height: 56px;
+    padding: 5px 5px 5px 55px;
+    .profile-img.circle {
+      left: 0px;
+    }
+  }
+}

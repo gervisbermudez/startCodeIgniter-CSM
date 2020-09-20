@@ -346,3 +346,18 @@ if ("serviceWorker" in navigator) {
     });
   });
 }
+
+Vue.component("userInfo", {
+  template: `
+  <div class="collection form-user-component user-info-inline">
+    <div class="collection-item avatar">
+      <a :href="user.get_profileurl()">
+        <img :src="user.get_avatarurl()" alt="" class="circle profile-img">
+        <span class="title">{{user.get_fullname()}}</span>
+        <div>{{user.usergroup.name}}</div>
+      </a>
+    </div>
+  </div>
+  `,
+  props: ["user"],
+});
