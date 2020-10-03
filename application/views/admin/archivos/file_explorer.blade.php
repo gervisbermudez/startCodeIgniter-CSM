@@ -6,10 +6,10 @@
 @endsection
 
 @section('head_includes')
-<link rel="stylesheet" href="<?= base_url('public/js/lightbox2-master/dist/css/lightbox.min.css') ?>">
-<link rel="stylesheet" href="<?= base_url('public/css/admin/file_explorer.min.css') ?>">
-<link rel="stylesheet" href="<?= base_url('public/js/fileinput-master/css/fileinput.min.css') ?>">
-<link rel="stylesheet" href="<?= base_url('public/font-awesome/css/all.min.css') ?>">
+<link rel="stylesheet" href="<?=base_url('public/js/lightbox2-master/dist/css/lightbox.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/css/admin/file_explorer.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/js/fileinput-master/css/fileinput.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/font-awesome/css/all.min.css')?>">
 @endsection
 
 @section('content')
@@ -104,6 +104,7 @@
                         </ul>
                     </div>
                     <div class="col s12 m10 files">
+                        <div class="file-overlay" v-bind:class="{ show: showSideRightBar }" @click="setCloseSideRightBar();"></div>
                         <div class="row search">
                             <div class="col s12">
                                 <nav  v-if="!backto" class="search-nav">
@@ -234,9 +235,8 @@
                                                     <a :href="getImagePath(item)" data-lightbox="roadtrip"><img
                                                             :src="getImagePath(item)"></a>
                                                 </div>
-                                                <div class="card-content">
+                                                <div class="card-content" @click="setSideRightBarSelectedFile(item);">
                                                     @{{(item.file_name + getExtention(item)) | shortName}}
-                                                    <p><a href="#">Share file</a></p>
                                                 </div>
                                                 <div class="card-reveal">
                                                     <span class="card-title grey-text text-darken-4">@{{item.file_name}}<i
@@ -260,6 +260,78 @@
                                     <div class="col s12">
                                         <h5>No hay archivos</h5>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="file-info-colum side-right"  v-bind:class="{ show: showSideRightBar }" v-if="showSideRightBar">
+                            <div class="side-header">
+                                <span class="filename">@{{(sideRightBarSelectedFile.file_name + getExtention(sideRightBarSelectedFile))}}</span>
+                                <a class="waves-effect waves-light modal-trigger right" href="#modal2"
+                                @click="trashFile(sideRightBarSelectedFile);">
+                                <i class="fas fa-trash grey-text text-darken-4 "></i></a>
+                            </div>
+                            <br/>
+                            <div class="row">
+                                <div class="col s12">
+                                    <ul class="tabs" id="filetabs">
+                                        <li class="tab col s6"><a class="active" href="#fileinfo"><i class="material-icons">info_outline</i> Info</a></li>
+                                        <li class="tab col s6"><a href="#filehistory"><i class="material-icons">linear_scale</i> History</a></li>
+                                    </ul>
+                                </div>
+                                <div class="tabsbody">
+                                    <div class="preview">
+                                        <div class="card-image"
+                                            v-if="!isImage(sideRightBarSelectedFile)">
+                                            <div class="file icon ">
+                                                <i :class="getIcon(sideRightBarSelectedFile)"></i>
+                                            </div>
+                                        </div>
+                                        <div class="card-image" v-if="isImage(sideRightBarSelectedFile)">
+                                            <a :href="getImagePath(sideRightBarSelectedFile)" data-lightbox="roadtrip"><img
+                                                    :src="getImagePath(sideRightBarSelectedFile)"></a>
+                                        </div>
+                                    </div>
+                                    <div class="divider"></div>
+                                    <div id="fileinfo" class="col s12">
+                                    <ul class="file_options">
+                                            <li>
+                                                <a :href="getFullFilePath(sideRightBarSelectedFile)" target="_blank"><i class="fas fa-cloud-download-alt"></i> Download File</a>
+                                            </li>
+                                            <li><a href="#!">
+                                                    <i class="fas fa-share-alt"></i> Share file</a>
+                                            </li>
+                                            <li>
+                                                <a class="waves-effect waves-light modal-trigger" href="#modal1"
+                                                    @click="renameFile(sideRightBarSelectedFile);">
+                                                    <i class="far fa-edit"></i>
+                                                    Rename</a>
+                                            </li>
+                                            <li><a href="#!" @click="featuredFileServe(sideRightBarSelectedFile);">
+                                                    <i class="fa-star"
+                                                        :class='[sideRightBarSelectedFile.featured == 1 ? "fas" : "far"]'></i>
+                                                    Important</a></li>
+                                            <li v-if="curDir != './trash/'">
+                                                <a class="waves-effect waves-light modal-trigger" href="#modal2"
+                                                    @click="trashFile(sideRightBarSelectedFile);">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </a>
+                                            </li>
+                                    </ul>   
+                                    <ul class="collection">
+                                            <li class="collection-item">Type: <span class="secondary-content">@{{sideRightBarSelectedFile.file_type}}</span></li>
+                                            <li class="collection-item">Create: <span class="secondary-content">@{{timeAgo(sideRightBarSelectedFile.date_create)}}</span> </li>
+                                            <li class="collection-item">Update: <span class="secondary-content">@{{timeAgo(sideRightBarSelectedFile.date_update)}}</span> </li>
+                                            <li class="collection-item">Folder: <span class="secondary-content">@{{(sideRightBarSelectedFile.file_path)}}</span> </li>
+                                            <li class="collection-item">File key: <span class="secondary-content">@{{(sideRightBarSelectedFile.rand_key)}}</span> </li>
+                                            <li class="collection-item" v-if="sideRightBarSelectedFile.user_group">Shared with: <span class="secondary-content">@{{sideRightBarSelectedFile.user_group.name}}</span></li>
+                                            <li class="collection-item" v-if="sideRightBarSelectedFile.user">
+                                                Create by: <br/>
+                                                <user-info :user="sideRightBarSelectedFile.user" />
+                                            </li>
+                                        </ul>
+                                        
+                                    </div>
+                                    <div id="filehistory" class="col s12" style="display: none;"> History</div>
                                 </div>
                             </div>
                         </div>
@@ -309,11 +381,11 @@
 @endsection
 
 @section('footer_includes')
-<script src="<?= base_url('public/js/components/fileExplorerModule.min.js'); ?>"></script>
-<script src="<?= base_url('public/js/lightbox2-master/dist/js/lightbox.min.js'); ?>"></script>
-<script src="<?= base_url('public/js/fileinput-master/js/fileinput.min.js'); ?>"></script>
-<script src="<?= base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js'); ?>"></script>
-<script src="<?= base_url('public/js/fileinput-master/js/locales/es.js'); ?>"></script>
+<script src="<?=base_url('public/js/components/fileExplorerModule.min.js');?>"></script>
+<script src="<?=base_url('public/js/lightbox2-master/dist/js/lightbox.min.js');?>"></script>
+<script src="<?=base_url('public/js/fileinput-master/js/fileinput.min.js');?>"></script>
+<script src="<?=base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js');?>"></script>
+<script src="<?=base_url('public/js/fileinput-master/js/locales/es.js');?>"></script>
 <script>
     $(document).on('ready', function () {
         $("#input-100").fileinput({
@@ -325,7 +397,7 @@
             // testUrl: "http://localhost/test-upload.php"
             },
             uploadExtraData: {
-                'uploadToken': 'SOME-TOKEN', // for access control / security 
+                'uploadToken': 'SOME-TOKEN', // for access control / security
                 'curDir': './uploads'
             },
             showCancel: true,

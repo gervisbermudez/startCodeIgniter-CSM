@@ -12,7 +12,10 @@ var fileExplorerModule = new Vue({
     search: "",
     editFile: {},
     moveToTrash: {},
+    showSideRightBar: false,
+    sideRightBarSelectedFile: {},
   },
+  mixins: [mixins],
   computed: {
     getFolders() {
       return this.files.filter((fileobject) => {
@@ -65,11 +68,43 @@ var fileExplorerModule = new Vue({
     },
   },
   methods: {
-    getFullFileName(item) {
-      return item.file_name + "." + item.file_type;
+    getFullFileName(file) {
+      return file.file_name + "." + file.file_type;
     },
-    getFullFilePath(item) {
-      return BASEURL + item.file_path + this.getFullFileName(item);
+    setSideRightBarSelectedFile(file) {
+      (url = BASEURL + "api/v1/users/" + file.user_id),
+        (this.sideRightBarSelectedFile = file);
+      this.showSideRightBar = true;
+      this.sideRightBarSelectedFile.user = null;
+      this.sideRightBarSelectedFile.user_group = null;
+      fetch(url)
+        .then((response) => response.json())
+        .then((response) => {
+          if (response.code == 200) {
+            this.sideRightBarSelectedFile.user = new User(response.data);
+            this.$forceUpdate();
+          }
+          this.initMT();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      url = BASEURL + "/api/v1/users/usergroups/" + file.shared_user_group_id;
+      fetch(url)
+        .then((response) => response.json())
+        .then((response) => {
+          this.sideRightBarSelectedFile.user_group = response.data;
+          this.$forceUpdate();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    setCloseSideRightBar() {
+      this.showSideRightBar = false;
+    },
+    getFullFilePath(file) {
+      return BASEURL + file.file_path + this.getFullFileName(file);
     },
     getIcon(fileObject) {
       let icon = "far fa-file";
@@ -119,19 +154,19 @@ var fileExplorerModule = new Vue({
         return "." + fileObject.file_type;
       }
     },
-    isImage(item) {
+    isImage(file) {
       if (
-        item.file_type == "jpg" ||
-        item.file_type == "png" ||
-        item.file_type == "gif"
+        file.file_type == "jpg" ||
+        file.file_type == "png" ||
+        file.file_type == "gif"
       ) {
         return true;
       }
       return false;
     },
-    renameFile(item) {
-      console.log(item);
-      this.editFile = item;
+    renameFile(file) {
+      console.log(file);
+      this.editFile = file;
       this.editFile.new_name = this.editFile.file_name;
     },
     renameFileServe() {
@@ -155,19 +190,12 @@ var fileExplorerModule = new Vue({
         },
       });
     },
-    featuredFileServe(item) {
+    featuredFileServe(file) {
       var self = this;
-      var file = {};
-      self.files.forEach((element, index) => {
-        if (element.rand_key == item.rand_key) {
-          self.files[index].featured =
-            self.files[index].featured == "1" ? "0" : "1";
-          file = self.files[index];
-        }
-      });
+      file.featured = file.featured == 1 ? 0 : 1;
       $.ajax({
         type: "POST",
-        url: BASEURL + "admin/archivos/ajax_featured_file",
+        url: BASEURL + "api/v1/files/featured_file",
         data: {
           file: file,
         },
@@ -175,19 +203,20 @@ var fileExplorerModule = new Vue({
         success: function (response) {
           if (response.code == 200) {
             M.toast({ html: "Done!" });
+            self.$forceUpdate();
           }
         },
       });
     },
-    trashFile(item) {
-      this.moveToTrash = item;
+    trashFile(file) {
+      this.moveToTrash = file;
     },
-    moveFileTo(item, newPath) {
+    moveFileTo(file, newPath) {
       var self = this;
       var file = {};
       var indexFile;
       self.files.forEach((element, index) => {
-        if (element.rand_key == item.rand_key) {
+        if (element.rand_key == file.rand_key) {
           file = self.files[index];
           indexFile = index;
         }
@@ -211,14 +240,14 @@ var fileExplorerModule = new Vue({
         },
       });
     },
-    getImagePath(item) {
-      if (this.isImage(item)) {
+    getImagePath(file) {
+      if (this.isImage(file)) {
         return (
           BASEURL +
-          item.file_path.substr(2) +
-          item.file_name +
+          file.file_path.substr(2) +
+          file.file_name +
           "." +
-          item.file_type
+          file.file_type
         );
       }
     },
@@ -226,9 +255,10 @@ var fileExplorerModule = new Vue({
       var self = this;
       self.fileloader = true;
       self.files = [];
+      var url = BASEURL + "api/v1/files/reload_file_explorer";
       $.ajax({
         type: "POST",
-        url: BASEURL + "admin/archivos/ajax_reload_file_explorer",
+        url: url,
         data: {
           path: self.root,
         },
@@ -247,12 +277,13 @@ var fileExplorerModule = new Vue({
         self.backto = null;
       }
       self.fileloader = true;
+      var params = {
+        path: path,
+      };
       $.ajax({
-        type: "POST",
-        url: BASEURL + "admin/archivos/ajax_get_files",
-        data: {
-          path: path,
-        },
+        type: "GET",
+        url: BASEURL + "api/v1/files/",
+        data: params,
         dataType: "json",
         success: function (response) {
           self.fileloader = false;
@@ -313,7 +344,7 @@ var fileExplorerModule = new Vue({
       var self = this;
       $.ajax({
         type: "POST",
-        url: BASEURL + "admin/archivos/ajax_get_filter_files",
+        url: BASEURL + "api/v1/files/filter_files",
         data: {
           filter_name: filter_name,
           filter_value: filter_value,
@@ -330,6 +361,9 @@ var fileExplorerModule = new Vue({
       setTimeout(() => {
         var elems = document.querySelectorAll(".dropdown-trigger");
         M.Dropdown.init(elems, {});
+        var elems = document.querySelectorAll(".modal");
+        var instances = M.Modal.init(elems, {});
+        var instance = M.Tabs.init(document.getElementById("filetabs"), {});
       }, 2000);
     },
   },
