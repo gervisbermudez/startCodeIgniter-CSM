@@ -224,7 +224,7 @@ class Pages extends REST_Controller
 
     }
 
-    public function editpageinfo_get($page_id)
+    public function editpageinfo_get($page_id = false)
     {
         $this->load->model('Admin/Page_type');
         $this->load->helper('directory');

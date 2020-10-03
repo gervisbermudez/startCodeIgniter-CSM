@@ -362,7 +362,7 @@ class Categorie extends REST_Controller
      *     "data": []
      * }
      */
-    public function type_get($type)
+    public function type_get($type = 0)
     {
         $categorie = new Categories();
         $result = $categorie->where(array('parent_id' => '0', 'type' => $type));
