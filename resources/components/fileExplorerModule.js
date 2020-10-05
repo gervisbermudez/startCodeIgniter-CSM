@@ -1,3 +1,284 @@
+Vue.component("FileExplorerSelector", {
+  template: "#file-explorar-selector",
+  props: ["mode", "multiple"], //mode Can be "all", "files", "folders"
+  data: function () {
+    return {
+      debug: DEBUGMODE,
+      filters: null,
+      selected: [],
+      selectedRoot: false,
+      root: "./",
+      curDir: "",
+      fileloader: false,
+      files: [],
+      backto: null,
+      search: "",
+    };
+  },
+  mixins: [mixins],
+  computed: {
+    getFolders() {
+      return this.files.filter((file) => {
+        if (file.file_path == "./" && file.file_name == "trash") {
+          return false;
+        }
+        return file.file_type == "folder";
+      });
+    },
+    getFiles() {
+      return this.files.filter((file) => {
+        return file.file_type != "folder";
+      });
+    },
+    getBackPath() {
+      if (this.getbreadcrumb.length > 0) {
+        return this.getbreadcrumb[this.getbreadcrumb.length - 1].path;
+      } else {
+        return this.root;
+      }
+    },
+    getbreadcrumb() {
+      let breadcrumb = this.curDir.split("/").filter((value) => {
+        return value != "" && value != ".";
+      });
+      breadcrumb = breadcrumb.map((element, index) => {
+        let tempArray = [];
+        for (let i = 0; i < index; i++) {
+          tempArray.push(breadcrumb[i]);
+        }
+
+        let path = tempArray.join("/");
+        if (path) {
+          return {
+            path: this.root + path + "/",
+            folder: element,
+          };
+        } else {
+          return {
+            path: this.root + path,
+            folder: element,
+          };
+        }
+      });
+      return breadcrumb;
+    },
+  },
+  methods: {
+    getSelected() {
+      return this.files.filter((file) => {
+        return file.selected == true;
+      });
+    },
+    getSelectedRoot() {
+      return {
+        is_root: true,
+        file_id: "0",
+        rand_key: "",
+        file_name: "",
+        file_path: "./",
+        file_type: "",
+        parent_name: "./",
+        user_id: "",
+        shared_user_group_id: "",
+        share_link: "",
+        featured: "",
+        date_create: "",
+        date_update: "",
+        status: "",
+        selected: true,
+      };
+    },
+    onClickButton(event) {
+      this.$emit(
+        "notify",
+        this.selectedRoot ? [this.getSelectedRoot()] : this.getSelected()
+      );
+    },
+    getFullFileName(file) {
+      return file.file_name + "." + file.file_type;
+    },
+    getFullFilePath(file) {
+      return BASEURL + file.file_path + this.getFullFileName(file);
+    },
+    getIcon(file) {
+      let icon = "far fa-file";
+      switch (file.file_type) {
+        case "folder":
+          icon = "far fa-folder";
+          break;
+        case "jpg":
+        case "png":
+        case "gif":
+          icon = "fas fa-file-image";
+          break;
+        case "html":
+          icon = "fab fa-html5";
+          break;
+        case "scss":
+          icon = "fab fa-sass";
+          break;
+        case "css":
+        case "min.css":
+          icon = "fab fa-css3-alt";
+          break;
+        case "txt":
+          icon = "far fa-file-alt";
+          break;
+        case "php":
+        case "blade.php":
+          icon = "fab fa-php";
+          break;
+        case "js":
+        case "json":
+        case "min.js":
+          icon = "fab fa-js";
+          break;
+        case "eot":
+        case "otf":
+        case "woff2":
+          icon = "fas fa-font";
+          break;
+      }
+      return icon;
+    },
+    getExtention(file) {
+      if (file.file_type == "folder") {
+        return "";
+      } else {
+        return "." + file.file_type;
+      }
+    },
+    isImage(file) {
+      if (
+        file.file_type == "jpg" ||
+        file.file_type == "png" ||
+        file.file_type == "gif"
+      ) {
+        return true;
+      }
+      return false;
+    },
+    getImagePath(file) {
+      if (this.isImage(file)) {
+        return (
+          BASEURL +
+          file.file_path.substr(2) +
+          file.file_name +
+          "." +
+          file.file_type
+        );
+      }
+    },
+    toggleView() {},
+    navigateFiles(path) {
+      var self = this;
+      self.backto = self.getBackPath;
+      self.curDir = path;
+      if (path == self.root) {
+        self.backto = null;
+      }
+      self.fileloader = true;
+      var params = {
+        path: path,
+      };
+      $.ajax({
+        type: "GET",
+        url: BASEURL + "api/v1/files/",
+        data: params,
+        dataType: "json",
+        success: function (response) {
+          self.fileloader = false;
+          if (response.code == 200 && response.data.length) {
+            self.files = response.data;
+            self.files = self.files.map((file) => {
+              file.selected = false;
+              return file;
+            });
+          } else {
+            self.files = [];
+          }
+        },
+      });
+    },
+    filterFiles(filter) {
+      switch (filter) {
+        case "important":
+          this.getFilterFiles("featured", ["1"]);
+          break;
+        case "trash":
+          this.getFilterFiles("file_path", ["./trash/"]);
+          this.curDir = "./trash/";
+          break;
+        case "images":
+          this.getFilterFiles("file_type", ["jpg", "png", "gif"]);
+          break;
+        case "doc":
+          this.getFilterFiles("file_type", ["pdf", "doc"]);
+          break;
+        case "docs":
+          this.getFilterFiles("file_type", ["pdf", "doc", "xls"]);
+          break;
+        case "audio":
+          this.getFilterFiles("file_type", ["acc, mp3"]);
+          break;
+        case "video":
+          this.getFilterFiles("file_type", ["mp4"]);
+          break;
+        case "zip":
+          this.getFilterFiles("file_type", ["zip", "rar"]);
+          break;
+        default:
+          break;
+      }
+    },
+    resetSearch() {
+      this.search = null;
+      this.navigateFiles(this.root);
+    },
+    searchfiles() {
+      if (this.search) {
+        this.getFilterFiles("file_name", [this.search]);
+      } else {
+        this.navigateFiles(this.root);
+      }
+    },
+    getFilterFiles(filter_name, filter_value) {
+      var self = this;
+      $.ajax({
+        type: "POST",
+        url: BASEURL + "api/v1/files/filter_files",
+        data: {
+          filter_name: filter_name,
+          filter_value: filter_value,
+        },
+        dataType: "json",
+        success: function (response) {
+          if (response.code == 200) {
+            self.files = response.data;
+          }
+        },
+      });
+    },
+  },
+  filters: {
+    shortName: function (value) {
+      if (!value) return "";
+      value = value.toString();
+      if (value.length > 15) {
+        return value.substr(0, 15) + "...";
+      } else {
+        return value.substr(0, 15);
+      }
+    },
+  },
+  mounted: function () {
+    this.$nextTick(function () {
+      var self = this;
+      this.navigateFiles(self.root);
+    });
+  },
+});
+
 var fileExplorerModule = new Vue({
   el: "#root",
   data: {
@@ -14,17 +295,21 @@ var fileExplorerModule = new Vue({
     moveToTrash: {},
     showSideRightBar: false,
     sideRightBarSelectedFile: {},
+    fileToMove: {},
   },
   mixins: [mixins],
   computed: {
     getFolders() {
-      return this.files.filter((fileobject) => {
-        return fileobject.file_type == "folder";
+      return this.files.filter((file) => {
+        if (file.file_path == "./" && file.file_name == "trash") {
+          return false;
+        }
+        return file.file_type == "folder";
       });
     },
     getFiles() {
-      return this.files.filter((fileobject) => {
-        return fileobject.file_type != "folder";
+      return this.files.filter((file) => {
+        return file.file_type != "folder";
       });
     },
     getBackPath() {
@@ -71,6 +356,9 @@ var fileExplorerModule = new Vue({
     getFullFileName(file) {
       return file.file_name + "." + file.file_type;
     },
+    setSelected(item) {
+      item.selected = !item.selected;
+    },
     setSideRightBarSelectedFile(file) {
       (url = BASEURL + "api/v1/users/" + file.user_id),
         (this.sideRightBarSelectedFile = file);
@@ -106,9 +394,9 @@ var fileExplorerModule = new Vue({
     getFullFilePath(file) {
       return BASEURL + file.file_path + this.getFullFileName(file);
     },
-    getIcon(fileObject) {
+    getIcon(file) {
       let icon = "far fa-file";
-      switch (fileObject.file_type) {
+      switch (file.file_type) {
         case "folder":
           icon = "far fa-folder";
           break;
@@ -147,11 +435,11 @@ var fileExplorerModule = new Vue({
       }
       return icon;
     },
-    getExtention(fileObject) {
-      if (fileObject.file_type == "folder") {
+    getExtention(file) {
+      if (file.file_type == "folder") {
         return "";
       } else {
-        return "." + fileObject.file_type;
+        return "." + file.file_type;
       }
     },
     isImage(file) {
@@ -174,7 +462,7 @@ var fileExplorerModule = new Vue({
 
       $.ajax({
         type: "POST",
-        url: BASEURL + "admin/archivos/ajax_rename_file",
+        url: BASEURL + "api/v1/files/rename_file",
         data: {
           file: self.editFile,
         },
@@ -208,22 +496,60 @@ var fileExplorerModule = new Vue({
         },
       });
     },
+    setFileToMove(file) {
+      this.fileToMove = file;
+    },
     trashFile(file) {
       this.moveToTrash = file;
     },
-    moveFileTo(file, newPath) {
+    moveCallcack(selected) {
+      var instance = M.Modal.getInstance(
+        document.getElementById("folderSelectorMove")
+      );
+      instance.close();
+      this.moveFileTo(
+        this.fileToMove,
+        selected[0].file_path +
+          (selected[0].file_name ? selected[0].file_name + "/" : "")
+      );
+    },
+    copyCallcack(selected) {
+      var instance = M.Modal.getInstance(
+        document.getElementById("folderSelectorCopy")
+      );
+      instance.close();
+      this.copyFileTo(
+        this.fileToMove,
+        selected[0].file_path +
+          (selected[0].file_name ? selected[0].file_name + "/" : "")
+      );
+    },
+    deleteFile(file) {
       var self = this;
-      var file = {};
-      var indexFile;
-      self.files.forEach((element, index) => {
-        if (element.rand_key == file.rand_key) {
-          file = self.files[index];
-          indexFile = index;
-        }
-      });
+      var file = file;
       $.ajax({
         type: "POST",
-        url: BASEURL + "admin/archivos/ajax_move_file",
+        url: BASEURL + "api/v1/files/delete/" + file.file_id,
+        data: {
+          file: file,
+        },
+        dataType: "json",
+        success: function (response) {
+          if (response.code == 200) {
+            html = "<span>Done! </span>";
+            M.toast({ html: html });
+            self.navigateFiles("./trash/");
+          }
+        },
+      });
+    },
+    moveFileTo(file, newPath) {
+      var self = this;
+      var file = file;
+      var newPath = newPath;
+      $.ajax({
+        type: "POST",
+        url: BASEURL + "api/v1/files/move_file",
         data: {
           file: file,
           newPath: newPath,
@@ -233,9 +559,41 @@ var fileExplorerModule = new Vue({
           if (response.code == 200) {
             html = "<span>Done! </span>";
             M.toast({ html: html });
-
+            let indexFile = null;
+            self.files.forEach((item, index) => {
+              if (item.file_id == file.file_id) {
+                indexFile = index;
+              }
+            });
             self.files[indexFile].file_path = newPath;
             self.files.splice(indexFile, 1);
+          }
+        },
+      });
+    },
+    copyFileTo(file, newPath) {
+      var self = this;
+      var file = file;
+      var newPath = newPath;
+      $.ajax({
+        type: "POST",
+        url: BASEURL + "api/v1/files/copy_file",
+        data: {
+          file: file,
+          newPath: newPath,
+        },
+        dataType: "json",
+        success: function (response) {
+          if (response.code == 200) {
+            html = "<span>Done! </span>";
+            M.toast({ html: html });
+            let indexFile = null;
+            self.files.forEach((item, index) => {
+              if (item.file_id == file.file_id) {
+                indexFile = index;
+              }
+            });
+            self.files[indexFile].file_path = newPath;
           }
         },
       });

@@ -51,36 +51,34 @@
     box-shadow: none;
 
     i {
-      color: #000;
+      color: $gray;
       height: 50px;
       line-height: 50px;
     }
 
-    .input-field label.label-icon i {
-      color: #000 !important;
+    .input-field .label-icon i {
+      color: $gray !important;
       height: 50px;
       line-height: 50px;
     }
 
-    a.breadcrumb {
-      color: black;
+    .breadcrumb {
+      color: $gray;
+      i {
+        line-height: 60px;
+      }
     }
 
     .breadcrumb:before {
-      color: black;
+      color: $gray;
     }
 
-    a.brand-logo {
+    .brand-logo {
       position: relative;
       float: left;
       left: 0px;
       text-align: center;
       width: 40px;
-    }
-
-    a.brand-logo i {
-      margin: 0 !important;
-      float: none !important;
     }
 
     .col.s12.breadcrumb-nav {
@@ -104,6 +102,13 @@
 
     .folder {
       cursor: pointer;
+      position: relative;
+
+      .checkbox{
+        position: absolute;
+        right: 10px;
+        top: 10px;
+      }
 
       .card-panel {
         overflow: hidden;

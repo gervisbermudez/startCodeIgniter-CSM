@@ -126,8 +126,10 @@
                                 </nav>
                                 <nav v-if="backto" class="navigation-nav">
                                     <div class="nav-wrapper">
-                                        <a href="#!" class="brand-logo" @click="navigateFiles(getBackPath)"><i
+                                        <div class="col s12 breadcrumb-nav" v-if="getbreadcrumb">
+                                            <a href="#!" class="breadcrumb" @click="navigateFiles(getBackPath)"><i
                                                 class="material-icons">arrow_back</i></a>
+                                        </div>
                                         <div class="col s12 breadcrumb-nav" v-if="getbreadcrumb">
                                             <a href="#!" class="breadcrumb" v-for="(item, index) in getbreadcrumb"
                                                 :key="index"
@@ -204,7 +206,7 @@
                                                 <a class="grey-text text-darken-4 dropdown-trigger" href='#!'
                                                     :data-target="'file_options' + index"><i
                                                         class="material-icons right">more_vert</i></a>
-                                                <ul :id="'file_options' + index" class='dropdown-content'>
+                                                <ul :id="'file_options' + index" class='dropdown-content' v-if="curDir != './trash/'">
                                                     <li><a href="#!">
                                                             <i class="fas fa-share-alt"></i> Share file</a>
                                                     </li>
@@ -214,12 +216,35 @@
                                                             <i class="far fa-edit"></i>
                                                             Rename</a>
                                                     </li>
+                                                    <li>
+                                                        <a class="waves-effect waves-light modal-trigger" @click="setFileToMove(item);" href="#folderSelectorMove">
+                                                            <i class="fas fa-cut" ></i>
+                                                            Move</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="waves-effect waves-light modal-trigger" @click="setFileToMove(item);" href="#folderSelectorCopy">
+                                                            <i class="fas fa-copy" ></i>
+                                                            Copy</a>
+                                                    </li>
                                                     <li><a href="#!" @click="featuredFileServe(item);">
                                                             <i class="fa-star"
                                                                 :class='[item.featured == 1 ? "fas" : "far"]'></i>
                                                             Important</a></li>
-                                                    <li v-if="curDir != './trash/'">
-                                                        <a class="waves-effect waves-light modal-trigger" href="#modal2"
+                                                    <li>
+                                                        <a class="waves-effect waves-light modal-trigger" href="#deleteFileModal"
+                                                            @click="trashFile(item);">
+                                                            <i class="fas fa-trash"></i> Delete
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                                <ul :id="'file_options' + index" class='dropdown-content' v-else>
+                                                    <li>
+                                                        <a class="waves-effect waves-light modal-trigger" @click="setFileToMove(item);" href="#folderSelectorMove">
+                                                            <i class="fas fa-cut" ></i>
+                                                            Move</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="waves-effect waves-light modal-trigger" href="#deleteFileModal"
                                                             @click="trashFile(item);">
                                                             <i class="fas fa-trash"></i> Delete
                                                         </a>
@@ -266,7 +291,7 @@
                         <div class="file-info-colum side-right"  v-bind:class="{ show: showSideRightBar }" v-if="showSideRightBar">
                             <div class="side-header">
                                 <span class="filename">@{{(sideRightBarSelectedFile.file_name + getExtention(sideRightBarSelectedFile))}}</span>
-                                <a class="waves-effect waves-light modal-trigger right" href="#modal2"
+                                <a class="waves-effect waves-light modal-trigger right" href="#deleteFileModal"
                                 @click="trashFile(sideRightBarSelectedFile);">
                                 <i class="fas fa-trash grey-text text-darken-4 "></i></a>
                             </div>
@@ -311,12 +336,12 @@
                                                         :class='[sideRightBarSelectedFile.featured == 1 ? "fas" : "far"]'></i>
                                                     Important</a></li>
                                             <li v-if="curDir != './trash/'">
-                                                <a class="waves-effect waves-light modal-trigger" href="#modal2"
+                                                <a class="waves-effect waves-light modal-trigger" href="#deleteFileModal"
                                                     @click="trashFile(sideRightBarSelectedFile);">
                                                     <i class="fas fa-trash"></i> Delete
                                                 </a>
                                             </li>
-                                    </ul>   
+                                    </ul>
                                     <ul class="collection">
                                             <li class="collection-item">Type: <span class="secondary-content">@{{sideRightBarSelectedFile.file_type}}</span></li>
                                             <li class="collection-item">Create: <span class="secondary-content">@{{timeAgo(sideRightBarSelectedFile.date_create)}}</span> </li>
@@ -329,7 +354,7 @@
                                                 <user-info :user="sideRightBarSelectedFile.user" />
                                             </li>
                                         </ul>
-                                        
+
                                     </div>
                                     <div id="filehistory" class="col s12" style="display: none;"> History</div>
                                 </div>
@@ -356,15 +381,38 @@
             <a href="#!" @click="renameFileServe()" class="modal-close waves-effect waves-green btn-flat">Agree</a>
         </div>
     </div>
-    <div id="modal2" class="modal">
+    <div id="deleteFileModal" class="modal">
         <div class="modal-content">
             <h4>Delete File</h4>
-            <p>Move this file to trash?</p>
+            <p v-if="curDir != './trash/'">Move this file to trash?</p>
+            <p v-else>Delete this file permanently?</p>
         </div>
         <div class="modal-footer">
             <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
-            <a href="#!" @click="moveFileTo(moveToTrash, './trash/');"
-                class="modal-close waves-effect waves-green btn-flat">Agree</a>
+            <a href="#!" v-if="curDir != './trash/'" @click="moveFileTo(moveToTrash, './trash/');"
+                class="modal-close waves-effect waves-green btn-flat">Move</a>
+            <a href="#!" v-else @click="deleteFile(moveToTrash);"
+                class="modal-close waves-effect waves-green btn-flat red white-text">Delete</a>
+        </div>
+    </div>
+    <!-- Modal Structure -->
+    <div id="folderSelectorMove" class="modal">
+       <div class="modal-content">
+            <h4><i class="material-icons left">content_cut</i> Move file</h4>
+           <file-explorer-selector :mode="'folders'" :multiple="false" v-on:notify="moveCallcack"></file-explorer-selector>
+       </div>
+        <div class="modal-footer">
+            <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
+        </div>
+    </div>
+    <!-- Modal Structure -->
+    <div id="folderSelectorCopy" class="modal">
+       <div class="modal-content">
+            <h4><i class="material-icons left">content_copy</i> Copy file</h4>
+           <file-explorer-selector :mode="'folders'" :multiple="false" v-on:notify="copyCallcack"></file-explorer-selector>
+       </div>
+        <div class="modal-footer">
+            <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
         </div>
     </div>
 </div>
@@ -378,7 +426,11 @@
         <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
     </div>
 </div>
+
+@include('admin.components.FileExplorerSelector')
+
 @endsection
+
 
 @section('footer_includes')
 <script src="<?=base_url('public/js/components/fileExplorerModule.min.js');?>"></script>

@@ -285,8 +285,8 @@ var fileUploaderModule = new Vue({
       }
       self.fileloader = true;
       $.ajax({
-        type: "POST",
-        url: BASEURL + "api/v1/files/get_files",
+        type: "GET",
+        url: BASEURL + "api/v1/files/",
         data: {
           path: path,
         },

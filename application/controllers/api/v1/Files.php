@@ -129,10 +129,43 @@ class Files extends REST_Controller
      *
      * @return Response
      */
-    public function index_delete()
+    /**
+     * Get All Data from this method.
+     *
+     * @return Response
+     */
+    public function delete_post($file_id = null)
     {
-        $this->response(array('Metodo no permitido'), REST_Controller::HTTP_METHOD_NOT_ALLOWED);
 
+        if (!$file_id) {
+            $response = array(
+                'code' => REST_Controller::HTTP_NOT_FOUND,
+                "error_message" => lang('not_found_error'),
+                'data' => [],
+            );
+            $this->response($response, REST_Controller::HTTP_NOT_FOUND);
+            return;
+        }
+
+        $result = false;
+        $file = new File();
+        $result = $file->find($file_id);
+
+        if ($result) {
+            unlink($file->file_path . $file->file_name . '.' . $file->file_type);
+            $file->delete();
+            $response = array(
+                'code' => 200,
+                'data' => $result,
+            );
+        } else {
+            $response = array(
+                'code' => REST_Controller::HTTP_NOT_FOUND,
+                "error_message" => lang('not_found_error'),
+                'data' => [],
+            );
+        }
+        $this->response($response, REST_Controller::HTTP_OK);
     }
 
     public function featured_file_post()
@@ -180,11 +213,11 @@ class Files extends REST_Controller
     {
         $file = $this->input->post('file');
         $newPath = $this->input->post('newPath');
-        $file = new File();
-        $restult = $file->find_with(array('rand_key' => $file['rand_key']));
+        $file_model = new File();
+        $restult = $file_model->find_with(array('rand_key' => $file['rand_key']));
         if ($restult) {
-            $file->file_path = $newPath;
-            $file->save();
+            $file_model->file_path = $newPath;
+            $file_model->save();
             $file_name = $file['file_name'] . '.' . $file['file_type'];
             $rename = rename($file['file_path'] . $file_name, $newPath . $file_name);
             $response = array(
@@ -192,7 +225,7 @@ class Files extends REST_Controller
                 'data' => $rename,
             );
         } else {
-            $restult = array(
+            $response = array(
                 'code' => REST_Controller::HTTP_NOT_FOUND,
                 "error_message" => lang('not_found_error'),
                 'data' => [],
@@ -209,10 +242,14 @@ class Files extends REST_Controller
 
         $newPath = $this->input->post('newPath');
         $file_name = $file['file_name'] . '.' . $file['file_type'];
-        $rename = copy($file['file_path'] . $file_name, $newPath . $file_name);
+        $new_file_name = $file['file_name'] . '.' . $file['file_type'];
+        if ($file['file_path'] . $file_name == $newPath . $new_file_name) {
+            $new_file_name = $file['file_name'] . '(1)' . '.' . $file['file_type'];
+        }
+        $rename = copy($file['file_path'] . $file_name, $newPath . $new_file_name);
         $result = $rename;
         if ($rename) {
-            $insert_array = $file_model->get_array_save_file($file_name, $newPath);
+            $insert_array = $file_model->get_array_save_file($new_file_name, $newPath);
             $result = $file_model->set_data($insert_array);
         }
 
