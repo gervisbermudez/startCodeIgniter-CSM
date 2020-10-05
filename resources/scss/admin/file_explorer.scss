@@ -240,6 +240,8 @@
     opacity: 0;
     border-radius: 0 0.25rem 0.25rem 0;
     box-shadow: -8px 0 18px 0 rgba(25, 42, 70, 0.13);
+    overflow-y: scroll;
+    overflow-x: hidden;
     &.show {
       -webkit-transform: translateX(9%) translateY(1px);
       -ms-transform: translateX(9%) translateY(1px);
