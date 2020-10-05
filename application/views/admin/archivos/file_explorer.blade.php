@@ -6,10 +6,10 @@
 @endsection
 
 @section('head_includes')
-<link rel="stylesheet" href="<?= base_url('public/js/lightbox2-master/dist/css/lightbox.min.css') ?>">
-<link rel="stylesheet" href="<?= base_url('public/css/admin/file_explorer.min.css') ?>">
-<link rel="stylesheet" href="<?= base_url('public/js/fileinput-master/css/fileinput.min.css') ?>">
-<link rel="stylesheet" href="<?= base_url('public/font-awesome/css/all.min.css') ?>">
+<link rel="stylesheet" href="<?=base_url('public/js/lightbox2-master/dist/css/lightbox.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/css/admin/file_explorer.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/js/fileinput-master/css/fileinput.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/font-awesome/css/all.min.css')?>">
 @endsection
 
 @section('content')
@@ -104,6 +104,7 @@
                         </ul>
                     </div>
                     <div class="col s12 m10 files">
+                        <div class="file-overlay" v-bind:class="{ show: showSideRightBar }" @click="setCloseSideRightBar();"></div>
                         <div class="row search">
                             <div class="col s12">
                                 <nav  v-if="!backto" class="search-nav">
@@ -125,8 +126,10 @@
                                 </nav>
                                 <nav v-if="backto" class="navigation-nav">
                                     <div class="nav-wrapper">
-                                        <a href="#!" class="brand-logo" @click="navigateFiles(getBackPath)"><i
+                                        <div class="col s12 breadcrumb-nav" v-if="getbreadcrumb">
+                                            <a href="#!" class="breadcrumb" @click="navigateFiles(getBackPath)"><i
                                                 class="material-icons">arrow_back</i></a>
+                                        </div>
                                         <div class="col s12 breadcrumb-nav" v-if="getbreadcrumb">
                                             <a href="#!" class="breadcrumb" v-for="(item, index) in getbreadcrumb"
                                                 :key="index"
@@ -203,7 +206,7 @@
                                                 <a class="grey-text text-darken-4 dropdown-trigger" href='#!'
                                                     :data-target="'file_options' + index"><i
                                                         class="material-icons right">more_vert</i></a>
-                                                <ul :id="'file_options' + index" class='dropdown-content'>
+                                                <ul :id="'file_options' + index" class='dropdown-content' v-if="curDir != './trash/'">
                                                     <li><a href="#!">
                                                             <i class="fas fa-share-alt"></i> Share file</a>
                                                     </li>
@@ -213,12 +216,35 @@
                                                             <i class="far fa-edit"></i>
                                                             Rename</a>
                                                     </li>
+                                                    <li>
+                                                        <a class="waves-effect waves-light modal-trigger" @click="setFileToMove(item);" href="#folderSelectorMove">
+                                                            <i class="fas fa-cut" ></i>
+                                                            Move</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="waves-effect waves-light modal-trigger" @click="setFileToMove(item);" href="#folderSelectorCopy">
+                                                            <i class="fas fa-copy" ></i>
+                                                            Copy</a>
+                                                    </li>
                                                     <li><a href="#!" @click="featuredFileServe(item);">
                                                             <i class="fa-star"
                                                                 :class='[item.featured == 1 ? "fas" : "far"]'></i>
                                                             Important</a></li>
-                                                    <li v-if="curDir != './trash/'">
-                                                        <a class="waves-effect waves-light modal-trigger" href="#modal2"
+                                                    <li>
+                                                        <a class="waves-effect waves-light modal-trigger" href="#deleteFileModal"
+                                                            @click="trashFile(item);">
+                                                            <i class="fas fa-trash"></i> Delete
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                                <ul :id="'file_options' + index" class='dropdown-content' v-else>
+                                                    <li>
+                                                        <a class="waves-effect waves-light modal-trigger" @click="setFileToMove(item);" href="#folderSelectorMove">
+                                                            <i class="fas fa-cut" ></i>
+                                                            Move</a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="waves-effect waves-light modal-trigger" href="#deleteFileModal"
                                                             @click="trashFile(item);">
                                                             <i class="fas fa-trash"></i> Delete
                                                         </a>
@@ -234,9 +260,8 @@
                                                     <a :href="getImagePath(item)" data-lightbox="roadtrip"><img
                                                             :src="getImagePath(item)"></a>
                                                 </div>
-                                                <div class="card-content">
+                                                <div class="card-content" @click="setSideRightBarSelectedFile(item);">
                                                     @{{(item.file_name + getExtention(item)) | shortName}}
-                                                    <p><a href="#">Share file</a></p>
                                                 </div>
                                                 <div class="card-reveal">
                                                     <span class="card-title grey-text text-darken-4">@{{item.file_name}}<i
@@ -263,6 +288,78 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="file-info-colum side-right"  v-bind:class="{ show: showSideRightBar }" v-if="showSideRightBar">
+                            <div class="side-header">
+                                <span class="filename">@{{(sideRightBarSelectedFile.file_name + getExtention(sideRightBarSelectedFile))}}</span>
+                                <a class="waves-effect waves-light modal-trigger right" href="#deleteFileModal"
+                                @click="trashFile(sideRightBarSelectedFile);">
+                                <i class="fas fa-trash grey-text text-darken-4 "></i></a>
+                            </div>
+                            <br/>
+                            <div class="row">
+                                <div class="col s12">
+                                    <ul class="tabs" id="filetabs">
+                                        <li class="tab col s6"><a class="active" href="#fileinfo"><i class="material-icons">info_outline</i> Info</a></li>
+                                        <li class="tab col s6"><a href="#filehistory"><i class="material-icons">linear_scale</i> History</a></li>
+                                    </ul>
+                                </div>
+                                <div class="tabsbody">
+                                    <div class="preview">
+                                        <div class="card-image"
+                                            v-if="!isImage(sideRightBarSelectedFile)">
+                                            <div class="file icon ">
+                                                <i :class="getIcon(sideRightBarSelectedFile)"></i>
+                                            </div>
+                                        </div>
+                                        <div class="card-image" v-if="isImage(sideRightBarSelectedFile)">
+                                            <a :href="getImagePath(sideRightBarSelectedFile)" data-lightbox="roadtrip"><img
+                                                    :src="getImagePath(sideRightBarSelectedFile)"></a>
+                                        </div>
+                                    </div>
+                                    <div class="divider"></div>
+                                    <div id="fileinfo" class="col s12">
+                                    <ul class="file_options">
+                                            <li>
+                                                <a :href="getFullFilePath(sideRightBarSelectedFile)" target="_blank"><i class="fas fa-cloud-download-alt"></i> Download File</a>
+                                            </li>
+                                            <li><a href="#!">
+                                                    <i class="fas fa-share-alt"></i> Share file</a>
+                                            </li>
+                                            <li>
+                                                <a class="waves-effect waves-light modal-trigger" href="#modal1"
+                                                    @click="renameFile(sideRightBarSelectedFile);">
+                                                    <i class="far fa-edit"></i>
+                                                    Rename</a>
+                                            </li>
+                                            <li><a href="#!" @click="featuredFileServe(sideRightBarSelectedFile);">
+                                                    <i class="fa-star"
+                                                        :class='[sideRightBarSelectedFile.featured == 1 ? "fas" : "far"]'></i>
+                                                    Important</a></li>
+                                            <li v-if="curDir != './trash/'">
+                                                <a class="waves-effect waves-light modal-trigger" href="#deleteFileModal"
+                                                    @click="trashFile(sideRightBarSelectedFile);">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </a>
+                                            </li>
+                                    </ul>
+                                    <ul class="collection">
+                                            <li class="collection-item">Type: <span class="secondary-content">@{{sideRightBarSelectedFile.file_type}}</span></li>
+                                            <li class="collection-item">Create: <span class="secondary-content">@{{timeAgo(sideRightBarSelectedFile.date_create)}}</span> </li>
+                                            <li class="collection-item">Update: <span class="secondary-content">@{{timeAgo(sideRightBarSelectedFile.date_update)}}</span> </li>
+                                            <li class="collection-item">Folder: <span class="secondary-content">@{{(sideRightBarSelectedFile.file_path)}}</span> </li>
+                                            <li class="collection-item">File key: <span class="secondary-content">@{{(sideRightBarSelectedFile.rand_key)}}</span> </li>
+                                            <li class="collection-item" v-if="sideRightBarSelectedFile.user_group">Shared with: <span class="secondary-content">@{{sideRightBarSelectedFile.user_group.name}}</span></li>
+                                            <li class="collection-item" v-if="sideRightBarSelectedFile.user">
+                                                Create by: <br/>
+                                                <user-info :user="sideRightBarSelectedFile.user" />
+                                            </li>
+                                        </ul>
+
+                                    </div>
+                                    <div id="filehistory" class="col s12" style="display: none;"> History</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -284,15 +381,38 @@
             <a href="#!" @click="renameFileServe()" class="modal-close waves-effect waves-green btn-flat">Agree</a>
         </div>
     </div>
-    <div id="modal2" class="modal">
+    <div id="deleteFileModal" class="modal">
         <div class="modal-content">
             <h4>Delete File</h4>
-            <p>Move this file to trash?</p>
+            <p v-if="curDir != './trash/'">Move this file to trash?</p>
+            <p v-else>Delete this file permanently?</p>
         </div>
         <div class="modal-footer">
             <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
-            <a href="#!" @click="moveFileTo(moveToTrash, './trash/');"
-                class="modal-close waves-effect waves-green btn-flat">Agree</a>
+            <a href="#!" v-if="curDir != './trash/'" @click="moveFileTo(moveToTrash, './trash/');"
+                class="modal-close waves-effect waves-green btn-flat">Move</a>
+            <a href="#!" v-else @click="deleteFile(moveToTrash);"
+                class="modal-close waves-effect waves-green btn-flat red white-text">Delete</a>
+        </div>
+    </div>
+    <!-- Modal Structure -->
+    <div id="folderSelectorMove" class="modal">
+       <div class="modal-content">
+            <h4><i class="material-icons left">content_cut</i> Move file</h4>
+           <file-explorer-selector :mode="'folders'" :multiple="false" v-on:notify="moveCallcack"></file-explorer-selector>
+       </div>
+        <div class="modal-footer">
+            <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
+        </div>
+    </div>
+    <!-- Modal Structure -->
+    <div id="folderSelectorCopy" class="modal">
+       <div class="modal-content">
+            <h4><i class="material-icons left">content_copy</i> Copy file</h4>
+           <file-explorer-selector :mode="'folders'" :multiple="false" v-on:notify="copyCallcack"></file-explorer-selector>
+       </div>
+        <div class="modal-footer">
+            <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
         </div>
     </div>
 </div>
@@ -306,14 +426,19 @@
         <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
     </div>
 </div>
+
+@include('admin.components.FileExplorerSelector')
+
 @endsection
 
+
 @section('footer_includes')
-<script src="<?= base_url('public/js/components/fileExplorerModule.min.js'); ?>"></script>
-<script src="<?= base_url('public/js/lightbox2-master/dist/js/lightbox.min.js'); ?>"></script>
-<script src="<?= base_url('public/js/fileinput-master/js/fileinput.min.js'); ?>"></script>
-<script src="<?= base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js'); ?>"></script>
-<script src="<?= base_url('public/js/fileinput-master/js/locales/es.js'); ?>"></script>
+<script src="<?=base_url('public/js/components/FileExplorerSelector.min.js');?>"></script>
+<script src="<?=base_url('public/js/components/fileExplorerModule.min.js');?>"></script>
+<script src="<?=base_url('public/js/lightbox2-master/dist/js/lightbox.min.js');?>"></script>
+<script src="<?=base_url('public/js/fileinput-master/js/fileinput.min.js');?>"></script>
+<script src="<?=base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js');?>"></script>
+<script src="<?=base_url('public/js/fileinput-master/js/locales/es.js');?>"></script>
 <script>
     $(document).on('ready', function () {
         $("#input-100").fileinput({
@@ -325,7 +450,7 @@
             // testUrl: "http://localhost/test-upload.php"
             },
             uploadExtraData: {
-                'uploadToken': 'SOME-TOKEN', // for access control / security 
+                'uploadToken': 'SOME-TOKEN', // for access control / security
                 'curDir': './uploads'
             },
             showCancel: true,

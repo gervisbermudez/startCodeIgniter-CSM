@@ -12,16 +12,23 @@ var fileExplorerModule = new Vue({
     search: "",
     editFile: {},
     moveToTrash: {},
+    showSideRightBar: false,
+    sideRightBarSelectedFile: {},
+    fileToMove: {},
   },
+  mixins: [mixins],
   computed: {
     getFolders() {
-      return this.files.filter((fileobject) => {
-        return fileobject.file_type == "folder";
+      return this.files.filter((file) => {
+        if (file.file_path == "./" && file.file_name == "trash") {
+          return false;
+        }
+        return file.file_type == "folder";
       });
     },
     getFiles() {
-      return this.files.filter((fileobject) => {
-        return fileobject.file_type != "folder";
+      return this.files.filter((file) => {
+        return file.file_type != "folder";
       });
     },
     getBackPath() {
@@ -65,15 +72,50 @@ var fileExplorerModule = new Vue({
     },
   },
   methods: {
-    getFullFileName(item) {
-      return item.file_name + "." + item.file_type;
+    getFullFileName(file) {
+      return file.file_name + "." + file.file_type;
     },
-    getFullFilePath(item) {
-      return BASEURL + item.file_path + this.getFullFileName(item);
+    setSelected(item) {
+      item.selected = !item.selected;
     },
-    getIcon(fileObject) {
+    setSideRightBarSelectedFile(file) {
+      (url = BASEURL + "api/v1/users/" + file.user_id),
+        (this.sideRightBarSelectedFile = file);
+      this.showSideRightBar = true;
+      this.sideRightBarSelectedFile.user = null;
+      this.sideRightBarSelectedFile.user_group = null;
+      fetch(url)
+        .then((response) => response.json())
+        .then((response) => {
+          if (response.code == 200) {
+            this.sideRightBarSelectedFile.user = new User(response.data);
+            this.$forceUpdate();
+          }
+          this.initMT();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      url = BASEURL + "/api/v1/users/usergroups/" + file.shared_user_group_id;
+      fetch(url)
+        .then((response) => response.json())
+        .then((response) => {
+          this.sideRightBarSelectedFile.user_group = response.data;
+          this.$forceUpdate();
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    },
+    setCloseSideRightBar() {
+      this.showSideRightBar = false;
+    },
+    getFullFilePath(file) {
+      return BASEURL + file.file_path + this.getFullFileName(file);
+    },
+    getIcon(file) {
       let icon = "far fa-file";
-      switch (fileObject.file_type) {
+      switch (file.file_type) {
         case "folder":
           icon = "far fa-folder";
           break;
@@ -112,26 +154,26 @@ var fileExplorerModule = new Vue({
       }
       return icon;
     },
-    getExtention(fileObject) {
-      if (fileObject.file_type == "folder") {
+    getExtention(file) {
+      if (file.file_type == "folder") {
         return "";
       } else {
-        return "." + fileObject.file_type;
+        return "." + file.file_type;
       }
     },
-    isImage(item) {
+    isImage(file) {
       if (
-        item.file_type == "jpg" ||
-        item.file_type == "png" ||
-        item.file_type == "gif"
+        file.file_type == "jpg" ||
+        file.file_type == "png" ||
+        file.file_type == "gif"
       ) {
         return true;
       }
       return false;
     },
-    renameFile(item) {
-      console.log(item);
-      this.editFile = item;
+    renameFile(file) {
+      console.log(file);
+      this.editFile = file;
       this.editFile.new_name = this.editFile.file_name;
     },
     renameFileServe() {
@@ -139,7 +181,7 @@ var fileExplorerModule = new Vue({
 
       $.ajax({
         type: "POST",
-        url: BASEURL + "admin/archivos/ajax_rename_file",
+        url: BASEURL + "api/v1/files/rename_file",
         data: {
           file: self.editFile,
         },
@@ -155,19 +197,12 @@ var fileExplorerModule = new Vue({
         },
       });
     },
-    featuredFileServe(item) {
+    featuredFileServe(file) {
       var self = this;
-      var file = {};
-      self.files.forEach((element, index) => {
-        if (element.rand_key == item.rand_key) {
-          self.files[index].featured =
-            self.files[index].featured == "1" ? "0" : "1";
-          file = self.files[index];
-        }
-      });
+      file.featured = file.featured == 1 ? 0 : 1;
       $.ajax({
         type: "POST",
-        url: BASEURL + "admin/archivos/ajax_featured_file",
+        url: BASEURL + "api/v1/files/featured_file",
         data: {
           file: file,
         },
@@ -175,26 +210,65 @@ var fileExplorerModule = new Vue({
         success: function (response) {
           if (response.code == 200) {
             M.toast({ html: "Done!" });
+            self.$forceUpdate();
           }
         },
       });
     },
-    trashFile(item) {
-      this.moveToTrash = item;
+    setFileToMove(file) {
+      this.fileToMove = file;
     },
-    moveFileTo(item, newPath) {
+    trashFile(file) {
+      this.moveToTrash = file;
+    },
+    moveCallcack(selected) {
+      var instance = M.Modal.getInstance(
+        document.getElementById("folderSelectorMove")
+      );
+      instance.close();
+      this.moveFileTo(
+        this.fileToMove,
+        selected[0].file_path +
+          (selected[0].file_name ? selected[0].file_name + "/" : "")
+      );
+    },
+    copyCallcack(selected) {
+      var instance = M.Modal.getInstance(
+        document.getElementById("folderSelectorCopy")
+      );
+      instance.close();
+      this.copyFileTo(
+        this.fileToMove,
+        selected[0].file_path +
+          (selected[0].file_name ? selected[0].file_name + "/" : "")
+      );
+    },
+    deleteFile(file) {
       var self = this;
-      var file = {};
-      var indexFile;
-      self.files.forEach((element, index) => {
-        if (element.rand_key == item.rand_key) {
-          file = self.files[index];
-          indexFile = index;
-        }
-      });
+      var file = file;
       $.ajax({
         type: "POST",
-        url: BASEURL + "admin/archivos/ajax_move_file",
+        url: BASEURL + "api/v1/files/delete/" + file.file_id,
+        data: {
+          file: file,
+        },
+        dataType: "json",
+        success: function (response) {
+          if (response.code == 200) {
+            html = "<span>Done! </span>";
+            M.toast({ html: html });
+            self.navigateFiles("./trash/");
+          }
+        },
+      });
+    },
+    moveFileTo(file, newPath) {
+      var self = this;
+      var file = file;
+      var newPath = newPath;
+      $.ajax({
+        type: "POST",
+        url: BASEURL + "api/v1/files/move_file",
         data: {
           file: file,
           newPath: newPath,
@@ -204,21 +278,53 @@ var fileExplorerModule = new Vue({
           if (response.code == 200) {
             html = "<span>Done! </span>";
             M.toast({ html: html });
-
+            let indexFile = null;
+            self.files.forEach((item, index) => {
+              if (item.file_id == file.file_id) {
+                indexFile = index;
+              }
+            });
             self.files[indexFile].file_path = newPath;
             self.files.splice(indexFile, 1);
           }
         },
       });
     },
-    getImagePath(item) {
-      if (this.isImage(item)) {
+    copyFileTo(file, newPath) {
+      var self = this;
+      var file = file;
+      var newPath = newPath;
+      $.ajax({
+        type: "POST",
+        url: BASEURL + "api/v1/files/copy_file",
+        data: {
+          file: file,
+          newPath: newPath,
+        },
+        dataType: "json",
+        success: function (response) {
+          if (response.code == 200) {
+            html = "<span>Done! </span>";
+            M.toast({ html: html });
+            let indexFile = null;
+            self.files.forEach((item, index) => {
+              if (item.file_id == file.file_id) {
+                indexFile = index;
+              }
+            });
+            self.files[indexFile].file_path = newPath;
+          }
+        },
+      });
+    },
+    getImagePath(file) {
+      if (this.isImage(file)) {
         return (
           BASEURL +
-          item.file_path.substr(2) +
-          item.file_name +
+          file.file_path.substr(2) +
+          file.file_name +
           "." +
-          item.file_type
+          file.file_type
         );
       }
     },
@@ -226,9 +332,10 @@ var fileExplorerModule = new Vue({
       var self = this;
       self.fileloader = true;
       self.files = [];
+      var url = BASEURL + "api/v1/files/reload_file_explorer";
       $.ajax({
         type: "POST",
-        url: BASEURL + "admin/archivos/ajax_reload_file_explorer",
+        url: url,
         data: {
           path: self.root,
         },
@@ -247,12 +354,13 @@ var fileExplorerModule = new Vue({
         self.backto = null;
       }
       self.fileloader = true;
+      var params = {
+        path: path,
+      };
       $.ajax({
-        type: "POST",
-        url: BASEURL + "admin/archivos/ajax_get_files",
-        data: {
-          path: path,
-        },
+        type: "GET",
+        url: BASEURL + "api/v1/files/",
+        data: params,
         dataType: "json",
         success: function (response) {
           self.fileloader = false;
@@ -313,7 +421,7 @@ var fileExplorerModule = new Vue({
       var self = this;
       $.ajax({
         type: "POST",
-        url: BASEURL + "admin/archivos/ajax_get_filter_files",
+        url: BASEURL + "api/v1/files/filter_files",
         data: {
           filter_name: filter_name,
           filter_value: filter_value,
@@ -330,6 +438,9 @@ var fileExplorerModule = new Vue({
       setTimeout(() => {
         var elems = document.querySelectorAll(".dropdown-trigger");
         M.Dropdown.init(elems, {});
+        var elems = document.querySelectorAll(".modal");
+        var instances = M.Modal.init(elems, {});
+        var instance = M.Tabs.init(document.getElementById("filetabs"), {});
       }, 2000);
     },
   },

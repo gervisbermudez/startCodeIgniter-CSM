@@ -70,11 +70,16 @@ body {
         top: 10px;
       }
     }
-
     .content {
       display: block;
     }
   }
+}
+
+.card
+  .card-action
+  a:not(.btn):not(.btn-large):not(.btn-small):not(.btn-large):not(.btn-floating) {
+  color: $color4;
 }
 
 .page-widget {

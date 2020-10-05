@@ -195,16 +195,16 @@ class User {
   };
 
   get_avatarurl = () => {
-    try {
+    if (this.user_data.avatar) {
       return (
         BASEURL +
-        "/public/img/profile/" +
+        "public/img/profile/" +
         this.username +
         "/" +
         this.user_data.avatar
       );
-    } catch (error) {
-      return "";
+    } else {
+      return BASEURL + "public/img/profile/default.png";
     }
   };
 }
