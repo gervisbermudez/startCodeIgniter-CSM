@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "5e9e723f-f59e-4a25-867d-3c872b26450a",
+		"_postman_id": "cfe7d709-3301-4092-8fc9-beb2af0cbade",
 		"name": "Start CMS",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -17,7 +17,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{BASEURL}}/api/v1/users/usergroups",
+									"raw": "{{BASEURL}}/api/v1/users/usergroups/:usergroup_id",
 									"host": [
 										"{{BASEURL}}"
 									],
@@ -25,7 +25,14 @@
 										"api",
 										"v1",
 										"users",
-										"usergroups"
+										"usergroups",
+										":usergroup_id"
+									],
+									"variable": [
+										{
+											"key": "usergroup_id",
+											"value": "2"
+										}
 									]
 								},
 								"description": "Obetner un listado de grupos de usuarios"
@@ -115,7 +122,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{BASEURL}}/api/v1/users/{id}",
+							"raw": "{{BASEURL}}/api/v1/users/:id",
 							"host": [
 								"{{BASEURL}}"
 							],
@@ -123,7 +130,13 @@
 								"api",
 								"v1",
 								"users",
-								"{id}"
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
 							]
 						}
 					},
@@ -176,7 +189,7 @@
 								},
 								{
 									"key": "password",
-									"value": "1245",
+									"value": "Argentina.2020",
 									"type": "text"
 								}
 							],
@@ -187,14 +200,454 @@
 							}
 						},
 						"url": {
-							"raw": "{{BASEURL}}/admin/login/ajax_verify_auth",
+							"raw": "{{BASEURL}}/api/v1/login",
 							"host": [
 								"{{BASEURL}}"
 							],
 							"path": [
-								"admin",
-								"login",
-								"ajax_verify_auth"
+								"api",
+								"v1",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Config",
+			"item": [
+				{
+					"name": "[GET] Obtener Configuraciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/config/",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"config",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "File",
+			"item": [
+				{
+					"name": "Get Files",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "data",
+									"value": "U2FsdGVkX1+jF8rS9xrSheZiop9FCPdlkV+EelnvP0vtZ3MoVcB+BY6fTOzjXaEzg2jsV+9FgSF/rS9SSgdxoNSeCJTOaFhJkTggU5gX1L4=-x42c5ac99-031c-40a9-a4a0-295b8fcf9331",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/files/:id?path",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"files",
+								":id"
+							],
+							"query": [
+								{
+									"key": "path",
+									"value": null
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Manage the filemanager with the File api v1: \r\nGet files, filter files, create file, update and delete them ",
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Pages",
+			"item": [
+				{
+					"name": "[GET] Pages",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "data",
+									"value": "U2FsdGVkX1+jF8rS9xrSheZiop9FCPdlkV+EelnvP0vtZ3MoVcB+BY6fTOzjXaEzg2jsV+9FgSF/rS9SSgdxoNSeCJTOaFhJkTggU5gX1L4=-x42c5ac99-031c-40a9-a4a0-295b8fcf9331",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/pages/:id",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"pages",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[GET] Pages Types",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "data",
+									"value": "U2FsdGVkX1+jF8rS9xrSheZiop9FCPdlkV+EelnvP0vtZ3MoVcB+BY6fTOzjXaEzg2jsV+9FgSF/rS9SSgdxoNSeCJTOaFhJkTggU5gX1L4=-x42c5ac99-031c-40a9-a4a0-295b8fcf9331",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/pages/types/:id",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"pages",
+								"types",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[GET] Pages Templates",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "data",
+									"value": "U2FsdGVkX1+jF8rS9xrSheZiop9FCPdlkV+EelnvP0vtZ3MoVcB+BY6fTOzjXaEzg2jsV+9FgSF/rS9SSgdxoNSeCJTOaFhJkTggU5gX1L4=-x42c5ac99-031c-40a9-a4a0-295b8fcf9331",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/pages/templates",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"pages",
+								"templates"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[GET] Edit Page Info",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "data",
+									"value": "U2FsdGVkX1+jF8rS9xrSheZiop9FCPdlkV+EelnvP0vtZ3MoVcB+BY6fTOzjXaEzg2jsV+9FgSF/rS9SSgdxoNSeCJTOaFhJkTggU5gX1L4=-x42c5ac99-031c-40a9-a4a0-295b8fcf9331",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/pages/editpageinfo/",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"pages",
+								"editpageinfo",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Forms",
+			"item": [
+				{
+					"name": "[GET] Forms",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "data",
+									"value": "U2FsdGVkX1+jF8rS9xrSheZiop9FCPdlkV+EelnvP0vtZ3MoVcB+BY6fTOzjXaEzg2jsV+9FgSF/rS9SSgdxoNSeCJTOaFhJkTggU5gX1L4=-x42c5ac99-031c-40a9-a4a0-295b8fcf9331",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/forms/:id",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"forms",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[GET] Forms Data",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "data",
+									"value": "U2FsdGVkX1+jF8rS9xrSheZiop9FCPdlkV+EelnvP0vtZ3MoVcB+BY6fTOzjXaEzg2jsV+9FgSF/rS9SSgdxoNSeCJTOaFhJkTggU5gX1L4=-x42c5ac99-031c-40a9-a4a0-295b8fcf9331",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/forms/data/:id",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"forms",
+								"data",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "[GET] Categories",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "data",
+									"value": "U2FsdGVkX1+jF8rS9xrSheZiop9FCPdlkV+EelnvP0vtZ3MoVcB+BY6fTOzjXaEzg2jsV+9FgSF/rS9SSgdxoNSeCJTOaFhJkTggU5gX1L4=-x42c5ac99-031c-40a9-a4a0-295b8fcf9331",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/categorie/:categorie_id",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"categorie",
+								":categorie_id"
+							],
+							"variable": [
+								{
+									"key": "categorie_id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[GET] Filter Categories",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "data",
+									"value": "U2FsdGVkX1+jF8rS9xrSheZiop9FCPdlkV+EelnvP0vtZ3MoVcB+BY6fTOzjXaEzg2jsV+9FgSF/rS9SSgdxoNSeCJTOaFhJkTggU5gX1L4=-x42c5ac99-031c-40a9-a4a0-295b8fcf9331",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/categorie/type/:type_id",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"categorie",
+								"type",
+								":type_id"
+							],
+							"variable": [
+								{
+									"key": "type_id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[GET] Filter Categories",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "data",
+									"value": "U2FsdGVkX1+jF8rS9xrSheZiop9FCPdlkV+EelnvP0vtZ3MoVcB+BY6fTOzjXaEzg2jsV+9FgSF/rS9SSgdxoNSeCJTOaFhJkTggU5gX1L4=-x42c5ac99-031c-40a9-a4a0-295b8fcf9331",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/categorie/filter/?name=Web Design",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"categorie",
+								"filter",
+								""
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "Web Design"
+								}
 							]
 						}
 					},
@@ -208,7 +661,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "c4edba8f-5fd3-4b9b-881b-35d5c7b02dab",
+				"id": "a9ef3863-aa1c-457d-bf72-abdd8cbe861b",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -218,7 +671,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "18a8a892-ae5d-4ff9-a294-cb62ba4ddd7e",
+				"id": "2287157d-daf0-4df7-a960-4ed516a53710",
 				"type": "text/javascript",
 				"exec": [
 					""
