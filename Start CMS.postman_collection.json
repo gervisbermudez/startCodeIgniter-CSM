@@ -655,6 +655,38 @@
 				}
 			],
 			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Albumes",
+			"item": [
+				{
+					"name": "[GET] Albumes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/albumes/:album_id",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"albumes",
+								":album_id"
+							],
+							"variable": [
+								{
+									"key": "album_id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
 		}
 	],
 	"event": [

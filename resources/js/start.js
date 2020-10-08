@@ -35,6 +35,20 @@ var mixins = {
     },
   },
   methods: {
+    searchInObject(object, strSearchTerm) {
+      var keys = Object.keys(object);
+      var result = false;
+      for (var i = 0; i < keys.length; i++) {
+        if (typeof object[keys[i]] == "string") {
+          item_val = object[keys[i]];
+          result = item_val.toLowerCase().indexOf(strSearchTerm) != -1;
+          if (result) {
+            break;
+          }
+        }
+      }
+      return result;
+    },
     getSortData(strPropertyName) {
       if (this.orderDataConf.strPropertyName == strPropertyName) {
         return "sort_desc";

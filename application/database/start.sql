@@ -11,46 +11,47 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 
-
--- Volcando estructura de base de datos para start_cms
-CREATE DATABASE IF NOT EXISTS `start_cms` /*!40100 DEFAULT CHARACTER SET latin1 */;
-USE `start_cms`;
-
 -- Volcando estructura para tabla start_cms.album
 CREATE TABLE IF NOT EXISTS `album` (
   `album_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(75) NOT NULL,
-  `description` tinytext NOT NULL,
-  `date_publish` datetime NOT NULL,
-  `path` varchar(125) NOT NULL,
+  `description` text NOT NULL DEFAULT '',
+  `date_publish` timestamp NOT NULL DEFAULT current_timestamp(),
+  `user_id` int(11) NOT NULL DEFAULT 0,
   `status` tinyint(1) NOT NULL DEFAULT 1,
   `date_create` timestamp NOT NULL DEFAULT current_timestamp(),
   `date_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`album_id`),
   UNIQUE KEY `nombre` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
--- Volcando datos para la tabla start_cms.album: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.album: ~1 rows (aproximadamente)
 DELETE FROM `album`;
 /*!40000 ALTER TABLE `album` DISABLE KEYS */;
+INSERT INTO `album` (`album_id`, `name`, `description`, `date_publish`, `user_id`, `status`, `date_create`, `date_update`) VALUES
+	(1, 'Hola', 'Mundo', '2020-10-07 19:01:17', 1, 1, '2020-10-07 19:01:17', '2020-10-07 19:18:26');
 /*!40000 ALTER TABLE `album` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.album_items
 CREATE TABLE IF NOT EXISTS `album_items` (
   `album_item_id` int(11) NOT NULL AUTO_INCREMENT,
   `album_id` int(11) NOT NULL,
-  `nombre` varchar(125) NOT NULL,
-  `titulo` varchar(75) NOT NULL,
+  `file_id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `description` mediumtext DEFAULT NULL,
   `status` tinyint(4) NOT NULL DEFAULT 1,
   `date_create` timestamp NOT NULL DEFAULT current_timestamp(),
   `date_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`album_item_id`),
-  KEY `id_album` (`album_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  KEY `id_album` (`album_id`),
+  KEY `file_id` (`file_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
--- Volcando datos para la tabla start_cms.album_items: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.album_items: ~1 rows (aproximadamente)
 DELETE FROM `album_items`;
 /*!40000 ALTER TABLE `album_items` DISABLE KEYS */;
+INSERT INTO `album_items` (`album_item_id`, `album_id`, `file_id`, `name`, `description`, `status`, `date_create`, `date_update`) VALUES
+	(1, 1, 1, 'hola', '0hola', 1, '2020-10-07 19:03:11', '2020-10-07 19:03:19');
 /*!40000 ALTER TABLE `album_items` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.categories
@@ -159,12 +160,34 @@ CREATE TABLE IF NOT EXISTS `file` (
   `status` tinyint(4) DEFAULT 1,
   PRIMARY KEY (`file_id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=597 DEFAULT CHARSET=latin1;
 
--- Volcando datos para la tabla start_cms.file: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.file: ~563 rows (aproximadamente)
 DELETE FROM `file`;
 /*!40000 ALTER TABLE `file` DISABLE KEYS */;
 /*!40000 ALTER TABLE `file` ENABLE KEYS */;
+
+-- Volcando estructura para tabla start_cms.file_activity
+CREATE TABLE IF NOT EXISTS `file_activity` (
+  `file_activity_id` int(11) NOT NULL AUTO_INCREMENT,
+  `file_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `action` varchar(250) DEFAULT NULL,
+  `description` varchar(250) DEFAULT NULL,
+  `date_create` timestamp NULL DEFAULT current_timestamp(),
+  `date_update` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `status` tinyint(4) DEFAULT 1,
+  PRIMARY KEY (`file_activity_id`),
+  KEY `file_id` (`file_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `FK_file_activity_file` FOREIGN KEY (`file_id`) REFERENCES `file` (`file_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_file_activity_user` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Volcando datos para la tabla start_cms.file_activity: ~0 rows (aproximadamente)
+DELETE FROM `file_activity`;
+/*!40000 ALTER TABLE `file_activity` DISABLE KEYS */;
+/*!40000 ALTER TABLE `file_activity` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.form_content
 CREATE TABLE IF NOT EXISTS `form_content` (
@@ -176,11 +199,13 @@ CREATE TABLE IF NOT EXISTS `form_content` (
   `user_id` int(11) DEFAULT NULL,
   `status` tinyint(4) DEFAULT 1,
   PRIMARY KEY (`form_content_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
--- Volcando datos para la tabla start_cms.form_content: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.form_content: ~1 rows (aproximadamente)
 DELETE FROM `form_content`;
 /*!40000 ALTER TABLE `form_content` DISABLE KEYS */;
+INSERT INTO `form_content` (`form_content_id`, `form_custom_id`, `form_tab_id`, `date_create`, `date_update`, `user_id`, `status`) VALUES
+	(17, 6, 6, '2020-09-14 18:05:36', '2020-09-14 18:05:36', 1, 1);
 /*!40000 ALTER TABLE `form_content` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.form_content_data
@@ -195,11 +220,14 @@ CREATE TABLE IF NOT EXISTS `form_content_data` (
   PRIMARY KEY (`form_custom_data_id`),
   KEY `form_id` (`form_content_id`),
   CONSTRAINT `FK_form_content_data_form_content` FOREIGN KEY (`form_content_id`) REFERENCES `form_content` (`form_content_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
--- Volcando datos para la tabla start_cms.form_content_data: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.form_content_data: ~2 rows (aproximadamente)
 DELETE FROM `form_content_data`;
 /*!40000 ALTER TABLE `form_content_data` DISABLE KEYS */;
+INSERT INTO `form_content_data` (`form_custom_data_id`, `form_content_id`, `form_field_id`, `form_value`, `date_create`, `date_update`, `status`) VALUES
+	(21, 17, 9, '{"title":"Kiss"}', '2020-09-14 18:05:36', '2020-09-14 18:05:36', 1),
+	(22, 17, 10, '{"title":"Keep It Simple, Stupid"}', '2020-09-14 18:05:36', '2020-09-14 18:05:36', 1);
 /*!40000 ALTER TABLE `form_content_data` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.form_custom
@@ -214,7 +242,7 @@ CREATE TABLE IF NOT EXISTS `form_custom` (
   PRIMARY KEY (`form_custom_id`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 
--- Volcando datos para la tabla start_cms.form_custom: ~2 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.form_custom: ~1 rows (aproximadamente)
 DELETE FROM `form_custom`;
 /*!40000 ALTER TABLE `form_custom` DISABLE KEYS */;
 INSERT INTO `form_custom` (`form_custom_id`, `form_name`, `form_description`, `date_create`, `date_update`, `user_id`, `status`) VALUES
@@ -286,7 +314,7 @@ CREATE TABLE IF NOT EXISTS `form_tabs` (
   CONSTRAINT `FK_form_tabs_form_custom` FOREIGN KEY (`form_custom_id`) REFERENCES `form_custom` (`form_custom_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
 
--- Volcando datos para la tabla start_cms.form_tabs: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.form_tabs: ~1 rows (aproximadamente)
 DELETE FROM `form_tabs`;
 /*!40000 ALTER TABLE `form_tabs` DISABLE KEYS */;
 INSERT INTO `form_tabs` (`form_tab_id`, `form_custom_id`, `tab_name`, `date_create`, `date_update`, `status`) VALUES
@@ -397,14 +425,13 @@ CREATE TABLE IF NOT EXISTS `page` (
   PRIMARY KEY (`page_id`),
   KEY `author` (`user_id`) USING BTREE,
   KEY `type` (`page_type_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=99 DEFAULT CHARSET=latin1;
 
--- Volcando datos para la tabla start_cms.page: ~2 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.page: ~1 rows (aproximadamente)
 DELETE FROM `page`;
 /*!40000 ALTER TABLE `page` DISABLE KEYS */;
 INSERT INTO `page` (`page_id`, `path`, `template`, `title`, `subtitle`, `content`, `page_type_id`, `user_id`, `visibility`, `categorie_id`, `subcategorie_id`, `status`, `layout`, `mainImage`, `date_publish`, `date_update`, `date_create`) VALUES
-	(67, 'materialize', 'default', 'Materialize', '', '<p class="caption" style="box-sizing: inherit; padding: 0px; color: rgba(0, 0, 0, 0.87); font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen-Sans, Ubuntu, Cantarell, \'Helvetica Neue\', sans-serif; font-size: 16px;">Created and designed by Google, Material Design is a design language that combines the classic principles of successful design along with innovation and technology. Google\'s goal is to develop a system of design that allows for a unified user experience across all their products on any platform.</p>\n<div class="video-container" style="box-sizing: inherit; position: relative; padding-bottom: 380.712px; height: 0px; overflow: hidden; color: rgba(0, 0, 0, 0.87); font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen-Sans, Ubuntu, Cantarell, \'Helvetica Neue\', sans-serif; font-size: 16px;"><iframe style="box-sizing: inherit; position: absolute; top: 0px; left: 0px; width: 676.84px; height: 380.712px;" src="https://www.youtube.com/embed/Q8TXgCzxEnw?rel=0" width="853" height="480" frameborder="0" allowfullscreen=""></iframe></div>\n<div class="section" style="box-sizing: inherit; padding-top: 1rem; padding-bottom: 1rem; color: rgba(0, 0, 0, 0.87); font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen-Sans, Ubuntu, Cantarell, \'Helvetica Neue\', sans-serif; font-size: 16px;">\n<h3 class="header light" style="box-sizing: inherit; font-weight: 300; line-height: 48.18px; font-size: 2.92rem; margin: 1.94667rem 0px 1.168rem; color: #ee6e73;">Principles</h3>\n<div class="row" style="box-sizing: inherit; margin-left: -0.75rem; margin-right: -0.75rem; margin-bottom: 20px;">\n<div class="col s12 l4" style="box-sizing: border-box; float: left; padding: 0px 0.75rem; min-height: 1px; width: 233.108px; margin-left: auto; left: auto; right: auto;"><img class="promo" style="box-sizing: inherit; border-style: none; width: 210.608px;" src="https://materializecss.com/images/metaphor.png" />\n<h4 class="center" style="box-sizing: inherit; font-weight: 400; line-height: 37.62px; font-size: 2.28rem; margin: 1.52rem 0px 0.912rem; text-align: center; vertical-align: middle;">Material is the metaphor</h4>\n<p style="box-sizing: inherit; padding: 0px;">The metaphor of material defines the relationship between space and motion. The idea is that the technology is inspired by paper and ink and is utilized to facilitate creativity and innovation. Surfaces and edges provide familiar visual cues that allow users to quickly understand the technology beyond the physical world.</p>\n</div>\n<div class="col s12 l4" style="box-sizing: border-box; float: left; padding: 0px 0.75rem; min-height: 1px; width: 233.108px; margin-left: auto; left: auto; right: auto;"><img class="promo" style="box-sizing: inherit; border-style: none; width: 210.608px;" src="https://materializecss.com/images/bold.png" />\n<h4 class="center" style="box-sizing: inherit; font-weight: 400; line-height: 37.62px; font-size: 2.28rem; margin: 1.52rem 0px 0.912rem; text-align: center; vertical-align: middle;">Bold, graphic, intentional</h4>\n<p style="box-sizing: inherit; padding: 0px;">Elements and components such as grids, typography, color, and imagery are not only visually pleasing, but also create a sense of hierarchy, meaning, and focus. Emphasis on different actions and components create a visual guide for users.</p>\n</div>\n<div class="col s12 l4" style="box-sizing: border-box; float: left; padding: 0px 0.75rem; min-height: 1px; width: 233.108px; margin-left: auto; left: auto; right: auto;"><img class="promo" style="box-sizing: inherit; border-style: none; width: 210.608px;" src="https://materializecss.com/images/motion.png" />\n<h4 class="center" style="box-sizing: inherit; font-weight: 400; line-height: 37.62px; font-size: 2.28rem; margin: 1.52rem 0px 0.912rem; text-align: center; vertical-align: middle;">Motion provides meaning</h4>\n<p style="box-sizing: inherit; padding: 0px;">Motion allows the user to draw a parallel between what they see on the screen and in real life. By providing both feedback and familiarity, this allows the user to fully immerse him or herself into unfamiliar technology. Motion contains consistency and continuity in addition to giving users additional subconscious information about objects and transformations.</p>\n</div>\n</div>\n</div>', 1, 1, 1, 0, 0, 1, 'default', NULL, '2020-09-01 22:49:29', '2020-09-13 11:20:00', '2020-09-01 22:49:29'),
-	(68, 'collections', 'default', 'Collections', '', '<p style="box-sizing: border-box; margin-top: 0px; font-size: 16px; line-height: 1.8em; color: rgba(9, 9, 16, 0.7); margin-bottom: 2em; font-family: scandia-web, sans-serif;">The&nbsp;<code class=" language-php" style="box-sizing: border-box; font-family: source-code-pro, monospace; font-size: 0.8rem; line-height: 1.9; color: #ca473f; background: #fbfbfd; padding: 0px 0.25em; white-space: pre; word-spacing: normal; word-break: normal; overflow-wrap: normal; tab-size: 4; hyphens: none; box-shadow: rgba(0, 0, 0, 0.075) 0px 1px 1px;">Illuminate\\<span class="token package" style="box-sizing: border-box;">Support<span class="token punctuation" style="box-sizing: border-box; color: #090910;">\\</span>Collection</span></code>&nbsp;class provides a fluent, convenient wrapper for working with arrays of data. For example, check out the following code. We\'ll use the&nbsp;<code class=" language-php" style="box-sizing: border-box; font-family: source-code-pro, monospace; font-size: 0.8rem; line-height: 1.9; color: #ca473f; background: #fbfbfd; padding: 0px 0.25em; white-space: pre; word-spacing: normal; word-break: normal; overflow-wrap: normal; tab-size: 4; hyphens: none; box-shadow: rgba(0, 0, 0, 0.075) 0px 1px 1px;">collect</code>&nbsp;helper to create a new collection instance from the array, run the&nbsp;<code class=" language-php" style="box-sizing: border-box; font-family: source-code-pro, monospace; font-size: 0.8rem; line-height: 1.9; color: #ca473f; background: #fbfbfd; padding: 0px 0.25em; white-space: pre; word-spacing: normal; word-break: normal; overflow-wrap: normal; tab-size: 4; hyphens: none; box-shadow: rgba(0, 0, 0, 0.075) 0px 1px 1px;">strtoupper</code>&nbsp;function on each element, and then remove all empty elements:</p>\n<pre class=" language-php" style="box-sizing: border-box; overflow: auto; font-family: monospace, monospace; font-size: 16px; color: #ca473f; background: #fbfbfd; word-break: normal; overflow-wrap: normal; tab-size: 4; hyphens: none; padding: 1em; margin-top: 0.5em; margin-bottom: 2em; max-width: 100%; box-shadow: rgba(0, 0, 0, 0.075) 0px 1px 1px;"><code class=" language-php" style="box-sizing: border-box; font-family: source-code-pro, monospace; font-size: 0.8rem; line-height: 1.9; color: #090910; background: none; word-spacing: normal; word-break: normal; overflow-wrap: normal; tab-size: 4; hyphens: none;"><span class="token variable" style="box-sizing: border-box; color: #0782b1;">$collection</span> <span class="token operator" style="box-sizing: border-box;">=</span> <span class="token function" style="box-sizing: border-box; color: #ca473f;">collect</span><span class="token punctuation" style="box-sizing: border-box;">(</span><span class="token punctuation" style="box-sizing: border-box;">[</span><span class="token single-quoted-string string" style="box-sizing: border-box; color: #669900;">\'taylor\'</span><span class="token punctuation" style="box-sizing: border-box;">,</span> <span class="token single-quoted-string string" style="box-sizing: border-box; color: #669900;">\'abigail\'</span><span class="token punctuation" style="box-sizing: border-box;">,</span> <span class="token constant" style="box-sizing: border-box; color: #981d15;">null</span><span class="token punctuation" style="box-sizing: border-box;">]</span><span class="token punctuation" style="box-sizing: border-box;">)</span><span class="token operator" style="box-sizing: border-box;">-</span><span class="token operator" style="box-sizing: border-box;">&gt;</span><span class="token function" style="box-sizing: border-box; color: #ca473f;">map</span><span class="token punctuation" style="box-sizing: border-box;">(</span><span class="token keyword" style="box-sizing: border-box; color: #055472;">function</span> <span class="token punctuation" style="box-sizing: border-box;">(</span><span class="token variable" style="box-sizing: border-box; color: #0782b1;">$name</span><span class="token punctuation" style="box-sizing: border-box;">)</span> <span class="token punctuation" style="box-sizing: border-box;">{</span>\n    <span class="token keyword" style="box-sizing: border-box; color: #055472;">return</span> <span class="token function" style="box-sizing: border-box; color: #ca473f;">strtoupper</span><span class="token punctuation" style="box-sizing: border-box;">(</span><span class="token variable" style="box-sizing: border-box; color: #0782b1;">$name</span><span class="token punctuation" style="box-sizing: border-box;">)</span><span class="token punctuation" style="box-sizing: border-box;">;</span>\n<span class="token punctuation" style="box-sizing: border-box;">}</span><span class="token punctuation" style="box-sizing: border-box;">)</span>\n<span class="token operator" style="box-sizing: border-box;">-</span><span class="token operator" style="box-sizing: border-box;">&gt;</span><span class="token function" style="box-sizing: border-box; color: #ca473f;">reject</span><span class="token punctuation" style="box-sizing: border-box;">(</span><span class="token keyword" style="box-sizing: border-box; color: #055472;">function</span> <span class="token punctuation" style="box-sizing: border-box;">(</span><span class="token variable" style="box-sizing: border-box; color: #0782b1;">$name</span><span class="token punctuation" style="box-sizing: border-box;">)</span> <span class="token punctuation" style="box-sizing: border-box;">{</span>\n    <span class="token keyword" style="box-sizing: border-box; color: #055472;">return</span> <span class="token keyword" style="box-sizing: border-box; color: #055472;">empty</span><span class="token punctuation" style="box-sizing: border-box;">(</span><span class="token variable" style="box-sizing: border-box; color: #0782b1;">$name</span><span class="token punctuation" style="box-sizing: border-box;">)</span><span class="token punctuation" style="box-sizing: border-box;">;</span>\n<span class="token punctuation" style="box-sizing: border-box;">}</span><span class="token punctuation" style="box-sizing: border-box;">)</span><span class="token punctuation" style="box-sizing: border-box;">;</span></code></pre>\n<p style="box-sizing: border-box; margin-top: 0px; font-size: 16px; line-height: 1.8em; color: rgba(9, 9, 16, 0.7); margin-bottom: 2em; font-family: scandia-web, sans-serif;">As you can see, the&nbsp;<code class=" language-php" style="box-sizing: border-box; font-family: source-code-pro, monospace; font-size: 0.8rem; line-height: 1.9; color: #ca473f; background: #fbfbfd; padding: 0px 0.25em; white-space: pre; word-spacing: normal; word-break: normal; overflow-wrap: normal; tab-size: 4; hyphens: none; box-shadow: rgba(0, 0, 0, 0.075) 0px 1px 1px;">Collection</code>&nbsp;class allows you to chain its methods to perform fluent mapping and reducing of the underlying array. In general, collections are immutable, meaning every&nbsp;<code class=" language-php" style="box-sizing: border-box; font-family: source-code-pro, monospace; font-size: 0.8rem; line-height: 1.9; color: #ca473f; background: #fbfbfd; padding: 0px 0.25em; white-space: pre; word-spacing: normal; word-break: normal; overflow-wrap: normal; tab-size: 4; hyphens: none; box-shadow: rgba(0, 0, 0, 0.075) 0px 1px 1px;">Collection</code>&nbsp;method returns an entirely new&nbsp;<code class=" language-php" style="box-sizing: border-box; font-family: source-code-pro, monospace; font-size: 0.8rem; line-height: 1.9; color: #ca473f; background: #fbfbfd; padding: 0px 0.25em; white-space: pre; word-spacing: normal; word-break: normal; overflow-wrap: normal; tab-size: 4; hyphens: none; box-shadow: rgba(0, 0, 0, 0.075) 0px 1px 1px;">Collection</code>&nbsp;instance.</p>', 1, 1, 1, 0, 0, 1, 'default', NULL, '2020-09-13 23:31:39', '2020-09-13 11:20:05', '2020-09-13 23:31:39');
+	(98, 'materialize', 'default', 'Materialize', '', '<p>A modern responsive front-end framework based on Material Design</p>\n<p>&nbsp;</p>\n<div id="gtx-trans" style="position: absolute; left: -17px; top: 31.6354px;">&nbsp;</div>', 1, 1, 1, 0, 0, 2, 'default', NULL, '2020-10-03 00:39:54', NULL, '2020-10-03 00:39:54');
 /*!40000 ALTER TABLE `page` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.page_data
@@ -412,17 +439,24 @@ CREATE TABLE IF NOT EXISTS `page_data` (
   `page_data_id` int(11) NOT NULL AUTO_INCREMENT,
   `page_id` int(11) NOT NULL,
   `_key` varchar(100) NOT NULL,
-  `_value` varchar(600) NOT NULL,
+  `_value` text NOT NULL DEFAULT '',
   `status` tinyint(4) NOT NULL DEFAULT 1,
   `date_create` timestamp NOT NULL DEFAULT current_timestamp(),
   `date_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`page_data_id`) USING BTREE,
-  KEY `user` (`page_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+  KEY `user` (`page_id`) USING BTREE,
+  CONSTRAINT `FK_page_data_page` FOREIGN KEY (`page_id`) REFERENCES `page` (`page_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
--- Volcando datos para la tabla start_cms.page_data: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.page_data: ~5 rows (aproximadamente)
 DELETE FROM `page_data`;
 /*!40000 ALTER TABLE `page_data` DISABLE KEYS */;
+INSERT INTO `page_data` (`page_data_id`, `page_id`, `_key`, `_value`, `status`, `date_create`, `date_update`) VALUES
+	(28, 98, 'meta', '[{"name":"author","content":"Gervis Mora"},{"name":"keywords","content":"Materialize"},{"name":"description","content":"A modern responsive front-end framework based on Material Design\\u00a0\\u00a0..."},{"name":"ROBOTS","content":"NOODP"},{"name":"GOOGLEBOT","content":"INDEX, FOLLOW"},{"property":"og:title","content":"Materialize"},{"property":"og:description","content":"A modern responsive front-end framework based on Material Design\\u00a0\\u00a0..."},{"property":"og:site_name","content":"Modern Business"},{"property":"og:url","content":"http:\\/\\/localhost:8000\\/materialize"},{"property":"og:image","content":""},{"property":"og:type","content":"article"},{"property":"twitter:card","content":"summary"},{"property":"twitter:title","content":"Materialize"},{"property":"twitter:description","content":"A modern responsive front-end framework based on Material Design\\u00a0\\u00a0..."},{"property":"twitter:image","content":""}]', 1, '2020-09-17 21:05:59', '2020-09-17 21:10:40'),
+	(29, 98, 'tags', '["css","frontend"]', 1, '2020-09-17 21:07:35', '2020-09-17 21:07:35'),
+	(30, 98, 'title', 'Materialize', 1, '2020-09-17 21:09:13', '2020-09-17 21:09:13'),
+	(31, 98, 'headers_includes', '', 1, '2020-09-17 21:12:06', '2020-09-17 21:33:11'),
+	(32, 98, 'footer_includes', '', 1, '2020-09-17 21:12:16', '2020-09-17 21:33:25');
 /*!40000 ALTER TABLE `page_data` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.page_type
@@ -443,6 +477,27 @@ INSERT INTO `page_type` (`page_type_id`, `page_type_name`, `date_create`, `date_
 	(2, 'blog', '2020-04-18 21:18:36', '2020-04-18 21:18:36', 1),
 	(3, 'news', '2020-04-18 21:18:45', '2020-04-18 21:18:45', 1);
 /*!40000 ALTER TABLE `page_type` ENABLE KEYS */;
+
+-- Volcando estructura para tabla start_cms.permisions
+CREATE TABLE IF NOT EXISTS `permisions` (
+  `permisions_id` int(11) NOT NULL AUTO_INCREMENT,
+  `permision_name` varchar(50) DEFAULT NULL,
+  `date_create` timestamp NULL DEFAULT current_timestamp(),
+  `date_update` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `status` tinyint(4) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`permisions_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
+
+-- Volcando datos para la tabla start_cms.permisions: ~5 rows (aproximadamente)
+DELETE FROM `permisions`;
+/*!40000 ALTER TABLE `permisions` DISABLE KEYS */;
+INSERT INTO `permisions` (`permisions_id`, `permision_name`, `date_create`, `date_update`, `status`) VALUES
+	(1, 'CREATE_USER', '2020-09-20 09:51:14', '2020-09-20 09:52:03', 1),
+	(2, 'UPDATE_USER', '2020-09-20 09:51:27', '2020-09-20 09:52:04', 1),
+	(3, 'DELETE_USER', '2020-09-20 09:51:34', '2020-09-20 09:52:05', 1),
+	(4, 'SELECT_USERS', '2020-09-20 09:52:01', '2020-09-20 09:52:06', 1),
+	(5, 'UPDATE_USERS', '2020-09-20 12:13:54', '2020-09-20 12:13:54', 1);
+/*!40000 ALTER TABLE `permisions` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.relations
 CREATE TABLE IF NOT EXISTS `relations` (
@@ -468,26 +523,28 @@ CREATE TABLE IF NOT EXISTS `site_config` (
   `config_value` varchar(500) NOT NULL,
   `config_type` varchar(500) DEFAULT NULL,
   `config_data` text DEFAULT NULL,
-  `status` int(11) NOT NULL DEFAULT 1,
+  `readonly` int(11) NOT NULL DEFAULT 0,
   `date_create` timestamp NOT NULL DEFAULT current_timestamp(),
   `date_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `status` int(11) NOT NULL DEFAULT 1,
   PRIMARY KEY (`site_config_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
 
--- Volcando datos para la tabla start_cms.site_config: ~10 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.site_config: ~11 rows (aproximadamente)
 DELETE FROM `site_config`;
 /*!40000 ALTER TABLE `site_config` DISABLE KEYS */;
-INSERT INTO `site_config` (`site_config_id`, `user_id`, `config_name`, `config_value`, `config_type`, `config_data`, `status`, `date_create`, `date_update`) VALUES
-	(1, 1, 'SITE_TITLE', 'Start Codeigneiter Hola', 'general', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "50",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "text",\r\n  "perm_values": null\r\n}', 1, '2020-09-08 15:43:59', '2020-09-06 11:49:24'),
-	(2, 1, 'SITE_DESCRIPTION', 'My Great website made by Start Codeigneiter', 'general', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "50",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "text",\r\n  "perm_values": null\r\n}', 1, '2020-09-06 18:38:13', '2020-09-06 11:49:12'),
-	(3, 1, 'SITE_ADMIN_EMAIL', 'gerber@email.com', 'general', '{\r\n  "type_value": "string",\r\n  "validate_as": "email",\r\n  "max_lenght": "150",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "email",\r\n  "perm_values": null\r\n}', 1, '2020-09-06 18:28:44', '2020-09-06 11:49:02'),
-	(4, 1, 'SITE_LANGUAGE', 'esp', 'general', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "50",\r\n  "min_lenght": "0",\r\n  "handle_as": "select",\r\n  "input_type": "select",\r\n  "perm_values": ["en", "esp"]\r\n}', 1, '2020-09-06 18:38:20', '2020-09-06 13:26:38'),
-	(5, 1, 'SITE_TIME_ZONE', 'UTC-10', 'general', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "50",\r\n  "min_lenght": "0",\r\n  "handle_as": "select",\r\n  "input_type": "select",\r\n  "perm_values": {\r\n    "UTC-12": "UTC-12",\r\n    "UTC-11.5": "UTC-11:30",\r\n    "UTC-11": "UTC-11",\r\n    "UTC-10.5": "UTC-10:30",\r\n    "UTC-10": "UTC-10",\r\n    "UTC-9.5": "UTC-9:30",\r\n    "UTC-9": "UTC-9",\r\n    "UTC-8.5": "UTC-8:30",\r\n    "UTC-8": "UTC-8",\r\n    "UTC-7.5": "UTC-7:30",\r\n    "UTC-7": "UTC-7",\r\n    "UTC-6.5": "UTC-6:30",\r\n    "UTC-6": "UTC-6",\r\n    "UTC-5.5": "UTC-5:30",\r\n    "UTC-5": "UTC-5",\r\n    "UTC-4.5": "UTC-4:30",\r\n    "UTC-4": "UTC-4",\r\n    "UTC-3.5": "UTC-3:30",\r\n    "UTC-3": "UTC-3",\r\n    "UTC-2.5": "UTC-2:30",\r\n    "UTC-2": "UTC-2",\r\n    "UTC-1.5": "UTC-1:30",\r\n    "UTC-1": "UTC-1",\r\n    "UTC-0.5": "UTC-0:30",\r\n    "UTC+0": "UTC+0",\r\n    "UTC+0.5": "UTC+0:30",\r\n    "UTC+1": "UTC+1",\r\n    "UTC+1.5": "UTC+1:30",\r\n    "UTC+2": "UTC+2",\r\n    "UTC+2.5": "UTC+2:30",\r\n    "UTC+3": "UTC+3",\r\n    "UTC+3.5": "UTC+3:30",\r\n    "UTC+4": "UTC+4",\r\n    "UTC+4.5": "UTC+4:30",\r\n    "UTC+5": "UTC+5",\r\n    "UTC+5.5": "UTC+5:30",\r\n    "UTC+5.75": "UTC+5:45",\r\n    "UTC+6": "UTC+6",\r\n    "UTC+6.5": "UTC+6:30",\r\n    "UTC+7": "UTC+7",\r\n    "UTC+7.5": "UTC+7:30",\r\n    "UTC+8": "UTC+8",\r\n    "UTC+8.5": "UTC+8:30",\r\n    "UTC+8.75": "UTC+8:45",\r\n    "UTC+9": "UTC+9",\r\n    "UTC+9.5": "UTC+9:30",\r\n    "UTC+10": "UTC+10",\r\n    "UTC+10.5": "UTC+10:30",\r\n    "UTC+11": "UTC+11",\r\n    "UTC+11.5": "UTC+11:30",\r\n    "UTC+12": "UTC+12",\r\n    "UTC+12.75": "UTC+12:45",\r\n    "UTC+13": "UTC+13",\r\n    "UTC+13.75": "UTC+13:45",\r\n    "UTC+14": "UTC+14"\r\n  }\r\n}', 1, '2020-09-06 18:15:28', '2020-09-06 13:26:48'),
-	(6, 0, 'SITE_DATE_FORMAT', 'j \\d\\e F \\d\\e Y', 'general', '{"type_value":"string","validate_as":"text","max_lenght":"50","min_lenght":"5"}', 1, '2020-09-05 15:48:17', '2020-09-05 21:13:53'),
-	(7, 1, 'SITE_TIME_FORMAT', 'H:i', 'general', '{"type_value":"string","validate_as":"text","max_lenght":"50","min_lenght":"0"}', 1, '2020-09-06 01:44:30', '2020-09-05 21:14:06'),
-	(9, 1, 'SITE_LIST_MAX_ENTRY', '10', 'lectura', '{"type_value":"number","validate_as":"number","max_lenght":"50","min_lenght":"0"}', 1, '2020-09-06 18:28:31', '2020-09-05 21:09:53'),
-	(11, 1, 'SITE_LIST_PUBLIC', 'No', 'lectura', '{\r\n  "type_value": "boolean",\r\n  "validate_as": "boolean",\r\n  "handle_as": "switch",\r\n  "input_type": "switch",\r\n  "perm_values": ["No", "Si"],\r\n  "true": "Si"\r\n}\r\n', 1, '2020-09-06 19:30:40', '2020-09-06 14:03:10'),
-	(12, 1, 'SITE_AUTHOR', 'Gervis Bermudez', 'general', '{"type_value":"string","validate_as":"name","max_lenght":"50","min_lenght":"5"}', 1, '2020-09-06 18:29:01', '2020-09-05 21:05:52');
+INSERT INTO `site_config` (`site_config_id`, `user_id`, `config_name`, `config_value`, `config_type`, `config_data`, `readonly`, `date_create`, `date_update`, `status`) VALUES
+	(1, 1, 'SITE_TITLE', 'Start Codeigneiter Hola', 'general', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "50",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "text",\r\n  "perm_values": null\r\n}', 0, '2020-09-08 15:43:59', '2020-09-06 11:49:24', 1),
+	(2, 1, 'SITE_DESCRIPTION', 'My Great website made by Start Codeigneiter', 'general', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "50",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "text",\r\n  "perm_values": null\r\n}', 0, '2020-09-06 18:38:13', '2020-09-06 11:49:12', 1),
+	(3, 1, 'SITE_ADMIN_EMAIL', 'gerber@email.com', 'general', '{\r\n  "type_value": "string",\r\n  "validate_as": "email",\r\n  "max_lenght": "150",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "email",\r\n  "perm_values": null\r\n}', 0, '2020-09-06 18:28:44', '2020-09-06 11:49:02', 1),
+	(4, 1, 'SITE_LANGUAGE', 'esp', 'general', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "50",\r\n  "min_lenght": "0",\r\n  "handle_as": "select",\r\n  "input_type": "select",\r\n  "perm_values": ["en", "esp"]\r\n}', 0, '2020-09-06 18:38:20', '2020-09-06 13:26:38', 1),
+	(5, 1, 'SITE_TIME_ZONE', 'UTC-10', 'general', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "50",\r\n  "min_lenght": "0",\r\n  "handle_as": "select",\r\n  "input_type": "select",\r\n  "perm_values": {\r\n    "UTC-12": "UTC-12",\r\n    "UTC-11.5": "UTC-11:30",\r\n    "UTC-11": "UTC-11",\r\n    "UTC-10.5": "UTC-10:30",\r\n    "UTC-10": "UTC-10",\r\n    "UTC-9.5": "UTC-9:30",\r\n    "UTC-9": "UTC-9",\r\n    "UTC-8.5": "UTC-8:30",\r\n    "UTC-8": "UTC-8",\r\n    "UTC-7.5": "UTC-7:30",\r\n    "UTC-7": "UTC-7",\r\n    "UTC-6.5": "UTC-6:30",\r\n    "UTC-6": "UTC-6",\r\n    "UTC-5.5": "UTC-5:30",\r\n    "UTC-5": "UTC-5",\r\n    "UTC-4.5": "UTC-4:30",\r\n    "UTC-4": "UTC-4",\r\n    "UTC-3.5": "UTC-3:30",\r\n    "UTC-3": "UTC-3",\r\n    "UTC-2.5": "UTC-2:30",\r\n    "UTC-2": "UTC-2",\r\n    "UTC-1.5": "UTC-1:30",\r\n    "UTC-1": "UTC-1",\r\n    "UTC-0.5": "UTC-0:30",\r\n    "UTC+0": "UTC+0",\r\n    "UTC+0.5": "UTC+0:30",\r\n    "UTC+1": "UTC+1",\r\n    "UTC+1.5": "UTC+1:30",\r\n    "UTC+2": "UTC+2",\r\n    "UTC+2.5": "UTC+2:30",\r\n    "UTC+3": "UTC+3",\r\n    "UTC+3.5": "UTC+3:30",\r\n    "UTC+4": "UTC+4",\r\n    "UTC+4.5": "UTC+4:30",\r\n    "UTC+5": "UTC+5",\r\n    "UTC+5.5": "UTC+5:30",\r\n    "UTC+5.75": "UTC+5:45",\r\n    "UTC+6": "UTC+6",\r\n    "UTC+6.5": "UTC+6:30",\r\n    "UTC+7": "UTC+7",\r\n    "UTC+7.5": "UTC+7:30",\r\n    "UTC+8": "UTC+8",\r\n    "UTC+8.5": "UTC+8:30",\r\n    "UTC+8.75": "UTC+8:45",\r\n    "UTC+9": "UTC+9",\r\n    "UTC+9.5": "UTC+9:30",\r\n    "UTC+10": "UTC+10",\r\n    "UTC+10.5": "UTC+10:30",\r\n    "UTC+11": "UTC+11",\r\n    "UTC+11.5": "UTC+11:30",\r\n    "UTC+12": "UTC+12",\r\n    "UTC+12.75": "UTC+12:45",\r\n    "UTC+13": "UTC+13",\r\n    "UTC+13.75": "UTC+13:45",\r\n    "UTC+14": "UTC+14"\r\n  }\r\n}', 0, '2020-09-06 18:15:28', '2020-09-06 13:26:48', 1),
+	(6, 0, 'SITE_DATE_FORMAT', 'j \\d\\e F \\d\\e Y', 'general', '{"type_value":"string","validate_as":"text","max_lenght":"50","min_lenght":"5"}', 0, '2020-09-05 15:48:17', '2020-09-05 21:13:53', 1),
+	(7, 1, 'SITE_TIME_FORMAT', 'H:i', 'general', '{"type_value":"string","validate_as":"text","max_lenght":"50","min_lenght":"0"}', 0, '2020-09-06 01:44:30', '2020-09-05 21:14:06', 1),
+	(9, 1, 'SITE_LIST_MAX_ENTRY', '10', 'lectura', '{"type_value":"number","validate_as":"number","max_lenght":"50","min_lenght":"0"}', 0, '2020-09-06 18:28:31', '2020-09-05 21:09:53', 1),
+	(11, 1, 'SITE_LIST_PUBLIC', 'No', 'lectura', '{\r\n  "type_value": "boolean",\r\n  "validate_as": "boolean",\r\n  "handle_as": "switch",\r\n  "input_type": "switch",\r\n  "perm_values": ["No", "Si"],\r\n  "true": "Si"\r\n}\r\n', 0, '2020-09-06 19:30:40', '2020-09-06 14:03:10', 1),
+	(12, 1, 'SITE_AUTHOR', 'Gervis Bermudez', 'general', '{"type_value":"string","validate_as":"name","max_lenght":"50","min_lenght":"5"}', 0, '2020-09-06 18:29:01', '2020-09-05 21:05:52', 1),
+	(13, 0, 'LAST_UPDATE_FILEMANAGER', '2020-10-03 21:19:46', 'timestamp', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "50",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "text",\r\n  "perm_values": null\r\n}', 0, '2020-10-01 12:02:11', '2020-10-03 16:19:46', 1);
 /*!40000 ALTER TABLE `site_config` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.suscriptions
@@ -518,30 +575,19 @@ CREATE TABLE IF NOT EXISTS `user` (
   `status` tinyint(1) NOT NULL DEFAULT 1,
   `date_create` timestamp NOT NULL DEFAULT current_timestamp(),
   `date_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COMMENT='Usuarios del Sistema';
+  PRIMARY KEY (`user_id`),
+  KEY `usergroup_id` (`usergroup_id`),
+  CONSTRAINT `FK_user_usergroup` FOREIGN KEY (`usergroup_id`) REFERENCES `usergroup` (`usergroup_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='Usuarios del Sistema';
 
--- Volcando datos para la tabla start_cms.user: ~2 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.user: ~3 rows (aproximadamente)
 DELETE FROM `user`;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
 INSERT INTO `user` (`user_id`, `username`, `password`, `email`, `lastseen`, `usergroup_id`, `status`, `date_create`, `date_update`) VALUES
-	(1, 'gerber', '$2y$10$r0DE7OWmcoEsziRfl.qor.PhSYpYq.p0K6C.xY4oDoF10W5JCPbiq', 'gerber@gmail.com', '2020-09-14 23:01:21', 1, 1, '2020-03-01 16:11:25', '2020-09-09 14:56:41'),
-	(2, 'yduran', '$2y$10$.Rd9Ke7opDn2zvjc70DESuilWjm2mIMB9R2qyHyKTQbYQRYxGI6A2', 'yduran@gmail.com', '2017-03-05 17:12:06', 3, 1, '2020-03-01 16:11:25', '2020-05-25 11:47:36');
+	(1, 'gerber', '$2y$10$r0DE7OWmcoEsziRfl.qor.PhSYpYq.p0K6C.xY4oDoF10W5JCPbiq', 'gerber@gmail.com', '2020-10-07 22:34:06', 1, 1, '2020-03-01 16:11:25', '2020-09-09 14:56:41'),
+	(2, 'yduran', '$2y$10$.Rd9Ke7opDn2zvjc70DESuilWjm2mIMB9R2qyHyKTQbYQRYxGI6A2', 'yduran@gmail.com', '2020-10-07 20:09:26', 2, 1, '2020-03-01 16:11:25', '2020-09-20 19:05:39'),
+	(3, 'nestor', '$2y$10$todx7BAG8S1cSoKOYxtrPuF412C1FvKuuaJWU1jNb/28ahu0a30GW', 'nestor@email.com', '2020-09-21 00:22:31', 4, 1, '2020-09-20 19:22:31', '2020-09-20 19:22:31');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
-
--- Volcando estructura para tabla start_cms.userdatapermisions
-CREATE TABLE IF NOT EXISTS `userdatapermisions` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `usergroup_id` int(11) NOT NULL,
-  `permision` int(11) NOT NULL,
-  `status` tinyint(1) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- Volcando datos para la tabla start_cms.userdatapermisions: ~0 rows (aproximadamente)
-DELETE FROM `userdatapermisions`;
-/*!40000 ALTER TABLE `userdatapermisions` DISABLE KEYS */;
-/*!40000 ALTER TABLE `userdatapermisions` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.usergroup
 CREATE TABLE IF NOT EXISTS `usergroup` (
@@ -549,22 +595,54 @@ CREATE TABLE IF NOT EXISTS `usergroup` (
   `name` varchar(25) NOT NULL,
   `level` int(11) NOT NULL,
   `description` tinytext NOT NULL,
+  `user_id` tinyint(4) NOT NULL DEFAULT 0,
+  `parent_id` tinyint(4) NOT NULL DEFAULT 0,
   `status` tinyint(1) NOT NULL DEFAULT 1,
   `date_create` timestamp NOT NULL DEFAULT current_timestamp(),
   `date_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  PRIMARY KEY (`usergroup_id`)
+  PRIMARY KEY (`usergroup_id`),
+  KEY `user_id` (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 -- Volcando datos para la tabla start_cms.usergroup: ~5 rows (aproximadamente)
 DELETE FROM `usergroup`;
 /*!40000 ALTER TABLE `usergroup` DISABLE KEYS */;
-INSERT INTO `usergroup` (`usergroup_id`, `name`, `level`, `description`, `status`, `date_create`, `date_update`) VALUES
-	(1, 'root', 1, 'All permisions allowed', 1, '2016-08-27 09:22:22', '2020-03-01 16:10:01'),
-	(2, 'Administrador', 2, 'All configurations allowed', 1, '2016-08-27 09:22:22', '2020-03-01 16:10:01'),
-	(3, 'Estandar', 3, 'Not delete permisions allowed', 1, '2016-08-27 08:32:49', '2020-03-01 16:10:01'),
-	(7, 'Publisher', 4, 'Only Insert and Update permisions allowed', 1, '2016-08-28 07:35:50', '2020-03-01 16:10:01'),
-	(8, 'Editor', 5, 'Only insert permisions allowed', 1, '2016-08-29 03:21:39', '2020-03-01 16:10:01');
+INSERT INTO `usergroup` (`usergroup_id`, `name`, `level`, `description`, `user_id`, `parent_id`, `status`, `date_create`, `date_update`) VALUES
+	(1, 'root', 1, 'All permisions allowed', 0, 0, 1, '2016-08-27 09:22:22', '2020-03-01 16:10:01'),
+	(2, 'Administrador', 2, 'All configurations allowed', 1, 0, 1, '2016-08-27 09:22:22', '2020-10-07 15:27:08'),
+	(3, 'Estandar', 3, 'Not delete permisions allowed', 1, 2, 0, '2016-08-27 08:32:49', '2020-10-07 15:26:30'),
+	(4, 'Publisher', 4, 'Only Insert and Update permisions allowed', 1, 3, 1, '2016-08-28 07:35:50', '2020-10-07 15:42:49'),
+	(5, 'Editor', 5, 'Only insert permisions allowed', 1, 3, 0, '2016-08-29 03:21:39', '2020-10-07 15:42:51');
 /*!40000 ALTER TABLE `usergroup` ENABLE KEYS */;
+
+-- Volcando estructura para tabla start_cms.usergroup_permisions
+CREATE TABLE IF NOT EXISTS `usergroup_permisions` (
+  `usergroup_permisions_id` int(11) NOT NULL AUTO_INCREMENT,
+  `usergroup_id` int(11) NOT NULL,
+  `permision_id` int(11) NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 0,
+  `date_create` timestamp NOT NULL DEFAULT current_timestamp(),
+  `date_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`usergroup_permisions_id`) USING BTREE,
+  KEY `usergroup_id` (`usergroup_id`),
+  KEY `permision_id` (`permision_id`),
+  CONSTRAINT `FK_usergroup_permisions_permisions` FOREIGN KEY (`permision_id`) REFERENCES `permisions` (`permisions_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_usergroup_permisions_usergroup` FOREIGN KEY (`usergroup_id`) REFERENCES `usergroup` (`usergroup_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+
+-- Volcando datos para la tabla start_cms.usergroup_permisions: ~8 rows (aproximadamente)
+DELETE FROM `usergroup_permisions`;
+/*!40000 ALTER TABLE `usergroup_permisions` DISABLE KEYS */;
+INSERT INTO `usergroup_permisions` (`usergroup_permisions_id`, `usergroup_id`, `permision_id`, `status`, `date_create`, `date_update`) VALUES
+	(1, 1, 1, 1, '2020-09-20 09:55:35', '2020-09-20 09:55:35'),
+	(2, 1, 2, 1, '2020-09-20 09:55:48', '2020-09-20 09:55:48'),
+	(3, 1, 3, 1, '2020-09-20 09:56:09', '2020-09-20 09:56:09'),
+	(4, 1, 4, 1, '2020-09-20 09:56:20', '2020-09-20 09:56:20'),
+	(5, 2, 1, 1, '2020-09-20 12:07:34', '2020-09-20 12:07:34'),
+	(6, 2, 4, 1, '2020-09-20 12:07:52', '2020-09-20 12:07:52'),
+	(7, 2, 2, 1, '2020-09-20 12:08:01', '2020-09-20 12:08:07'),
+	(8, 3, 4, 1, '2020-09-20 12:10:55', '2020-09-20 12:10:55');
+/*!40000 ALTER TABLE `usergroup_permisions` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.user_data
 CREATE TABLE IF NOT EXISTS `user_data` (
@@ -577,9 +655,9 @@ CREATE TABLE IF NOT EXISTS `user_data` (
   `date_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`user_data_id`),
   KEY `user` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
 
--- Volcando datos para la tabla start_cms.user_data: ~12 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.user_data: ~17 rows (aproximadamente)
 DELETE FROM `user_data`;
 /*!40000 ALTER TABLE `user_data` DISABLE KEYS */;
 INSERT INTO `user_data` (`user_data_id`, `user_id`, `_key`, `_value`, `status`, `date_create`, `date_update`) VALUES
@@ -594,7 +672,12 @@ INSERT INTO `user_data` (`user_data_id`, `user_id`, `_key`, `_value`, `status`, 
 	(9, 2, 'direccion', 'Mara', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:43'),
 	(10, 2, 'telefono', '0412-9873920', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:46'),
 	(11, 2, 'create by', 'gerber', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:48'),
-	(12, 2, 'avatar', '300_4.jpg', 1, '2020-05-02 19:21:05', '2020-05-25 11:48:50');
+	(12, 2, 'avatar', '300_4.jpg', 1, '2020-05-02 19:21:05', '2020-05-25 11:48:50'),
+	(13, 3, 'nombre', 'Nestor', 1, '2020-09-20 19:22:31', '2020-09-20 19:22:31'),
+	(14, 3, 'apellido', 'Barroso', 1, '2020-09-20 19:22:31', '2020-09-20 19:22:31'),
+	(15, 3, 'direccion', 'Gascon 1610', 1, '2020-09-20 19:22:31', '2020-09-20 19:22:31'),
+	(16, 3, 'telefono', '1157614678', 1, '2020-09-20 19:22:31', '2020-09-20 19:22:31'),
+	(17, 3, 'create_by_id', '2', 1, '2020-09-20 19:22:31', '2020-09-20 19:22:31');
 /*!40000 ALTER TABLE `user_data` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.video

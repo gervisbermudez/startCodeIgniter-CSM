@@ -1604,6 +1604,50 @@ i.material-icons.right.remove {
   }
 }
 
+input#search::placeholder {
+  color: #fff;
+}
+
+.album .card-image {
+  .card-image-container {
+    position: relative;
+    img {
+      position: absolute;
+      left: 0;
+      -webkit-transition: opacity 1s ease-in-out;
+      -moz-transition: opacity 1s ease-in-out;
+      -o-transition: opacity 1s ease-in-out;
+      transition: opacity 1s ease-in-out;
+      height: 100%;
+      width: 100%;
+    }
+  }
+  &:hover img.top {
+    opacity: 0;
+  }
+}
+
+.files.files-selector {
+  .folder {
+    position: relative;
+    label.checkbox {
+      position: absolute;
+      right: 0px;
+      top: 10px;
+    }
+  }
+  .file.icon {
+    font-size: 30px;
+    display: flex;
+    align-content: center;
+    align-items: center;
+    height: 60px;
+    justify-content: center;
+    background: #5f6366;
+    color: #fff;
+  }
+}
+
 th.both {
   background: url("/public/img/sort_both.png") no-repeat center right;
   cursor: pointer;
