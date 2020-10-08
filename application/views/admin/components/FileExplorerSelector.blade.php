@@ -7,7 +7,7 @@
                 <div class="nav-wrapper">
                     <form>
                         <div class="input-field">
-                            <input id="search" type="search" placeholder="Buscar Archivos..." v-model="search" v-on:keyup.enter="searchfiles()">
+                            <input class="input-search" type="search" placeholder="Buscar Archivos..." v-model="search" v-on:keyup.enter="searchfiles()">
                             <label class="label-icon" for="search"><i class="material-icons">search</i></label>
                             <i class="material-icons" @click="resetSearch()">close</i>
                         </div>
