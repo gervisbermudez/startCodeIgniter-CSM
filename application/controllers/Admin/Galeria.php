@@ -38,17 +38,24 @@ class Galeria extends MY_Controller
         }
     }
 
-    public function crearalbum()
+    public function nuevo()
     {
         $data['title'] = ADMIN_TITLE . " | Nuevo Album";
         $data['h1'] = "Agregar nuevo Album";
+        $data['album_id'] = null;
+        $data['editMode'] = null;
         $data['header'] = $this->load->view('admin/header', $data, true);
-        $data['footer_includes'] = array(
-            'tinymce' => '<script src="' . base_url('public/js/tinymce/js/tinymce/tinymce.min.js') . '"></script>',
-            'tinymceinit' => "<script>tinymce.init({ selector:'textarea',  plugins : ['link table'] });</script>");
+        echo $this->blade->view("admin.galeria.new_form", $data);
+    }
 
-        echo $this->blade->view("admin.galeria.crearalbum", $data);
-
+    public function editar($album_id)
+    {
+        $data['title'] = ADMIN_TITLE . " | Editar Album";
+        $data['h1'] = "Editar Album";
+        $data['album_id'] = $album_id;
+        $data['editMode'] = "edit";
+        $data['header'] = $this->load->view('admin/header', $data, true);
+        echo $this->blade->view("admin.galeria.new_form", $data);
     }
 
 }

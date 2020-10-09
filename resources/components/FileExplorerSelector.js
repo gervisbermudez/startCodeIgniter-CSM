@@ -1,10 +1,9 @@
 Vue.component("FileExplorerSelector", {
   template: "#file-explorar-selector",
-  props: ["mode", "multiple", "filter"], //mode Can be "all", "files", "folders"
+  props: ["mode", "multiple", "filter", "modal", "ignore"], //mode Can be "all", "files", "folders"
   data: function () {
     return {
       debug: DEBUGMODE,
-      filters: null,
       selected: [],
       selectedRoot: false,
       root: "./",
@@ -233,7 +232,12 @@ Vue.component("FileExplorerSelector", {
     },
     resetSearch() {
       this.search = null;
-      this.navigateFiles(this.root);
+      var self = this;
+      if (self.filter) {
+        this.filterFiles(self.filter);
+      } else {
+        this.navigateFiles(self.root);
+      }
     },
     searchfiles() {
       if (this.search) {
@@ -275,7 +279,7 @@ Vue.component("FileExplorerSelector", {
     this.$nextTick(function () {
       var self = this;
       if (self.filter) {
-        this.filterFiles(self.filter)
+        this.filterFiles(self.filter);
       } else {
         this.navigateFiles(self.root);
       }

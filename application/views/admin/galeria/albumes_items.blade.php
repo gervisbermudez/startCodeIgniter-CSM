@@ -19,7 +19,7 @@
                 <a class='dropdown-trigger right' href='#!' :data-target='"album" + album.album_id'><i
                         class="material-icons">more_vert</i></a>
                 <ul :id='"album" + album.album_id' class='dropdown-content'>
-                    <li><a :href="base_url('admin/paginas/editar/' + album.album_id)">Editar</a></li>
+                    <li><a :href="base_url('admin/galeria/editar/' + album.album_id)">Editar</a></li>
                     <li><a href="#!" v-on:click="deletePage(album, index);">Borrar</a></li>
                     <li v-if="album.status == 2"><a :href="base_url('admin/paginas/preview?album_id=' + album.album_id)"
                             target="_blank">Preview</a></li>
@@ -206,16 +206,8 @@
         </a>
     </div>
     <!-- Modal Structure -->
-    <div id="folderSelector" class="modal">
-        <div class="modal-content">
-            <h4><i class="material-icons left">content_copy</i> Copy file</h4>
-            <file-explorer-selector :mode="'files'" filter="'images'" :multiple="true" v-on:notify="copyCallcack">
-            </file-explorer-selector>
-        </div>
-        <div class="modal-footer">
-            <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
-        </div>
-    </div>
+    <file-explorer-selector :modal="'folderSelector'" :mode="'files'" filter="'images'" :multiple="true" v-on:notify="copyCallcack">
+    </file-explorer-selector>
 </div>
 @include('admin.components.FileExplorerSelector')
 

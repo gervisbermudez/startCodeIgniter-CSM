@@ -111,7 +111,7 @@
                         <a class="waves-effect" href="{{ base_url('admin/galeria') }}"> Todos</a>
                     </li>
                     <li>
-                        <a href="{{ base_url('admin/galeria/crearalbum/') }}">Nuevo Album</a>
+                        <a href="{{ base_url('admin/galeria/nuevo/') }}">Nuevo Album</a>
                     </li>
                 </ul>
             </div>

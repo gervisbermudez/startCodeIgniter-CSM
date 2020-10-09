@@ -396,25 +396,10 @@
         </div>
     </div>
     <!-- Modal Structure -->
-    <div id="folderSelectorMove" class="modal">
-       <div class="modal-content">
-            <h4><i class="material-icons left">content_cut</i> Move file</h4>
-           <file-explorer-selector :mode="'folders'" :multiple="false" v-on:notify="moveCallcack"></file-explorer-selector>
-       </div>
-        <div class="modal-footer">
-            <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
-        </div>
-    </div>
+        <file-explorer-selector :modal="'folderSelectorMove'" :mode="'folders'" :multiple="false" v-on:notify="moveCallcack"></file-explorer-selector>
     <!-- Modal Structure -->
-    <div id="folderSelectorCopy" class="modal">
-       <div class="modal-content">
-            <h4><i class="material-icons left">content_copy</i> Copy file</h4>
-           <file-explorer-selector :mode="'folders'" :multiple="false" v-on:notify="copyCallcack"></file-explorer-selector>
-       </div>
-        <div class="modal-footer">
-            <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
-        </div>
-    </div>
+        <file-explorer-selector :modal="'folderSelectorCopy'" :mode="'folders'" :multiple="false" v-on:notify="copyCallcack"></file-explorer-selector>
+
 </div>
 <!-- Modal Structure -->
 <div id="uploaderModal" class="modal bottom-sheet">

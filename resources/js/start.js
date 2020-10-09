@@ -49,6 +49,12 @@ var mixins = {
       }
       return result;
     },
+    getFullFileName(file) {
+      return file.file_name + "." + file.file_type;
+    },
+    getFullFilePath(file) {
+      return BASEURL + file.file_path + this.getFullFileName(file);
+    },
     getSortData(strPropertyName) {
       if (this.orderDataConf.strPropertyName == strPropertyName) {
         return "sort_desc";
@@ -340,18 +346,14 @@ class ExplorerFile {
   }
 
   get_filename = () => {
-    try {
-      return this.file_name + "." + this.file_type;
-    } catch (error) {
-      return "";
-    }
+    return this.file_name + "." + this.file_type;
   };
 
-  getFullFilePath = () => {
+  get_full_file_path = () => {
     return BASEURL + this.file_path + this.get_filename();
   };
 
-  getFullSharePath = () => {
+  get_full_share_path = () => {
     return BASEURL + this.share_link;
   };
 }

@@ -92,9 +92,11 @@ class File extends MY_Model
     {
         $this->db->select('*');
         $this->db->from($this->table);
-        $this->db->where_in($column, $filters);
+        $this->db->like($column, $filters[0]);
+        for ($i=1; $i < count($filters); $i++) { 
+            $this->db->or_like($column, $filters[$i]);
+        }
         $query = $this->db->get();
-
         if ($query->num_rows() > 0) {
             return $query->result_array();
         }

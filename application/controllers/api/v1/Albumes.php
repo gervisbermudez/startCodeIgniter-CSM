@@ -79,14 +79,9 @@ class Albumes extends REST_Controller
         $form = new FormValidator();
 
         $config = array(
-            array('field' => 'title', 'label' => 'title', 'rules' => 'required|min_length[5]'),
-            array('field' => 'path', 'label' => 'path', 'rules' => 'required|min_length[5]'),
-            array('field' => 'content', 'label' => 'content', 'rules' => 'required|min_length[5]'),
-            array('field' => 'page_type_id', 'label' => 'page_type_id', 'rules' => 'integer|is_natural_no_zero'),
-            array('field' => 'categorie_id', 'label' => 'categorie_id', 'rules' => 'integer|is_natural'),
-            array('field' => 'subcategorie_id', 'label' => 'subcategorie_id', 'rules' => 'integer|is_natural'),
-            array('field' => 'status', 'label' => 'status', 'rules' => 'required|integer|is_natural_no_zero'),
-            array('field' => 'visibility', 'label' => 'visibility', 'rules' => 'integer|is_natural_no_zero'),
+            array('field' => 'name', 'label' => 'name', 'rules' => 'required|min_length[5]'),
+            array('field' => 'description', 'label' => 'description', 'rules' => 'required|min_length[5]'),
+            array('field' => 'status', 'label' => 'status', 'rules' => 'required|integer'),
         );
 
         $form->set_rules($config);
@@ -102,29 +97,34 @@ class Albumes extends REST_Controller
             return;
         }
 
-        $page = new Album();
-        $this->input->post('album_id') ? $page->find($this->input->post('album_id')) : false;
-        $page->title = $this->input->post('title');
-        $page->subtitle = $this->input->post('subtitle');
-        $page->path = $this->input->post('path');
-        $page->content = $this->input->post('content');
-        $page->user_id = userdata('user_id');
-        $page->page_type_id = $this->input->post('page_type_id');
-        $page->status = $this->input->post('status');
-        $page->template = $this->input->post('template');
-        $page->layout = $this->input->post('layout');
-        $page->date_publish = $this->input->post('publishondate') == 'true' ? date("Y-m-d H:i:s") : $this->input->post('date_publish');
-        $page->date_create = date("Y-m-d H:i:s");
-        $page->visibility = $this->input->post('visibility');
-        $page->categorie_id = $this->input->post('categorie_id');
-        $page->subcategorie_id = $this->input->post('subcategorie_id');
-        $page->mainImage = $this->input->post('mainImage') ? $this->input->post('mainImage') : null;
-        $page->{"page_data"} = $this->input->post('page_data');
+        $album = new Album();
+        $this->input->post('album_id') ? $album->find($this->input->post('album_id')) : false;
+        $album->name = $this->input->post('name');
+        $album->description = $this->input->post('description');
+        $album->user_id = userdata('user_id');
+        $album->status = $this->input->post('status');
+        $album->date_publish = $this->input->post('date_publish') ? $this->input->post('date_publish') : date("Y-m-d H:i:s");
+        $album->date_create = date("Y-m-d H:i:s");
 
-        if ($page->save()) {
+        if ($album->save()) {
+
+            $album_items = $this->input->post("album_items");
+            $this->load->model('Admin/Album_items');
+            foreach ($album_items as $value) {
+               $item = new Album_items();
+               $value['album_item_id'] ? $item->find($value['album_item_id']) : false;
+               $item->album_id = $album->album_id;
+               $item->file_id = $value['file_id'];
+               $item->name = $value['name'];
+               $item->description = $value['description'];
+               $item->status = $value['status'];
+               $item->date_create = date("Y-m-d H:i:s");
+               $item->save();
+            }
+
             $response = array(
                 'code' => REST_Controller::HTTP_OK,
-                'data' => $page,
+                'data' => $album,
             );
 
             $this->response($response, REST_Controller::HTTP_OK);
@@ -180,102 +180,31 @@ class Albumes extends REST_Controller
         }
     }
 
-    public function types_get()
+    /**
+     * Get All Data from this method.
+     *
+     * @return Response
+     */
+    public function delete_album_item_get($item_album_id)
     {
-        $this->load->model('Admin/Page_type');
-
-        $page_type = new Page_type();
-        $result = $page_type->all();
-
-        if ($result) {
+        $this->load->model('Admin/Album_items');
+        $album_items = new Album_items();
+        $album_items->find($item_album_id);
+        if ($album_items->delete()) {
             $response = array(
-                'code' => 200,
-                'data' => $result,
+                'code' => REST_Controller::HTTP_OK,
+                'data' => $album_items,
             );
             $this->response($response, REST_Controller::HTTP_OK);
             return;
-        }
-
-        $response = array(
-            'code' => REST_Controller::HTTP_NOT_FOUND,
-            "error_message" => lang('not_found_error'),
-            'data' => [],
-        );
-        $this->response($response, REST_Controller::HTTP_NOT_FOUND);
-
-    }
-
-    public function templates_get()
-    {
-        $this->load->helper('directory');
-        $layouts = directory_map('./application/views/site/layouts', 1);
-        $templates = directory_map('./application/views/site/templates', 1);
-
-        $response = array(
-            'code' => REST_Controller::HTTP_OK,
-            'data' => [
-                'layouts' => $layouts ? $layouts : [],
-                'templates' => $templates ? $templates : [],
-            ]
-        );
-
-        $this->response($response, REST_Controller::HTTP_OK);
-
-    }
-
-    public function editpageinfo_get($album_id = false)
-    {
-        $this->load->model('Admin/Page_type');
-        $this->load->helper('directory');
-
-        $page = new Album();
-        $result = false;
-
-        if ($album_id) {
-            $result = $page->find($album_id);
-        }
-
-        if (!$result) {
+        } else {
             $response = array(
                 'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
+                'error_message' => lang('not_found_error'),
+                'data' => $_POST,
             );
             $this->response($response, REST_Controller::HTTP_NOT_FOUND);
-            return;
         }
-
-        //Types
-        $page_type = new Page_type();
-        $page_types = $page_type->all();
-
-        if (!$page_types) {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
-            $this->response($response, REST_Controller::HTTP_NOT_FOUND);
-            return;
-        }
-
-        //Templates
-
-        $layouts = directory_map('./application/views/site/layouts', 1);
-        $templates = directory_map('./application/views/site/templates', 1);
-
-        $response = array(
-            'code' => 200,
-            'data' => array(
-                'page' => $page,
-                'page_types' => $page_types,
-                'layouts' => $layouts ? $layouts : [],
-                'templates' => $templates ? $templates : [],
-            ),
-        );
-
-        $this->response($response, REST_Controller::HTTP_OK);
-        return;
     }
 
 }
