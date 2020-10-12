@@ -14,9 +14,6 @@
 				<i class="material-icons arrow right" v-show="show_arrow">keyboard_arrow_right</i>
 			</div>
 			<div class="collapsible-body" :class="{ 'collapsible-body-hidden': !show_body}" v-show="show_body">
-
-
-
 				<span class="current"><b>@{{configuration.config_value}}</b></span>
 				<br />
 				<div v-if="handle_value_as == 'select' && (typeof configuration.config_data.perm_values == 'object')">

@@ -6,6 +6,7 @@ body {
   overflow-x: hidden;
   font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
   background: #f9f9f9;
+  color: #444;
 }
 
 .material-icons {
@@ -1374,8 +1375,38 @@ div#dropnotify {
   color: #ffffffde;
 }
 
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
+.configuration-root {
+  .card-panel {
+    display: block;
+    cursor: pointer;
+  }
+}
+
+input.input-search::placeholder {
+  color: #fff;
+}
+
 .configurations {
   margin-top: 20px;
+}
+
+.configuration-root {
+  .config-card {
+    .info {
+      padding-top: 44px;
+      label {
+        color: #fff;
+      }
+    }
+  }
 }
 
 .collapsible.configuration-component + .configuration-component {
