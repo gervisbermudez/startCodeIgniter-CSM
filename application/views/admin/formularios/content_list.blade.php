@@ -27,7 +27,7 @@
         <div class="nav-wrapper">
             <form>
                 <div class="input-field">
-                    <input id="search" type="search" placeholder="Buscar..." v-model="filter">
+                    <input class="input-search" type="search" placeholder="Buscar..." v-model="filter">
                     <label class="label-icon" for="search"><i class="material-icons">search</i></label>
                     <i class="material-icons" v-on:click="resetFilter();">close</i>
                 </div>
@@ -151,7 +151,7 @@
     </div>
 </div>
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Nuevo Formulario" href="{{base_url('admin/formularios/new')}}">
+    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Nuevo Formulario" href="{{base_url('admin/formularios/nuevo')}}">
         <i class="large material-icons">add</i>
     </a>
 </div>

@@ -24,8 +24,6 @@ gulp.task('concat_widgets', function () {
         .pipe(gulp.dest(public + '/js/components/'));
 });
 
-
-
 gulp.task('compress_js_components', function () {
     return gulp.src(resources + 'components/*.js')
         .pipe(rename(function (path) {
@@ -67,16 +65,6 @@ gulp.task('compile_sass', function () {
 
 gulp.task('task_series', gulp.series('compress_js', 'compress_js_components', 'compile_sass'));
 
-gulp.task("watch_resources", function () {
-    gulp.watch([resources + '**/*.js', resources + '**/*.scss', '!' + resources + 'components/*.scss'], gulp.series('task_series'));
-});
-
-gulp.task('widget_task_series', gulp.series('concat_widgets', 'compile_sass'));
-
-gulp.task("watch_widget", function () {
-    gulp.watch([resources + '**/*.js', resources + 'components/dashboardModule.js', resources + '**/*.scss', '!' + resources + 'components/*.scss'], gulp.series('widget_task_series'));
-});
-
 gulp.task('concat_form_components', function () {
     return gulp.src(
         [
@@ -112,6 +100,16 @@ gulp.task('concat_form_content_components', function () {
 });
 
 gulp.task('form_task_series', gulp.series('concat_form_components', 'concat_form_content_components'));
+
+gulp.task("watch_resources", function () {
+    gulp.watch([resources + '**/*.js', resources + '**/*.scss', '!' + resources + 'components/*.scss'], gulp.series('task_series'));
+});
+
+gulp.task('widget_task_series', gulp.series('concat_widgets', 'compile_sass'));
+
+gulp.task("watch_widget", function () {
+    gulp.watch([resources + '**/*.js', resources + 'components/dashboardModule.js', resources + '**/*.scss', '!' + resources + 'components/*.scss'], gulp.series('widget_task_series'));
+});
 
 gulp.task("watch_form", function () {
     gulp.watch([resources + 'components/FormNewModule.js', resources + 'components/FormContentNewModule.js', resources + '**/*.scss', '!' + resources + 'components/*.scss'], gulp.series('form_task_series'));

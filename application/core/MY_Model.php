@@ -332,15 +332,22 @@ class MY_model extends CI_Model implements JsonSerializable
     public function search_for_data($primaryKey, $primaryKeyFieldName)
     {
         $table_data_name = $this->table . '_data';
-        $sql = "SELECT d." . $primaryKeyFieldName . ", CONCAT('{', GROUP_CONCAT('\"', d._key, '\"', ':', '\"', d._value, '\"'), '}')
-				AS `data` FROM " . $table_data_name . " d
-				WHERE " . $primaryKeyFieldName . " = $primaryKey
-				GROUP BY " . $primaryKeyFieldName;
-        $table_data = $this->get_query($sql);
-        if ($table_data) {
-            $table_data = json_decode($table_data->first()->data);
+
+        $this->db->where(array($primaryKeyFieldName => $primaryKey));
+        $query = $this->db->get($table_data_name);
+        if ($query->num_rows() > 0) {
+            $table_data = new Collection($query->result());
         }
-        return $table_data ? $table_data : [];
+        $temp_array = [];
+        foreach ($table_data as $value) {
+            $decode_value = json_decode($value->{"_value"});
+            if (gettype($decode_value) == "object" || gettype($decode_value) == "array") {
+                $temp_array[$value->{"_key"}] = $decode_value;
+            } else {
+                $temp_array[$value->{"_key"}] = $value->{"_value"};
+            }
+        }
+        return $temp_array ? $temp_array : [];
     }
 
     public function created_data()
@@ -349,15 +356,21 @@ class MY_model extends CI_Model implements JsonSerializable
         $foreing_id = $this->{$this->primaryKey};
         $data = $this->{$table_data_name} ? $this->{$table_data_name} : [];
         foreach ($data as $key => $value) {
+
+            if (gettype($value) == "object" || gettype($value) == "array") {
+                $value = json_encode($value);
+            }
+
             $insert = array(
                 $this->primaryKey => $foreing_id,
                 '_key' => $key,
                 '_value' => $value,
                 'status' => 1,
             );
+
             $this->db->insert($table_data_name, $insert);
+
         }
-        $this->find($this->user_id);
     }
 
     public function updated_data()
@@ -366,12 +379,30 @@ class MY_model extends CI_Model implements JsonSerializable
         $data = $this->{$table_data_name};
         $foreing_id = $this->{$this->primaryKey};
         foreach ($data as $key => $value) {
+            $val = $value;
+            if (gettype($value) == "object" || gettype($value) == "array") {
+                $val = json_encode($value);
+            }
             $update = array(
-                '_value' => $value,
+                '_value' => $val,
             );
             $where = array($this->primaryKey => $foreing_id, '_key' => $key);
             $this->db->where($where);
-            $this->db->update($table_data_name, $update);
+            $query = $this->db->get($table_data_name);
+            if ($query->num_rows() > 0) {
+                $this->db->where($where);
+                $this->db->update($table_data_name, $update);
+            } else {
+                //Try insert if not exit previously
+                $insert = array(
+                    $this->primaryKey => $foreing_id,
+                    '_key' => $key,
+                    '_value' => $val,
+                    'status' => 1,
+                );
+
+                $this->db->insert($table_data_name, $insert);
+            }
         }
     }
 

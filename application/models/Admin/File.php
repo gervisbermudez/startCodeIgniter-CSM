@@ -1,17 +1,6 @@
 <?php
-/**
- * The Files model
- */
 
-function filter_dir($dir)
-{
-    if ($dir == '.' || $dir == '..' || $dir == 'node_modules\\') {
-        return false;
-    }
-    return true;
-}
-
-class Files_model extends MY_Model
+class File extends MY_Model
 {
     public $table = 'file';
     public $root_dir = './';
@@ -23,30 +12,44 @@ class Files_model extends MY_Model
         'file_front_path' => 'getFileFrontPath',
         'file_full_name' => 'getFileFullName',
     );
+    public $exclude_folders = array(
+        '.',
+        '..',
+        'node_modules\\',
+        'vendor\\',
+        'startCodeIgniter-CSM-master\\',
+        'application\\',
+        'bin\\',
+        '.vscode\\',
+        'resources\\',
+    );
+
+    public $exclude_file_types = array(
+        "bladec",
+        "aspx",
+        "aspx.cs",
+    );
 
     public function __construct()
     {
         parent::__construct();
         $this->load->helper('directory');
-        $this->load->helper('string');
-
+        $this->load->model('Admin/Site_config');
     }
 
     public function map_files()
     {
         $directorio = directory_map($this->current_dir . $this->current_folder);
-        unset($directorio['node_modules\\']);
-        unset($directorio['vendor\\']);
-
-        $this->delete_data(array('status' => 1), $this->table);
+        foreach ($this->exclude_folders as $value) {
+            unset($directorio[$value]);
+        }
         $curdir = $this->current_dir . $this->current_folder;
         $this->save_dir($directorio, $curdir);
-        $this->load->model('Admin/Site_config');
 
-        if (!$this->Site_config->get_data(array('config_name' => 'map_dir', 'config_value' => $this->current_dir), 'site_config')) {
-            return $this->Site_config->update_data(array('config_name' => 'map_dir'), array('config_value' => $this->current_dir), 'site_config');
+        if (!$this->Site_config->get_data(array('config_name' => 'LAST_UPDATE_FILEMANAGER'), 'site_config')) {
+            return $this->Site_config->update_data(array('config_name' => 'LAST_UPDATE_FILEMANAGER'), array('config_value' => date("Y-m-d H:i:s")), 'site_config');
         } else {
-            return $this->Site_config->set_data(array('config_name' => 'map_dir', 'config_value' => $this->current_dir, 'user_id' => 0), 'site_config');
+            return $this->Site_config->set_data(array('config_name' => 'LAST_UPDATE_FILEMANAGER', 'config_value' => date("Y-m-d H:i:s")), 'site_config');
         }
     }
 
@@ -76,19 +79,24 @@ class Files_model extends MY_Model
         } else {
             $insert_array = $this->get_array_save_file($value, $dir);
         }
-        if (!$this->get_data(array('file_name' => $insert_array['file_name'], 'file_path' => $insert_array['file_path']), $this->table, '', '')) {
-            $this->set_data($insert_array, $this->table);
+        
+        if(!in_array($insert_array["file_type"], $this->exclude_file_types)){
+            $result = $this->get_data(array('file_name' => $insert_array['file_name'], 'file_path' => $insert_array['file_path']), "1");
+            if (!$result) {
+                $this->set_data($insert_array, $this->table);
+            }
         }
-
     }
 
     public function get_filter_files($column, $filters)
     {
         $this->db->select('*');
         $this->db->from($this->table);
-        $this->db->where_in($column, $filters);
+        $this->db->like($column, $filters[0]);
+        for ($i=1; $i < count($filters); $i++) { 
+            $this->db->or_like($column, $filters[$i]);
+        }
         $query = $this->db->get();
-
         if ($query->num_rows() > 0) {
             return $query->result_array();
         }

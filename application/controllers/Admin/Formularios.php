@@ -15,14 +15,14 @@ class Formularios extends MY_Controller
     {
         $data['title'] = ADMIN_TITLE . " | Formularios";
         $data['h1'] = "Formularios";
-        $data['header'] = $this->load->view('admin/header', $data, true);
         echo $this->blade->view("admin.formularios.formularios_list", $data);
     }
 
-    public function new () {
+    public function nuevo()
+    {
         $data['base_url'] = $this->config->base_url();
         $data['title'] = ADMIN_TITLE . " | Formularios";
-        $data['header'] = $this->load->view('admin/header', $data, true);
+        $data['h1'] = "Nuevo formulario";
         echo $this->blade->view("admin.formularios.new", $data);
     }
 

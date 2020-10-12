@@ -1,0 +1,50 @@
+@import "components/palette";
+
+$headerHeight: 280px;
+
+.main-navbar {
+  box-shadow: none;
+}
+
+.main::before {
+  content: "";
+  width: 100%;
+  height: $headerHeight;
+  display: block;
+  background-color: #646b7f;
+}
+
+.container {
+  padding: 0px;
+  width: auto;
+  max-width: none;
+}
+
+.header {
+  position: absolute;
+  top: 70px;
+  width: auto;
+  padding: 0 10px;
+
+  & * {
+    color: #fff;
+    font-weight: 300;
+    font-size: 16px;
+  }
+  .page-header {
+    font-size: 30px;
+    font-weight: 600;
+  }
+  .page-subheader {
+    font-weight: 200;
+    font-size: 15px;
+    margin: 15px 0px;
+    display: inline-block;
+  }
+  .collection-item.avatar {
+    background: none;
+  }
+  .collection.form-user-component.user-info-inline {
+    margin: 10px 0px 0px;
+  }
+}

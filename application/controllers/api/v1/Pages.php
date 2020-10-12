@@ -54,13 +54,13 @@ class Pages extends REST_Controller
             return;
         }
 
-        if($page_id){
+        if ($page_id) {
             $response = array(
                 'code' => REST_Controller::HTTP_NOT_FOUND,
                 "error_message" => lang('not_found_error'),
                 'data' => [],
             );
-        }else{
+        } else {
             $response = array(
                 'code' => REST_Controller::HTTP_OK,
                 'data' => [],
@@ -120,7 +120,8 @@ class Pages extends REST_Controller
         $page->categorie_id = $this->input->post('categorie_id');
         $page->subcategorie_id = $this->input->post('subcategorie_id');
         $page->mainImage = $this->input->post('mainImage') ? $this->input->post('mainImage') : null;
-        $page->page_data = array();
+        $page->{"page_data"} = $this->input->post('page_data');
+
         if ($page->save()) {
             $response = array(
                 'code' => REST_Controller::HTTP_OK,
@@ -218,12 +219,12 @@ class Pages extends REST_Controller
                 'templates' => $templates ? $templates : [],
             ]
         );
-        
+
         $this->response($response, REST_Controller::HTTP_OK);
-        
+
     }
 
-    public function editpageinfo_get($page_id)
+    public function editpageinfo_get($page_id = false)
     {
         $this->load->model('Admin/Page_type');
         $this->load->helper('directory');
@@ -235,7 +236,7 @@ class Pages extends REST_Controller
             $result = $page->find($page_id);
         }
 
-        if(!$result){
+        if (!$result) {
             $response = array(
                 'code' => REST_Controller::HTTP_NOT_FOUND,
                 "error_message" => lang('not_found_error'),
@@ -249,7 +250,7 @@ class Pages extends REST_Controller
         $page_type = new Page_type();
         $page_types = $page_type->all();
 
-        if(!$page_types){
+        if (!$page_types) {
             $response = array(
                 'code' => REST_Controller::HTTP_NOT_FOUND,
                 "error_message" => lang('not_found_error'),
@@ -262,18 +263,18 @@ class Pages extends REST_Controller
         //Templates
 
         $layouts = directory_map('./application/views/site/layouts', 1);
-        $templates = directory_map('./application/views/site/templates', 1);        
-        
+        $templates = directory_map('./application/views/site/templates', 1);
+
         $response = array(
             'code' => 200,
             'data' => array(
-                'page'          => $page,
-                'page_types'    => $page_types,
+                'page' => $page,
+                'page_types' => $page_types,
                 'layouts' => $layouts ? $layouts : [],
                 'templates' => $templates ? $templates : [],
             ),
         );
-        
+
         $this->response($response, REST_Controller::HTTP_OK);
         return;
     }

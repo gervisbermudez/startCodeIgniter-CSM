@@ -1,3 +1,5 @@
+var runningAutoSave = false;
+
 var PageNewForm = new Vue({
   el: "#root",
   data: {
@@ -42,7 +44,76 @@ var PageNewForm = new Vue({
     pageTypes: [],
     categories: [],
     subcategories: [],
+    page_data: {
+      title: "",
+    },
+    customMetas: [],
+    metas: [
+      {
+        name: "author",
+        content: new User(
+          JSON.parse(localStorage.getItem("userdata"))
+        ).get_fullname(),
+      },
+      {
+        name: "keywords",
+        content: "",
+      },
+      {
+        name: "description",
+        content: "",
+      },
+      {
+        name: "ROBOTS",
+        content: "NOODP",
+      },
+      {
+        name: "GOOGLEBOT",
+        content: "INDEX, FOLLOW",
+      },
+      {
+        property: "og:title",
+        content: "",
+      },
+      {
+        property: "og:description",
+        content: "",
+      },
+      {
+        property: "og:site_name",
+        content: SITE_TITLE,
+      },
+      {
+        property: "og:url",
+        content: "",
+      },
+      {
+        property: "og:image",
+        content: "",
+      },
+      {
+        property: "og:type",
+        content: "article",
+      },
+      {
+        property: "twitter:card",
+        content: "summary",
+      },
+      {
+        property: "twitter:title",
+        content: "",
+      },
+      {
+        property: "twitter:description",
+        content: "",
+      },
+      {
+        property: "twitter:image",
+        content: "",
+      },
+    ],
   },
+  mixins: [mixins],
   computed: {
     btnEnable: function () {
       let enable =
@@ -98,6 +169,31 @@ var PageNewForm = new Vue({
     },
   },
   methods: {
+    addCustomMeta() {
+      this.customMetas.push({
+        name: "",
+        content: "",
+      });
+    },
+    removeMeta(index, is_custom = true) {
+      if (is_custom) {
+        this.customMetas.splice(index, 1);
+      } else {
+        this.metas.splice(index, 1);
+      }
+    },
+    setMetaContent(strValue, strProperty, index) {
+      if (index !== undefined) {
+        this.metas[index].content = strValue;
+        return;
+      }
+      this.metas = this.metas.map((meta) => {
+        if (meta.property == strProperty || meta.name == strProperty) {
+          meta.content = strValue;
+        }
+        return meta;
+      });
+    },
     getPathSegments() {
       /**
        * url path:
@@ -124,10 +220,22 @@ var PageNewForm = new Vue({
       let pagePath = this.path;
       return [type, categorie, subcategorie, pagePath];
     },
+    onChangeTitle(title) {
+      this.page_data.title = title;
+      this.setMetaContent(title, "og:title");
+      this.setMetaContent(title, "twitter:title");
+      this.setMetaContent(title, "keywords");
+    },
     autoSave() {
       if (!this.status) {
-        this.runSaveData();
-        this.debug ? console.log("running autosave...") : null;
+        if (!runningAutoSave) {
+          runningAutoSave = true;
+          setTimeout(() => {
+            this.runSaveData();
+            this.debug ? console.log("running autosave...") : null;
+            runningAutoSave = false;
+          }, 3000);
+        }
       }
     },
     removeImage(index) {
@@ -147,6 +255,7 @@ var PageNewForm = new Vue({
     setPath(value) {
       let slug = this.string_to_slug(value);
       this.path = slug;
+      this.setMetaContent(BASEURL + slug, "og:url");
     },
     string_to_slug: function (str) {
       if (str.length == 0) return "";
@@ -258,7 +367,23 @@ var PageNewForm = new Vue({
         categorie_id: this.categorie_id || 0,
         subcategorie_id: this.subcategorie_id || 0,
         mainImage: this.getMainImagenPath,
+        page_data: {
+          tags: this.getPageTags(),
+          title: this.page_data.title,
+          footer_includes: this.page_data.footer_includes,
+          headers_includes: this.page_data.headers_includes,
+          meta: [...this.metas, ...this.customMetas],
+        },
       };
+    },
+    getPageTags() {
+      let tags = [];
+      const instance = M.Chips.getInstance(document.getElementById("pageTags"))
+        .chipsData;
+      instance.forEach((element) => {
+        tags.push(element.tag);
+      });
+      return tags;
     },
     getTemplates() {
       var self = this;
@@ -400,15 +525,13 @@ var PageNewForm = new Vue({
         var self = this;
         self.editMode = true;
         var url = BASEURL + "api/v1/pages/editpageinfo/" + page_id;
-        $.ajax({
-          type: "GET",
-          url: url,
-          data: {},
-          dataType: "json",
-          success: function (response) {
+        fetch(url)
+          .then((response) => response.json())
+          .then((response) => {
             self.loader = false;
             self.debug ? console.log(url, response) : null;
             if (response.code == 200) {
+              alert;
               self.form.fields.title.value = response.data.page.title;
               self.form.fields.subtitle.value = response.data.page.subtitle;
               self.page_id = response.data.page.page_id;
@@ -421,6 +544,20 @@ var PageNewForm = new Vue({
               self.subcategories_id = response.data.page.subcategories_id || 0;
               self.pageTypes = response.data.page_types;
               self.page_type_id = response.data.page.page_type_id;
+              self.page_data = response.data.page.page_data;
+              const instance = M.Chips.getInstance(
+                document.getElementById("pageTags")
+              );
+              self.page_data.tags
+                ? self.page_data.tags.forEach((element) => {
+                    instance.addChip({
+                      tag: element,
+                    });
+                  })
+                : null;
+              response.data.page.page_data.meta
+                ? (self.metas = response.data.page.page_data.meta)
+                : null;
               self.user = new User(response.data.page.user);
               if (response.data.page.main_image) {
                 self.mainImage.push(response.data.page.main_image);
@@ -443,28 +580,38 @@ var PageNewForm = new Vue({
             setTimeout(() => {
               M.updateTextFields();
             }, 1000);
-          },
-          error: function (error) {
+          })
+          .catch((response) => {
             M.toast({ html: response.responseJSON.error_message });
             self.loader = false;
-          },
-        });
+          });
       } else {
         this.getPageTypes();
         this.getTemplates();
       }
     },
     initPlugins() {
+      M.Chips.init(document.getElementById("pageTags"), {});
       tinymce.init({
-        selector: "textarea",
+        selector: "#id_cazary",
         plugins: ["link table code"],
-        setup: function (editor) {
-          editor.on("Change", function (e) {
+        setup: (editor) => {
+          editor.on("Change", (e) => {
             PageNewForm.content = tinymce.editors["id_cazary"].getContent();
+            let content = this.getcontentText(PageNewForm.content, 200);
+            content = content.replace(/(\r\n|\n|\r)/gm, "");
+            this.setMetaContent(content, "description");
+            this.setMetaContent(content, "og:description");
+            this.setMetaContent(content, "twitter:description");
           });
         },
       });
       setTimeout(() => {
+        M.Tabs.init(document.getElementById("formTabs"), {});
+        var elems = document.getElementById("pageMetas");
+        var instances = M.Collapsible.init(elems, {
+          accordion: false,
+        });
         var elems = document.querySelectorAll(".datepicker");
         M.Datepicker.init(elems, {
           format: "yyyy-mm-dd",

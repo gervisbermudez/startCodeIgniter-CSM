@@ -85,18 +85,11 @@
 				</div>
 			</div>
 			<div class="col s12" v-bind:class="{'m2': user_id}" v-cloak v-if="user_id"  v-show="!loader">
+			<span class="header grey-text text-darken-2">Adicional <i class="material-icons left">description</i></span>
 				<p>
 					<b>Creado por</b>:
+					<user-info :user="user" />
 				</p>
-				<ul class="collection form-user-component">
-					<li class="collection-item avatar">
-						<a :href="user.get_profileurl()">
-							<img :src="user.get_avatarurl()" alt="" class="circle">
-							<span class="title">@{{user.get_fullname()}}</span>
-							<p>@{{user.usergroup.name}}</p>
-						</a>
-					</li>
-				</ul>
 				<p>
 					<b>Creado</b>: <br>
 					<span>@{{date_create}}</span> <br><br>
@@ -110,7 +103,7 @@
 					<span>@{{parent.name}}</span> <br><br>
 				</p>
 				<p v-if="subcategories.length">
-					<b>Subcategorias:</b>: <br>
+					<b>Subcategorias:</b> <br>
 					<div v-for="categorie in subcategories" :key="categorie.id">
 						<span>• @{{ categorie.name }}</span>
 					</div>

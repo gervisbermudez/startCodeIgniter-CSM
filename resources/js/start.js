@@ -7,6 +7,23 @@ jQuery(document).ready(function ($) {
   });
 
   $(".sidenav").niceScroll();
+
+  $("#darkmode-switch").change(function (e) {
+    e.preventDefault();
+    $("html").toggleClass("dark-mode");
+    if ($(this).is(":checked")) {
+      localStorage.setItem("dark-mode", "dark-mode");
+    } else {
+      localStorage.removeItem("dark-mode", "dark-mode");
+    }
+  });
+
+  $("#darkmode-switch").prop("checked", false);
+
+  if (localStorage.getItem("dark-mode")) {
+    $("html").toggleClass("dark-mode");
+    $("#darkmode-switch").prop("checked", true);
+  }
 });
 
 var mixins = {
@@ -18,8 +35,69 @@ var mixins = {
     },
   },
   methods: {
+    searchInObject(object, strSearchTerm) {
+      var keys = Object.keys(object);
+      var result = false;
+      for (var i = 0; i < keys.length; i++) {
+        if (typeof object[keys[i]] == "string") {
+          item_val = object[keys[i]];
+          result = item_val.toLowerCase().indexOf(strSearchTerm) != -1;
+          if (result) {
+            break;
+          }
+        }
+      }
+      return result;
+    },
+    getFullFileName(file) {
+      return file.file_name + "." + file.file_type;
+    },
+    getFullFilePath(file) {
+      return BASEURL + file.file_path + this.getFullFileName(file);
+    },
+    getSortData(strPropertyName) {
+      if (this.orderDataConf.strPropertyName == strPropertyName) {
+        return "sort_desc";
+      }
+      if (this.orderDataConf.strPropertyName == "-" + strPropertyName) {
+        return "sort_asc";
+      }
+      return "both";
+    },
+    sortData(strPropertyName, array) {
+      strPropertyName =
+        this.orderDataConf.strPropertyName == null
+          ? strPropertyName
+          : this.orderDataConf.strPropertyName == strPropertyName
+          ? "-" + strPropertyName
+          : strPropertyName;
+      let sorted = array.sort(this.dynamicSort(strPropertyName));
+      this.orderDataConf.strPropertyName = strPropertyName;
+      array = sorted;
+    },
+    dynamicSort(property) {
+      var sortOrder = 1;
+      if (property[0] === "-") {
+        sortOrder = -1;
+        property = property.substr(1);
+      }
+      return function (a, b) {
+        /* next line works with strings and numbers,
+         * and you may want to customize it to your needs
+         */
+        var result =
+          a[property] < b[property] ? -1 : a[property] > b[property] ? 1 : 0;
+        return result * sortOrder;
+      };
+    },
     base_url: function (path) {
       return BASEURL + path;
+    },
+    getcontentText: function (html, length = 120) {
+      var span = document.createElement("span");
+      span.innerHTML = html;
+      let text = span.textContent || span.innerText;
+      return text.substring(0, length) + "...";
     },
     makeid: function (length) {
       var result = "";
@@ -160,9 +238,9 @@ class User {
   }
 
   get_fullname = () => {
-    try {
+    if (this.user_data.nombre && this.user_data.apellido) {
       return this.user_data.nombre + " " + this.user_data.apellido;
-    } catch (error) {
+    } else {
       return "";
     }
   };
@@ -172,16 +250,16 @@ class User {
   };
 
   get_avatarurl = () => {
-    try {
+    if (this.user_data.avatar) {
       return (
         BASEURL +
-        "/public/img/profile/" +
+        "public/img/profile/" +
         this.username +
         "/" +
         this.user_data.avatar
       );
-    } catch (error) {
-      return "";
+    } else {
+      return BASEURL + "public/img/profile/default.png";
     }
   };
 }
@@ -268,18 +346,14 @@ class ExplorerFile {
   }
 
   get_filename = () => {
-    try {
-      return this.file_name + "." + this.file_type;
-    } catch (error) {
-      return "";
-    }
+    return this.file_name + "." + this.file_type;
   };
 
-  getFullFilePath = () => {
+  get_full_file_path = () => {
     return BASEURL + this.file_path + this.get_filename();
   };
 
-  getFullSharePath = () => {
+  get_full_share_path = () => {
     return BASEURL + this.share_link;
   };
 }
@@ -323,3 +397,18 @@ if ("serviceWorker" in navigator) {
     });
   });
 }
+
+Vue.component("userInfo", {
+  template: `
+  <div class="collection form-user-component user-info-inline">
+    <div class="collection-item avatar">
+      <a :href="user.get_profileurl()">
+        <img :src="user.get_avatarurl()" alt="" class="circle profile-img">
+        <span class="title">{{user.get_fullname()}}</span>
+        <div>{{user.usergroup.name}}</div>
+      </a>
+    </div>
+  </div>
+  `,
+  props: ["user"],
+});

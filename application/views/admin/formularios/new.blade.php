@@ -2,29 +2,33 @@
 
 @section('title', $title)
 
-@section('header')
-@include('admin.shared.header')
-@endsection
-
 @section('head_includes')
 <link rel="stylesheet" href="<?=base_url('public/js/fileinput-master/css/fileinput.min.css')?>">
 <link rel="stylesheet" href="<?=base_url('public/font-awesome/css/all.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/css/admin/form.min.css')?>">
 @endsection
 
 @section('content')
-<div class="container formModule" id="root">
+<div class="container formModule form" id="root">
+    <div class="row">
+        <div class="col s12">
+            <h3 class="page-header">{{$h1}}</h3>
+        </div>
+    </div>
     <div class="col s12 center" v-bind:class="{ hide: !loader }">
         <div class="preloader-wrapper big active">
             <div class="spinner-layer spinner-blue-only">
-              <div class="circle-clipper left">
-                <div class="circle"></div>
-              </div><div class="gap-patch">
-                <div class="circle"></div>
-              </div><div class="circle-clipper right">
-                <div class="circle"></div>
-              </div>
+                <div class="circle-clipper left">
+                    <div class="circle"></div>
+                </div>
+                <div class="gap-patch">
+                    <div class="circle"></div>
+                </div>
+                <div class="circle-clipper right">
+                    <div class="circle"></div>
+                </div>
             </div>
-          </div>
+        </div>
     </div>
     <div v-cloak v-show="!loader">
         <div class="row">
@@ -44,10 +48,8 @@
                         <ul class="vtabs">
                             <li class="vtab col s3" v-for="(tab, index) in tabs" :id="index" :class="{active : tab.active}">
                                 <a :href="'#' + tab.tabID" @click="setActive(index)" v-if="!tab.edited">@{{tab.tab_name}}</a>
-                                <i class="material-icons right" v-if="!tab.edited && index != 0"
-                                    @click="deleteTab(index)">delete</i>
-                                <input type="text" :id="'input' + index" v-model="tab.tab_name"
-                                    v-on:keyup.enter="saveTab(index)" v-on:blur="saveTab(index)" v-if="tab.edited">
+                                <i class="material-icons right" v-if="!tab.edited && index != 0" @click="deleteTab(index)">delete</i>
+                                <input type="text" :id="'input' + index" v-model="tab.tab_name" v-on:keyup.enter="saveTab(index)" v-on:blur="saveTab(index)" v-if="tab.edited">
                             </li>
                             <li class="vtab col s3"><a href="#tab1" @click="addTab()">New Tab +</a></li>
                         </ul>
@@ -59,15 +61,7 @@
                             <div class="col s12 component">
                                 <a class="waves-effect waves-light btn right red darken-2 tooltipped" data-position="left" data-tooltip="Remove Field" @click="removeField(i, index)"><i class="material-icons">delete</i></a>
                                 <br>
-                                <component
-                                    :serve-data = "field.data"
-                                    :is = "field.component"
-                                    :tab-parent = "tab"
-                                    :field-ref-index = "index"
-                                    :field-ref =" field"
-                                    :configurable = "true"
-                                    ref="field.component"
-                                    >
+                                <component :serve-data="field.data" :is="field.component" :tab-parent="tab" :field-ref-index="index" :field-ref=" field" :configurable="true" ref="field.component">
                                 </component>
                             </div>
                         </div>
@@ -83,8 +77,7 @@
                             </li>
                             <li class="collection-item" v-for="(formsElement, index) in formsElements">
                                 <div>@{{formsElement.displayName}}
-                                    <a href="#!" class="secondary-content" @click="addField(formsElement)"><i
-                                            class="material-icons">@{{formsElement.icon}}</i></a>
+                                    <a href="#!" class="secondary-content" @click="addField(formsElement)"><i class="material-icons">@{{formsElement.icon}}</i></a>
                                 </div>
                             </li>
                         </ul>
@@ -114,9 +107,9 @@
 </div>
 @include('admin.formularios.formsFields')
 @isset($form_custom_id)
-    <script>
-        const form_custom_id = <?=json_encode($form_custom_id);?>;
-    </script>
+<script>
+    const form_custom_id = <?php echo json_encode($form_custom_id); ?> ;
+</script>
 @endisset
 @endsection
 

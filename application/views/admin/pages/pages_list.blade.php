@@ -27,7 +27,7 @@
         <div class="nav-wrapper">
             <form>
                 <div class="input-field">
-                    <input id="search" type="search" placeholder="Buscar..." v-model="filter">
+                    <input class="input-search" type="search" placeholder="Buscar..." v-model="filter">
                     <label class="label-icon" for="search"><i class="material-icons">search</i></label>
                     <i class="material-icons" v-on:click="resetFilter();">close</i>
                 </div>
@@ -122,11 +122,7 @@
                                     @{{getcontentText(page)}}
                                 </p>
                                 <span class="activator right"><i class="material-icons">more_vert</i></span>
-                                <ul>
-                                    <li class="truncate">
-                                        Author: <a :href="base_url('admin/usuarios/ver/' + page.user_id)">@{{page.username}}</a>
-                                    </li>
-                                </ul>
+                                <user-info :user="page.user" />
                             </div>
                         </div>
                     </div>

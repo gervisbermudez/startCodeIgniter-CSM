@@ -64,7 +64,16 @@ class Base_Controller extends CI_Controller
 
     public function getPageMetas($page)
     {
-        return array(
+        if ($page->page_data["meta"]) {
+            function convertArrayToObject($value)
+            {
+                return (Array) $value;
+            }
+            return array_map("convertArrayToObject", $page->page_data["meta"]);
+
+        }
+
+        $default_metas = array(
             array('name' => 'keywords', 'content' => $page->title),
             array('name' => 'description', 'content' => $page->title),
             array('name' => 'ROBOTS', 'content' => 'NOODP'),
@@ -80,7 +89,7 @@ class Base_Controller extends CI_Controller
             array('name' => 'twitter:description', 'content' => $page->title),
             array('name' => 'twitter:image', 'content' => $page->title),
         );
-
+        return $default_metas;
     }
 
     public function error404()

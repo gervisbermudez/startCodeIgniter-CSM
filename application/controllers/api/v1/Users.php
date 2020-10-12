@@ -252,12 +252,18 @@ class Users extends REST_Controller
         }
     }
 
-    public function usergroups_get()
+    public function usergroups_get($usergroup_id = null)
     {
 
         $this->load->model('Admin/Usergroup');
 
-        $result = $this->Usergroup->where(array('level >=' => userdata('level')));
+        $usergroup = new Usergroup();
+
+        if($usergroup_id){
+            $result = $usergroup->find_with(array("usergroup_id" => $usergroup_id));
+        }else{
+            $result = $usergroup->where(array('level >=' => userdata('level')));
+        }
 
         if ($result) {
             $response = array(

@@ -70,11 +70,16 @@ body {
         top: 10px;
       }
     }
-
     .content {
       display: block;
     }
   }
+}
+
+.card
+  .card-action
+  a:not(.btn):not(.btn-large):not(.btn-small):not(.btn-large):not(.btn-floating) {
+  color: $color4;
 }
 
 .page-widget {
@@ -83,6 +88,7 @@ body {
   background-color: #fff;
   border-radius: 5px;
   overflow: hidden;
+  margin-bottom: 20px;
 
   button {
     border-radius: 0;
@@ -533,6 +539,7 @@ body {
 
       .m-widget19__body {
         color: #898b96;
+        min-height: 140px;
       }
     }
   }

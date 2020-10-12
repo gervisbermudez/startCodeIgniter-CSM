@@ -255,6 +255,55 @@ $sidemenuWidth: 210px;
 
   margin-left: $sidemenuWidth;
 
+  .darkmode-switch i.material-icons {
+    height: auto;
+    line-height: initial;
+    transition: left 0.3s ease, background 0.3s ease, box-shadow 0.1s ease,
+      transform 0.1s ease, -webkit-box-shadow 0.1s ease,
+      -webkit-transform 0.1s ease;
+    position: absolute;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    left: -5px;
+    top: -5px;
+    -webkit-transition: left 0.3s ease, background 0.3s ease,
+      -webkit-box-shadow 0.1s ease, -webkit-transform 0.1s ease;
+    transition: left 0.3s ease, background 0.3s ease,
+      -webkit-box-shadow 0.1s ease, -webkit-transform 0.1s ease;
+    transition: left 0.3s ease, background 0.3s ease, box-shadow 0.1s ease,
+      transform 0.1s ease;
+    transition: left 0.3s ease, background 0.3s ease, box-shadow 0.1s ease,
+      transform 0.1s ease, -webkit-box-shadow 0.1s ease,
+      -webkit-transform 0.1s ease;
+    color: #fff;
+  }
+
+  .darkmode-switch label .lever:before,
+  .switch label .lever:after {
+    display: none;
+  }
+
+  .darkmode-switch label input[type="checkbox"]:checked + .lever i {
+    left: 18px;
+    color: #000;
+  }
+
+  .darkmode-switch label input[type="checkbox"]:checked + .lever:after {
+    display: none;
+  }
+
+  .switch.right.darkmode-switch label {
+    display: inline-block;
+    height: 50px;
+    position: relative;
+    vertical-align: middle;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
   @media all and (max-width: 992px) {
     margin: auto;
   }
@@ -455,6 +504,7 @@ i.material-icons.circle.cyan.medium {
 ul.tabs {
   width: auto !important;
   overflow: hidden;
+  margin-bottom: 20px;
 }
 
 .userform {
@@ -556,7 +606,7 @@ span.level {
 .main-navbar {
   padding: 0px;
   position: fixed;
-  z-index: 9;
+  z-index: 999;
   background-color: $color4;
   top: 0;
   margin: 0px;
@@ -625,7 +675,7 @@ blockquote {
 .dropdown-content li > {
   a,
   span {
-    color: #2196f3;
+    color: #444;
   }
 }
 
@@ -721,6 +771,19 @@ div.row.event a.dropdown-button.right {
   top: 10px;
   z-index: 9;
   cursor: pointer;
+}
+
+ul.tabs li a span {
+  display: inline-block;
+  line-height: 48px;
+  vertical-align: top;
+  margin: 0px 10px;
+}
+
+ul.tabs li a i {
+  display: inline-block;
+  line-height: 48px;
+  vertical-align: top;
 }
 
 .card .card-image .card-title {
@@ -1033,6 +1096,12 @@ div.row.event a.dropdown-button.right {
     }
   }
 }
+nav.search-nav {
+  .input-field {
+    width: 80%;
+    float: left;
+  }
+}
 
 #dropnotify {
   top: 64px !important;
@@ -1174,6 +1243,10 @@ div#dropnotify {
 
       .activator {
         cursor: pointer;
+      }
+
+      p {
+        min-height: 70px;
       }
 
       ul {
@@ -1335,4 +1408,299 @@ div#dropnotify {
 }
 .collapsible .active .arrow {
   transform: rotate(90deg);
+}
+
+span.header {
+  display: block;
+  overflow: hidden;
+}
+
+i.material-icons.right.remove {
+  position: absolute;
+  right: 20px;
+  cursor: pointer;
+}
+
+.dark-mode {
+  * {
+    color: #c2c2c2;
+  }
+  .form {
+    background-color: rgb(18, 20, 20);
+    border-color: rgb(47, 51, 53);
+  }
+  .sidenav {
+    background-color: rgb(18, 20, 20);
+  }
+  .sidemenu {
+    background-color: rgb(18, 20, 20);
+  }
+  a.brand-logo {
+    color: #fff;
+  }
+
+  nav i,
+  nav [class^="mdi-"],
+  nav [class*="mdi-"],
+  nav i.material-icons {
+    color: #fff;
+  }
+
+  .main-navbar {
+    background-color: rgb(64, 70, 72);
+  }
+  .main,
+  html,
+  body {
+    background-image: initial;
+    background-color: rgb(20, 22, 23);
+  }
+  .dashboard .panel {
+    box-shadow: rgba(41, 44, 46, 0.08) 0px 1px 15px 1px;
+    background-color: rgb(18, 20, 20);
+  }
+  .page-widget {
+    box-shadow: rgba(41, 44, 46, 0.08) 0px 1px 15px 1px;
+    background-color: rgb(18, 20, 20);
+  }
+
+  .page-widget .m-portlet {
+    box-shadow: rgba(41, 44, 46, 0.08) 0px 1px 15px 1px;
+    background-color: rgb(18, 20, 20);
+  }
+
+  .dashboard h5 {
+    color: #fff;
+  }
+
+  .collection .collection-item {
+    background-color: rgb(18, 20, 20);
+    color: rgba(174, 173, 170, 0.87);
+  }
+
+  .timeline > li > .timeline-item {
+    background: #121414;
+  }
+
+  .collection.with-header .collection-header {
+    background-color: rgb(18, 20, 20);
+    color: rgba(174, 173, 170, 0.87);
+  }
+
+  .page-widget .btn.btn-secondary {
+    background-image: initial;
+    background-color: rgb(18, 20, 20);
+    border-color: rgb(40, 43, 44);
+  }
+
+  .dropdown-content {
+    background-color: #2a2a2a;
+  }
+
+  .select-wrapper {
+    .dropdown-content li > a,
+    .dropdown-content li > span {
+      color: #e0e0e0;
+    }
+  }
+
+  .sidenav li > a {
+    color: #ffffffde;
+  }
+
+  .explorer .tree .sidenav i {
+    color: #ffffffde;
+  }
+
+  .btn {
+    color: #fff;
+  }
+
+  .collapsible-header,
+  .collapsible-body {
+    -webkit-tap-highlight-color: transparent;
+    background-color: rgb(18, 20, 20);
+    border-bottom-color: rgb(44, 47, 49);
+    color: rgba(174, 173, 170, 0.87);
+  }
+
+  .main::before {
+    background-color: #404648;
+  }
+
+  .tabs,
+  .formModule .vtabs {
+    background-color: rgb(18, 20, 20);
+  }
+
+  .card {
+    background-color: rgb(18, 20, 20);
+  }
+
+  .formModule .component {
+    background-color: rgb(18, 20, 20);
+  }
+
+  .card .card-reveal {
+    background: #121414;
+  }
+
+  .card .card-reveal .card-title {
+    color: #ccc !important;
+  }
+
+  .z-depth-1,
+  .card-panel,
+  .card,
+  .toast,
+  .btn,
+  .btn-large,
+  .btn-small,
+  .btn-floating,
+  .dropdown-content,
+  .collapsible,
+  .sidenav {
+    box-shadow: rgba(0, 0, 0, 0.14) 0px 2px 2px 0px,
+      rgba(0, 0, 0, 0.12) 0px 3px 1px -2px, rgba(0, 0, 0, 0.2) 0px 1px 5px 0px;
+  }
+
+  .sidemenu .sidenav i.material-icons {
+    color: rgba(174, 173, 170, 0.54);
+  }
+
+  .collapsible {
+    border-top-color: rgb(44, 47, 49);
+    border-right-color: rgb(44, 47, 49);
+    border-left-color: rgb(44, 47, 49);
+  }
+
+  .explorer {
+    background-color: rgb(18, 20, 20);
+    border-color: rgb(47, 51, 53);
+  }
+
+  .explorer nav {
+    background-color: rgb(18, 20, 20);
+    box-shadow: none;
+  }
+
+  .card-panel {
+    background-color: rgb(18, 20, 20);
+  }
+
+  .input-field input[type="search"]:focus:not(.browser-default) {
+    background-color: rgb(18, 20, 20);
+    border-color: initial;
+    box-shadow: none;
+    color: rgb(142, 137, 131);
+  }
+
+  .explorer nav i {
+    color: #fff;
+  }
+
+  .explorer nav .input-field label.label-icon i {
+    color: #fff;
+  }
+}
+
+div.card-image > div > i.material-icons.tooltipped {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  z-index: 9;
+}
+
+div#folderSelector {
+  width: 90%;
+}
+
+.user-info-inline {
+  margin: 0;
+  display: inline-block;
+
+  .collection-item.avatar {
+    min-height: 56px;
+    padding: 5px 5px 5px 55px;
+    .profile-img.circle {
+      left: 0px;
+    }
+  }
+}
+
+input#search::placeholder {
+  color: #fff;
+}
+
+.album .card-image {
+  .card-image-container {
+    position: relative;
+    img {
+      position: absolute;
+      left: 0;
+      -webkit-transition: opacity 1s ease-in-out;
+      -moz-transition: opacity 1s ease-in-out;
+      -o-transition: opacity 1s ease-in-out;
+      transition: opacity 1s ease-in-out;
+      height: 100%;
+      width: 100%;
+    }
+  }
+  &:hover img.top {
+    opacity: 0;
+  }
+}
+.files.files-selector {
+  .folder {
+    position: relative;
+    label.checkbox {
+      position: absolute;
+      right: 0px;
+      top: 10px;
+    }
+  }
+  .file {
+    position: relative;
+    label.checkbox {
+      position: absolute;
+      right: 0px;
+      top: 10px;
+      z-index: 9;
+    }
+  }
+  .file.icon {
+    font-size: 30px;
+    display: flex;
+    align-content: center;
+    align-items: center;
+    height: 60px;
+    justify-content: center;
+    background: #5f6366;
+    color: #fff;
+  }
+
+  .card .card-image {
+    position: relative;
+    height: 140px;
+    overflow: hidden;
+  }
+}
+
+label.label-icon[for="search"] {
+  width: auto;
+}
+
+th.both {
+  background: url("/public/img/sort_both.png") no-repeat center right;
+  cursor: pointer;
+}
+
+th.sort_asc {
+  background: url("/public/img/sort_asc.png") no-repeat center right;
+  cursor: pointer;
+}
+
+th.sort_desc {
+  background: url("/public/img/sort_desc.png") no-repeat center right;
+  cursor: pointer;
 }

@@ -123,4 +123,13 @@ class Usuarios extends MY_Controller
             ->set_output(json_encode($response));
     }
 
+
+    public function usergroups()
+    {
+        $data['title'] = ADMIN_TITLE . " | User Groups";
+        $data['h1'] = "User Groups";
+        $data['header'] = $this->load->view('admin/header', $data, true);
+        echo $this->blade->view("admin.user.usergroups", $data);
+    }
+
 }

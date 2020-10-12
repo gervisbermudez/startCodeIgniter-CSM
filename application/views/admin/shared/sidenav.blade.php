@@ -48,7 +48,7 @@
                         <a class="waves-effect" href="{{ base_url('admin/formularios/') }}">Todos</a>
                     </li>
                     <li>
-                        <a href="{{ base_url('admin/formularios/new') }}">Nuevo</a>
+                        <a href="{{ base_url('admin/formularios/nuevo') }}">Nuevo</a>
                     </li>
                 </ul>
             </div>
@@ -111,7 +111,7 @@
                         <a class="waves-effect" href="{{ base_url('admin/galeria') }}"> Todos</a>
                     </li>
                     <li>
-                        <a href="{{ base_url('admin/galeria/crearalbum/') }}">Nuevo Album</a>
+                        <a href="{{ base_url('admin/galeria/nuevo/') }}">Nuevo Album</a>
                     </li>
                 </ul>
             </div>

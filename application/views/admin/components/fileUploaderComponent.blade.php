@@ -21,7 +21,7 @@
                                 <nav v-if="!backto" class="search-nav">
                                     <div class="nav-wrapper">
                                         <div class="input-field">
-                                            <input id="search" type="search" placeholder="Buscar Archivos..."
+                                            <input class="input-search" type="search" placeholder="Buscar Archivos..."
                                                 v-model="search" v-on:keyup.enter="searchfiles()">
                                             <label class="label-icon" for="search"><i
                                                     class="material-icons">search</i></label>

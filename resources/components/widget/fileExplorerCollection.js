@@ -11,7 +11,7 @@ Vue.component("fileExplorerCollection", {
       var self = this;
       $.ajax({
         type: "POST",
-        url: BASEURL + "admin/archivos/ajax_get_filter_files",
+        url: BASEURL + "api/v1/files/filter_files",
         data: {
           filter_name: "featured",
           filter_value: "1",

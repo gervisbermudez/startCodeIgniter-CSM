@@ -11,7 +11,7 @@ class Page extends MY_model
     public $hasOne = [
         'user' => ['user_id', 'Admin/User', 'user'],
         'pages_type' => ['page_type_id', 'Admin/Page_type', 'page_type'],
-        'main_image' => ['mainImage', 'Files_model', 'Files_model'],
+        'main_image' => ['mainImage', 'Admin/File', 'File'],
     ];
 
     public $page_data = [];
@@ -64,14 +64,14 @@ class Page extends MY_model
                 $value->{'model_type'} = "page";
             }
         }
-        $this->load->model('Files_model');
+        $this->load->model('Admin/File');
         foreach ($collection as $key => &$value) {
             if (isset($value->mainImage) && $value->mainImage) {
-                $Files_model = new Files_model();
-                $Files_model->find($value->mainImage);
-                $value->imagen_file = $Files_model->as_data();
+                $file = new File();
+                $file->find($value->mainImage);
+                $value->imagen_file = $file->as_data();
                 $value->imagen_file->{'file_front_path'} = new stdClass();
-                $value->imagen_file->{'file_front_path'} = $Files_model->getFileFrontPath();
+                $value->imagen_file->{'file_front_path'} = $file->getFileFrontPath();
             }
         }
         return $collection;

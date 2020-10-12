@@ -172,3 +172,18 @@ if (!function_exists("time_ago")) {
         return $string ? implode(', ', $string) . ' ago' : 'just now';
     }
 }
+
+if (!function_exists('page_meta')) {
+    function page_meta($metas)
+    {
+        $str = "";
+        foreach ($metas as $meta) {
+            $temp_str = "";
+            foreach ($meta as $key => $value) {
+                $temp_str .= $key . '="' . $value . '" ';
+            }
+            $str .= '<meta ' . $temp_str . '/>' . "\n";
+        }
+        return $str;
+    }
+}

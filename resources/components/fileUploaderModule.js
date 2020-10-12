@@ -161,7 +161,7 @@ var fileUploaderModule = new Vue({
 
       $.ajax({
         type: "POST",
-        url: BASEURL + "admin/archivos/ajax_rename_file",
+        url: BASEURL + "api/v1/files/rename_file",
         data: {
           file: self.editFile,
         },
@@ -189,7 +189,7 @@ var fileUploaderModule = new Vue({
       });
       $.ajax({
         type: "POST",
-        url: BASEURL + "admin/archivos/ajax_featured_file",
+        url: BASEURL + "api/v1/files/featured_file",
         data: {
           file: file,
         },
@@ -216,7 +216,7 @@ var fileUploaderModule = new Vue({
       });
       $.ajax({
         type: "POST",
-        url: BASEURL + "admin/archivos/ajax_move_file",
+        url: BASEURL + "api/v1/files/move_file",
         data: {
           file: file,
           newPath: newPath,
@@ -245,7 +245,7 @@ var fileUploaderModule = new Vue({
       });
       $.ajax({
         type: "POST",
-        url: BASEURL + "admin/archivos/ajax_copy_file",
+        url: BASEURL + "api/v1/files/copy_file",
         data: {
           file: file,
           newPath: newPath,
@@ -285,8 +285,8 @@ var fileUploaderModule = new Vue({
       }
       self.fileloader = true;
       $.ajax({
-        type: "POST",
-        url: BASEURL + "admin/archivos/ajax_get_files",
+        type: "GET",
+        url: BASEURL + "api/v1/files/",
         data: {
           path: path,
         },
@@ -348,7 +348,7 @@ var fileUploaderModule = new Vue({
       var self = this;
       $.ajax({
         type: "POST",
-        url: BASEURL + "admin/archivos/ajax_get_filter_files",
+        url: BASEURL + "api/v1/files/filter_files",
         data: {
           filter_name: filter_name,
           filter_value: filter_value,
