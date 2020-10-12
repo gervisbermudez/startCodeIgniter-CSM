@@ -390,7 +390,7 @@ class Config_data {
   }
 }
 
-if ("serviceWorker" in navigator) {
+if ("serviceWorker" in navigator && window.location.protocol == 'https:') {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("/service-worker.min.js", {
       scope: "/admin",
