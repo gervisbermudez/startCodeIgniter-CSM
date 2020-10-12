@@ -1,6 +1,6 @@
 Vue.component("FileExplorerSelector", {
   template: "#file-explorar-selector",
-  props: ["mode", "multiple", "filter", "modal", "ignore"], //mode Can be "all", "files", "folders"
+  props: ["mode", "multiple", "filter", "modal", "ignore", "preselected"], //mode Can be "all", "files", "folders"
   data: function () {
     return {
       debug: DEBUGMODE,
@@ -21,11 +21,17 @@ Vue.component("FileExplorerSelector", {
         if (file.file_path == "./" && file.file_name == "trash") {
           return false;
         }
+        this.preselected.forEach((element) => {
+          if (file.file_id == element.file_id) file.selected = true;
+        });
         return file.file_type == "folder";
       });
     },
     getFiles() {
       return this.files.filter((file) => {
+        this.preselected.forEach((element) => {
+          if (file.file_id == element.file_id) file.selected = true;
+        });
         return file.file_type != "folder";
       });
     },
@@ -278,6 +284,9 @@ Vue.component("FileExplorerSelector", {
   mounted: function () {
     this.$nextTick(function () {
       var self = this;
+      if (!self.preselected) {
+        self.preselected = [];
+      }
       if (self.filter) {
         this.filterFiles(self.filter);
       } else {

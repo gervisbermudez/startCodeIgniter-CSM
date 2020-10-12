@@ -30,9 +30,14 @@ var AlbumNewForm = new Vue({
       let enable =
         (!!this.form.fields.name.value && !!this.description) || false;
       if (enable) {
-        this.autoSave();
+        //this.autoSave();
       }
       return enable;
+    },
+    preselected: function () {
+      return this.items.map((item) => {
+        return item.file;
+      });
     },
   },
   methods: {
@@ -46,19 +51,32 @@ var AlbumNewForm = new Vue({
       let instance = M.Modal.getInstance($(".modal"));
       instance.close();
       console.log(selectedFiles);
-      this.items = [...this.items, ...selectedFiles.map((item) => {
-        return {
-          album_id: "1",
-          album_item_id: "1",
-          date_create: "",
-          date_update: "",
-          description: "",
-          file: new ExplorerFile(item),
-          file_id: item.file_id,
-          name: "",
-          status: "1",
-        };
-      })]
+
+      this.items = [
+        ...selectedFiles.map((item) => {
+          let album_item = {
+            album_id: "",
+            album_item_id: "",
+            date_create: "",
+            date_update: "",
+            description: "",
+            file: new ExplorerFile(item),
+            file_id: item.file_id,
+            name: "",
+            status: "1",
+          };
+
+          this.items.forEach((element) => {
+            debugger;
+            if (element.file.file_id == item.file_id) {
+              album_item = element;
+            }
+          });
+
+          return album_item;
+        }),
+      ];
+
       setTimeout(() => {
         var elems = document.querySelectorAll(".tooltipped");
         M.Tooltip.init(elems, {});

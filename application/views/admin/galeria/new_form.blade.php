@@ -135,7 +135,7 @@
             </p>
         </div>
     </div>
-    <file-explorer-selector :modal="'folderSelector'" :mode="'files'" :filter="'images'" :multiple="true"
+    <file-explorer-selector :preselected="preselected" :modal="'folderSelector'" :mode="'files'" :filter="'images'" :multiple="true"
         v-on:notify="copyCallcack"></file-explorer-selector>
 </div>
 <script>

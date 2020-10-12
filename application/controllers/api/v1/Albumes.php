@@ -110,16 +110,18 @@ class Albumes extends REST_Controller
 
             $album_items = $this->input->post("album_items");
             $this->load->model('Admin/Album_items');
-            foreach ($album_items as $value) {
-               $item = new Album_items();
-               $value['album_item_id'] ? $item->find($value['album_item_id']) : false;
-               $item->album_id = $album->album_id;
-               $item->file_id = $value['file_id'];
-               $item->name = $value['name'];
-               $item->description = $value['description'];
-               $item->status = $value['status'];
-               $item->date_create = date("Y-m-d H:i:s");
-               $item->save();
+                if ($album_items) {
+                    foreach ($album_items as $value) {
+                    $item = new Album_items();
+                    $value['album_item_id'] ? $item->find($value['album_item_id']) : false;
+                    $item->album_id = $album->album_id;
+                    $item->file_id = $value['file_id'];
+                    $item->name = $value['name'];
+                    $item->description = $value['description'];
+                    $item->status = $value['status'];
+                    $item->date_create = date("Y-m-d H:i:s");
+                    $item->save();
+                }
             }
 
             $response = array(
@@ -161,12 +163,12 @@ class Albumes extends REST_Controller
      */
     public function index_delete($id = null)
     {
-        $page = new Album();
-        $page->find($id);
-        if ($page->delete()) {
+        $album = new Album();
+        $album->find($id);
+        if ($album->delete()) {
             $response = array(
                 'code' => REST_Controller::HTTP_OK,
-                'data' => $page,
+                'data' => $album,
             );
             $this->response($response, REST_Controller::HTTP_OK);
             return;

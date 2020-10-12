@@ -77,14 +77,10 @@
                                 <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Borrador">edit</i>
                             </td>
                             <td>
-                                <i v-if="album.visibility == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Publico">public</i>
-                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Privado">lock</i>
-                            </td>
-                            <td>
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + album.album_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + album.album_id' class='dropdown-content'>
                                     <li><a :href="base_url('admin/paginas/editar/' + album.album_id)">Editar</a></li>
-                                    <li><a href="#!" v-on:click="deletePage(album, index);">Borrar</a></li>
+                                    <li><a href="#!" v-on:click="deleteAlbum(album, index);">Borrar</a></li>
                                     <li v-if="album.status == 2"><a :href="base_url('admin/paginas/preview?album_id=' + album.album_id)" target="_blank">Preview</a></li>
                                     <li><a :href="base_url('/admin/galeria/items/' + album.album_id)" target="_blank">Archivar</a></li>
                                 </ul>
@@ -107,7 +103,7 @@
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown" + album.album_id' class='dropdown-content'>
                             <li><a :href="base_url('admin/galeria/editar/' + album.album_id)">Editar</a></li>
-                            <li><a href="#!" v-on:click="deletePage(album, index);">Borrar</a></li>
+                            <li><a href="#!" v-on:click="deleteAlbum(album, index);">Borrar</a></li>
                             <li v-if="album.status == 2"><a :href="base_url('admin/paginas/preview?album_id=' + album.album_id)" target="_blank">Preview</a></li>
                             <li><a :href="base_url('/admin/galeria/items/' + album.album_id)" target="_blank">Archivar</a></li>
                         </ul>
@@ -132,7 +128,7 @@
                             @{{album.name}}
                         </span>
                         <span class="subtitle">
-                            @{{album.subtitle}}
+                            @{{getcontentText(album.description)}}
                         </span>
                         <ul>
                             <li><b>Fecha de publicacion:</b> <br> @{{album.date_publish ? album.date_publish : album.date_create}}</li>
@@ -151,11 +147,11 @@
         </div>
     </div>
     <div class="container" v-if="!loader && albums.length == 0" v-cloak>
-        <h4>No hay paginas</h4>
+        <h4>No hay Albumes</h4>
     </div>
 </div>
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Nueva Pagina" href="{{base_url('admin/paginas/nueva/')}}">
+    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Nuevo Album" href="{{base_url('admin/galeria/nuevo/')}}">
         <i class="large material-icons">add</i>
     </a>
 </div>

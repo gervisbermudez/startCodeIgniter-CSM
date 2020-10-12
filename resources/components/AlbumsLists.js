@@ -31,14 +31,11 @@ var AlbumsLists = new Vue({
     getPageImagePath(album, index) {
       let item = album.items[index] ? album.items[index] : { file: {} };
       if (item.file.file_front_path) {
-        return (
-          BASEURL +
-          item.file.file_front_path
-        );
+        return BASEURL + item.file.file_front_path;
       }
       return BASEURL + "public/img/default.jpg";
     },
-    getPages: function () {
+    getAlbums: function () {
       var self = this;
       $.ajax({
         type: "GET",
@@ -62,12 +59,12 @@ var AlbumsLists = new Vue({
         },
       });
     },
-    deletePage: function (page, index) {
+    deleteAlbum: function (album, index) {
       var self = this;
       self.loader = true;
       $.ajax({
         type: "DELETE",
-        url: BASEURL + "api/v1/albumes/" + page.page_id,
+        url: BASEURL + "api/v1/albumes/" + album.album_id,
         data: {},
         dataType: "json",
         success: function (response) {
@@ -96,7 +93,7 @@ var AlbumsLists = new Vue({
   },
   mounted: function () {
     this.$nextTick(function () {
-      this.getPages();
+      this.getAlbums();
       this.initPlugins();
     });
   },
