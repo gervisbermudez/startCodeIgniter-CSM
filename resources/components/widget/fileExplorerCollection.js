@@ -120,7 +120,7 @@ Vue.component("fileExplorerCollection", {
   mounted: function () {
     this.$nextTick(function () {
       this.getFiles();
-      this.debug ? console.log("mounted: usersCollection") : null;
+      this.debug ? console.log("mounted: fileExplorerCollection") : null;
     });
   },
 });

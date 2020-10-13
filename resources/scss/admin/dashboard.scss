@@ -79,10 +79,13 @@ body {
         margin: 0;
       }
     }
+    .panel-boddy {
+      padding: 15px;
+    }
   }
 }
 
-.fileExplorerCollection-root {
+.panel .title {
   a.dropdown-trigger {
     position: absolute;
     right: 15px;
@@ -92,7 +95,10 @@ body {
       color: #fff;
     }
   }
-  .collection{
+}
+
+.fileExplorerCollection-root {
+  .collection {
     max-height: 433px;
     overflow: scroll;
   }
