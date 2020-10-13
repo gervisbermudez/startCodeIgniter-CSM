@@ -1,21 +1,10 @@
 <script type="text/x-template" id="page-card-template">
     <div class="panel">
 		<div class="title indigo">
-			<h5>Archivos</h5>
+			<h5>Pages</h5>
 			<div class="subtitle">
-				@{{pages.length}} Archivos
+				@{{pages.length}} Pages
 			</div>
-			<a class='dropdown-trigger' href='#' data-target='fileExplorerFilter'>
-				<i class="material-icons">more_vert</i>
-			</a>
-			<ul id='fileExplorerFilter' class='dropdown-content'>
-			<li><a href="#!" >All</a></li>
-			<li><a href="#!">Imagenes</a></li>
-			<li><a href="#!" >Documents</a></li>
-			<li><a href="#!">Videos</a></li>
-			<li><a href="#!">Important</a></li>
-			<li><a href="#!">Trash</a></li>
-			</ul>
 		</div>
 		<div class="panel-boddy">
 			<div class="row">
