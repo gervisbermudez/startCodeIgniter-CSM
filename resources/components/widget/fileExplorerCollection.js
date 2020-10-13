@@ -1,9 +1,9 @@
 Vue.component("fileExplorerCollection", {
   template: "#fileExplorerCollection-template",
+  props: ["files"],
   data: function () {
     return {
       debug: DEBUGMODE,
-      files: [],
     };
   },
   mixins: [mixins],
@@ -15,9 +15,11 @@ Vue.component("fileExplorerCollection", {
           return this.searchInObject(value, filterTerm);
         });
       } else {
-        return this.files.filter((file) => {
-          return file.file_type != "folder";
-        }).slice(0, 25);
+        return this.files
+          .filter((file) => {
+            return file.file_type != "folder";
+          })
+          .slice(0, 25);
       }
     },
   },
@@ -119,7 +121,7 @@ Vue.component("fileExplorerCollection", {
   },
   mounted: function () {
     this.$nextTick(function () {
-      this.getFiles();
+      this.init();
       this.debug ? console.log("mounted: fileExplorerCollection") : null;
     });
   },

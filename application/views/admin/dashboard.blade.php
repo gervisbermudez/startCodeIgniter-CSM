@@ -37,20 +37,24 @@
         <div class="col m8 s12">
             <div class="row">
                 <div class="col s12">
-                    <create-contents></create-contents>
+                    <create-contents :forms_types="forms_types" :content="content"></create-contents>
                 </div>
             </div>
         </div>
         <div class="col m4 s12">
-            <users-collection></users-collection>
+            <users-collection :users="users"></users-collection>
         </div>
     </div>
     <div class="row" v-show="!loader">
         <div class="col m6 s12">
-            <file-explorer-collection></file-explorer-collection>
+            <file-explorer-collection :files="files"></file-explorer-collection>
         </div>
     </div>
-    <page-card v-show="!loader"></page-card>
+    <div class="row" v-show="!loader">
+        <div class="col s12">
+            <page-card v-show="!loader" :pages="pages"></page-card>
+        </div>
+    </div>
 </div>
 <div class="fixed-action-btn">
     <a data-position="left" data-delay="50" data-tooltip="Formulario nuevo" class="btn-floating btn-large tooltipped red" href="{{base_url('admin/formularios/nuevo')}}">
