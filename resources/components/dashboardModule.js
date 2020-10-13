@@ -7,6 +7,7 @@ var dashboardModule = new Vue({
     files: [],
     pages: [],
     forms_types: [],
+    albumes: [],
     content: [],
     api_data: {
       dashboard: BASEURL + "api/v1/dashboard/",
@@ -41,6 +42,10 @@ var dashboardModule = new Vue({
         });
         this.files = dashboard_response.data.files.map((file) => {
           return new ExplorerFile(file);
+        });
+        this.albumes = dashboard_response.data.albumes.map((album) => {
+          album.user = new User(album.user);
+          return album;
         });
         this.loader = false;
         this.init();

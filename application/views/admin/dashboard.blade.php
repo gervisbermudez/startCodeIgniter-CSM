@@ -49,6 +49,9 @@
         <div class="col m6 s12">
             <file-explorer-collection :files="files"></file-explorer-collection>
         </div>
+        <div class="col m6 s12">
+            <albumes-widget :albumes="albumes"></albumes-widget>
+        </div>
     </div>
     <div class="row" v-show="!loader">
         <div class="col s12">
@@ -71,6 +74,7 @@
 @include('admin.components.userCollectionComponent')
 @include('admin.components.createContentsComponent')
 @include('admin.components.fileExplorerCollectionComponent')
+@include('admin.components.albumesWidgetComponent')
 
 @endsection
 

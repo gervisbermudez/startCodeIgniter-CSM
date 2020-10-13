@@ -83,6 +83,7 @@ class Dashboard extends REST_Controller
         $this->load->model('Admin/Form_custom');
         $this->load->model('Admin/Form_content');
         $this->load->model('Admin/File');
+        $this->load->model('Admin/Album');
 
         $result = array();
 
@@ -103,6 +104,9 @@ class Dashboard extends REST_Controller
 
         $file = new File();
         $result['files'] = $file->all();
+
+        $album = new Album();
+        $result['albumes'] = $album->all();
 
         $response = array(
             'code' => 200,

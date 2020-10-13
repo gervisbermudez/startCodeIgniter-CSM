@@ -26,8 +26,16 @@ body {
       min-height: auto;
       border: 0;
 
+      .title {
+        font-weight: 600;
+      }
+
       a {
         color: #444;
+      }
+
+      a.secondary-content {
+        color: #ccc;
       }
 
       &.collection-header {
@@ -81,6 +89,38 @@ body {
     }
     .panel-boddy {
       padding: 20px 15px 15px;
+    }
+  }
+}
+
+.albumes {
+  .card-image-container {
+    position: relative;
+    height: 140px;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .card.album {
+    box-shadow: none;
+    overflow: hidden;
+  }
+  .card-image {
+    height: 140px;
+    border-radius: 5px;
+  }
+
+  .album .card-content {
+    display: block;
+    padding: 10px 0px;
+    min-height: auto;
+    .card-title {
+      display: block;
+      line-height: 16px;
+      margin-bottom: 8px;
+      a {
+        color: #444;
+        font-size: 17px;
+      }
     }
   }
 }
