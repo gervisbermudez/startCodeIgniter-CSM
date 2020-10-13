@@ -308,4 +308,27 @@ class Forms extends REST_Controller
         }
         $this->response($response, REST_Controller::HTTP_OK);
     }
+
+
+    public function data_set_status_post($form_content_id = null)
+    {
+        $this->load->model('Admin/Form_content');
+        $Form_conten = new Form_content();
+        $Form_conten->find($form_content_id);
+        $Form_conten->status = $this->input->post('status');
+        $result = $Form_conten->save();
+        if ($result) {
+            $response = array(
+                'code' => REST_Controller::HTTP_OK,
+                'data' => [],
+            );
+        } else {
+            $response = array(
+                'code' => REST_Controller::HTTP_NOT_FOUND,
+                "error_message" => lang('not_found_error'),
+                'data' => [],
+            );
+        }
+        $this->response($response, REST_Controller::HTTP_OK);
+    }
 }

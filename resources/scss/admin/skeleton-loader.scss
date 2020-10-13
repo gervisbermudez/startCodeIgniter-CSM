@@ -1,3 +1,5 @@
+@import "mixins";
+
 .skeleton-list:empty {
   background-color: #ffffff;
 
@@ -18,8 +20,8 @@
     linear-gradient(#cccccc 20px, transparent 0),
     radial-gradient(circle 14px at 14px 14px, #cccccc 13px, transparent 14px);
   background-repeat: repeat-y;
-  background-size: 50px 170px, 300px 170px, 28px 170px, 300px 170px, 28px 170px,
-    300px 170px, 28px 170px;
+  background-size: 50px 170px, calc(100% - 90px) 170px, 28px 170px, calc(100% - 90px) 170px, 28px 170px,
+    calc(100% - 90px) 170px, 28px 170px;
   background-position: 0 0, 70px 125px, 20px 120px, 70px 75px, 20px 70px,
     70px 25px, 20px 20px;
   animation: shineForSkeleton-list 2s infinite;
@@ -96,4 +98,8 @@
   to {
     background-position: 100% 0, 70px 244px, 20px 236px, 20px 20px;
   }
+}
+
+@mixin phone-only{
+
 }

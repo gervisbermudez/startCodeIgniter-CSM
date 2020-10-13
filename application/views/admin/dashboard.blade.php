@@ -22,13 +22,13 @@
             </div>
         </div>
         <div class="row">
-            <div class="col s6 m4">
+            <div class="col s12 m4">
                 <div class="skeleton-card heightForSkeleton-card panel"></div>
             </div>
-            <div class="col s6 m4">
+            <div class="col s12 m4">
                 <div class="skeleton-card heightForSkeleton-card panel"></div>
             </div>
-            <div class="col s6 m4">
+            <div class="col s12 m4">
                 <div class="skeleton-card heightForSkeleton-card panel"></div>
             </div>
         </div>
@@ -45,12 +45,12 @@
             <users-collection></users-collection>
         </div>
     </div>
-    <page-card v-show="!loader"></page-card>
     <div class="row" v-show="!loader">
         <div class="col m6 s12">
             <file-explorer-collection></file-explorer-collection>
         </div>
     </div>
+    <page-card v-show="!loader"></page-card>
 </div>
 <div class="fixed-action-btn">
     <a data-position="left" data-delay="50" data-tooltip="Formulario nuevo" class="btn-floating btn-large tooltipped red" href="{{base_url('admin/formularios/nuevo')}}">

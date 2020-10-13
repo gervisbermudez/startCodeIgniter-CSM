@@ -262,6 +262,10 @@ class User {
       return BASEURL + "public/img/profile/default.png";
     }
   };
+
+  get_edit_url = () => {
+  return BASEURL + "admin/usuarios/edit/"+ this.user_id;
+  }
 }
 
 class Page {
@@ -356,6 +360,59 @@ class ExplorerFile {
   get_full_share_path = () => {
     return BASEURL + this.share_link;
   };
+
+  get_icon() {
+    let icon = "far fa-file";
+    switch (this.file_type) {
+      case "folder":
+        icon = "far fa-folder";
+        break;
+      case "jpg":
+      case "png":
+      case "gif":
+        icon = "fas fa-file-image";
+        break;
+      case "html":
+        icon = "fab fa-html5";
+        break;
+      case "scss":
+        icon = "fab fa-sass";
+        break;
+      case "css":
+      case "min.css":
+        icon = "fab fa-css3-alt";
+        break;
+      case "txt":
+        icon = "far fa-file-alt";
+        break;
+      case "php":
+      case "blade.php":
+        icon = "fab fa-php";
+        break;
+      case "js":
+      case "json":
+      case "min.js":
+        icon = "fab fa-js";
+        break;
+      case "eot":
+      case "otf":
+      case "woff2":
+        icon = "fas fa-font";
+        break;
+    }
+    return icon;
+  }
+
+  is_image() {
+    if (
+      this.file_type == "jpg" ||
+      this.file_type == "png" ||
+      this.file_type == "gif"
+    ) {
+      return true;
+    }
+    return false;
+  }
 }
 
 class Config_data {

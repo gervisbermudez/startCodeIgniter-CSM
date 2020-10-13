@@ -9,6 +9,7 @@ Vue.component("createContents", {
       content: [],
     };
   },
+  mixins: [mixins],
   methods: {
     getDataFromServe() {
       var self = this;
@@ -31,6 +32,11 @@ Vue.component("createContents", {
         success: function (response) {
           console.log(response);
           self.content = response.data;
+          self.content.map((element) => {
+            element.user = new User(element.user);
+            element.status = element.status == "1";
+            return element;
+          });
         },
       });
 
@@ -40,6 +46,24 @@ Vue.component("createContents", {
         var elems = document.querySelectorAll(".collapsible");
         var instances = M.Collapsible.init(elems, {});
       }, 3000);
+    },
+    isActive(item) {
+      return item.status;
+    },
+    toggleStatus(item) {
+      var self = this;
+      $.ajax({
+        type: "POST",
+        url: BASEURL + "api/v1/forms/data_set_status/" + item.form_content_id,
+        data: {
+          status: item.status ? "1" : "0"
+        },
+        dataType: "json",
+        success: function (response) {
+          console.log(response);
+          M.toast({ html: "Actualizado" });
+        },
+      });
     },
     getFormsTypeUrl(formObject) {
       return BASEURL + "admin/formularios/addData/" + formObject.form_custom_id;
