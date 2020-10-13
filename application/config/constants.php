@@ -93,7 +93,7 @@ defined('IMGPATH') or define('IMGPATH', PUBLICPATH . 'img/');
 defined('IMGPROFILEPATH') or define('IMGPROFILEPATH', IMGPATH . 'profile/');
 
 //Define the currente site version
-defined('ADMIN_VERSION') or define('ADMIN_VERSION', '1.3.5');
+defined('ADMIN_VERSION') or define('ADMIN_VERSION', '1.3.6');
 defined('ADMIN_TITLE') or define('ADMIN_TITLE', 'Start CMS');
 defined('ADMIN_BRAND_NAME') or define('ADMIN_BRAND_NAME', 'Start CMS');
 defined('ADMIN_BRAND_SORT_NAME') or define('ADMIN_BRAND_SORT_NAME', 'Start');
