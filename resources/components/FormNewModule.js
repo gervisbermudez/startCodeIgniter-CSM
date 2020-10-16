@@ -40,6 +40,7 @@ var FormNewModule = new Vue({
       {
         field_name: "image",
         displayName: "Imagen",
+        component: "formImageSelector",
         icon: "image",
         status: "1",
         data: {},

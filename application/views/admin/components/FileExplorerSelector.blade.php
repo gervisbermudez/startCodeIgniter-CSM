@@ -85,7 +85,7 @@
                             <div class="col s12 m6 l4 xl3 file" v-for="(item, index) in getFiles" :key="index">
                                 <div class="card">
                                     <label class="checkbox">
-                                        <input type="checkbox" v-model="item.selected" />
+                                        <input type="checkbox" v-model="item.selected" v-if="showCheckbox(item)"/>
                                         <span>&nbsp;</span>
                                     </label>
                                     <div class="card-image waves-effect waves-block waves-light" v-if="!isImage(item)">
@@ -94,8 +94,7 @@
                                         </div>
                                     </div>
                                     <div class="card-image" v-if="isImage(item)">
-                                        <a :href="getImagePath(item)" data-lightbox="roadtrip"><img
-                                                :src="getImagePath(item)" /></a>
+                                        <img class="materialboxed" :src="getImagePath(item)" />
                                     </div>
                                     <div class="card-content" @click="setSideRightBarSelectedFile(item);">
                                         @{{ item.file_name + getExtention(item) | shortName }}

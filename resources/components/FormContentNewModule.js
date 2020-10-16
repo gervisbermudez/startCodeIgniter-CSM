@@ -41,6 +41,7 @@ var FormNewModule = new Vue({
       {
         field_name: "image",
         displayName: "Imagen",
+        component: "formImageSelector",
         icon: "image",
         status: "1",
         data: {},
@@ -289,6 +290,8 @@ var FormNewModule = new Vue({
       setTimeout(() => {
         var elems = document.querySelectorAll(".collapsible");
         M.Collapsible.init(elems, {});
+        var elems = document.querySelectorAll(".modal");
+        var instances = M.Modal.init(elems, {});
         this.loader = false;
       }, 2000);
     },

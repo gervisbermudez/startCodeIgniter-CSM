@@ -6,16 +6,13 @@ var CustomFormLists = new Vue({
     loader: true,
     filter: "",
   },
+  mixins: [mixins],
   computed: {
     filterForms: function () {
       if (!!this.filter) {
         let filterTerm = this.filter.toLowerCase();
         return this.forms.filter((value, index) => {
-          let result =
-            value.form_name.toLowerCase().indexOf(filterTerm) != -1 ||
-            value.form_description.toLowerCase().indexOf(filterTerm) != -1 ||
-            value.user.username.toLowerCase().indexOf(filterTerm) != -1;
-          return result;
+          return this.searchInObject(value, filterTerm);
         });
       } else {
         return this.forms;
@@ -23,27 +20,21 @@ var CustomFormLists = new Vue({
     },
   },
   methods: {
-    getcontentText: function (page) {
-      var span = document.createElement("span");
-      span.innerHTML = page.content;
-      let text = span.textContent || span.innerText;
-      return text.substring(0, 120) + "...";
-    },
     toggleView: function () {
       this.tableView = !this.tableView;
-      this.initPlugins();
+      this.init();
     },
     resetFilter: function () {
       this.filter = "";
     },
-    getPageImagePath(page) {
-      if (page.imagen_file) {
+    getPageImagePath(form) {
+      if (form.imagen_file) {
         return (
           BASEURL +
-          page.imagen_file.file_path.substr(2) +
-          page.imagen_file.file_name +
+          form.imagen_file.file_path.substr(2) +
+          form.imagen_file.file_name +
           "." +
-          page.imagen_file.file_type
+          form.imagen_file.file_type
         );
       }
       return BASEURL + "public/img/default.jpg";
@@ -56,10 +47,13 @@ var CustomFormLists = new Vue({
         data: {},
         dataType: "json",
         success: function (response) {
-          self.forms = response.data;
+          self.forms = response.data.map((element) => {
+            element.user = new User(element.user);
+            return element;
+          });
           setTimeout(() => {
             self.loader = false;
-            self.initPlugins();
+            self.init();
           }, 1000);
         },
         error: function (error) {
@@ -82,7 +76,7 @@ var CustomFormLists = new Vue({
           }
           setTimeout(() => {
             self.loader = false;
-            self.initPlugins();
+            self.init();
           }, 1000);
         },
         error: function (error) {
@@ -91,22 +85,19 @@ var CustomFormLists = new Vue({
         },
       });
     },
-    base_url: function (path) {
-      return BASEURL + path;
-    },
-    initPlugins: function () {
+    init: function () {
       setTimeout(() => {
         var elems = document.querySelectorAll(".tooltipped");
-        var instances = M.Tooltip.init(elems, {});
+        M.Tooltip.init(elems, {});
         var elems = document.querySelectorAll(".dropdown-trigger");
-        var instances = M.Dropdown.init(elems, {});
+        M.Dropdown.init(elems, {});
       }, 3000);
     },
   },
   mounted: function () {
     this.$nextTick(function () {
       this.getForms();
-      this.initPlugins();
+      this.init();
     });
   },
 });
