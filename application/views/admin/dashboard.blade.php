@@ -46,10 +46,10 @@
         </div>
     </div>
     <div class="row" v-show="!loader">
-        <div class="col m6 s12">
+        <div class="col m5 s12">
             <file-explorer-collection :files="files"></file-explorer-collection>
         </div>
-        <div class="col m6 s12">
+        <div class="col m7 s12">
             <albumes-widget :albumes="albumes"></albumes-widget>
         </div>
     </div>
