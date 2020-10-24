@@ -99,5 +99,6 @@ defined('ADMIN_BRAND_NAME') or define('ADMIN_BRAND_NAME', 'Start CMS');
 defined('ADMIN_BRAND_SORT_NAME') or define('ADMIN_BRAND_SORT_NAME', 'Start');
 
 defined('SITE_VERSION') or define('SITE_VERSION', '1.3.2');
+defined('SITE_THEME') or define('SITE_THEME', null);
 defined('SITE_TITLE') or define('SITE_TITLE', 'Modern Business');
 defined('SITE_BRAND') or define('SITE_BRAND', 'Modern Business');
