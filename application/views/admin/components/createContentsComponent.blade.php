@@ -23,7 +23,7 @@
 			<tr>
 				<td>
 					<ul>
-						<li class="collection-item" v-for="(value, key) in Object.values(item.data)" :key="key" v-if="key < 3">@{{ value }}</li>
+						<li class="collection-item" v-for="(value, key) in Object.values(item.data)" :key="key" v-if="key < 2">@{{ value }}</li>
 					</ul>
 				</td>
 				<td><span class="new badge" data-badge-caption="">@{{item.form_custom.form_name}}</span></td>
