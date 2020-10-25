@@ -8,7 +8,7 @@
 		</div>
 		<div class="panel-boddy">
 			<div class="row">
-				<div class="col s4" v-for="(album, index) in albumes" :key="index">
+				<div class="col m4 s12" v-for="(album, index) in albumes" :key="index">
                     <div class="card album">
                         <a :href="base_url('admin/galeria/items/' + album.album_id)" class="card-image">
                             <div class="card-image-container">

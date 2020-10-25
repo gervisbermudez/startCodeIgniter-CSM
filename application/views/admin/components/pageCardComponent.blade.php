@@ -8,7 +8,7 @@
 		</div>
 		<div class="panel-boddy">
 			<div class="row">
-				<div class="col s4" v-for="(page, index) in pages" :key="index" v-if="index < 3">
+				<div class="col s12 m4" v-for="(page, index) in pages" :key="index" v-if="index < 3">
 					<div class="page-widget">
 						<div class="m-portlet m-portlet--bordered-semi m-portlet--full-height  m-portlet--rounded-force">
 							<div class="m-portlet__head m-portlet__head--fit">
