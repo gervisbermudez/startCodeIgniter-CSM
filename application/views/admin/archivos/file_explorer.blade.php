@@ -396,9 +396,23 @@
         </div>
     </div>
     <!-- Modal Structure -->
-        <file-explorer-selector :modal="'folderSelectorMove'" :mode="'folders'" :multiple="false" v-on:notify="moveCallcack"></file-explorer-selector>
+        <file-explorer-selector 
+        :modal="'folderSelectorMove'" 
+        :preselected="[]" 
+        :mode="'folders'" 
+        :multiple="false" 
+        v-on:notify="moveCallcack"
+        >
+        </file-explorer-selector>
     <!-- Modal Structure -->
-        <file-explorer-selector :modal="'folderSelectorCopy'" :mode="'folders'" :multiple="false" v-on:notify="copyCallcack"></file-explorer-selector>
+        <file-explorer-selector 
+        :modal="'folderSelectorCopy'" 
+        :preselected="[]" 
+        :mode="'folders'" 
+        :multiple="false" 
+        v-on:notify="copyCallcack"
+        >
+        </file-explorer-selector>
 
 </div>
 <!-- Modal Structure -->

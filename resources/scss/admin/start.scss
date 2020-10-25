@@ -1690,6 +1690,18 @@ input#search::placeholder {
       top: 10px;
     }
   }
+  .new-folder .card-content {
+    width: 70%;
+}
+
+.new-folder .input-field {
+    margin: 0;
+}
+
+.new-folder input#folder_name {
+    margin: 0;
+    height: 20px;
+}
   .file {
     position: relative;
     label.checkbox {

@@ -1,7 +1,7 @@
 <script type="text/x-template" id="file-explorar-selector">
 <div :id="modal" class="modal modal-fixed-footer">
     <div class="modal-content">
-        <h4><i class="material-icons left">content_copy</i> Agregar Imagenes</h4>
+        <h4><i class="material-icons left">content_copy</i> @{{title}}</h4>
         <div class="files files-selector">
             <div class="row search">
                 <div class="col s12">
@@ -61,7 +61,7 @@
                     <div class="col s6 m6 l4 xl3 folder" v-if="!selectedRoot" v-for="(item, index) in getFolders"
                         :key="index">
                         <label class="checkbox">
-                            <input type="checkbox" v-model="item.selected" />
+                            <input type="checkbox" v-model="item.selected" v-if="showCheckbox(item)"/>
                             <span>&nbsp;</span>
                         </label>
                         <div class="card-panel" @click="navigateFiles(item.file_path + item.file_name + '/')">
@@ -72,6 +72,20 @@
                             </div>
                             <div class="card-content">
                                 <span> @{{ item.file_name }} </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s6 m6 l4 xl3 folder new-folder" v-if="create_folder_process">
+                        <div class="card-panel">
+                            <div class="card-icon">
+                                <div class="icon">
+                                    <i class="material-icons">folder</i>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="input-field">
+                                    <input type="text" id="folder_name" class="validate" value="New Folder" v-on:blur="makeFolderServer();" />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -115,6 +129,7 @@
         </div>
     </div>
     <div class="modal-footer">
+        <a href="#!" class="modal-action waves-effect waves-green btn" v-if="(mode != 'files')" @click="makeNewFolder()"><i class="material-icons left">add_box</i> New Folder</a>
         <button class="btn waves-effect waves-light" type="submit" v-on:click="onClickButton()" name="action">
             Seleccionar
             <i class="material-icons right">send</i>

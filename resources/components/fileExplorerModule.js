@@ -178,7 +178,6 @@ var fileExplorerModule = new Vue({
     },
     renameFileServe() {
       var self = this;
-
       $.ajax({
         type: "POST",
         url: BASEURL + "api/v1/files/rename_file",
@@ -231,6 +230,7 @@ var fileExplorerModule = new Vue({
         selected[0].file_path +
           (selected[0].file_name ? selected[0].file_name + "/" : "")
       );
+      this.navigateFiles(this.curDir);
     },
     copyCallcack(selected) {
       var instance = M.Modal.getInstance(
@@ -242,6 +242,7 @@ var fileExplorerModule = new Vue({
         selected[0].file_path +
           (selected[0].file_name ? selected[0].file_name + "/" : "")
       );
+      this.navigateFiles(this.curDir);
     },
     deleteFile(file) {
       var self = this;

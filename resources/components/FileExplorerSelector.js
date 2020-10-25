@@ -4,6 +4,7 @@ Vue.component("FileExplorerSelector", {
   data: function () {
     return {
       debug: DEBUGMODE,
+      title: "Seleccionar",
       selectedRoot: false,
       root: "./",
       curDir: "",
@@ -11,11 +12,14 @@ Vue.component("FileExplorerSelector", {
       files: [],
       backto: null,
       search: "",
+      create_folder_process: false,
+      new_folder_name: "new folder",
     };
   },
   mixins: [mixins],
   computed: {
     selected() {
+      this.files;
       return this.files.filter((file) => {
         return file.selected == true;
       });
@@ -73,7 +77,46 @@ Vue.component("FileExplorerSelector", {
     },
   },
   methods: {
+    makeNewFolder() {
+      this.create_folder_process = true;
+      setTimeout(() => {
+        $("#folder_name").focus();
+        $("#folder_name").select();
+      }, 1000);
+    },
+    makeFolderServer() {
+      var self = this;
+      $.ajax({
+        type: "POST",
+        url: BASEURL + "api/v1/files/make_dir",
+        data: {
+          path: self.curDir,
+          new_folder_name: $("#folder_name").val()
+        },
+        dataType: "json",
+        success: function (response) {
+          console.log(response);
+          self.create_folder_process = false;
+          self.navigateFiles(self.curDir);
+        } 
+      });
+    },
     showCheckbox(file) {
+      if (
+        this.mode == "folders" && //Only folders
+        !this.multiple && //Single folder selected
+        this.selected.length > 0 && //There are almost one folder seleted
+        file.file_id != this.selected[0].file_id //The current file is not the selected
+      ) {
+        false;
+      } else if (
+        this.mode == "folders" && //Only folders
+        !this.multiple && //Single folder selected
+        this.selected.length > 0 && //There are almost one folder seleted
+        file.file_id == this.selected[0].file_id //The current file is the selected
+      ) {
+        true;
+      }
       if (this.multiple || this.selected.length == 0) {
         return true;
       }
@@ -208,10 +251,6 @@ Vue.component("FileExplorerSelector", {
           self.fileloader = false;
           if (response.code == 200 && response.data.length) {
             self.files = response.data;
-            self.files = self.files.map((file) => {
-              file.selected = false;
-              return file;
-            });
           } else {
             self.files = [];
           }
@@ -308,7 +347,7 @@ Vue.component("FileExplorerSelector", {
       if (!self.preselected) {
         self.preselected = [];
       }
-      if (self.filter) {
+      if (self.filter && self.mode == "files") {
         this.filterFiles(self.filter);
       } else {
         this.navigateFiles(self.root);
