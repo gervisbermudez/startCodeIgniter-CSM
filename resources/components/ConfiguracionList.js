@@ -6,7 +6,8 @@ var ConfiguracionList = new Vue({
     loader: true,
     filter: "",
     sectionActive: "home",
-    routes: ["home", "analytics", "seo", "pixel"],
+    routes: ["home", "analytics", "seo", "pixel", "database"],
+    files: [],
   },
   mixins: [mixins],
   computed: {
@@ -51,7 +52,10 @@ var ConfiguracionList = new Vue({
     },
     getConfigValueBoolean: function (value, prop = "config_name") {
       let config_object = this.getConfig(value, prop);
-      return config_object && config_object.config_value ==  config_object.config_data.true;
+      return (
+        config_object &&
+        config_object.config_value == config_object.config_data.true
+      );
     },
     updateConfig(e, prop = "config_name") {
       value = e.target.value;
@@ -64,15 +68,15 @@ var ConfiguracionList = new Vue({
       config = this.getConfig(prop);
 
       if (value) {
-        config.config_data.perm_values.forEach(element => {
-          if (element  == config.config_data.true) {
-            value = element
+        config.config_data.perm_values.forEach((element) => {
+          if (element == config.config_data.true) {
+            value = element;
           }
         });
       } else {
-        config.config_data.perm_values.forEach(element => {
-          if (element  != config.config_data.true) {
-            value = element
+        config.config_data.perm_values.forEach((element) => {
+          if (element != config.config_data.true) {
+            value = element;
           }
         });
       }
@@ -217,10 +221,81 @@ var ConfiguracionList = new Vue({
     base_url: function (path) {
       return BASEURL + path;
     },
+    reloadFileExplorer() {
+      var e = this;
+      e.files = [];
+      var t = BASEURL + "api/v1/files/reload_file_explorer";
+      $.ajax({
+        type: "POST",
+        url: t,
+        data: {
+          path: "./backups/database/",
+        },
+        dataType: "json",
+        success: function (t) {
+          e.getDatabaseBackups();
+        },
+      });
+    },
+    getDatabaseBackups() {
+      var self = this;
+      var params = {
+        path: "./backups/database/",
+      };
+      $.ajax({
+        type: "GET",
+        url: BASEURL + "api/v1/files/",
+        data: params,
+        dataType: "json",
+        success: function (response) {
+          self.fileloader = false;
+          if (response.code == 200 && response.data.length) {
+            self.files = response.data.map(file => new ExplorerFile(file));
+          } else {
+            self.files = [];
+          }
+        },
+      });
+    },
+    deleteFile(file) {
+      var self = this;
+      var file = file;
+      $.ajax({
+        type: "POST",
+        url: BASEURL + "api/v1/files/delete/" + file.file_id,
+        data: {
+          file: file,
+        },
+        dataType: "json",
+        success: function (response) {
+          if (response.code == 200) {
+            html = "<span>Done! </span>";
+            M.toast({ html: html });
+            self.getDatabaseBackups();
+          }
+        },
+      });
+    },
+    createDatabaseBackup() {
+      fetch(BASEURL + "api/v1/config/backup_database")
+        .then((response) => response.json())
+        .then((response) => {
+          if (response.code == "200") {
+            M.toast({ html: response.result });
+            this.reloadFileExplorer();
+          } else {
+            M.toast({ html: response.result });
+          }
+        })
+        .catch((err) => {
+          M.toast({ html: "Error code: 001" });
+        });
+    },
   },
   mounted: function () {
     this.$nextTick(function () {
       this.getconfigurations();
+      this.getDatabaseBackups();
       window.addEventListener(
         "popstate",
         (event) => {
