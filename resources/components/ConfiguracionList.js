@@ -272,6 +272,8 @@ var ConfiguracionList = new Vue({
             html = "<span>Done! </span>";
             M.toast({ html: html });
             self.getDatabaseBackups();
+            var elems = document.querySelectorAll('.collapsible');
+            var instances = M.Collapsible.init(elems, {});
           }
         },
       });
