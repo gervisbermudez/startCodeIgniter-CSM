@@ -397,7 +397,7 @@
         </div>
     </transition>
 </div>
-@include('admin.components.configurationcomponent')
+@include('admin.components.configurationComponent')
 @endsection
 
 @section('footer_includes')
