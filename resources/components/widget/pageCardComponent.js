@@ -18,6 +18,8 @@ Vue.component("pageCard", {
       if (page.status == 1) {
         return BASEURL + page.path;
       }
+    },
+    getPageEditPath: function (page) {
       return BASEURL + "admin/paginas/editar/" + page.page_id;
     },
   },

@@ -8,7 +8,7 @@
 		</div>
 		<div class="panel-boddy">
 			<div class="row">
-				<div class="col s4" v-for="(page, index) in pages" :key="index">
+				<div class="col s4" v-for="(page, index) in pages" :key="index" v-if="index < 3">
 					<div class="page-widget">
 						<div class="m-portlet m-portlet--bordered-semi m-portlet--full-height  m-portlet--rounded-force">
 							<div class="m-portlet__head m-portlet__head--fit">
@@ -60,11 +60,13 @@
 										<div class="m-widget19__body"  v-html="contentText(page)"></div>
 									</div>
 									<div class="m-widget19__action">
-										<a :href="getPageFullPath(page)" class="btn m-btn--pill btn-secondary m-btn m-btn--hover-brand m-btn--custom">
-											<span v-if="page.status == 1">
+											<a :href="getPageFullPath(page)" class="btn m-btn--pill btn-secondary m-btn m-btn--hover-brand m-btn--custom">
+											<span>
 												View
 												</span>
-												<span v-else>
+											</a>
+											<a :href="getPageEditPath(page)" class="btn m-btn--pill btn-secondary m-btn m-btn--hover-brand m-btn--custom">
+												<span>
 												Edit
 												</span>
 											</a>
