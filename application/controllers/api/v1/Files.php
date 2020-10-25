@@ -328,7 +328,7 @@ class Files extends REST_Controller
     {
         $filter_name = $this->input->post('filter_name');
         $filter_value = $this->input->post('filter_value');
-        $result = $this->File->get_filter_files($filter_name, $filter_value);
+        $result = $this->File->get_filter_files($filter_name, $filter_value, null, array('date_update', "DESC"));
         $response = array(
             'code' => 200,
             'data' => $result,

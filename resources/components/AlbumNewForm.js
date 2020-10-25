@@ -50,8 +50,6 @@ var AlbumNewForm = new Vue({
     copyCallcack(selectedFiles) {
       let instance = M.Modal.getInstance($(".modal"));
       instance.close();
-      console.log(selectedFiles);
-
       this.items = [
         ...selectedFiles.map((item) => {
           let album_item = {

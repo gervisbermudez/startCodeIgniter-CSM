@@ -1322,57 +1322,13 @@ div#dropnotify {
   }
 }
 
-#fileUploader {
-  .row.search {
-    height: 70px;
-    margin-bottom: 0px;
-  }
-
-  .search-nav {
-    background-color: $color4;
-  }
-
-  .breadcrumb-nav {
-    margin-left: 20px;
-  }
-
-  .file {
-    cursor: pointer;
-
-    label {
-      position: absolute;
-      right: 0px;
-      top: 5px;
-      z-index: 9;
-    }
-  }
-
-  .card-image.waves-effect.waves-block.waves-light {
-    height: 60px;
-  }
-
-  .file.icon.text-center {
-    text-align: center;
-    font-size: 30px;
-  }
-
-  .card .card-content {
-    padding: 10px;
-  }
-
-  .card-image {
-    height: 130px;
-    background-size: cover !important;
-  }
-}
-
 .mainPageImage .close {
   position: absolute;
   right: 10px;
   top: 10px;
   z-index: 9;
   cursor: pointer;
-  color: #ffffffde;
+  color: #000000;
 }
 
 .fade-enter-active,
@@ -1642,7 +1598,7 @@ div.card-image > div > i.material-icons.tooltipped {
   z-index: 9;
 }
 
-div#folderSelector {
+.file-explorar-selector {
   width: 90%;
 }
 
@@ -1681,6 +1637,41 @@ input#search::placeholder {
     opacity: 0;
   }
 }
+
+.files.files-selector nav {
+  background-color: #fb9678;
+  height: 50px;
+  i.material-icons,
+  .input-field .label-icon i {
+    color: #fff;
+  }
+
+  .input-field input[type="search"] ~ .mdi-navigation-close,
+  .input-field input[type="search"] ~ .material-icons {
+    color: transparent;
+  }
+
+  .input-field input[type="search"]:focus:not(.browser-default) + label i,
+  .input-field
+    input[type="search"]:focus:not(.browser-default)
+    ~ .mdi-navigation-close,
+  .input-field
+    input[type="search"]:focus:not(.browser-default)
+    ~ .material-icons {
+    color: #444;
+  }
+
+  .col.s12.breadcrumb-nav {
+    height: 50px;
+    line-height: 50px;
+    a {
+      color: #fff;
+    }
+  }
+}
+.file-drop-zone.clearfix {
+  overflow: hidden;
+}
 .files.files-selector {
   .folder {
     position: relative;
@@ -1692,16 +1683,16 @@ input#search::placeholder {
   }
   .new-folder .card-content {
     width: 70%;
-}
+  }
 
-.new-folder .input-field {
+  .new-folder .input-field {
     margin: 0;
-}
+  }
 
-.new-folder input#folder_name {
+  .new-folder input#folder_name {
     margin: 0;
     height: 20px;
-}
+  }
   .file {
     position: relative;
     label.checkbox {

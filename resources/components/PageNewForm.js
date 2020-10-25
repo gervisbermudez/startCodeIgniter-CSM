@@ -590,6 +590,12 @@ var PageNewForm = new Vue({
         this.getTemplates();
       }
     },
+    copyCallcack(files) {
+      let file = files[0];
+      this.mainImage.push(file);
+      let instance = M.Modal.getInstance($("#fileUploader"));
+      instance.close();
+    },
     initPlugins() {
       M.Chips.init(document.getElementById("pageTags"), {});
       tinymce.init({
@@ -640,9 +646,6 @@ var PageNewForm = new Vue({
         var instances = M.FormSelect.init(elems, {});
       }, 1000);
     },
-    loadFiles() {
-      fileUploaderModule.navigateFiles(fileUploaderModule.root);
-    },
   },
   mounted: function () {
     this.$nextTick(function () {
@@ -650,32 +653,6 @@ var PageNewForm = new Vue({
       this.initPlugins();
       this.checkEditMode();
       this.getCategories();
-      window.uploadCallback = (event, previewId, index, fileId) => {
-        console.log(event, previewId, index, fileId);
-        var self = this;
-        var url = BASEURL + "admin/archivos/ajax_get_last_created_file";
-        $.ajax({
-          type: "POST",
-          url: url,
-          data: {},
-          dataType: "json",
-          success: function (response) {
-            self.debug ? console.log(url, response) : null;
-            if (response.code == 200) {
-              self.mainImage = response.data;
-              setTimeout(() => {
-                var elems = document.querySelectorAll(".tooltipped");
-                var instances = M.Tooltip.init(elems, {});
-              }, 3000);
-            }
-          },
-        });
-      };
-      fileUploaderModule.multiple = false;
-      fileUploaderModule.callBakSelectedImagen = (selectedFiles) => {
-        let file = selectedFiles[0];
-        PageNewForm.mainImage.push(file);
-      };
     });
   },
 });
