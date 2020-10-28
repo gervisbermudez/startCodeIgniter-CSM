@@ -154,9 +154,7 @@ var userProfile = new Vue({
       return BASEURL + path;
     },
     getAvatarUrl(avatar) {
-      return this.base_url(
-        "public/img/profile/" + this.user.username + "/" + avatar
-      );
+      return this.user.get_avatarurl();
     },
     initPlugins: function () {
       M.Tabs.init(document.getElementById("user-tabs"), {});
@@ -167,37 +165,20 @@ var userProfile = new Vue({
         M.Dropdown.init(elems, {});
       }, 4000);
     },
+    uploadCallback: function (seletedFiles) {
+      let instance = M.Modal.getInstance($(".modal"));
+      instance.close();
+      console.log(seletedFiles);
+      let file = new ExplorerFile(seletedFiles[0]);
+      this.user.user_data.avatar = file.get_relative_file_path();
+      this.updateAvatar();
+    }
   },
   mounted: function () {
     this.$nextTick(function () {
       this.getUser();
       this.getUserTimeline();
       this.initPlugins();
-      window.uploadCallback = (event, previewId, index, fileId) => {
-        console.log(fileId);
-        this.user.user_data.avatar = fileId.substring(fileId.indexOf("_") + 1);
-        this.updateAvatar();
-        M.toast({ html: "File Uploaded!" });
-        let instance = M.Modal.getInstance($("#modal1"));
-        instance.close();
-      };
-      fileUploaderModule.multiple = false;
-      fileUploaderModule.callBakSelectedImagen = (selectedFiles) => {
-        console.log(selectedFiles);
-        let file = selectedFiles[0];
-        userProfile.user.user_data.avatar =
-          file["file_name"] + "." + file["file_type"];
-        fileUploaderModule.copyFileTo(
-          selectedFiles[0],
-          "./public/img/profile/" + this.user.username + "/",
-          function (response) {
-            if (response.code == 200) {
-              userProfile.updateAvatar();
-              M.toast({ html: "<span>Done! </span>" });
-            }
-          }
-        );
-      };
     });
   },
 });

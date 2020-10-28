@@ -3,7 +3,7 @@
         <a href="#" data-target="slide-out" class="sidenav-trigger show-on-medium-and-down"><i class="material-icons">menu</i></a>
         <a class='dropdown-trigger right' href='#' data-target='user_dropdown'>
             @if (userdata('avatar'))
-            <img src="{{base_url(IMGPROFILEPATH) . userdata('username') . '/' . userdata('avatar') }}" alt="" class="circle z-depth-1" />
+            <img src="{{base_url(userdata('avatar'))}}" alt="" class="circle z-depth-1" />
             @else
             <i class="material-icons circle grey lighten-5 profile z-depth-1">account_circle</i>
             @endif
@@ -23,7 +23,7 @@
                 </div>
                 <a href="{{base_url('admin/usuarios/ver/' . userdata('user_id')) }}" class="user-avatar">
                     @if (userdata('avatar'))
-                    <img src="{{base_url(IMGPROFILEPATH) . userdata('username') . '/' . userdata('avatar') }}" alt="" class="circle z-depth-1" />
+                    <img src="{{base_url(userdata('avatar')) }}" alt="" class="circle z-depth-1" />
                     @else
                     <i class="material-icons circle grey lighten-5 profile z-depth-1">account_circle</i>
                     @endif

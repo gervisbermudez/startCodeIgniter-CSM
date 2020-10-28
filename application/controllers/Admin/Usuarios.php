@@ -45,7 +45,7 @@ class Usuarios extends MY_Controller
 
             $links = array(
                 'Editar' => array('href' => base_url('admin/usuarios/edit/' . $user_id)),
-                'Cambiar avatar' => array('href' => '#modal2', 'class' => 'modal-trigger'),
+                'Cambiar avatar' => array('href' => '#folderSelector', 'class' => 'modal-trigger'),
                 'Eliminar' => array('href' => '#!'),
                 'Bloquear' => array('href' => '#!'),
             );
@@ -53,7 +53,7 @@ class Usuarios extends MY_Controller
             if ($user_id == $this->session->userdata('user_id')) {
                 $links = array(
                     'Editar' => array('href' => base_url('admin/usuarios/edit/' . $user_id)),
-                    'Cambiar avatar' => array('href' => '#modal2', 'class' => 'modal-trigger'),
+                    'Cambiar avatar' => array('href' => '#folderSelector', 'class' => 'modal-trigger'),
                 );
             }
 

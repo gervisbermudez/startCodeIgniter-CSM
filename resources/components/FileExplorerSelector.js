@@ -1,6 +1,6 @@
 Vue.component("FileExplorerSelector", {
   template: "#file-explorar-selector",
-  props: ["mode", "multiple", "filter", "modal", "ignore", "preselected", "uploader"], //mode Can be "all", "files", "folders"
+  props: ["mode", "multiple", "filter", "modal", "ignore", "preselected", "uploader", "initialdir"], //mode Can be "all", "files", "folders"
   data: function () {
     return {
       debug: DEBUGMODE,
@@ -17,6 +17,11 @@ Vue.component("FileExplorerSelector", {
     };
   },
   mixins: [mixins],
+  watch: { 
+    initialdir: function(newVal) {
+      this.curDir = newVal;
+    }
+  },
   computed: {
     selected() {
       this.files;

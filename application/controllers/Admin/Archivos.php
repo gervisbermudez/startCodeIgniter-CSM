@@ -41,8 +41,6 @@ class Archivos extends MY_Controller
 
     }
 
- 
-
     public function ajaxDeleteFile()
     {
         $archivo = $this->input->post('file');
@@ -82,9 +80,23 @@ class Archivos extends MY_Controller
         $result = $loaderClient->upload();
         //persit on database
         if (!isset($result['error'])) {
-            $insert_array = $this->File->get_array_save_file($_POST['fileName'], $_POST['curDir']);
-            $this->File->set_data($insert_array, $this->File->table);
-            $result['file_object'] = $this->File->get_data(array('file_id' => $this->db->insert_id()));
+            $file = new File();
+            $insert_array = $file->get_array_save_file($_POST['fileName'], $_POST['curDir']);
+            $find_result = $file->find_with(
+                [
+                "file_path" => $insert_array['file_path'],
+                "file_name" => $insert_array['file_name'],
+                "file_type" => $insert_array['file_type'],
+            ]
+            );
+            if (!$find_result) {
+                $this->File->set_data($insert_array, $this->File->table);
+                $result['file_object'] = $this->File->get_data(array('file_id' => $this->db->insert_id()));
+            }else{
+                $file->date_update = date("Y-m-d H:i:s");
+                $file->save();
+                $result['file_object'] = $file->as_data();
+            }
         }
 
         $this->output
