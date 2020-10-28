@@ -1331,6 +1331,10 @@ div#dropnotify {
   color: #000000;
 }
 
+.file-preview .fileinput-remove {
+  display: none;
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.5s;

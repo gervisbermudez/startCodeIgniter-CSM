@@ -18,6 +18,16 @@
   background: #edf0f5 !important;
 }
 
+.card.banner .dropdown-trigger.right {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 9;
+  i {
+    color: #000;
+  }
+}
+
 .banner {
   .card-image:before {
     content: "";
@@ -27,14 +37,6 @@
     z-index: 99999;
     background: rgba(0, 0, 0, 0.42);
     display: block;
-  }
-
-  i {
-    position: absolute;
-    top: -56px;
-    left: 20px;
-    font-size: 14px;
-    padding: 10px;
   }
 
   .avatar {

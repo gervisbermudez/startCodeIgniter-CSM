@@ -253,9 +253,6 @@ class User {
     if (this.user_data.avatar) {
       return (
         BASEURL +
-        "public/img/profile/" +
-        this.username +
-        "/" +
         this.user_data.avatar
       );
     } else {
@@ -351,6 +348,10 @@ class ExplorerFile {
 
   get_filename = () => {
     return this.file_name + "." + this.file_type;
+  };
+
+  get_relative_file_path = () => {
+    return this.file_path + this.get_filename();
   };
 
   get_full_file_path = () => {
