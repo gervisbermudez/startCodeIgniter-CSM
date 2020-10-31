@@ -33,7 +33,7 @@
                     <div class="card-content">
                         <div v-if="userdata" class="user" tabindex="0">
                             <a href="#!" class="user-avatar">
-                                <img :src="userdata.user_data.avatar" alt="" class="circle z-depth-1">
+                                <img :src="userdata.get_avatarurl()" alt="" class="circle z-depth-1">
                             </a>
                             <a class="avatar-username" href="#!">
                             <span class="name">@{{userdata.user_data.nombre + ' ' + userdata.user_data.apellido}}</span>
