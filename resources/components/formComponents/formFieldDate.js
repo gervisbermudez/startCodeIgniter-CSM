@@ -1,5 +1,5 @@
-Vue.component("formTextFormat", {
-  template: "#formTextFormat-template",
+Vue.component("formFieldDate", {
+  template: "#formFieldDate-template",
   props: [
     "tab-parent",
     "field-ref",
@@ -10,16 +10,24 @@ Vue.component("formTextFormat", {
   ],
   data: function () {
     return {
-      form_field_id: null,
-      fieldID: "text_format_" + this.makeid(10),
-      fieldName: "text_format",
-      fielApiID: "text_format_" + this.makeid(4),
-      text: null,
-      form_custom_data_id: null,
       fieldPlaceholder: "",
+      form_field_id: null,
+      fieldID: this.makeid(10),
+      fieldName: "Field Date",
+      fielApiID: "field_date",
+      fielFormat: "yyyy-mm-dd",
+      date: null,
+      form_custom_data_id: null,
     };
   },
   methods: {
+    convertfielApiID() {
+      this.fielApiID = this.fieldName
+        .toLowerCase()
+        .replace(/ /g, "_")
+        .replace(/[^\w-]+/g, "");
+      this.fieldPlaceholder = this.fieldName.toLowerCase();
+    },
     makeid(length) {
       var result = "";
       var characters =
@@ -32,35 +40,26 @@ Vue.component("formTextFormat", {
       }
       return result;
     },
-    convertfielApiID() {
-      this.fielApiID = this.fieldName
-        .toLowerCase()
-        .replace(/ /g, "_")
-        .replace(/[^\w-]+/g, "");
-    },
     getData() {
       return {
+        fieldPlaceholder: this.fieldPlaceholder,
         fieldID: this.fieldID,
         fieldName: this.fieldName,
         fielApiID: this.fielApiID,
         form_custom_data_id: this.form_custom_data_id,
+        fielFormat: this.fielFormat,
       };
     },
     getContentData() {
       return {
-        text: this.text,
+        date: this.date,
       };
     },
     init() {
-      setTimeout(() => {        
-        tinymce.init({
-          selector: "#" + this.fieldID,
-          plugins: ["link table code"],
-          setup: (editor) => {
-            editor.on("Change", (e) => {
-              this.text = tinymce.editors[this.fieldID].getContent();
-            });
-          },
+      setTimeout(() => {
+        var elems = document.querySelectorAll(".datepicker");
+        M.Datepicker.init(elems, {
+          format: this.fielFormat,
         });
       }, 2000);
     },
@@ -76,7 +75,8 @@ Vue.component("formTextFormat", {
       if (this.fieldData) {
         this.form_field_id = this.fieldData.form_field_id;
         this.form_custom_data_id = this.fieldData.form_custom_data_id;
-        this.text = this.fieldData.form_value.text;
+        this.title = this.fieldData.form_value.title;
+        this.fielFormat = this.fieldData.fielFormat;
       }
       this.init();
     });

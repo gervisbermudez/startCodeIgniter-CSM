@@ -1,4 +1,7 @@
 @include('admin.components.formTitle')
+@include('admin.components.formFieldDate')
+@include('admin.components.formFieldTime')
+@include('admin.components.formFieldNumber')
 @include('admin.components.formTextArea')
 @include('admin.components.formTextFormat')
 @include('admin.components.FileExplorerSelector')

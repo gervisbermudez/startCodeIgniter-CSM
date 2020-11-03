@@ -59,7 +59,7 @@
                     <div id="simple-list">
                         <div class="row" v-for="(field, index) in tab.form_fields">
                             <div class="col s12 component">
-                                <a class="waves-effect waves-light btn right red darken-2 tooltipped" data-position="left" data-tooltip="Remove Field" @click="removeField(i, index)"><i class="material-icons">delete</i></a>
+                                <a class="waves-effect waves-light btn right red darken-2" @click="removeField(i, index)"><i class="material-icons">delete</i></a>
                                 <br>
                                 <component :serve-data="field.data" :is="field.component" :tab-parent="tab" :field-ref-index="index" :field-ref=" field" :configurable="true" ref="field.component">
                                 </component>

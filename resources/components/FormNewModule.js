@@ -48,13 +48,15 @@ var FormNewModule = new Vue({
       {
         field_name: "date",
         displayName: "Fecha",
+        component: "formFieldDate",
         icon: "date_range",
         status: "1",
         data: {},
       },
       {
-        field_name: "timestamp",
-        displayName: "Fecha y Hora",
+        field_name: "time",
+        displayName: "Hora",
+        component: "formFieldTime",
         icon: "access_time",
         status: "1",
         data: {},
@@ -62,6 +64,7 @@ var FormNewModule = new Vue({
       {
         field_name: "number",
         displayName: "Numero",
+        component: "formFieldNumber",
         icon: "looks_one",
         status: "1",
         data: {},
@@ -225,7 +228,11 @@ var FormNewModule = new Vue({
             self.form_custom_id = response.data.form_custom_id;
             self.editMode = true;
             self.loader = false;
-            M.toast({ html: "Formulario Guardado" });
+            M.toast({
+              html: `<span>Formulario Guardado</span> <a class="btn-flat toast-action" href="${
+                BASEURL + "admin/formularios/addData/" + self.form_custom_id
+              }"> Agregar Data</a>`,
+            });
           }
         },
         error: function (response) {
