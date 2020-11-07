@@ -99,7 +99,7 @@ gulp.task('concat_form_content_components', function () {
         .pipe(gulp.dest(public + '/js/components/'));
 });
 
-gulp.task('form_task_series', gulp.series('concat_form_components', 'concat_form_content_components'));
+gulp.task('form_task_series', gulp.series('concat_form_components', 'concat_form_content_components', 'compile_sass'));
 
 gulp.task("watch_resources", function () {
     gulp.watch([resources + '**/*.js', resources + '**/*.scss', '!' + resources + 'components/*.scss'], gulp.series('task_series'));
