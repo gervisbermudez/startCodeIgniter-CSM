@@ -48,7 +48,7 @@ Vue.component("formTextFormat", {
     },
     getContentData() {
       return {
-        text: this.text,
+        formatText: this.text,
       };
     },
     init() {

@@ -4,5 +4,6 @@
 @include('admin.components.formFieldNumber')
 @include('admin.components.formTextArea')
 @include('admin.components.formTextFormat')
+@include('admin.components.formFieldSelect')
 @include('admin.components.FileExplorerSelector')
 @include('admin.components.formImageSelector')

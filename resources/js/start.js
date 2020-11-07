@@ -212,6 +212,80 @@ var mixins = {
   },
 };
 
+formsElements = [
+  {
+    field_name: "title",
+    displayName: "Titulo",
+    icon: "format_color_text",
+    component: "formFieldTitle",
+    status: "1",
+    data: {},
+  },
+  {
+    field_name: "text",
+    displayName: "Texto",
+    icon: "short_text",
+    component: "formFieldTextArea",
+    status: "1",
+    data: {},
+  },
+  {
+    field_name: "formatText",
+    displayName: "Texto con formato",
+    component: "formTextFormat",
+    icon: "format_size",
+    status: "1",
+    data: {},
+  },
+  {
+    field_name: "image",
+    displayName: "Imagen",
+    component: "formImageSelector",
+    icon: "image",
+    status: "1",
+    data: {},
+  },
+  {
+    field_name: "date",
+    displayName: "Fecha",
+    component: "formFieldDate",
+    icon: "date_range",
+    status: "1",
+    data: {},
+  },
+  {
+    field_name: "time",
+    displayName: "Hora",
+    component: "formFieldTime",
+    icon: "access_time",
+    status: "1",
+    data: {},
+  },
+  {
+    field_name: "number",
+    displayName: "Numero",
+    component: "formFieldNumber",
+    icon: "looks_one",
+    status: "1",
+    data: {},
+  },
+  {
+    field_name: "dropdown_select",
+    displayName: "Select",
+    component: "formFieldSelect",
+    status: "1",
+    icon: "list",
+    data: {},
+  },
+  {
+    field_name: "bolean",
+    displayName: "Bolean",
+    status: "1",
+    icon: "check_circle",
+    data: {},
+  },
+];
+
 class User {
   user_id = null;
   username = "";
@@ -251,18 +325,15 @@ class User {
 
   get_avatarurl = () => {
     if (this.user_data.avatar) {
-      return (
-        BASEURL +
-        this.user_data.avatar
-      );
+      return BASEURL + this.user_data.avatar;
     } else {
       return BASEURL + "public/img/profile/default.png";
     }
   };
 
   get_edit_url = () => {
-  return BASEURL + "admin/usuarios/edit/"+ this.user_id;
-  }
+    return BASEURL + "admin/usuarios/edit/" + this.user_id;
+  };
 }
 
 class Page {
@@ -448,7 +519,7 @@ class Config_data {
   }
 }
 
-if ("serviceWorker" in navigator && window.location.protocol == 'https:') {
+if ("serviceWorker" in navigator && window.location.protocol == "https:") {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("/service-worker.min.js", {
       scope: "/admin",

@@ -1335,6 +1335,15 @@ div#dropnotify {
   display: none;
 }
 
+.formFieldselect {
+  .collapsible {
+    position: relative;
+  }
+  .title.grey-text.text-darken-2 {
+    overflow: hidden;
+  }
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.5s;
