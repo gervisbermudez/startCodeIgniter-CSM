@@ -280,6 +280,7 @@ formsElements = [
   {
     field_name: "bolean",
     displayName: "Bolean",
+    component: "formFieldBoolean",
     status: "1",
     icon: "check_circle",
     data: {},

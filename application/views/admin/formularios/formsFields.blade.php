@@ -5,5 +5,6 @@
 @include('admin.components.formTextArea')
 @include('admin.components.formTextFormat')
 @include('admin.components.formFieldSelect')
+@include('admin.components.formFieldBoolean')
 @include('admin.components.FileExplorerSelector')
 @include('admin.components.formImageSelector')
