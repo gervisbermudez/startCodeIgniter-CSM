@@ -3,70 +3,80 @@
 @section('title', $title)
 
 @section('footer')
-    @include('site.shared.navbar')
+@include('site.shared.navbar')
 @endsection
 
 @section('content')
-  <!-- Page Content -->
-  <div class="container">
+<!-- Page Content -->
+<div class="container">
 
+  <div class="section">
     <!-- Page Heading/Breadcrumbs -->
     <h1 class="mt-4 mb-3">Services
       <small>Subheading</small>
     </h1>
+  </div>
 
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item">
-        <a href="index.html">Home</a>
-      </li>
-      <li class="breadcrumb-item active">Services</li>
-    </ol>
 
-    <!-- Image Header -->
-    <img class="img-fluid rounded mb-4" src="http://placehold.it/1200x300" alt="">
-
-    <!-- Marketing Icons Section -->
-    <div class="row">
-      <div class="col-lg-4 mb-4">
-        <div class="card h-100">
-          <h4 class="card-header">Card Title</h4>
-          <div class="card-body">
-            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sapiente esse necessitatibus neque.</p>
-          </div>
-          <div class="card-footer">
-            <a href="#" class="btn btn-primary">Learn More</a>
-          </div>
+  <div class="section">
+    <nav class="breadcrumbs">
+      <div class="nav-wrapper">
+        <div class="col s12">
+          <a href="{{base_url()}}" class="breadcrumb">Home</a>
+          <a href="#!" class="breadcrumb">Services</a>
         </div>
       </div>
-      <div class="col-lg-4 mb-4">
-        <div class="card h-100">
-          <h4 class="card-header">Card Title</h4>
-          <div class="card-body">
-            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis ipsam eos, nam perspiciatis natus commodi similique totam consectetur praesentium molestiae atque exercitationem ut consequuntur, sed eveniet, magni nostrum sint fuga.</p>
-          </div>
-          <div class="card-footer">
-            <a href="#" class="btn btn-primary">Learn More</a>
-          </div>
+    </nav>
+  </div>
+
+  <!-- Image Header -->
+  <img class="responsive-img rounded mb-4" src="http://placehold.it/1200x300" alt="">
+
+  <!-- Marketing Icons Section -->
+  <div class="row">
+    <div class="col l4 mb-4">
+      <div class="card h-100">
+        <div class="card-content">
+          <h4 class="card-title">Card Title</h4>
+          <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sapiente esse necessitatibus
+            neque.</p>
         </div>
-      </div>
-      <div class="col-lg-4 mb-4">
-        <div class="card h-100">
-          <h4 class="card-header">Card Title</h4>
-          <div class="card-body">
-            <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sapiente esse necessitatibus neque.</p>
-          </div>
-          <div class="card-footer">
-            <a href="#" class="btn btn-primary">Learn More</a>
-          </div>
+        <div class="card-action">
+          <a href="#" class="btn btn-primary">Learn More</a>
         </div>
       </div>
     </div>
-    <!-- /.row -->
-
+    <div class="col l4 mb-4">
+      <div class="card h-100">
+        <div class="card-content">
+          <h4 class="card-title">Card Title</h4>
+          <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sapiente esse necessitatibus
+            neque.</p>
+        </div>
+        <div class="card-action">
+          <a href="#" class="btn btn-primary">Learn More</a>
+        </div>
+      </div>
+    </div>
+    <div class="col l4 mb-4">
+      <div class="card h-100">
+        <div class="card-content">
+          <h4 class="card-title">Card Title</h4>
+          <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Sapiente esse necessitatibus
+            neque.</p>
+        </div>
+        <div class="card-action">
+          <a href="#" class="btn btn-primary">Learn More</a>
+        </div>
+      </div>
+    </div>
   </div>
-  <!-- /.container -->
+  <!-- /.row -->
+
+</div>
+<!-- /.container -->
 @endsection
 
 @section('footer')
-    @include('site.shared.footer')
+@include('site.shared.footer')
 @endsection

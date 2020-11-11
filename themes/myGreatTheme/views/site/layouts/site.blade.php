@@ -10,9 +10,10 @@
         @yield('content')
     </div>
     @include('site.shared.footer')
-    <!-- Bootstrap core JavaScript -->
-    <script src="public/jquery/jquery.min.js"></script>
-    <script src="public/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!--  Scripts-->
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="<?php echo base_url(getThemePublicPath()); ?>js/materialize.js"></script>
+  <script src="<?php echo base_url(getThemePublicPath()); ?>js/init.js"></script>
     @yield('footer_includes')
 </body>
 </html>

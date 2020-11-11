@@ -27,10 +27,10 @@
     <div class="row">
 
         <!-- Post Content Column -->
-        <div class="col-lg-8">
+        <div class="col l8">
             @if ($page->main_image)
             <!-- Preview Image -->
-            <img class="img-fluid rounded" src="{{base_url($page->main_image->file_front_path)}}" alt="{{$page->title}}">
+            <img class="responsive-img rounded" src="{{base_url($page->main_image->file_front_path)}}" alt="{{$page->title}}">
 
             <hr>
             @endif
@@ -64,7 +64,7 @@
                 <h5 class="card-header">Categories</h5>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-lg-6">
+                        <div class="col l6">
                             <ul class="list-unstyled mb-0">
                                 <li>
                                     <a href="#">Web Design</a>
@@ -77,7 +77,7 @@
                                 </li>
                             </ul>
                         </div>
-                        <div class="col-lg-6">
+                        <div class="col l6">
                             <ul class="list-unstyled mb-0">
                                 <li>
                                     <a href="#">JavaScript</a>

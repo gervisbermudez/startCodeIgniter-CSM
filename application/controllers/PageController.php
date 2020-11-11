@@ -38,8 +38,8 @@ class PageController extends Base_Controller
         $data['meta'] = $this->getPageMetas($pageInfo);
         $data['title'] = $pageInfo->page_data["title"] ? $pageInfo->page_data["title"] : $pageInfo->title;
         $data['layout'] = $pageInfo->layout == 'default' ? 'site' : $pageInfo->layout;
-        $data['headers_includes'] = $pageInfo->page_data["headers_includes"] ? $pageInfo->page_data["headers_includes"] : "";
-        $data['footer_includes'] = $pageInfo->page_data["footer_includes"] ? $pageInfo->page_data["footer_includes"] : "";
+        $data['headers_includes'] = isset($pageInfo->page_data["headers_includes"]) ? $pageInfo->page_data["headers_includes"] : "";
+        $data['footer_includes'] = isset($pageInfo->page_data["footer_includes"]) ? $pageInfo->page_data["footer_includes"] : "";
         $template = $pageInfo->template == 'default' ? 'template' : $pageInfo->template;
 
         echo $this->blade->view("site.templates." . $template, $data);
@@ -61,8 +61,8 @@ class PageController extends Base_Controller
         $data['meta'] = $this->getPageMetas($pageInfo);
 
         $data['title'] = $pageInfo->page_data["title"] ? $pageInfo->page_data["title"] : $pageInfo->title;
-        $data['headers_includes'] = $pageInfo->page_data["headers_includes"] ? $pageInfo->page_data["headers_includes"] : "";
-        $data['footer_includes'] = $pageInfo->page_data["footer_includes"] ? $pageInfo->page_data["footer_includes"] : "";
+        $data['headers_includes'] = isset($pageInfo->page_data["headers_includes"]) ? $pageInfo->page_data["headers_includes"] : "";
+        $data['footer_includes'] = isset($pageInfo->page_data["footer_includes"]) ? $pageInfo->page_data["footer_includes"] : "";
         $data['layout'] = $pageInfo->layout == 'default' ? 'site' : $pageInfo->layout;
         $template = $pageInfo->template == 'default' ? 'template' : $pageInfo->template;
 

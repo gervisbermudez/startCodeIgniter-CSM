@@ -24,7 +24,7 @@
 
     <!-- Content Row -->
     <div class="row">
-      <div class="col-lg-4 mb-4">
+      <div class="col l4 mb-4">
         <div class="card h-100">
           <h3 class="card-header">Basic</h3>
           <div class="card-body">
@@ -41,7 +41,7 @@
           </ul>
         </div>
       </div>
-      <div class="col-lg-4 mb-4">
+      <div class="col l4 mb-4">
         <div class="card card-outline-primary h-100">
           <h3 class="card-header bg-primary text-white">Plus</h3>
           <div class="card-body">
@@ -58,7 +58,7 @@
           </ul>
         </div>
       </div>
-      <div class="col-lg-4 mb-4">
+      <div class="col l4 mb-4">
         <div class="card h-100">
           <h3 class="card-header">Ultra</h3>
           <div class="card-body">

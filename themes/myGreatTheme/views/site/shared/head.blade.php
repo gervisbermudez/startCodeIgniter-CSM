@@ -5,12 +5,12 @@
 <?php echo page_meta($meta); ?>
 @endisset
 <title>{{$title}}</title>
-<!-- Bootstrap Core CSS -->
-<?php echo link_tag('public/bootstrap/css/bootstrap.min.css'); ?>
+<!-- Materialize Core CSS -->
+<?php echo link_tag(getThemePublicPath() . 'css/materialize.css'); ?>
 <!-- Custom CSS -->
-<?php echo link_tag('public/css/modern-business.css'); ?>
+<?php echo link_tag(getThemePublicPath() . 'css/style.css'); ?>
 <!-- Custom Fonts -->
-<?php echo link_tag('public/font-awesome/css/font-awesome.min.css'); ?>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>

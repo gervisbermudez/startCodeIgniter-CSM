@@ -42,7 +42,7 @@ if (!function_exists('getThemePublicPath')) {
     {
         $ci = &get_instance();
         $config = new stdClass();
-        $theme_path = isset($config->site_theme) ? $config->site_theme : SITE_THEME;
+        $theme_path = $ci->config->item("THEME_PATH");
         if ($theme_path) {
             return 'themes/' . $theme_path . '/public/';
         }
