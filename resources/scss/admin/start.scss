@@ -1207,6 +1207,17 @@ div#dropnotify {
       max-width: 90%;
       margin: auto;
       top: -20px;
+      position: relative;
+      .indicator {
+        position: absolute;
+        top: 10px;
+        right: 0px;
+        z-index: 9;
+      }
+    }
+
+    .card-reveal {
+      z-index: 9999;
     }
 
     .card-image:after {
@@ -1263,6 +1274,11 @@ div#dropnotify {
 
     .card-info .material-icons {
       color: $color3;
+    }
+
+    .card-info .btn .material-icons {
+      color: #fff;
+      position: static;
     }
 
     .btn-floating {

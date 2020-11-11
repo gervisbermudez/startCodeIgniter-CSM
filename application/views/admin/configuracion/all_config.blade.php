@@ -2,6 +2,11 @@
 @section('title', $title)
 @section('header')
 @endsection
+
+@section('head_includes')
+<link rel="stylesheet" href="<?=base_url('public/css/admin/form.min.css')?>">
+@endsection
+
 @section('content')
 <div id="root" class="configuration-root">
     <div class="row" v-show="sectionActive == 'home'">
@@ -18,7 +23,28 @@
                     </div>
                     <div class="col s6 tooltipped" data-position="bottom" data-tooltip="Ver más">
                         <div class="info white-text right-align">
-                            @{{generalConfigurations.length}} 
+                            @{{generalConfigurations.length}}
+                            <br />
+                            Configuraciones
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col s12 m3">
+            <div v-on:click="changeSectionActive('theme')" class="config-card card-panel pink">
+                <div class="row">
+                    <div class="col s6">
+                        <div class="div">
+                            <i class="material-icons medium white-text">brush</i>
+                        </div>
+                        <div class="white-text">
+                            Theme
+                        </div>
+                    </div>
+                    <div class="col s6 tooltipped" data-position="bottom" data-tooltip="Ver más">
+                        <div class="info white-text right-align">
+                            @{{themeConfigurations.length}}
                             <br />
                             Configuraciones
                         </div>
@@ -39,11 +65,12 @@
                     </div>
                     <div class="col s6 tooltipped" data-position="bottom" data-tooltip="Ver más">
                         <div class="info white-text right-align">
-                            Seguimiento <br/>
+                            Seguimiento <br />
                             <div class="switch">
                                 <label>
                                     Off
-                                    <input type="checkbox" :checked="getConfigValueBoolean('ANALYTICS_ACTIVE')" v-on:change="updateConfigCheckbox($event, 'ANALYTICS_ACTIVE')">
+                                    <input type="checkbox" :checked="getConfigValueBoolean('ANALYTICS_ACTIVE')"
+                                        v-on:change="updateConfigCheckbox($event, 'ANALYTICS_ACTIVE')">
                                     <span class="lever"></span>
                                     On
                                 </label>
@@ -66,7 +93,7 @@
                     </div>
                     <div class="col s6 tooltipped" data-position="bottom" data-tooltip="Ver más">
                         <div class="info white-text right-align">
-                            @{{generalConfigurations.length}} 
+                            @{{generalConfigurations.length}}
                             <br />
                             Configuraciones
                         </div>
@@ -87,11 +114,12 @@
                     </div>
                     <div class="col s6 tooltipped" data-position="bottom" data-tooltip="Ver más">
                         <div class="info white-text right-align">
-                            Seguimiento <br/>
+                            Seguimiento <br />
                             <div class="switch">
                                 <label>
                                     Off
-                                    <input type="checkbox" :checked="getConfigValueBoolean('PIXEL_ACTIVE')" v-on:change="updateConfigCheckbox($event, 'PIXEL_ACTIVE')">
+                                    <input type="checkbox" :checked="getConfigValueBoolean('PIXEL_ACTIVE')"
+                                        v-on:change="updateConfigCheckbox($event, 'PIXEL_ACTIVE')">
                                     <span class="lever"></span>
                                     On
                                 </label>
@@ -114,7 +142,7 @@
                     </div>
                     <div class="col s6 tooltipped" data-position="bottom" data-tooltip="Ver más">
                         <div class="info white-text right-align">
-                            @{{files.length}} 
+                            @{{files.length}}
                             <br />
                             Create Backup Database
                         </div>
@@ -124,66 +152,86 @@
         </div>
     </div>
     <transition name="fade">
-        <div v-show="sectionActive == 'analytics'" class="container">
-            <h2>Google Analytics</h2>
-            <p>
-                <label>
-                    <span>Activar seguimiento</span>
-                </label>
-            <div class="switch">
-                <label>
-                    Off
-                    <input type="checkbox" :checked="getConfigValueBoolean('ANALYTICS_ACTIVE')" v-on:change="updateConfigCheckbox($event, 'ANALYTICS_ACTIVE')">
-                    <span class="lever"></span>
-                    On
-                </label>
-            </div>
-            </p>
-            <!-- Switch -->
+        <div v-show="sectionActive == 'analytics'" class="container form">
             <div class="row">
-                <div class="input-field col s6">
-                    <input :value="getConfigValue('ANALYTICS_ID')" placeholder="UA-XXXXX-Y" type="text" class="validate"
-                        v-on:change="updateConfig($event, 'ANALYTICS_ID')">
-                    <label class="active" >ID de seguimiento de GA</label>
+                <div class="col s12">
+                    <h2>Google Analytics</h2>
                 </div>
             </div>
             <div class="row">
-                <form class="col s12">
+                <div class="col s12">
+                    <p>
+                        <label>
+                            <span>Activar seguimiento</span>
+                        </label>
+                    <div class="switch">
+                        <label>
+                            Off
+                            <input type="checkbox" :checked="getConfigValueBoolean('ANALYTICS_ACTIVE')"
+                                v-on:change="updateConfigCheckbox($event, 'ANALYTICS_ACTIVE')">
+                            <span class="lever"></span>
+                            On
+                        </label>
+                    </div>
+                    </p>
+                    <!-- Switch -->
                     <div class="row">
                         <div class="input-field col s6">
-                            <input :value="getConfigValue('ANALYTICS_CODE')"  placeholder="" type="text" class="validate" v-on:change="updateConfig($event, 'ANALYTICS_CODE')">
-                            <label>Head Code</label>
+                            <input :value="getConfigValue('ANALYTICS_ID')" placeholder="UA-XXXXX-Y" type="text" class="validate"
+                                v-on:change="updateConfig($event, 'ANALYTICS_ID')">
+                            <label class="active">ID de seguimiento de GA</label>
                         </div>
                     </div>
-                </form>
+                    <div class="row">
+                        <form class="col s12">
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <input :value="getConfigValue('ANALYTICS_CODE')" placeholder="" type="text" class="validate"
+                                        v-on:change="updateConfig($event, 'ANALYTICS_CODE')">
+                                    <label>Head Code</label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </transition>
     <transition name="fade">
-        <div v-show="sectionActive == 'pixel'" class="container">
-            <h2>Facebook Pixel</h2>
-            <p>
-                <label>
-                    <span>Activar seguimiento</span>
-                </label>
-            <div class="switch">
-                <label>
-                    Off
-                    <input type="checkbox" :checked="getConfigValueBoolean('PIXEL_ACTIVE')" v-on:change="updateConfigCheckbox($event, 'PIXEL_ACTIVE')">
-                    <span class="lever"></span>
-                    On
-                </label>
-            </div>
-            </p>
+        <div v-show="sectionActive == 'pixel'" class="container form">
             <div class="row">
-                <form class="col s12">
-                    <div class="row">
-                        <div class="input-field col s6">
-                            <input :value="getConfigValue('PIXEL_CODE')"  placeholder="" type="text" class="validate" v-on:change="updateConfig($event, 'PIXEL_CODE')">
-                            <label>Head Code</label>
-                        </div>
+                <div class="col s12">
+                    <h2>Facebook Pixel</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <p>
+                        <label>
+                            <span>Activar seguimiento</span>
+                        </label>
+                    <div class="switch">
+                        <label>
+                            Off
+                            <input type="checkbox" :checked="getConfigValueBoolean('PIXEL_ACTIVE')"
+                                v-on:change="updateConfigCheckbox($event, 'PIXEL_ACTIVE')">
+                            <span class="lever"></span>
+                            On
+                        </label>
                     </div>
-                </form>
+                    </p>
+                    <div class="row">
+                        <form class="col s12">
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <input :value="getConfigValue('PIXEL_CODE')" placeholder="" type="text" class="validate"
+                                        v-on:change="updateConfig($event, 'PIXEL_CODE')">
+                                    <label>Head Code</label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </transition>
@@ -272,8 +320,8 @@
                                     <td>
                                         <i v-if="configuration.status == 1" class="material-icons tooltipped"
                                             data-position="bottom" data-delay="50" data-tooltip="Publicado">publish</i>
-                                        <i v-else class="material-icons tooltipped" data-position="bottom" data-delay="50"
-                                            data-tooltip="Borrador">edit</i>
+                                        <i v-else class="material-icons tooltipped" data-position="bottom"
+                                            data-delay="50" data-tooltip="Borrador">edit</i>
                                     </td>
                                     <td>
                                         <a class='dropdown-trigger' href='#!'
@@ -387,8 +435,8 @@
                                     <td>
                                         <i v-if="configuration.status == 1" class="material-icons tooltipped"
                                             data-position="bottom" data-delay="50" data-tooltip="Publicado">publish</i>
-                                        <i v-else class="material-icons tooltipped" data-position="bottom" data-delay="50"
-                                            data-tooltip="Borrador">edit</i>
+                                        <i v-else class="material-icons tooltipped" data-position="bottom"
+                                            data-delay="50" data-tooltip="Borrador">edit</i>
                                     </td>
                                     <td>
                                         <a class='dropdown-trigger' href='#!'
@@ -418,36 +466,105 @@
         </div>
     </transition>
     <transition name="fade">
-        <div v-show="sectionActive == 'database'" class="container">
-            <h2>Manage Database</h2>
-            <p>
-                <h5>Crear backup</h5>
-                <a class="waves-effect waves-light btn amber" @click="createDatabaseBackup()"><i class="material-icons left">sd_card</i> backup</a>
-            </p>
-            <p v-if="files.length">
-                Backups creados:
-            </p>
-            <ul class="collapsible" v-if="files.length">
-                <li v-for="(file, index) in files" :key="index">
-                <div class="collapsible-header"><i class="material-icons">filter_drama</i> @{{file.get_filename()}}</div>
-                <div class="collapsible-body">
-                    <ul>
-                        <li>
-                            <b>Fecha:</b> @{{file.date_create}}
-                        </li>
-                        <li>
-                            <b>File Type:</b> @{{file.file_type}}
-                        </li>
-                        <li>
-                            <b>Path:</b> @{{file.file_path}}
+        <div v-show="sectionActive == 'database'" class="container form">
+            <div class="row">
+                <div class="col s12">
+                    <h2>Manage Database</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <p>
+                    <h5>Crear backup</h5>
+                    <a class="waves-effect waves-light btn amber" @click="createDatabaseBackup()"><i
+                            class="material-icons left">sd_card</i> backup</a>
+                    </p>
+                    <p v-if="files.length">
+                        Backups creados:
+                    </p>
+                    <ul class="collapsible" v-if="files.length">
+                        <li v-for="(file, index) in files" :key="index">
+                            <div class="collapsible-header"><i class="material-icons">filter_drama</i>
+                                @{{file.get_filename()}}
+                            </div>
+                            <div class="collapsible-body">
+                                <ul>
+                                    <li>
+                                        <b>Fecha:</b> @{{file.date_create}}
+                                    </li>
+                                    <li>
+                                        <b>File Type:</b> @{{file.file_type}}
+                                    </li>
+                                    <li>
+                                        <b>Path:</b> @{{file.file_path}}
+                                    </li>
+                                </ul>
+                                <br />
+                                <a class="waves-effect waves-light btn amber" :href="file.get_full_file_path()"><i
+                                        class="material-icons left">file_download</i> Download</a>
+                                <a class="waves-effect waves-light btn red" @click="deleteFile(file);"><i
+                                        class="material-icons left">delete</i> Delete</a>
+                            </div>
                         </li>
                     </ul>
-                    <br/>
-                    <a class="waves-effect waves-light btn amber" :href="file.get_full_file_path()"><i class="material-icons left">file_download</i> Download</a>
-                    <a class="waves-effect waves-light btn red" @click="deleteFile(file);"><i class="material-icons left">delete</i> Delete</a>
                 </div>
-                </li>
-            </ul>
+            </div>
+        </div>
+    </transition>
+    <transition name="fade">
+        <div v-show="sectionActive == 'theme'" class="container form">
+            <div class="row">
+                <div class="col s12">
+                    <h2>Manage Themes</h2>
+                </div>
+            </div>
+            <div class="row pages">
+                <div class="col s12">
+                    <div class="col s12 m4" v-for="(theme, index) in themes" :key="index">
+                        <div class="card page-card">
+                            <div class="card-image">
+                                <div class="card-image-container">
+                                    <img :src="getThemePreviewUrl(index, theme)" />
+                                </div>
+                                <label class="indicator" >
+                                    <input name="group1" type="radio" :checked="getThemeIsChecked(index)" v-on:change="changeTheme(index)"/>
+                                    <span>&nbsp;</span>
+                                </label>
+                            </div>
+                            <div class="card-content">
+                                <div>
+                                    <span class="card-title">@{{theme.name}}
+                                        <a href="#!"><span class="activator right"><i class="material-icons">more_vert</i></span></a>
+                                    </span>
+                                    <div class="card-info">
+                                        <p>
+                                            @{{theme.description}}
+                                        </p>
+                                        <a @click="changeTheme(index)" class="waves-effect waves-light btn "><i class="material-icons left">brush</i>Aplicar theme</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-reveal">
+                                <span class="card-title grey-text text-darken-4">
+                                    <i class="material-icons right">close</i>
+                                    @{{theme.name}}
+                                </span>
+                                <span class="subtitle">
+                                    @{{theme.description}}
+                                </span>
+                                <ul>
+                                    <li><b>Author:</b> <br> @{{theme.author}}</li>
+                                    <li><b>Actualizacion:</b> <br> @{{theme.updated}}</li>
+                                    <li><b>License:</b> @{{theme.license}}</li>
+                                    <li><b>Url:</b> @{{theme.url}}</li>
+                                    <li><b>Url:</b> @{{theme.url}}</li>
+                                    <li><b>Version:</b> @{{theme.version}}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </transition>
 </div>

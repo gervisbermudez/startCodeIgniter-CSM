@@ -1,0 +1,10 @@
+{
+  "name": "My Great Theme",
+  "version": "1.0.0",
+  "description": "A simple theme building for StartCMS",
+  "url": "git+https://github.com/gervisbermudez/startCodeIgniter-CSM.git",
+  "author": "Gervis Bermúdez",
+  "license": "ISC",
+  "preview": "theme_preview.jpg",
+  "updated": "2020-09-06 18:29:01"
+}

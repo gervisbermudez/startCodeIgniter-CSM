@@ -75,8 +75,8 @@ footer {
 }
 
 nav.navbar.navbar-inverse.navbar-fixed-top {
-    background-color: #009688;
-    border-color: #009688;
+    background-color: #607D8B;
+    border-color: #607D8B;
 }
 
 .navbar-inverse .navbar-brand {
@@ -88,27 +88,27 @@ nav.navbar.navbar-inverse.navbar-fixed-top {
 }
 
 h1 {
-    color: #009688;
+    color: #607D8B;
 }
 
 .panel-default>.panel-heading {
     color: #fff;
-    background-color: #008b7e;
+    background-color: #607D8B;
     border-color: #ddd;
 }
 
 .navbar-inverse .navbar-nav>.open>a,
 .navbar-inverse .navbar-nav>.open>a:focus,
 .navbar-inverse .navbar-nav>.open>a:hover {
-    background-color: #065851;
+    background-color: #607D8B;
 }
 
 h2.page-header {
-    color: #009688;
+    color: #607D8B;
 }
 
 a.btn.btn-lg.btn-default.btn-block {
-    background-color: #009688;
+    background-color: #607D8B;
     color: white;
 }
 

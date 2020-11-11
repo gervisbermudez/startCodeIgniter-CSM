@@ -1,22 +1,13 @@
-<div class="container">
-    <footer>
-        <div class="row">
-            <div class="col-lg-12">
-                <p>Copyright &copy; Your Website 2014</p>
-            </div>
-        </div>
-    </footer>
-</div>
-<!-- /.container -->
-<!-- jQuery -->
-<script src="/public/js/jquery.js"></script>
-<!-- Bootstrap Core JavaScript -->
-<script src="/public/js/bootstrap.min.js"></script>
-<!-- Script to Activate the Carousel -->
-    <script>
-        $('.carousel').carousel({
-        interval: 5000 //changes the speed
-        })
-    </script>
-</body>
-</html>
+<!-- Footer -->
+<footer class="py-5 bg-dark">
+    <div class="container">
+        <p class="m-0 text-center text-white">Copyright &copy; Your Website 2019</p>
+    </div>
+    <!-- /.container -->
+</footer>
+
+@section('footer_includes')
+@isset($footer_includes)
+<?php echo $footer_includes ?>
+@endisset
+@endsection

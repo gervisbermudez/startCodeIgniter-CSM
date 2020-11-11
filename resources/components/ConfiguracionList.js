@@ -6,8 +6,9 @@ var ConfiguracionList = new Vue({
     loader: true,
     filter: "",
     sectionActive: "home",
-    routes: ["home", "analytics", "seo", "pixel", "database"],
+    routes: ["home", "analytics", "seo", "pixel", "database", "theme"],
     files: [],
+    themes: [],
   },
   mixins: [mixins],
   computed: {
@@ -34,6 +35,9 @@ var ConfiguracionList = new Vue({
     },
     pixelConfigurations: function () {
       return this.filterConfigurations("pixel");
+    },
+    themeConfigurations: function () {
+      return this.filterConfigurations("theme");
     },
   },
   methods: {
@@ -91,6 +95,17 @@ var ConfiguracionList = new Vue({
     },
     changeSectionActive: function (section) {
       this.sectionActive = section;
+      switch (section) {
+        case "theme":
+          this.getThemes();
+          break;
+        case "database":
+          this.getDatabaseBackups();
+          break;
+
+        default:
+          break;
+      }
       var newurl =
         window.location.protocol +
         "//" +
@@ -99,6 +114,32 @@ var ConfiguracionList = new Vue({
         "?section=" +
         section;
       window.history.pushState({ path: newurl }, "", newurl);
+    },
+    getThemes() {
+      fetch(BASEURL + "api/v1/config/themes")
+        .then((response) => response.json())
+        .then((response) => {
+          this.themes = response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    getThemePreviewUrl(index, theme) {
+      if (theme.preview) {
+        return BASEURL + 'themes/' + index + '/' + theme.preview;
+      } else {
+        return BASEURL + "public/img/profile/default.png";
+      }
+    },
+    changeTheme(value) {
+      let config = this.getConfig("THEME_PATH");
+      config.config_value = value;
+      this.saveConfig(config);
+    },
+    getThemeIsChecked(index) {
+      let config = this.getConfig("THEME_PATH");
+      return (config.config_value == index);
     },
     toggleView: function () {
       this.tableView = !this.tableView;
@@ -250,7 +291,7 @@ var ConfiguracionList = new Vue({
         success: function (response) {
           self.fileloader = false;
           if (response.code == 200 && response.data.length) {
-            self.files = response.data.map(file => new ExplorerFile(file));
+            self.files = response.data.map((file) => new ExplorerFile(file));
           } else {
             self.files = [];
           }
@@ -272,7 +313,7 @@ var ConfiguracionList = new Vue({
             html = "<span>Done! </span>";
             M.toast({ html: html });
             self.getDatabaseBackups();
-            var elems = document.querySelectorAll('.collapsible');
+            var elems = document.querySelectorAll(".collapsible");
             var instances = M.Collapsible.init(elems, {});
           }
         },
@@ -297,7 +338,6 @@ var ConfiguracionList = new Vue({
   mounted: function () {
     this.$nextTick(function () {
       this.getconfigurations();
-      this.getDatabaseBackups();
       window.addEventListener(
         "popstate",
         (event) => {
@@ -332,10 +372,10 @@ var ConfiguracionList = new Vue({
         );
 
         if (search.section && this.routes.includes(search.section)) {
-          this.sectionActive = search.section;
+          this.changeSectionActive(search.section);
         }
       } catch (e) {
-        this.sectionActive = "home";
+        this.changeSectionActive("home");
       }
     });
   },

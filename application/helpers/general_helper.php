@@ -13,13 +13,15 @@ if (!function_exists('getThemePath')) {
     function getThemePath()
     {
         $ci = &get_instance();
-        $config = new stdClass();
-        $theme_path = isset($config->site_theme) ? $config->site_theme : SITE_THEME;
+        $theme_path = $ci->config->item("THEME_PATH");
         if ($theme_path) {
-            defined('THEME_PATH') or define('THEME_PATH', FCPATH . 'themes\\' . $theme_path) . '\\';
-            return THEME_PATH;
+            return FCPATH . 'themes\\' . $theme_path;
         }
-        return '';
+        if(SITE_THEME){
+            return FCPATH . 'themes\\' . SITE_THEME;
+        }
+
+        return null;
     }
 }
 

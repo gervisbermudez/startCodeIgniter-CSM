@@ -202,4 +202,29 @@ class Config extends REST_Controller
         $this->response($data, REST_Controller::HTTP_OK);
     }
 
+    public function themes_get()
+    {
+        $this->load->helper('directory');
+        $map = directory_map('./themes/');
+
+        $response = [];
+
+        foreach ($map as $key => $value) {
+            if(is_array($value)){
+                $folder_name = substr($key, 0, -1);
+                $string = file_get_contents( '.\\themes\\' .  $key . "theme_info.json");
+                $json_a = json_decode($string, true);
+                $response[$folder_name] = $json_a;
+            }
+        }
+
+        $response = array(
+            'code' => REST_Controller::HTTP_OK,
+            'data' => $response,
+        );
+
+        $this->response($response, REST_Controller::HTTP_OK);
+
+    }
+
 }
