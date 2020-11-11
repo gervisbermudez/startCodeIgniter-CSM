@@ -206,3 +206,5 @@ $RECYCLE.BIN/
 *.bladec
 doc/*
 /startCodeIgniter-CSM-master/
+/cache
+backups/database/*
