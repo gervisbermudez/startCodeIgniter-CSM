@@ -8,7 +8,7 @@ class SiteController extends Base_Controller
     public function index()
     {
 
-        $data['title'] = config("SITE_TITLE") . " - About";
+        $data['title'] = config("SITE_TITLE") . " - Home";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
