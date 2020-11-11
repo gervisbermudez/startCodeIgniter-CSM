@@ -13,14 +13,7 @@ var PagesLists = new Vue({
       if (!!this.filter) {
         let filterTerm = this.filter.toLowerCase();
         return this.pages.filter((value, index) => {
-          let result =
-            value.subtitle.toLowerCase().indexOf(filterTerm) != -1 ||
-            value.title.toLowerCase().indexOf(filterTerm) != -1 ||
-            value.template.toLowerCase().indexOf(filterTerm) != -1 ||
-            value.username.toLowerCase().indexOf(filterTerm) != -1 ||
-            value.layout.toLowerCase().indexOf(filterTerm) != -1 ||
-            value.path.toLowerCase().indexOf(filterTerm) != -1;
-          return result;
+          return this.searchInObject(value, filterTerm);
         });
       } else {
         return this.pages;
@@ -66,10 +59,8 @@ var PagesLists = new Vue({
             element.user = new User(element.user);
             return element;
           });
-          setTimeout(() => {
-            self.loader = false;
-            self.initPlugins();
-          }, 1000);
+          self.loader = false;
+          self.initPlugins();
         },
         error: function (error) {
           M.toast({ html: response.responseJSON.error_message });
@@ -89,10 +80,8 @@ var PagesLists = new Vue({
           if (response.code == 200) {
             self.pages.splice(index, 1);
           }
-          setTimeout(() => {
-            self.loader = false;
-            self.initPlugins();
-          }, 1000);
+          self.loader = false;
+          self.initPlugins();
         },
         error: function (error) {
           M.toast({ html: response.responseJSON.error_message });
@@ -112,7 +101,6 @@ var PagesLists = new Vue({
   mounted: function () {
     this.$nextTick(function () {
       this.getPages();
-      this.initPlugins();
     });
   },
 });
