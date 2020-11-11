@@ -107,9 +107,7 @@
     <div class="card user-card">
 		<div class="card-image">
 			<div class="card-image-container">
-				<img v-if="user.user_data.avatar"
-					:src="getAvatarUrl()">
-				<img v-else src="/public/img/profile/default.png" />
+				<img :src="user.get_avatarurl()">
 			</div>
 			<span class="card-title"><a :href="base_url('admin/usuarios/ver/' + user.user_id)" class="white-text">@{{user.user_data.nombre + ' ' + user.user_data.apellido}}</a></span>
 				<a class='btn-floating halfway-fab waves-effect waves-light dropdown-trigger' href='#!' :data-target='"dropdown" + user.user_id'>

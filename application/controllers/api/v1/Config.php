@@ -172,4 +172,34 @@ class Config extends REST_Controller
         $this->response($data, REST_Controller::HTTP_NOT_FOUND);
     }
 
+    /**
+     * Backup Your Database
+     * @return Response
+     */
+    public function backup_database_get()
+    {
+        // Load the DB utility class
+        $this->load->dbutil();
+        // Backup your entire database and assign it to a variable
+        $backup = $this->dbutil->backup();
+        // Load the file helper and write the file to your server
+        $this->load->helper('file');
+        if (!file_exists('./backups/database/')) {
+            mkdir('./backups/database/', 0777, true);
+        }
+        $data = array();
+        if (write_file('./backups/database/' . date('YmdHis') . '.gz', $backup)) {
+            $data = array(
+                'result' => "backup created",
+                "code" => REST_Controller::HTTP_OK,
+            );
+        } else {
+            $data = array(
+                'result' => "unnable to created a backup",
+                "code" => REST_Controller::HTTP_BAD_REQUEST,
+            );
+        }
+        $this->response($data, REST_Controller::HTTP_OK);
+    }
+
 }

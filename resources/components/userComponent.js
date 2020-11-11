@@ -7,15 +7,6 @@ Vue.component("userCard", {
     };
   },
   methods: {
-    getAvatarUrl() {
-      return (
-        BASEURL +
-        "public/img/profile/" +
-        this.user.username +
-        "/" +
-        this.user.user_data.avatar
-      );
-    },
     getUserUrl() {
       return BASEURL + "admin/usuarios/ver/" + this.user.user_id;
     },
@@ -42,13 +33,7 @@ var usersModule = new Vue({
       if (!!this.filter) {
         let filterTerm = this.filter.toLowerCase();
         return this.users.filter((value, index) => {
-          let result =
-            value.username.toLowerCase().indexOf(filterTerm) != -1 ||
-            value.email.toLowerCase().indexOf(filterTerm) != -1 ||
-            value.role.toLowerCase().indexOf(filterTerm) != -1 ||
-            value.user_data.nombre.toLowerCase().indexOf(filterTerm) != -1 ||
-            value.user_data.apellido.toLowerCase().indexOf(filterTerm) != -1;
-          return result;
+          return this.searchInObject(value, filterTerm);
         });
       } else {
         return this.users;
@@ -79,7 +64,9 @@ var usersModule = new Vue({
         dataType: "json",
         success: function (response) {
           self.loader = false;
-          self.users = response.data;
+          self.users = response.data.map((element) => {
+            return  new User(element);
+          });
           self.initPlugins();
         },
         error: function (error) {

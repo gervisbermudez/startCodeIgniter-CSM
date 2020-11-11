@@ -22,13 +22,13 @@
             </div>
         </div>
         <div class="row">
-            <div class="col s6 m4">
+            <div class="col s12 m4">
                 <div class="skeleton-card heightForSkeleton-card panel"></div>
             </div>
-            <div class="col s6 m4">
+            <div class="col s12 m4">
                 <div class="skeleton-card heightForSkeleton-card panel"></div>
             </div>
-            <div class="col s6 m4">
+            <div class="col s12 m4">
                 <div class="skeleton-card heightForSkeleton-card panel"></div>
             </div>
         </div>
@@ -37,18 +37,25 @@
         <div class="col m8 s12">
             <div class="row">
                 <div class="col s12">
-                    <create-contents></create-contents>
+                    <create-contents :forms_types="forms_types" :content="content"></create-contents>
                 </div>
             </div>
         </div>
         <div class="col m4 s12">
-            <users-collection></users-collection>
+            <users-collection :users="users"></users-collection>
         </div>
     </div>
-    <page-card v-show="!loader"></page-card>
     <div class="row" v-show="!loader">
-        <div class="col m6 s12">
-            <file-explorer-collection></file-explorer-collection>
+        <div class="col m5 s12">
+            <file-explorer-collection :files="files"></file-explorer-collection>
+        </div>
+        <div class="col m7 s12">
+            <albumes-widget :albumes="albumes"></albumes-widget>
+        </div>
+    </div>
+    <div class="row" v-show="!loader">
+        <div class="col s12">
+            <page-card v-show="!loader" :pages="pages"></page-card>
         </div>
     </div>
 </div>
@@ -67,6 +74,7 @@
 @include('admin.components.userCollectionComponent')
 @include('admin.components.createContentsComponent')
 @include('admin.components.fileExplorerCollectionComponent')
+@include('admin.components.albumesWidgetComponent')
 
 @endsection
 

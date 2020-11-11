@@ -12,74 +12,7 @@ var FormNewModule = new Vue({
     status: true,
     tabs: [],
     form_custom_id: null,
-    formsElements: [
-      {
-        field_name: "title",
-        displayName: "Titulo",
-        icon: "format_color_text",
-        component: "formFieldTitle",
-        status: "1",
-        data: {},
-      },
-      {
-        field_name: "text",
-        displayName: "Texto",
-        icon: "short_text",
-        component: "formFieldTextArea",
-        status: "1",
-        data: {},
-      },
-      {
-        field_name: "formatText",
-        displayName: "Texto con formato",
-        component: "formTextFormat",
-        icon: "format_size",
-        status: "1",
-        data: {},
-      },
-      {
-        field_name: "image",
-        displayName: "Imagen",
-        icon: "image",
-        status: "1",
-        data: {},
-      },
-      {
-        field_name: "date",
-        displayName: "Fecha",
-        icon: "date_range",
-        status: "1",
-        data: {},
-      },
-      {
-        field_name: "timestamp",
-        displayName: "Fecha y Hora",
-        icon: "access_time",
-        status: "1",
-        data: {},
-      },
-      {
-        field_name: "number",
-        displayName: "Numero",
-        icon: "looks_one",
-        status: "1",
-        data: {},
-      },
-      {
-        field_name: "dropdown_select",
-        displayName: "Select",
-        status: "1",
-        icon: "list",
-        data: {},
-      },
-      {
-        field_name: "bolean",
-        displayName: "Bolean",
-        status: "1",
-        icon: "check_circle",
-        data: {},
-      },
-    ],
+    formsElements: formsElements,
     configurable: true,
   },
   methods: {
@@ -224,7 +157,11 @@ var FormNewModule = new Vue({
             self.form_custom_id = response.data.form_custom_id;
             self.editMode = true;
             self.loader = false;
-            M.toast({ html: "Formulario Guardado" });
+            M.toast({
+              html: `<span>Formulario Guardado</span> <a class="btn-flat toast-action" href="${
+                BASEURL + "admin/formularios/addData/" + self.form_custom_id
+              }"> Agregar Data</a>`,
+            });
           }
         },
         error: function (response) {

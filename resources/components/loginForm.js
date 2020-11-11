@@ -67,8 +67,7 @@ var loginForm = new Vue({
     getRememberUserdata() {
       let userdata = JSON.parse(localStorage.getItem("userdata"));
       if (userdata) {
-        console.log(userdata);
-        this.userdata = userdata;
+        this.userdata = new User(userdata);
         this.username = userdata.username;
         this.remember_user = !!userdata;
       }

@@ -14,8 +14,9 @@ if (!function_exists('getThemePath')) {
     {
         $ci = &get_instance();
         $config = new stdClass();
-        if (isset($config->site_theme)) {
-            defined('THEME_PATH') or define('THEME_PATH', FCPATH . 'themes\\' . $config->site_theme) . '\\';
+        $theme_path = isset($config->site_theme) ? $config->site_theme : SITE_THEME;
+        if ($theme_path) {
+            defined('THEME_PATH') or define('THEME_PATH', FCPATH . 'themes\\' . $theme_path) . '\\';
             return THEME_PATH;
         }
         return '';
@@ -39,8 +40,9 @@ if (!function_exists('getThemePublicPath')) {
     {
         $ci = &get_instance();
         $config = new stdClass();
-        if ($config->site_theme) {
-            return 'themes/' . $config->site_theme . '/public/';
+        $theme_path = isset($config->site_theme) ? $config->site_theme : SITE_THEME;
+        if ($theme_path) {
+            return 'themes/' . $theme_path . '/public/';
         }
         return '';
     }

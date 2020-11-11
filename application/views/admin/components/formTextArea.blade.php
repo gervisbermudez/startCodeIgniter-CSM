@@ -4,7 +4,7 @@
             <b>Field Preview:</b>
         </div>
         <div class="input-field col s12">
-            <textarea :placeholder="fieldPlaceholder" v-if="configurable" v-model="fieldName" @keyup="convertfielApiID()" :id="fieldID" type="text" class="materialize-textarea"></textarea>
+            <textarea :placeholder="fieldPlaceholder" v-if="configurable" type="text" class="materialize-textarea"></textarea>
             <textarea :placeholder="fieldPlaceholder" v-else v-model="text" :id="fieldID" type="text" class="materialize-textarea"></textarea>
         </div>
         <div class="col s12" v-if="configurable">

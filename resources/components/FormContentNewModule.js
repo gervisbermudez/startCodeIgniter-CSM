@@ -13,81 +13,7 @@ var FormNewModule = new Vue({
     tabs: [],
     form_custom_id: null,
     form_content_id: null,
-    formsElements: [
-      {
-        field_name: "title",
-        displayName: "Titulo",
-        icon: "format_color_text",
-        component: "formFieldTitle",
-        status: "1",
-        data: {},
-      },
-      {
-        field_name: "text",
-        displayName: "Texto",
-        icon: "short_text",
-        component: "formFieldTextArea",
-        status: "1",
-        data: {},
-      },
-      {
-        field_name: "formatText",
-        displayName: "Texto con formato",
-        component: "formTextFormat",
-        icon: "format_size",
-        status: "1",
-        data: {},
-      },
-      {
-        field_name: "image",
-        displayName: "Imagen",
-        icon: "image",
-        status: "1",
-        data: {},
-      },
-      {
-        field_name: "link",
-        displayName: "Link",
-        icon: "insert_link",
-        status: "1",
-        data: {},
-      },
-      {
-        field_name: "date",
-        displayName: "Fecha",
-        icon: "date_range",
-        status: "1",
-        data: {},
-      },
-      {
-        field_name: "timestamp",
-        displayName: "Fecha y Hora",
-        icon: "access_time",
-        status: "1",
-        data: {},
-      },
-      {
-        field_name: "number",
-        displayName: "Numero",
-        icon: "looks_one",
-        status: "1",
-        data: {},
-      },
-      {
-        field_name: "dropdown_select",
-        displayName: "Select",
-        status: "1",
-        icon: "list",
-        data: {},
-      },
-      {
-        field_name: "bolean",
-        displayName: "Bolean",
-        status: "1",
-        icon: "check_circle",
-        data: {},
-      },
-    ],
+    formsElements: formsElements,
     configurable: false,
   },
   methods: {
@@ -289,6 +215,8 @@ var FormNewModule = new Vue({
       setTimeout(() => {
         var elems = document.querySelectorAll(".collapsible");
         M.Collapsible.init(elems, {});
+        var elems = document.querySelectorAll(".modal");
+        var instances = M.Modal.init(elems, {});
         this.loader = false;
       }, 2000);
     },

@@ -12,7 +12,7 @@ class SiteController extends Base_Controller
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
-        echo $this->blade->view("site.about", $data);
+        echo $this->blade->view("site.home", $data);
     }
 
     public function about()

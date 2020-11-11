@@ -259,9 +259,9 @@ class Users extends REST_Controller
 
         $usergroup = new Usergroup();
 
-        if($usergroup_id){
+        if ($usergroup_id) {
             $result = $usergroup->find_with(array("usergroup_id" => $usergroup_id));
-        }else{
+        } else {
             $result = $usergroup->where(array('level >=' => userdata('level')));
         }
 
@@ -386,25 +386,16 @@ class Users extends REST_Controller
         $usuario = new User();
         $result = false;
 
-        if ($usuario->find($user_id)) {
+        $result_find = $usuario->find($user_id);
 
-            if (isset($usuario->user_data->avatar)) {
-                $usuario->user_data->avatar = $avatar;
-                $result = $usuario->save();
-            } else {
-                $insert = array(
-                    'user_id' => $user_id,
-                    '_key' => 'avatar',
-                    '_value' => $avatar,
-                    'status' => 1,
-                );
-                $result = $usuario->set_user_data($insert);
-            }
-
+        if ($result_find) {
+            $usuario->user_data['avatar'] = $avatar;
+            $result = $usuario->save();
             if ($result) {
                 $response = array(
                     'code' => REST_Controller::HTTP_OK,
                     'data' => $result,
+
                 );
                 $this->response($response, REST_Controller::HTTP_OK);
                 return;
@@ -415,6 +406,49 @@ class Users extends REST_Controller
             'code' => REST_Controller::HTTP_BAD_REQUEST,
             'data' => $result,
             'user' => $usuario,
+        );
+        $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
+    }
+
+    public function changePassword_post()
+    {
+        $user_id = $this->input->post('user_id');
+        $currentPassword = $this->input->post('currentPassword');
+        $usuario = new User();
+        $result = false;
+        $result_find = $usuario->find($user_id);
+        if ($result_find) {
+            $this->load->model('Admin/LoginMod');
+            $login_data = $this->LoginMod->isLoged($usuario->username, $currentPassword);
+            if ($login_data) {
+                $result = $usuario->update_data(["user_id" => $user_id], ["password" => password_hash($this->input->post('password'), PASSWORD_DEFAULT)]);
+                if ($result) {
+                    $response = array(
+                        'code' => REST_Controller::HTTP_OK,
+                        'data' => $_POST,
+                        'error_message' => "Password changed correctly",
+                    );
+                } else {
+                    $response = array(
+                        'code' => REST_Controller::HTTP_BAD_REQUEST,
+                        'data' => $_POST,
+                        'error_message' => "An error has occurred",
+                    );
+                }
+            } else {
+                $response = array(
+                    'code' => REST_Controller::HTTP_BAD_REQUEST,
+                    'data' => $_POST,
+                    'error_message' => "The current password is incorret",
+                );
+            }
+            $this->response($response, REST_Controller::HTTP_OK);
+            return;
+        }
+        $response = array(
+            'code' => REST_Controller::HTTP_BAD_REQUEST,
+            'data' => $result,
+            'error_message' => lang('user_not_found_error'),
         );
         $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
     }

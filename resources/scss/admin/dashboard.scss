@@ -11,6 +11,7 @@ body {
 
 .dashboard {
   margin: 20px auto 0px;
+  max-width: none;
 
   h5 {
     color: #646464;
@@ -26,53 +27,121 @@ body {
       min-height: auto;
       border: 0;
 
+      .title {
+        font-weight: 600;
+      }
+
       a {
-        color: #898b96;
+        color: #444;
       }
 
-      &:first-child {
-        border-top-left-radius: 10px;
-        border-top-right-radius: 10px;
-      }
-
-      &:last-child {
-        border-bottom-left-radius: 10px;
-        border-bottom-right-radius: 10px;
+      a.secondary-content {
+        color: #ccc;
       }
 
       &.collection-header {
         padding-left: 15px;
+        background: #26a69a;
 
-        h5 {
+        h5,
+        p {
           margin: 0px;
+          color: #fff;
         }
       }
     }
   }
 
   .panel {
-    padding: 10px 20px;
+    padding: 0px;
     background-color: white;
-    border-radius: 5px;
     position: relative;
     -webkit-box-shadow: 0px 1px 15px 1px rgba(69, 65, 78, 0.08);
     box-shadow: 0px 1px 15px 1px rgba(69, 65, 78, 0.08);
     background-color: #fff;
-    min-height: 175px;
+    min-height: 260px;
 
     .title {
+      background: #42a5f5;
+      color: #fff;
+
       h5 {
-        margin: 10px 0px;
+        margin: 0;
+        color: #fff;
+        padding: 10px 10px 0px 10px;
+      }
+
+      .subtitle {
+        padding: 0px 10px 10px;
       }
 
       a.dropdown-trigger.btn.right.btn-floating.halfway-fab.waves-effect.waves-light {
         bottom: auto;
-        top: 10px;
+        top: 50px;
+        background-color: #fb9678;
       }
     }
-    .content {
+    .contents {
       display: block;
+      table ul {
+        padding: 0px 0px 0px 20px;
+        margin: 0;
+      }
     }
+    .panel-boddy {
+      padding: 20px 15px 15px;
+    }
+  }
+}
+
+.albumes {
+  .card-image-container {
+    position: relative;
+    height: 140px;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .card.album {
+    box-shadow: none;
+    overflow: hidden;
+  }
+  .card-image {
+    height: 140px;
+    border-radius: 5px;
+  }
+
+  .album .card-content {
+    display: block;
+    padding: 10px 0px;
+    min-height: auto;
+    .card-title {
+      display: block;
+      line-height: 16px;
+      margin-bottom: 8px;
+      a {
+        color: #444;
+        font-size: 17px;
+      }
+    }
+  }
+}
+
+.panel .title {
+  a.dropdown-trigger {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    color: #fff;
+    i {
+      color: #fff;
+    }
+  }
+}
+
+.fileExplorerCollection-root {
+  .collection {
+    max-height: 433px;
+    overflow: scroll;
   }
 }
 

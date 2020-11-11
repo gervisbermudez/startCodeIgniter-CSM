@@ -88,10 +88,16 @@ class File extends MY_Model
         }
     }
 
-    public function get_filter_files($column, $filters)
+    public function get_filter_files($column, $filters, $limit = '', $order = array())
     {
         $this->db->select('*');
         $this->db->from($this->table);
+        $limit ? $this->db->limit($limit) : null;
+        if ($order) {
+            $this->db->order_by($order[0], $order[1]);
+        } else {
+            $this->db->order_by($this->primaryKey, 'ASC');
+        }
         $this->db->like($column, $filters[0]);
         for ($i=1; $i < count($filters); $i++) { 
             $this->db->or_like($column, $filters[$i]);

@@ -67,15 +67,15 @@
                     <tbody>
                         <tr v-for="(form, index) in filterForms" :key="index">
                             <td>@{{form.form_name}}</td>
-                            <td>@{{form.form_description}}</td>
-                            <td><a :href="base_url('admin/usuarios/ver/' + form.user_id)">@{{form.user.username}}</a></td>
-                            <td>
-                                <i v-if="form.status == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Activo">publish</i>
-                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Inactivo">edit</i>
-                            </td>
+                            <td>@{{getcontentText(form.form_description)}}</td>
+                            <td><a :href="base_url('admin/usuarios/ver/' + form.user_id)">@{{form.user.get_fullname()}}</a></td>
                             <td>
                                 @{{form.date_publish ? form.date_publish : form.date_create}}
                             </td>
+                                        <td>
+                                            <i v-if="form.status == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Activo">publish</i>
+                                            <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Inactivo">edit</i>
+                                        </td>
                             <td>
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown_" + form.form_custom_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown_" + form.form_custom_id' class='dropdown-content'>
@@ -112,12 +112,12 @@
                             </span>
                             <div class="card-info">
                                 <p>
-                                    @{{form.form_description}}
+                                @{{getcontentText(form.form_description)}}
                                 </p>
                                 <span class="activator right"><i class="material-icons">more_vert</i></span>
                                 <ul>
                                     <li class="truncate">
-                                        Author: <a :href="base_url('admin/usuarios/ver/' + form.user_id)">@{{form.user.username}}</a>
+                                        Author: <a :href="base_url('admin/usuarios/ver/' + form.user_id)">@{{form.user.get_fullname()}}</a>
                                     </li>
                                 </ul>
                             </div>

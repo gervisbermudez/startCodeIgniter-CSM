@@ -135,8 +135,15 @@
             </p>
         </div>
     </div>
-    <file-explorer-selector :preselected="preselected" :modal="'folderSelector'" :mode="'files'" :filter="'images'" :multiple="true"
-        v-on:notify="copyCallcack"></file-explorer-selector>
+    <file-explorer-selector 
+    :uploader="'single'"
+    :preselected="preselected" 
+    :modal="'folderSelector'" 
+    :mode="'files'" 
+    :filter="'images'" 
+    :multiple="true"
+    v-on:notify="copyCallcack"
+    ></file-explorer-selector>
 </div>
 <script>
     const album_id = <?= json_encode($album_id ? $album_id : false);?>;

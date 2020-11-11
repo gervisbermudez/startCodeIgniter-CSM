@@ -3,9 +3,11 @@
 @section('title', $title)
 
 @section('head_includes')
+<link rel="stylesheet" href="<?=base_url('public/js/lightbox2-master/dist/css/lightbox.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/css/admin/file_explorer.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/js/fileinput-master/css/fileinput.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/font-awesome/css/all.min.css')?>">
 <link rel="stylesheet" href="<?= base_url('public/css/admin/userprofile.min.css') ?>">
-<link rel="stylesheet" href="<?= base_url('public/js/fileinput-master/css/fileinput.min.css') ?>">
-<link rel="stylesheet" href="<?= base_url('public/font-awesome/css/all.min.css') ?>">
 @endsection
 
 @section('content')
@@ -36,10 +38,10 @@
                     <img src="<?= base_url('public/img/profile/usertop.jpg'); ?>">
                 </div>
                 <div class="avatar">
-                    <a href="#fileUploader" class="modal-trigger" v-if="user.user_data.avatar">
+                    <a href="#folderSelector" class="modal-trigger" v-if="user.user_data.avatar">
                         <img :src="user. get_avatarurl()" :alt="user.username" class="circle z-depth-1">
                     </a>
-                    <a href="#fileUploader" class="modal-trigger" v-else>
+                    <a href="#folderSelector" class="modal-trigger" v-else>
                         <i class="material-icons circle grey lighten-5 z-depth-1">account_circle</i></a>
                 </div>
                 <div class="card-content row">
@@ -117,6 +119,16 @@
             </div>
         </div>
     </div>
+    <file-explorer-selector 
+    :uploader="'single'"
+    :preselected="[]" 
+    :modal="'folderSelector'" 
+    :mode="'files'" 
+    :filter="'images'" 
+    :multiple="true"
+    v-on:notify="uploadCallback"
+    :initialdir="'./public/img/profile/' + user.username + '/'"
+    ></file-explorer-selector>
 </div>
 <script type="text/x-template" id="page-card-template">
     <div class="pages">
@@ -220,83 +232,14 @@
         </div>
     </div>
 </script>
-
-@include('admin.components.fileUploaderComponent')
+@include('admin.components.FileExplorerSelector')
 @endsection
 
 @section('footer_includes')
-<script src="<?= base_url('public/js/components/fileUploaderModule.min.js'); ?>"></script>
+<script src="{{base_url('public/js/components/FileExplorerSelector.min.js')}}"></script>
+<script src="{{base_url('public/js/lightbox2-master/dist/js/lightbox.min.js')}}"></script>
+<script src="{{base_url('public/js/fileinput-master/js/fileinput.min.js')}}"></script>
+<script src="{{base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js')}}"></script>
+<script src="{{base_url('public/js/fileinput-master/js/locales/es.js')}}"></script>
 <script src="<?= base_url('public/js/components/userProfileComponent.min.js'); ?>"></script>
-<script src="<?= base_url('public/js/fileinput-master/js/fileinput.min.js'); ?>"></script>
-<script src="<?= base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js'); ?>"></script>
-<script src="<?= base_url('public/js/fileinput-master/js/locales/es.js'); ?>"></script>
-<script>
-    $(document).on('ready', function() {
-        $("#input-100").fileinput({
-            uploadUrl: BASEURL + "admin/archivos/ajax_upload_file"
-            , enableResumableUpload: true
-            , resumableUploadOptions: {
-                // uncomment below if you wish to test the file for previous partial uploaded chunks
-                // to the server and resume uploads from that point afterwards
-                // testUrl: "http://localhost/test-upload.php"
-            }
-            , uploadExtraData: {
-                'uploadToken': 'SOME-TOKEN'
-                , 'curDir': './uploads'
-            }
-            , showCancel: true
-            , initialPreview: []
-            , fileActionSettings: {
-                showRemove: true
-                , showUpload: true
-                , showDownload: true
-                , showZoom: true
-                , showDrag: true
-                , removeIcon: '<i class="fas fa-trash"></i>'
-                , removeClass: 'btn btn-sm btn-kv btn-default btn-outline-secondary'
-                , removeErrorClass: 'btn btn-sm btn-kv btn-danger'
-                , removeTitle: 'Remove file'
-                , uploadIcon: '<i class="fas fa-upload"></i>'
-                , uploadClass: 'btn btn-sm btn-kv btn-default btn-outline-secondary'
-                , uploadTitle: 'Upload file'
-                , uploadRetryIcon: '<i class="glyphicon glyphicon-repeat"></i>'
-                , uploadRetryTitle: 'Retry upload'
-                , downloadIcon: '<i class="fas fa-download"></i>'
-                , downloadClass: 'btn btn-sm btn-kv btn-default btn-outline-secondary'
-                , downloadTitle: 'Download file'
-                , zoomIcon: '<i class="fas fa-search-plus"></i>'
-                , zoomClass: 'btn btn-sm btn-kv btn-default btn-outline-secondary'
-                , zoomTitle: 'View Details'
-                , dragIcon: '<i class="fas fa-arrows-alt"></i>'
-                , dragClass: 'text-info'
-                , dragTitle: 'Move / Rearrange'
-                , dragSettings: {}
-                , indicatorNew: '<i class="glyphicon glyphicon-plus-sign text-warning"></i>'
-                , indicatorSuccess: '<i class="glyphicon glyphicon-ok-sign text-success"></i>'
-                , indicatorError: '<i class="glyphicon glyphicon-exclamation-sign text-danger"></i>'
-                , indicatorLoading: '<i class="glyphicon glyphicon-hourglass text-muted"></i>'
-                , indicatorPaused: '<i class="glyphicon glyphicon-pause text-primary"></i>'
-                , indicatorNewTitle: 'Not uploaded yet'
-                , indicatorSuccessTitle: 'Uploaded'
-                , indicatorErrorTitle: 'Upload Error'
-                , indicatorLoadingTitle: 'Uploading ...'
-                , indicatorPausedTitle: 'Upload Paused'
-            }
-            , uploadIcon: '<i class="fas fa-upload"></i>'
-            , removeIcon: '<i class="fas fa-trash"></i>'
-            , overwriteInitial: false,
-            // initialPreview: [],          // if you have previously uploaded preview files
-            // initialPreviewConfig: [],    // if you have previously uploaded preview files
-            deleteUrl: "http://localhost/file-delete.php"
-            , progressClass: 'determinate progress-bar bg-success progress-bar-success progress-bar-striped active'
-            , progressInfoClass: 'determinate progress-bar bg-info progress-bar-info progress-bar-striped active'
-            , progressCompleteClass: 'determinate progress-bar bg-success progress-bar-success'
-            , progressPauseClass: 'determinate progress-bar bg-primary progress-bar-primary progress-bar-striped active'
-            , progressErrorClass: 'determinate progress-bar bg-danger progress-bar-danger'
-        , }).on('fileuploaded', function(event, previewId, index, fileId) {
-            uploadCallback(event, previewId, index, fileId)
-        });
-    });
-
-</script>
 @endsection

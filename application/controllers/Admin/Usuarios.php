@@ -45,7 +45,7 @@ class Usuarios extends MY_Controller
 
             $links = array(
                 'Editar' => array('href' => base_url('admin/usuarios/edit/' . $user_id)),
-                'Cambiar avatar' => array('href' => '#modal2', 'class' => 'modal-trigger'),
+                'Cambiar avatar' => array('href' => '#folderSelector', 'class' => 'modal-trigger'),
                 'Eliminar' => array('href' => '#!'),
                 'Bloquear' => array('href' => '#!'),
             );
@@ -53,7 +53,8 @@ class Usuarios extends MY_Controller
             if ($user_id == $this->session->userdata('user_id')) {
                 $links = array(
                     'Editar' => array('href' => base_url('admin/usuarios/edit/' . $user_id)),
-                    'Cambiar avatar' => array('href' => '#modal2', 'class' => 'modal-trigger'),
+                    'Cambiar Contraseña' => array('href' => base_url('admin/usuarios/changePassword/' . $user_id)),
+                    'Cambiar avatar' => array('href' => '#folderSelector', 'class' => 'modal-trigger'),
                 );
             }
 
@@ -83,6 +84,21 @@ class Usuarios extends MY_Controller
                 script('public/js/components/UserNewForm.min.js'),
             );
             echo $this->blade->view("admin.user.form", $data);
+        } else {
+            $this->showError('Usuario no encontrado');
+        }
+    }
+
+    public function changePassword($id)
+    {
+        $data['userdata'] = $this->User->find($id);
+        if ($data['userdata']) {
+            $data['action'] = 'Admin/User/save/';
+            $data['title'] = ADMIN_TITLE . " | Cambiar Password";
+            $data['h1'] = "Cambiar Password";
+            $data['header'] = $this->load->view('admin/header', $data, true);
+            $data['mode'] = 'new';
+            echo $this->blade->view("admin.user.changepassword", $data);
         } else {
             $this->showError('Usuario no encontrado');
         }

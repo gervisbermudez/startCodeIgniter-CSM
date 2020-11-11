@@ -1,45 +1,30 @@
 Vue.component("createContents", {
   template: "#create-contents-template",
-  props: [],
+  props: ["forms_types", "content"],
   data: function () {
     return {
-      debug: false,
-      loader: false,
-      forms_types: [],
-      content: [],
+      debug: DEBUGMODE,
     };
   },
+  mixins: [mixins],
   methods: {
-    getDataFromServe() {
+    isActive(item) {
+      return item.status;
+    },
+    toggleStatus(item) {
       var self = this;
       $.ajax({
-        type: "GET",
-        url: BASEURL + "api/v1/forms/",
-        data: {},
+        type: "POST",
+        url: BASEURL + "api/v1/forms/data_set_status/" + item.form_content_id,
+        data: {
+          status: item.status ? "1" : "0"
+        },
         dataType: "json",
         success: function (response) {
           console.log(response);
-          self.forms_types = response.data;
+          M.toast({ html: "Actualizado" });
         },
       });
-
-      $.ajax({
-        type: "GET",
-        url: BASEURL + "api/v1/forms/data",
-        data: {},
-        dataType: "json",
-        success: function (response) {
-          console.log(response);
-          self.content = response.data;
-        },
-      });
-
-      setTimeout(() => {
-        var elems = document.querySelectorAll(".dropdown-trigger");
-        var instances = M.Dropdown.init(elems, {});
-        var elems = document.querySelectorAll(".collapsible");
-        var instances = M.Collapsible.init(elems, {});
-      }, 3000);
     },
     getFormsTypeUrl(formObject) {
       return BASEURL + "admin/formularios/addData/" + formObject.form_custom_id;
@@ -51,7 +36,6 @@ Vue.component("createContents", {
   mounted: function () {
     this.$nextTick(function () {
       this.debug ? console.log("mounted: createContents") : null;
-      this.getDataFromServe();
     });
   },
 });

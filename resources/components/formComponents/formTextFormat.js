@@ -48,19 +48,21 @@ Vue.component("formTextFormat", {
     },
     getContentData() {
       return {
-        text: this.text,
+        formatText: this.text,
       };
     },
     init() {
-      tinymce.init({
-        selector: "#" + this.fieldID,
-        plugins: ["link table code"],
-        setup: (editor) => {
-          editor.on("Change", (e) => {
-            this.text = tinymce.editors[this.fieldID].getContent();
-          });
-        },
-      });
+      setTimeout(() => {        
+        tinymce.init({
+          selector: "#" + this.fieldID,
+          plugins: ["link table code"],
+          setup: (editor) => {
+            editor.on("Change", (e) => {
+              this.text = tinymce.editors[this.fieldID].getContent();
+            });
+          },
+        });
+      }, 2000);
     },
   },
   mounted: function () {

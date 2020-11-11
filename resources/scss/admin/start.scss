@@ -6,6 +6,7 @@ body {
   overflow-x: hidden;
   font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
   background: #f9f9f9;
+  color: #444;
 }
 
 .material-icons {
@@ -1321,61 +1322,60 @@ div#dropnotify {
   }
 }
 
-#fileUploader {
-  .row.search {
-    height: 70px;
-    margin-bottom: 0px;
-  }
-
-  .search-nav {
-    background-color: $color4;
-  }
-
-  .breadcrumb-nav {
-    margin-left: 20px;
-  }
-
-  .file {
-    cursor: pointer;
-
-    label {
-      position: absolute;
-      right: 0px;
-      top: 5px;
-      z-index: 9;
-    }
-  }
-
-  .card-image.waves-effect.waves-block.waves-light {
-    height: 60px;
-  }
-
-  .file.icon.text-center {
-    text-align: center;
-    font-size: 30px;
-  }
-
-  .card .card-content {
-    padding: 10px;
-  }
-
-  .card-image {
-    height: 130px;
-    background-size: cover !important;
-  }
-}
-
 .mainPageImage .close {
   position: absolute;
   right: 10px;
   top: 10px;
   z-index: 9;
   cursor: pointer;
-  color: #ffffffde;
+  color: #000000;
+}
+
+.file-preview .fileinput-remove {
+  display: none;
+}
+
+.formModule {
+  .collapsible {
+    position: relative;
+  }
+  .title.grey-text.text-darken-2 {
+    overflow: hidden;
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
+.configuration-root {
+  .card-panel {
+    display: block;
+    cursor: pointer;
+  }
+}
+
+input.input-search::placeholder {
+  color: #fff;
 }
 
 .configurations {
   margin-top: 20px;
+}
+
+.configuration-root {
+  .config-card {
+    .info {
+      padding-top: 44px;
+      label {
+        color: #fff;
+      }
+    }
+  }
 }
 
 .collapsible.configuration-component + .configuration-component {
@@ -1611,7 +1611,7 @@ div.card-image > div > i.material-icons.tooltipped {
   z-index: 9;
 }
 
-div#folderSelector {
+.file-explorar-selector {
   width: 90%;
 }
 
@@ -1650,6 +1650,41 @@ input#search::placeholder {
     opacity: 0;
   }
 }
+
+.files.files-selector nav {
+  background-color: #fb9678;
+  height: 50px;
+  i.material-icons,
+  .input-field .label-icon i {
+    color: #fff;
+  }
+
+  .input-field input[type="search"] ~ .mdi-navigation-close,
+  .input-field input[type="search"] ~ .material-icons {
+    color: transparent;
+  }
+
+  .input-field input[type="search"]:focus:not(.browser-default) + label i,
+  .input-field
+    input[type="search"]:focus:not(.browser-default)
+    ~ .mdi-navigation-close,
+  .input-field
+    input[type="search"]:focus:not(.browser-default)
+    ~ .material-icons {
+    color: #444;
+  }
+
+  .col.s12.breadcrumb-nav {
+    height: 50px;
+    line-height: 50px;
+    a {
+      color: #fff;
+    }
+  }
+}
+.file-drop-zone.clearfix {
+  overflow: hidden;
+}
 .files.files-selector {
   .folder {
     position: relative;
@@ -1658,6 +1693,18 @@ input#search::placeholder {
       right: 0px;
       top: 10px;
     }
+  }
+  .new-folder .card-content {
+    width: 70%;
+  }
+
+  .new-folder .input-field {
+    margin: 0;
+  }
+
+  .new-folder input#folder_name {
+    margin: 0;
+    height: 20px;
   }
   .file {
     position: relative;
