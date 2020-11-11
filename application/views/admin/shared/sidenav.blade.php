@@ -57,10 +57,10 @@
             <a class="waves-effect" href="{{ base_url('admin/formularios/content') }}"><i class="material-icons">insert_chart</i>
                 Forms Content</a>
         </li>
-        <li class="{{isSectionActive('mensajes')}}">
+        <!-- <li class="{{isSectionActive('mensajes')}}">
             <a class="waves-effect" href="{{ base_url('admin/mensajes/') }}"><i class="material-icons">email</i>
                 Mensajes</a>
-        </li>
+        </li> -->
         <li class="{{isSectionActive('suscriptores')}}">
             <a class="waves-effect" href="{{ base_url('admin/suscriptores/') }}"><i class="material-icons">supervisor_account</i> Suscriptores</a>
         </li>

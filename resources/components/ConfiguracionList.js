@@ -292,6 +292,7 @@ var ConfiguracionList = new Vue({
           self.fileloader = false;
           if (response.code == 200 && response.data.length) {
             self.files = response.data.map((file) => new ExplorerFile(file));
+            self.initPlugins();
           } else {
             self.files = [];
           }
