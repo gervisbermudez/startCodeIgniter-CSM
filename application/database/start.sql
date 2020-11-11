@@ -2,7 +2,7 @@
 -- Host:                         127.0.0.1
 -- Versión del servidor:         10.4.13-MariaDB - mariadb.org binary distribution
 -- SO del servidor:              Win64
--- HeidiSQL Versión:             11.0.0.5919
+-- HeidiSQL Versión:             11.1.0.6116
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -10,9 +10,9 @@
 /*!50503 SET NAMES utf8mb4 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 -- Volcando estructura para tabla start_cms.album
-DROP TABLE IF EXISTS `album`;
 CREATE TABLE IF NOT EXISTS `album` (
   `album_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(250) NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `album` (
   PRIMARY KEY (`album_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
--- Volcando datos para la tabla start_cms.album: ~1 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.album: ~0 rows (aproximadamente)
 DELETE FROM `album`;
 /*!40000 ALTER TABLE `album` DISABLE KEYS */;
 INSERT INTO `album` (`album_id`, `name`, `description`, `date_publish`, `user_id`, `status`, `date_create`, `date_update`) VALUES
@@ -33,7 +33,6 @@ INSERT INTO `album` (`album_id`, `name`, `description`, `date_publish`, `user_id
 /*!40000 ALTER TABLE `album` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.album_items
-DROP TABLE IF EXISTS `album_items`;
 CREATE TABLE IF NOT EXISTS `album_items` (
   `album_item_id` int(11) NOT NULL AUTO_INCREMENT,
   `album_id` int(11) NOT NULL,
@@ -49,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `album_items` (
   CONSTRAINT `FK_album_items_album` FOREIGN KEY (`album_id`) REFERENCES `album` (`album_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8;
 
--- Volcando datos para la tabla start_cms.album_items: ~13 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.album_items: ~7 rows (aproximadamente)
 DELETE FROM `album_items`;
 /*!40000 ALTER TABLE `album_items` DISABLE KEYS */;
 INSERT INTO `album_items` (`album_item_id`, `album_id`, `file_id`, `name`, `description`, `status`, `date_create`, `date_update`) VALUES
@@ -63,7 +62,6 @@ INSERT INTO `album_items` (`album_item_id`, `album_id`, `file_id`, `name`, `desc
 /*!40000 ALTER TABLE `album_items` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.categories
-DROP TABLE IF EXISTS `categories`;
 CREATE TABLE IF NOT EXISTS `categories` (
   `categorie_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
@@ -95,7 +93,6 @@ INSERT INTO `categories` (`categorie_id`, `user_id`, `name`, `description`, `typ
 /*!40000 ALTER TABLE `categories` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.contacts
-DROP TABLE IF EXISTS `contacts`;
 CREATE TABLE IF NOT EXISTS `contacts` (
   `contact_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
@@ -113,7 +110,6 @@ DELETE FROM `contacts`;
 /*!40000 ALTER TABLE `contacts` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.contacts_data
-DROP TABLE IF EXISTS `contacts_data`;
 CREATE TABLE IF NOT EXISTS `contacts_data` (
   `contacts_data_id` int(11) NOT NULL AUTO_INCREMENT,
   `contact_id` int(11) NOT NULL,
@@ -132,7 +128,6 @@ DELETE FROM `contacts_data`;
 /*!40000 ALTER TABLE `contacts_data` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.events
-DROP TABLE IF EXISTS `events`;
 CREATE TABLE IF NOT EXISTS `events` (
   `event_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(70) NOT NULL,
@@ -156,7 +151,6 @@ DELETE FROM `events`;
 /*!40000 ALTER TABLE `events` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.file
-DROP TABLE IF EXISTS `file`;
 CREATE TABLE IF NOT EXISTS `file` (
   `file_id` int(11) NOT NULL AUTO_INCREMENT,
   `rand_key` varchar(250) DEFAULT NULL,
@@ -173,16 +167,16 @@ CREATE TABLE IF NOT EXISTS `file` (
   `status` tinyint(4) DEFAULT 1,
   PRIMARY KEY (`file_id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1198 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1278 DEFAULT CHARSET=latin1;
 
--- Volcando datos para la tabla start_cms.file: ~598 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.file: ~600 rows (aproximadamente)
 DELETE FROM `file`;
 /*!40000 ALTER TABLE `file` DISABLE KEYS */;
 INSERT INTO `file` (`file_id`, `rand_key`, `file_name`, `file_path`, `file_type`, `parent_name`, `user_id`, `shared_user_group_id`, `share_link`, `featured`, `date_create`, `date_update`, `status`) VALUES
-	(1, '9bjUypTC1FPQuow8', '1tnvrt0m6nob3yq8jkfp', './', 'jpg', './', 1, 1, 'admin/archivos/shared_file/9bjUypTC1FPQuow8', 0, '2020-10-07 20:09:47', '2020-10-07 20:34:01', 1),
-	(2, 'QFwf5KOXz98ZHDmG', '43900439-368fa600-9be5-11e8-8f9c-d209784de1ef', './', 'jpg', './', 1, 1, 'admin/archivos/shared_file/QFwf5KOXz98ZHDmG', 0, '2020-10-07 20:09:47', '2020-10-07 20:38:49', 1),
+	(1, '9bjUypTC1FPQuow8', '1tnvrt0m6nob3yq8jkfp', './public/img/', 'jpg', './', 1, 1, 'admin/archivos/shared_file/9bjUypTC1FPQuow8', 1, '2020-10-07 20:09:47', '2020-10-07 20:34:01', 1),
+	(2, 'QFwf5KOXz98ZHDmG', '43900439-368fa600-9be5-11e8-8f9c-d209784de1ef', './public/img/', 'jpg', './', 1, 1, 'admin/archivos/shared_file/QFwf5KOXz98ZHDmG', 0, '2020-10-07 20:09:47', '2020-10-07 20:38:49', 1),
 	(599, 'ms4YnrqwV8yIStJF', 'apidoc', './', 'json', './', 1, 1, 'admin/archivos/shared_file/ms4YnrqwV8yIStJF', 0, '2020-10-07 20:09:47', '2020-10-07 20:09:47', 1),
-	(600, 'OSA3D4NBhmryvV2d', 'blog3', './', 'jpg', './', 1, 1, 'admin/archivos/shared_file/OSA3D4NBhmryvV2d', 0, '2020-10-07 20:09:47', '2020-10-07 20:09:47', 1),
+	(600, 'OSA3D4NBhmryvV2d', 'blog3', './public/img/', 'jpg', './', 1, 1, 'admin/archivos/shared_file/OSA3D4NBhmryvV2d', 1, '2020-10-07 20:09:47', '2020-10-07 20:09:47', 1),
 	(601, 'ZYUjQXInkDiT3hug', 'composer', './', 'json', './', 1, 1, 'admin/archivos/shared_file/ZYUjQXInkDiT3hug', 0, '2020-10-07 20:09:47', '2020-10-07 20:09:47', 1),
 	(602, 'CRIyV12Ef5dHqalX', 'devnotes', './', 'txt', './', 1, 1, 'admin/archivos/shared_file/CRIyV12Ef5dHqalX', 0, '2020-10-07 20:09:47', '2020-10-07 20:09:47', 1),
 	(603, 'WL1kJt2hAjsNc3SH', 'gulpfile', './', 'js', './', 1, 1, 'admin/archivos/shared_file/WL1kJt2hAjsNc3SH', 0, '2020-10-07 20:09:47', '2020-10-07 20:09:47', 1),
@@ -778,11 +772,72 @@ INSERT INTO `file` (`file_id`, `rand_key`, `file_name`, `file_path`, `file_type`
 	(1193, 'vD3ZUpl8gTKMfVcY', '0', './trash/', 'file', 'trash', 1, 1, 'admin/archivos/shared_file/vD3ZUpl8gTKMfVcY', 0, '2020-10-07 20:09:49', '2020-10-07 20:09:49', 1),
 	(1194, 't5ivdxn0MzXjAIym', 'updater', './', 'php', './', 1, 1, 'admin/archivos/shared_file/t5ivdxn0MzXjAIym', 0, '2020-10-07 20:09:49', '2020-10-07 20:09:49', 1),
 	(1196, 'e43D0jWZTCdslzS5', 'header', './public/css/admin/', 'min.css', 'admin', 1, 1, 'admin/archivos/shared_file/e43D0jWZTCdslzS5', 0, '2020-10-12 09:56:32', '2020-10-12 09:56:32', 1),
-	(1197, '8CxfmisQrqbEDh9e', 'AlbumNewForm', './public/js/components/', 'min.js', 'components', 1, 1, 'admin/archivos/shared_file/8CxfmisQrqbEDh9e', 0, '2020-10-12 09:56:32', '2020-10-12 09:56:32', 1);
+	(1197, '8CxfmisQrqbEDh9e', 'AlbumNewForm', './public/js/components/', 'min.js', 'components', 1, 1, 'admin/archivos/shared_file/8CxfmisQrqbEDh9e', 0, '2020-10-12 09:56:32', '2020-10-12 09:56:32', 1),
+	(1203, 'fs3z1juYWFRqop5X', 'uploads', './', 'folder', './', 1, 1, 'admin/archivos/shared_file/fs3z1juYWFRqop5X', 0, '2020-10-25 16:10:51', '2020-10-25 13:06:11', 1),
+	(1210, '3t5rPo2aElAc8wms', '01-vuejs', './uploads/', 'jpg', 'uploads', 1, 1, 'admin/archivos/shared_file/3t5rPo2aElAc8wms', 0, '2020-10-25 13:30:32', '2020-10-25 13:30:32', 1),
+	(1211, 'kfReVAiF7wyEvgOZ', 'Flutter-Cover', './uploads/', 'png', 'uploads', 1, 1, 'admin/archivos/shared_file/kfReVAiF7wyEvgOZ', 0, '2020-10-25 13:41:48', '2020-10-25 13:41:48', 1),
+	(1212, 'xe8InLXCicTtmS6s', 'Flutter-Cover', './public/', 'png', 'public', 1, 1, 'admin/archivos/shared_file/xe8InLXCicTtmS6s', 0, '2020-10-25 17:57:02', '2020-10-25 17:57:02', 1),
+	(1213, 'ognjWw2MNuHaSFQG', 'backups', './', 'folder', './', 1, 1, 'admin/archivos/shared_file/ognjWw2MNuHaSFQG', 0, '2020-10-25 17:57:02', '2020-10-25 17:57:02', 1),
+	(1214, 'H2vGQ4TYdOemgbIL', 'database', './backups/', 'folder', 'backups', 1, 1, 'admin/archivos/shared_file/H2vGQ4TYdOemgbIL', 0, '2020-10-25 17:57:02', '2020-10-25 17:57:02', 1),
+	(1222, 'Z7DazviU4CGNd3Ax', 'changePassword', './public/js/components/', 'Component.min.js', 'components', 1, 1, 'admin/archivos/shared_file/Z7DazviU4CGNd3Ax', 0, '2020-11-11 12:17:19', '2020-11-11 12:17:19', 1),
+	(1223, 'F9WL5ca0j7EPmw62', 'theme_info', './themes/awesomeTheme/', 'json', 'awesomeTheme', 1, 1, 'admin/archivos/shared_file/F9WL5ca0j7EPmw62', 0, '2020-11-11 12:17:19', '2020-11-11 12:17:19', 1),
+	(1224, '81FTyGocwinXgRpJ', 'theme_info', './themes/myGreatTheme/', 'json', 'myGreatTheme', 1, 1, 'admin/archivos/shared_file/81FTyGocwinXgRpJ', 0, '2020-11-11 12:17:19', '2020-11-11 12:17:19', 1),
+	(1225, 'borsC2VifUQyAemv', '20201111161717', './backups/database/', 'gz', 'database', 1, 1, 'admin/archivos/shared_file/borsC2VifUQyAemv', 0, '2020-11-11 12:17:19', '2020-11-11 12:17:19', 1),
+	(1226, 'OLR8YZFMvumfXoed', 'img', './themes/awesomeTheme/public/', 'folder', 'public', 1, 1, 'admin/archivos/shared_file/OLR8YZFMvumfXoed', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1227, '4fKdeVm73qj5rxHp', 'photo-2', './themes/awesomeTheme/public/img/', 'jpg', 'img', 1, 1, 'admin/archivos/shared_file/4fKdeVm73qj5rxHp', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1228, 'iytBCek4MIjEQpXZ', 'photo-1', './themes/awesomeTheme/public/img/', 'jpg', 'img', 1, 1, 'admin/archivos/shared_file/iytBCek4MIjEQpXZ', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1229, 'IltJ3DR06m9iWube', 'photo-3', './themes/awesomeTheme/public/img/', 'jpg', 'img', 1, 1, 'admin/archivos/shared_file/IltJ3DR06m9iWube', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1230, 'psPCo1fnB38XlVKr', 'photo-700x450', './themes/awesomeTheme/public/img/', 'jpg', 'img', 1, 1, 'admin/archivos/shared_file/psPCo1fnB38XlVKr', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1231, 'AtrGWTfiasX7ZgM4', 'photo-700x400', './themes/awesomeTheme/public/img/', 'jpg', 'img', 1, 1, 'admin/archivos/shared_file/AtrGWTfiasX7ZgM4', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1232, 'f9ZQhtK3DBCr6dvz', 'photo-700x400-2', './themes/awesomeTheme/public/img/', 'jpg', 'img', 1, 1, 'admin/archivos/shared_file/f9ZQhtK3DBCr6dvz', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1233, 'feEDrB1MaOlA7Yum', 'photo-700x400-3', './themes/awesomeTheme/public/img/', 'jpg', 'img', 1, 1, 'admin/archivos/shared_file/feEDrB1MaOlA7Yum', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1234, 'TKV3gi8pYlRnWaHO', 'photo-4', './themes/awesomeTheme/public/img/', 'jpg', 'img', 1, 1, 'admin/archivos/shared_file/TKV3gi8pYlRnWaHO', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1235, 'hJIyru51ODft4aGp', 'siteWithoutFooter', './themes/awesomeTheme/views/site/layouts/', 'blade.php', 'layouts', 1, 1, 'admin/archivos/shared_file/hJIyru51ODft4aGp', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1236, 'yVDTb3XNkHfG6Qrs', 'templates', './themes/awesomeTheme/views/site/', 'folder', 'site', 1, 1, 'admin/archivos/shared_file/yVDTb3XNkHfG6Qrs', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1237, 'eKvzsA03hf4coO5m', 'sideBarTemplate', './themes/awesomeTheme/views/site/templates/', 'blade.php', 'templates', 1, 1, 'admin/archivos/shared_file/eKvzsA03hf4coO5m', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1238, 'AWQNgUPTMvzX45nL', 'template', './themes/awesomeTheme/views/site/templates/', 'blade.php', 'templates', 1, 1, 'admin/archivos/shared_file/AWQNgUPTMvzX45nL', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1239, 'l36dgsyqCbL0Ikv9', 'about', './themes/awesomeTheme/views/site/', 'blade.php', 'site', 1, 1, 'admin/archivos/shared_file/l36dgsyqCbL0Ikv9', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1240, 'Khe4HQ5AfTZJ0PRc', 'blogList', './themes/awesomeTheme/views/site/', 'blade.php', 'site', 1, 1, 'admin/archivos/shared_file/Khe4HQ5AfTZJ0PRc', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1241, 'bVyA2vd4lY3UhjMg', 'blogPost', './themes/awesomeTheme/views/site/', 'blade.php', 'site', 1, 1, 'admin/archivos/shared_file/bVyA2vd4lY3UhjMg', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1242, 'RLIreoUsJH8iupK0', 'contact', './themes/awesomeTheme/views/site/', 'blade.php', 'site', 1, 1, 'admin/archivos/shared_file/RLIreoUsJH8iupK0', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1243, '7vAhUI6iqytgCXbR', 'faq', './themes/awesomeTheme/views/site/', 'blade.php', 'site', 1, 1, 'admin/archivos/shared_file/7vAhUI6iqytgCXbR', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1244, 'capZT2wRhENO8eqF', 'fullwidth', './themes/awesomeTheme/views/site/', 'blade.php', 'site', 1, 1, 'admin/archivos/shared_file/capZT2wRhENO8eqF', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1245, 'inatEK7o1uXghCSe', 'portfolioItem', './themes/awesomeTheme/views/site/', 'blade.php', 'site', 1, 1, 'admin/archivos/shared_file/inatEK7o1uXghCSe', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1246, 'h6oc0nx8uHZMzrEP', 'portfolioList', './themes/awesomeTheme/views/site/', 'blade.php', 'site', 1, 1, 'admin/archivos/shared_file/h6oc0nx8uHZMzrEP', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1247, 'ZaoHpFw5n1APITix', 'pricing', './themes/awesomeTheme/views/site/', 'blade.php', 'site', 1, 1, 'admin/archivos/shared_file/ZaoHpFw5n1APITix', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1248, 'OHA4LmPRovrqKzGM', 'services', './themes/awesomeTheme/views/site/', 'blade.php', 'site', 1, 1, 'admin/archivos/shared_file/OHA4LmPRovrqKzGM', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1249, 'Zay302d9DrN7lVPk', 'sidebar', './themes/awesomeTheme/views/site/', 'blade.php', 'site', 1, 1, 'admin/archivos/shared_file/Zay302d9DrN7lVPk', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1250, 'IhB3bwyHzC9Mg8Wm', 'theme_preview', './themes/awesomeTheme/', 'jpg', 'awesomeTheme', 1, 1, 'admin/archivos/shared_file/IhB3bwyHzC9Mg8Wm', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1251, 'W8InmSEYaJ3CVtwe', 'cache', './themes/awesomeTheme/', 'folder', 'awesomeTheme', 1, 1, 'admin/archivos/shared_file/W8InmSEYaJ3CVtwe', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1252, 'DtLMfARcZiO4n3Cq', 'materialize', './themes/myGreatTheme/public/css/', 'css', 'css', 1, 1, 'admin/archivos/shared_file/DtLMfARcZiO4n3Cq', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1253, '7VUEAJyChaFLYOKW', 'style', './themes/myGreatTheme/public/css/', 'css', 'css', 1, 1, 'admin/archivos/shared_file/7VUEAJyChaFLYOKW', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1254, 'moIEgwOXi5Lf6zVc', 'init', './themes/myGreatTheme/public/js/', 'js', 'js', 1, 1, 'admin/archivos/shared_file/moIEgwOXi5Lf6zVc', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1255, 'HrzwqoyVETK5PM7p', 'materialize', './themes/myGreatTheme/public/js/', 'js', 'js', 1, 1, 'admin/archivos/shared_file/HrzwqoyVETK5PM7p', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1256, 'qnE9JaYDVGZOkMrS', 'img', './themes/myGreatTheme/public/', 'folder', 'public', 1, 1, 'admin/archivos/shared_file/qnE9JaYDVGZOkMrS', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1257, 'ZCi2XHmcJ7upoMqS', 'background1', './themes/myGreatTheme/public/img/', 'jpg', 'img', 1, 1, 'admin/archivos/shared_file/ZCi2XHmcJ7upoMqS', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1258, 'l5bKqsjQ9Z2McPCf', 'background2', './themes/myGreatTheme/public/img/', 'jpg', 'img', 1, 1, 'admin/archivos/shared_file/l5bKqsjQ9Z2McPCf', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1259, 'TH4B5iq8Itok12jN', 'background3', './themes/myGreatTheme/public/img/', 'jpg', 'img', 1, 1, 'admin/archivos/shared_file/TH4B5iq8Itok12jN', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1260, 'ZOP6QLwsecg19tD7', 'siteWithoutFooter', './themes/myGreatTheme/views/site/layouts/', 'blade.php', 'layouts', 1, 1, 'admin/archivos/shared_file/ZOP6QLwsecg19tD7', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1261, 'mCZB1x0AG4QeXskr', 'templates', './themes/myGreatTheme/views/site/', 'folder', 'site', 1, 1, 'admin/archivos/shared_file/mCZB1x0AG4QeXskr', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1262, '9YkeUgaGJ8MS3Wov', 'sideBarTemplate', './themes/myGreatTheme/views/site/templates/', 'blade.php', 'templates', 1, 1, 'admin/archivos/shared_file/9YkeUgaGJ8MS3Wov', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1263, 'HMPNDXa2olObTu5C', 'template', './themes/myGreatTheme/views/site/templates/', 'blade.php', 'templates', 1, 1, 'admin/archivos/shared_file/HMPNDXa2olObTu5C', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1264, 'AkNavYBcu2hUIqHQ', 'about', './themes/myGreatTheme/views/site/', 'blade.php', 'site', 1, 1, 'admin/archivos/shared_file/AkNavYBcu2hUIqHQ', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1265, 'MkyjeS2lVncfOvrX', 'blogList', './themes/myGreatTheme/views/site/', 'blade.php', 'site', 1, 1, 'admin/archivos/shared_file/MkyjeS2lVncfOvrX', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1266, 'kB9wbHJxa0XWs8c7', 'blogPost', './themes/myGreatTheme/views/site/', 'blade.php', 'site', 1, 1, 'admin/archivos/shared_file/kB9wbHJxa0XWs8c7', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1267, 'BTLeVMpZRmCXuw83', 'contact', './themes/myGreatTheme/views/site/', 'blade.php', 'site', 1, 1, 'admin/archivos/shared_file/BTLeVMpZRmCXuw83', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1268, 'zB1LclH4u89hMPaI', 'faq', './themes/myGreatTheme/views/site/', 'blade.php', 'site', 1, 1, 'admin/archivos/shared_file/zB1LclH4u89hMPaI', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1269, 'qGD35FIOnc0hB6Qb', 'fullwidth', './themes/myGreatTheme/views/site/', 'blade.php', 'site', 1, 1, 'admin/archivos/shared_file/qGD35FIOnc0hB6Qb', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1270, '6b8oxtkeZSKw4DJg', 'portfolioItem', './themes/myGreatTheme/views/site/', 'blade.php', 'site', 1, 1, 'admin/archivos/shared_file/6b8oxtkeZSKw4DJg', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1271, '4NSYuQHXFy87DOsh', 'portfolioList', './themes/myGreatTheme/views/site/', 'blade.php', 'site', 1, 1, 'admin/archivos/shared_file/4NSYuQHXFy87DOsh', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1272, 'eOnzZuBUKxNbCQaS', 'pricing', './themes/myGreatTheme/views/site/', 'blade.php', 'site', 1, 1, 'admin/archivos/shared_file/eOnzZuBUKxNbCQaS', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1273, 'GWe0YQ51UJLutqFo', 'services', './themes/myGreatTheme/views/site/', 'blade.php', 'site', 1, 1, 'admin/archivos/shared_file/GWe0YQ51UJLutqFo', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1274, 'Ld4aAnbBKlGzo8Rp', 'sidebar', './themes/myGreatTheme/views/site/', 'blade.php', 'site', 1, 1, 'admin/archivos/shared_file/Ld4aAnbBKlGzo8Rp', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1275, 'wFEtThjpVZWAn5NJ', 'theme_preview', './themes/myGreatTheme/', 'jpg', 'myGreatTheme', 1, 1, 'admin/archivos/shared_file/wFEtThjpVZWAn5NJ', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1276, '5CGtZqhwx3VIKOei', 'THEME_PATH', './', 'folder', './', 1, 1, 'admin/archivos/shared_file/5CGtZqhwx3VIKOei', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1277, 'UAr6MTFcYZsEqpQH', 'cache', './THEME_PATH/', 'folder', 'THEME_PATH', 1, 1, 'admin/archivos/shared_file/UAr6MTFcYZsEqpQH', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1);
 /*!40000 ALTER TABLE `file` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.file_activity
-DROP TABLE IF EXISTS `file_activity`;
 CREATE TABLE IF NOT EXISTS `file_activity` (
   `file_activity_id` int(11) NOT NULL AUTO_INCREMENT,
   `file_id` int(11) DEFAULT NULL,
@@ -805,7 +860,6 @@ DELETE FROM `file_activity`;
 /*!40000 ALTER TABLE `file_activity` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.form_content
-DROP TABLE IF EXISTS `form_content`;
 CREATE TABLE IF NOT EXISTS `form_content` (
   `form_content_id` int(11) NOT NULL AUTO_INCREMENT,
   `form_custom_id` int(11) NOT NULL DEFAULT 0,
@@ -814,18 +868,17 @@ CREATE TABLE IF NOT EXISTS `form_content` (
   `date_update` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `user_id` int(11) DEFAULT NULL,
   `status` tinyint(4) DEFAULT 1,
-  PRIMARY KEY (`form_content_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+  PRIMARY KEY (`form_content_id`),
+  KEY `form_custom_id` (`form_custom_id`),
+  CONSTRAINT `FK_form_content_form_custom` FOREIGN KEY (`form_custom_id`) REFERENCES `form_custom` (`form_custom_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
 -- Volcando datos para la tabla start_cms.form_content: ~0 rows (aproximadamente)
 DELETE FROM `form_content`;
 /*!40000 ALTER TABLE `form_content` DISABLE KEYS */;
-INSERT INTO `form_content` (`form_content_id`, `form_custom_id`, `form_tab_id`, `date_create`, `date_update`, `user_id`, `status`) VALUES
-	(17, 6, 6, '2020-09-14 18:05:36', '2020-09-14 18:05:36', 1, 1);
 /*!40000 ALTER TABLE `form_content` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.form_content_data
-DROP TABLE IF EXISTS `form_content_data`;
 CREATE TABLE IF NOT EXISTS `form_content_data` (
   `form_custom_data_id` int(11) NOT NULL AUTO_INCREMENT,
   `form_content_id` int(11) DEFAULT NULL,
@@ -837,18 +890,14 @@ CREATE TABLE IF NOT EXISTS `form_content_data` (
   PRIMARY KEY (`form_custom_data_id`),
   KEY `form_id` (`form_content_id`),
   CONSTRAINT `FK_form_content_data_form_content` FOREIGN KEY (`form_content_id`) REFERENCES `form_content` (`form_content_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
--- Volcando datos para la tabla start_cms.form_content_data: ~2 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.form_content_data: ~0 rows (aproximadamente)
 DELETE FROM `form_content_data`;
 /*!40000 ALTER TABLE `form_content_data` DISABLE KEYS */;
-INSERT INTO `form_content_data` (`form_custom_data_id`, `form_content_id`, `form_field_id`, `form_value`, `date_create`, `date_update`, `status`) VALUES
-	(21, 17, 9, '{"title":"Kiss"}', '2020-09-14 18:05:36', '2020-09-14 18:05:36', 1),
-	(22, 17, 10, '{"title":"Keep It Simple, Stupid"}', '2020-09-14 18:05:36', '2020-09-14 18:05:36', 1);
 /*!40000 ALTER TABLE `form_content_data` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.form_custom
-DROP TABLE IF EXISTS `form_custom`;
 CREATE TABLE IF NOT EXISTS `form_custom` (
   `form_custom_id` int(11) NOT NULL AUTO_INCREMENT,
   `form_name` varchar(250) DEFAULT NULL,
@@ -858,17 +907,14 @@ CREATE TABLE IF NOT EXISTS `form_custom` (
   `user_id` int(11) DEFAULT NULL,
   `status` tinyint(4) DEFAULT 1,
   PRIMARY KEY (`form_custom_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=latin1;
 
--- Volcando datos para la tabla start_cms.form_custom: ~2 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.form_custom: ~0 rows (aproximadamente)
 DELETE FROM `form_custom`;
 /*!40000 ALTER TABLE `form_custom` DISABLE KEYS */;
-INSERT INTO `form_custom` (`form_custom_id`, `form_name`, `form_description`, `date_create`, `date_update`, `user_id`, `status`) VALUES
-	(6, 'Card', 'Cards are a convenient means of displaying content composed of different types of objects. They’re also well-suited for presenting similar objects whose size or supported actions can vary considerably, like photos with captions of variable length.', '2020-09-01 18:14:06', '2020-09-13 13:57:43', 1, 1);
 /*!40000 ALTER TABLE `form_custom` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.form_fields
-DROP TABLE IF EXISTS `form_fields`;
 CREATE TABLE IF NOT EXISTS `form_fields` (
   `form_field_id` int(11) NOT NULL AUTO_INCREMENT,
   `form_tab_id` int(11) DEFAULT NULL,
@@ -880,19 +926,16 @@ CREATE TABLE IF NOT EXISTS `form_fields` (
   `date_update` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `status` tinyint(4) DEFAULT 1,
   PRIMARY KEY (`form_field_id`) USING BTREE,
-  KEY `form_tab_id` (`form_tab_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+  KEY `form_tab_id` (`form_tab_id`),
+  CONSTRAINT `FK_form_fields_form_tabs` FOREIGN KEY (`form_tab_id`) REFERENCES `form_tabs` (`form_tab_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=latin1;
 
--- Volcando datos para la tabla start_cms.form_fields: ~2 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.form_fields: ~0 rows (aproximadamente)
 DELETE FROM `form_fields`;
 /*!40000 ALTER TABLE `form_fields` DISABLE KEYS */;
-INSERT INTO `form_fields` (`form_field_id`, `form_tab_id`, `field_name`, `displayName`, `icon`, `component`, `date_create`, `date_update`, `status`) VALUES
-	(9, 6, 'title', 'Titulo', 'format_color_text', 'formFieldTitle', '2020-09-09 18:14:06', '2020-09-09 18:14:06', 1),
-	(10, 6, 'title', 'Titulo', 'format_color_text', 'formFieldTitle', '2020-09-09 18:14:06', '2020-09-09 18:14:06', 1);
 /*!40000 ALTER TABLE `form_fields` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.form_fields_data
-DROP TABLE IF EXISTS `form_fields_data`;
 CREATE TABLE IF NOT EXISTS `form_fields_data` (
   `form_field_config_id` int(11) NOT NULL AUTO_INCREMENT,
   `form_field_id` int(11) DEFAULT NULL,
@@ -902,27 +945,16 @@ CREATE TABLE IF NOT EXISTS `form_fields_data` (
   `date_update` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `status` tinyint(4) DEFAULT 1,
   PRIMARY KEY (`form_field_config_id`),
-  KEY `form_id` (`form_field_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=latin1;
+  KEY `form_id` (`form_field_id`),
+  CONSTRAINT `FK_form_fields_data_form_fields` FOREIGN KEY (`form_field_id`) REFERENCES `form_fields` (`form_field_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=273 DEFAULT CHARSET=latin1;
 
--- Volcando datos para la tabla start_cms.form_fields_data: ~10 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.form_fields_data: ~0 rows (aproximadamente)
 DELETE FROM `form_fields_data`;
 /*!40000 ALTER TABLE `form_fields_data` DISABLE KEYS */;
-INSERT INTO `form_fields_data` (`form_field_config_id`, `form_field_id`, `_key`, `_value`, `date_create`, `date_update`, `status`) VALUES
-	(35, 9, 'fieldPlaceholder', 'card_title', '2020-09-09 18:14:06', '2020-09-09 18:14:06', 1),
-	(36, 9, 'fieldID', 'OdNIy02wLe', '2020-09-09 18:14:06', '2020-09-09 18:14:06', 1),
-	(37, 9, 'fieldName', 'card_title', '2020-09-09 18:14:06', '2020-09-09 18:14:06', 1),
-	(38, 9, 'fielApiID', 'card_title', '2020-09-09 18:14:06', '2020-09-09 18:14:06', 1),
-	(39, 9, 'form_custom_data_id', NULL, '2020-09-09 18:14:06', '2020-09-09 18:14:06', 1),
-	(40, 10, 'fieldPlaceholder', 'card_content', '2020-09-09 18:14:06', '2020-09-09 18:14:06', 1),
-	(41, 10, 'fieldID', 'u3R26SluXo', '2020-09-09 18:14:06', '2020-09-09 18:14:06', 1),
-	(42, 10, 'fieldName', 'card_content', '2020-09-09 18:14:06', '2020-09-09 18:14:06', 1),
-	(43, 10, 'fielApiID', 'card_content', '2020-09-09 18:14:06', '2020-09-09 18:14:06', 1),
-	(44, 10, 'form_custom_data_id', NULL, '2020-09-09 18:14:06', '2020-09-09 18:14:06', 1);
 /*!40000 ALTER TABLE `form_fields_data` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.form_tabs
-DROP TABLE IF EXISTS `form_tabs`;
 CREATE TABLE IF NOT EXISTS `form_tabs` (
   `form_tab_id` int(11) NOT NULL AUTO_INCREMENT,
   `form_custom_id` int(11) DEFAULT NULL,
@@ -933,17 +965,14 @@ CREATE TABLE IF NOT EXISTS `form_tabs` (
   PRIMARY KEY (`form_tab_id`),
   KEY `form_id` (`form_custom_id`) USING BTREE,
   CONSTRAINT `FK_form_tabs_form_custom` FOREIGN KEY (`form_custom_id`) REFERENCES `form_custom` (`form_custom_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
 
 -- Volcando datos para la tabla start_cms.form_tabs: ~0 rows (aproximadamente)
 DELETE FROM `form_tabs`;
 /*!40000 ALTER TABLE `form_tabs` DISABLE KEYS */;
-INSERT INTO `form_tabs` (`form_tab_id`, `form_custom_id`, `tab_name`, `date_create`, `date_update`, `status`) VALUES
-	(6, 6, 'Tab 1', '2020-09-09 18:14:06', '2020-09-09 18:14:06', 1);
 /*!40000 ALTER TABLE `form_tabs` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.mailfolder
-DROP TABLE IF EXISTS `mailfolder`;
 CREATE TABLE IF NOT EXISTS `mailfolder` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `namefolder` varchar(60) NOT NULL,
@@ -967,7 +996,6 @@ INSERT INTO `mailfolder` (`id`, `namefolder`, `description`, `status`) VALUES
 /*!40000 ALTER TABLE `mailfolder` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.messages
-DROP TABLE IF EXISTS `messages`;
 CREATE TABLE IF NOT EXISTS `messages` (
   `messages_id` int(11) NOT NULL AUTO_INCREMENT,
   `_from` text NOT NULL,
@@ -991,7 +1019,6 @@ DELETE FROM `messages`;
 /*!40000 ALTER TABLE `messages` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.messages_data
-DROP TABLE IF EXISTS `messages_data`;
 CREATE TABLE IF NOT EXISTS `messages_data` (
   `messages_data_id` int(11) NOT NULL AUTO_INCREMENT,
   `id_mensaje` int(11) NOT NULL,
@@ -1010,7 +1037,6 @@ DELETE FROM `messages_data`;
 /*!40000 ALTER TABLE `messages_data` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.notificacions
-DROP TABLE IF EXISTS `notificacions`;
 CREATE TABLE IF NOT EXISTS `notificacions` (
   `notificacion_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
@@ -1029,7 +1055,6 @@ DELETE FROM `notificacions`;
 /*!40000 ALTER TABLE `notificacions` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.page
-DROP TABLE IF EXISTS `page`;
 CREATE TABLE IF NOT EXISTS `page` (
   `page_id` int(11) NOT NULL AUTO_INCREMENT,
   `path` varchar(2048) DEFAULT NULL,
@@ -1051,17 +1076,14 @@ CREATE TABLE IF NOT EXISTS `page` (
   PRIMARY KEY (`page_id`),
   KEY `author` (`user_id`) USING BTREE,
   KEY `type` (`page_type_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=99 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=latin1;
 
--- Volcando datos para la tabla start_cms.page: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.page: ~1 rows (aproximadamente)
 DELETE FROM `page`;
 /*!40000 ALTER TABLE `page` DISABLE KEYS */;
-INSERT INTO `page` (`page_id`, `path`, `template`, `title`, `subtitle`, `content`, `page_type_id`, `user_id`, `visibility`, `categorie_id`, `subcategorie_id`, `status`, `layout`, `mainImage`, `date_publish`, `date_update`, `date_create`) VALUES
-	(98, 'materialize', 'default', 'Materialize', '', '<p>A modern responsive front-end framework based on Material Design</p>\n<p>&nbsp;</p>\n<div id="gtx-trans" style="position: absolute; left: -17px; top: 31.6354px;">&nbsp;</div>', 1, 1, 1, 0, 0, 2, 'default', NULL, '2020-10-03 00:39:54', NULL, '2020-10-03 00:39:54');
 /*!40000 ALTER TABLE `page` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.page_data
-DROP TABLE IF EXISTS `page_data`;
 CREATE TABLE IF NOT EXISTS `page_data` (
   `page_data_id` int(11) NOT NULL AUTO_INCREMENT,
   `page_id` int(11) NOT NULL,
@@ -1073,21 +1095,14 @@ CREATE TABLE IF NOT EXISTS `page_data` (
   PRIMARY KEY (`page_data_id`) USING BTREE,
   KEY `user` (`page_id`) USING BTREE,
   CONSTRAINT `FK_page_data_page` FOREIGN KEY (`page_id`) REFERENCES `page` (`page_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
--- Volcando datos para la tabla start_cms.page_data: ~4 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.page_data: ~2 rows (aproximadamente)
 DELETE FROM `page_data`;
 /*!40000 ALTER TABLE `page_data` DISABLE KEYS */;
-INSERT INTO `page_data` (`page_data_id`, `page_id`, `_key`, `_value`, `status`, `date_create`, `date_update`) VALUES
-	(28, 98, 'meta', '[{"name":"author","content":"Gervis Mora"},{"name":"keywords","content":"Materialize"},{"name":"description","content":"A modern responsive front-end framework based on Material Design\\u00a0\\u00a0..."},{"name":"ROBOTS","content":"NOODP"},{"name":"GOOGLEBOT","content":"INDEX, FOLLOW"},{"property":"og:title","content":"Materialize"},{"property":"og:description","content":"A modern responsive front-end framework based on Material Design\\u00a0\\u00a0..."},{"property":"og:site_name","content":"Modern Business"},{"property":"og:url","content":"http:\\/\\/localhost:8000\\/materialize"},{"property":"og:image","content":""},{"property":"og:type","content":"article"},{"property":"twitter:card","content":"summary"},{"property":"twitter:title","content":"Materialize"},{"property":"twitter:description","content":"A modern responsive front-end framework based on Material Design\\u00a0\\u00a0..."},{"property":"twitter:image","content":""}]', 1, '2020-09-17 21:05:59', '2020-09-17 21:10:40'),
-	(29, 98, 'tags', '["css","frontend"]', 1, '2020-09-17 21:07:35', '2020-09-17 21:07:35'),
-	(30, 98, 'title', 'Materialize', 1, '2020-09-17 21:09:13', '2020-09-17 21:09:13'),
-	(31, 98, 'headers_includes', '', 1, '2020-09-17 21:12:06', '2020-09-17 21:33:11'),
-	(32, 98, 'footer_includes', '', 1, '2020-09-17 21:12:16', '2020-09-17 21:33:25');
 /*!40000 ALTER TABLE `page_data` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.page_type
-DROP TABLE IF EXISTS `page_type`;
 CREATE TABLE IF NOT EXISTS `page_type` (
   `page_type_id` int(11) NOT NULL AUTO_INCREMENT,
   `page_type_name` varchar(250) DEFAULT NULL,
@@ -1107,7 +1122,6 @@ INSERT INTO `page_type` (`page_type_id`, `page_type_name`, `date_create`, `date_
 /*!40000 ALTER TABLE `page_type` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.permisions
-DROP TABLE IF EXISTS `permisions`;
 CREATE TABLE IF NOT EXISTS `permisions` (
   `permisions_id` int(11) NOT NULL AUTO_INCREMENT,
   `permision_name` varchar(50) DEFAULT NULL,
@@ -1117,7 +1131,7 @@ CREATE TABLE IF NOT EXISTS `permisions` (
   PRIMARY KEY (`permisions_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 
--- Volcando datos para la tabla start_cms.permisions: ~4 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.permisions: ~5 rows (aproximadamente)
 DELETE FROM `permisions`;
 /*!40000 ALTER TABLE `permisions` DISABLE KEYS */;
 INSERT INTO `permisions` (`permisions_id`, `permision_name`, `date_create`, `date_update`, `status`) VALUES
@@ -1129,7 +1143,6 @@ INSERT INTO `permisions` (`permisions_id`, `permision_name`, `date_create`, `dat
 /*!40000 ALTER TABLE `permisions` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.relations
-DROP TABLE IF EXISTS `relations`;
 CREATE TABLE IF NOT EXISTS `relations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
@@ -1146,7 +1159,6 @@ DELETE FROM `relations`;
 /*!40000 ALTER TABLE `relations` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.site_config
-DROP TABLE IF EXISTS `site_config`;
 CREATE TABLE IF NOT EXISTS `site_config` (
   `site_config_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL DEFAULT 0,
@@ -1159,27 +1171,32 @@ CREATE TABLE IF NOT EXISTS `site_config` (
   `date_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `status` int(11) NOT NULL DEFAULT 1,
   PRIMARY KEY (`site_config_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
 
--- Volcando datos para la tabla start_cms.site_config: ~10 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.site_config: ~15 rows (aproximadamente)
 DELETE FROM `site_config`;
 /*!40000 ALTER TABLE `site_config` DISABLE KEYS */;
 INSERT INTO `site_config` (`site_config_id`, `user_id`, `config_name`, `config_value`, `config_type`, `config_data`, `readonly`, `date_create`, `date_update`, `status`) VALUES
-	(1, 1, 'SITE_TITLE', 'Start Codeigneiter Hola', 'general', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "50",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "text",\r\n  "perm_values": null\r\n}', 0, '2020-09-08 15:43:59', '2020-09-06 11:49:24', 1),
-	(2, 1, 'SITE_DESCRIPTION', 'My Great website made by Start Codeigneiter', 'general', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "50",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "text",\r\n  "perm_values": null\r\n}', 0, '2020-09-06 18:38:13', '2020-09-06 11:49:12', 1),
-	(3, 1, 'SITE_ADMIN_EMAIL', 'gerber@email.com', 'general', '{\r\n  "type_value": "string",\r\n  "validate_as": "email",\r\n  "max_lenght": "150",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "email",\r\n  "perm_values": null\r\n}', 0, '2020-09-06 18:28:44', '2020-09-06 11:49:02', 1),
-	(4, 1, 'SITE_LANGUAGE', 'esp', 'general', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "50",\r\n  "min_lenght": "0",\r\n  "handle_as": "select",\r\n  "input_type": "select",\r\n  "perm_values": ["en", "esp"]\r\n}', 0, '2020-09-06 18:38:20', '2020-09-06 13:26:38', 1),
-	(5, 1, 'SITE_TIME_ZONE', 'UTC-10', 'general', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "50",\r\n  "min_lenght": "0",\r\n  "handle_as": "select",\r\n  "input_type": "select",\r\n  "perm_values": {\r\n    "UTC-12": "UTC-12",\r\n    "UTC-11.5": "UTC-11:30",\r\n    "UTC-11": "UTC-11",\r\n    "UTC-10.5": "UTC-10:30",\r\n    "UTC-10": "UTC-10",\r\n    "UTC-9.5": "UTC-9:30",\r\n    "UTC-9": "UTC-9",\r\n    "UTC-8.5": "UTC-8:30",\r\n    "UTC-8": "UTC-8",\r\n    "UTC-7.5": "UTC-7:30",\r\n    "UTC-7": "UTC-7",\r\n    "UTC-6.5": "UTC-6:30",\r\n    "UTC-6": "UTC-6",\r\n    "UTC-5.5": "UTC-5:30",\r\n    "UTC-5": "UTC-5",\r\n    "UTC-4.5": "UTC-4:30",\r\n    "UTC-4": "UTC-4",\r\n    "UTC-3.5": "UTC-3:30",\r\n    "UTC-3": "UTC-3",\r\n    "UTC-2.5": "UTC-2:30",\r\n    "UTC-2": "UTC-2",\r\n    "UTC-1.5": "UTC-1:30",\r\n    "UTC-1": "UTC-1",\r\n    "UTC-0.5": "UTC-0:30",\r\n    "UTC+0": "UTC+0",\r\n    "UTC+0.5": "UTC+0:30",\r\n    "UTC+1": "UTC+1",\r\n    "UTC+1.5": "UTC+1:30",\r\n    "UTC+2": "UTC+2",\r\n    "UTC+2.5": "UTC+2:30",\r\n    "UTC+3": "UTC+3",\r\n    "UTC+3.5": "UTC+3:30",\r\n    "UTC+4": "UTC+4",\r\n    "UTC+4.5": "UTC+4:30",\r\n    "UTC+5": "UTC+5",\r\n    "UTC+5.5": "UTC+5:30",\r\n    "UTC+5.75": "UTC+5:45",\r\n    "UTC+6": "UTC+6",\r\n    "UTC+6.5": "UTC+6:30",\r\n    "UTC+7": "UTC+7",\r\n    "UTC+7.5": "UTC+7:30",\r\n    "UTC+8": "UTC+8",\r\n    "UTC+8.5": "UTC+8:30",\r\n    "UTC+8.75": "UTC+8:45",\r\n    "UTC+9": "UTC+9",\r\n    "UTC+9.5": "UTC+9:30",\r\n    "UTC+10": "UTC+10",\r\n    "UTC+10.5": "UTC+10:30",\r\n    "UTC+11": "UTC+11",\r\n    "UTC+11.5": "UTC+11:30",\r\n    "UTC+12": "UTC+12",\r\n    "UTC+12.75": "UTC+12:45",\r\n    "UTC+13": "UTC+13",\r\n    "UTC+13.75": "UTC+13:45",\r\n    "UTC+14": "UTC+14"\r\n  }\r\n}', 0, '2020-09-06 18:15:28', '2020-09-06 13:26:48', 1),
-	(6, 0, 'SITE_DATE_FORMAT', 'j \\d\\e F \\d\\e Y', 'general', '{"type_value":"string","validate_as":"text","max_lenght":"50","min_lenght":"5"}', 0, '2020-09-05 15:48:17', '2020-09-05 21:13:53', 1),
-	(7, 1, 'SITE_TIME_FORMAT', 'H:i', 'general', '{"type_value":"string","validate_as":"text","max_lenght":"50","min_lenght":"0"}', 0, '2020-09-06 01:44:30', '2020-09-05 21:14:06', 1),
-	(9, 1, 'SITE_LIST_MAX_ENTRY', '10', 'lectura', '{"type_value":"number","validate_as":"number","max_lenght":"50","min_lenght":"0"}', 0, '2020-09-06 18:28:31', '2020-09-05 21:09:53', 1),
-	(11, 1, 'SITE_LIST_PUBLIC', 'No', 'lectura', '{\r\n  "type_value": "boolean",\r\n  "validate_as": "boolean",\r\n  "handle_as": "switch",\r\n  "input_type": "switch",\r\n  "perm_values": ["No", "Si"],\r\n  "true": "Si"\r\n}\r\n', 0, '2020-09-06 19:30:40', '2020-09-06 14:03:10', 1),
-	(12, 1, 'SITE_AUTHOR', 'Gervis Bermudez', 'general', '{"type_value":"string","validate_as":"name","max_lenght":"50","min_lenght":"5"}', 0, '2020-09-06 18:29:01', '2020-09-05 21:05:52', 1),
-	(13, 0, 'LAST_UPDATE_FILEMANAGER', '2020-10-12 14:56:33', 'timestamp', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "50",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "text",\r\n  "perm_values": null\r\n}', 0, '2020-10-01 12:02:11', '2020-10-12 09:56:33', 1);
+	(1, 1, 'SITE_TITLE', 'Gervis Bermúdez', 'seo', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "50",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "text",\r\n  "perm_values": null\r\n}', 0, '2020-10-24 20:06:44', '2020-10-12 13:17:34', 1),
+	(2, 1, 'SITE_DESCRIPTION', 'My Great website made by Start Codeigneiter ', 'seo', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "50",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "text",\r\n  "perm_values": null\r\n}', 0, '2020-11-11 16:55:13', '2020-10-12 11:48:11', 1),
+	(3, 1, 'SITE_ADMIN_EMAIL', 'gervisbermudez@outlook.com', 'seo', '{\r\n  "type_value": "string",\r\n  "validate_as": "email",\r\n  "max_lenght": "150",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "email",\r\n  "perm_values": null\r\n}', 0, '2020-10-24 20:07:37', '2020-10-12 11:48:11', 1),
+	(4, 1, 'SITE_LANGUAGE', 'en', 'seo', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "50",\r\n  "min_lenght": "0",\r\n  "handle_as": "select",\r\n  "input_type": "select",\r\n  "perm_values": ["en", "esp"]\r\n}', 0, '2020-10-12 22:24:21', '2020-10-12 11:48:11', 1),
+	(5, 1, 'SITE_TIME_ZONE', 'UTC-10', 'general', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "50",\r\n  "min_lenght": "0",\r\n  "handle_as": "select",\r\n  "input_type": "select",\r\n  "perm_values": {\r\n    "UTC-12": "UTC-12",\r\n    "UTC-11.5": "UTC-11:30",\r\n    "UTC-11": "UTC-11",\r\n    "UTC-10.5": "UTC-10:30",\r\n    "UTC-10": "UTC-10",\r\n    "UTC-9.5": "UTC-9:30",\r\n    "UTC-9": "UTC-9",\r\n    "UTC-8.5": "UTC-8:30",\r\n    "UTC-8": "UTC-8",\r\n    "UTC-7.5": "UTC-7:30",\r\n    "UTC-7": "UTC-7",\r\n    "UTC-6.5": "UTC-6:30",\r\n    "UTC-6": "UTC-6",\r\n    "UTC-5.5": "UTC-5:30",\r\n    "UTC-5": "UTC-5",\r\n    "UTC-4.5": "UTC-4:30",\r\n    "UTC-4": "UTC-4",\r\n    "UTC-3.5": "UTC-3:30",\r\n    "UTC-3": "UTC-3",\r\n    "UTC-2.5": "UTC-2:30",\r\n    "UTC-2": "UTC-2",\r\n    "UTC-1.5": "UTC-1:30",\r\n    "UTC-1": "UTC-1",\r\n    "UTC-0.5": "UTC-0:30",\r\n    "UTC+0": "UTC+0",\r\n    "UTC+0.5": "UTC+0:30",\r\n    "UTC+1": "UTC+1",\r\n    "UTC+1.5": "UTC+1:30",\r\n    "UTC+2": "UTC+2",\r\n    "UTC+2.5": "UTC+2:30",\r\n    "UTC+3": "UTC+3",\r\n    "UTC+3.5": "UTC+3:30",\r\n    "UTC+4": "UTC+4",\r\n    "UTC+4.5": "UTC+4:30",\r\n    "UTC+5": "UTC+5",\r\n    "UTC+5.5": "UTC+5:30",\r\n    "UTC+5.75": "UTC+5:45",\r\n    "UTC+6": "UTC+6",\r\n    "UTC+6.5": "UTC+6:30",\r\n    "UTC+7": "UTC+7",\r\n    "UTC+7.5": "UTC+7:30",\r\n    "UTC+8": "UTC+8",\r\n    "UTC+8.5": "UTC+8:30",\r\n    "UTC+8.75": "UTC+8:45",\r\n    "UTC+9": "UTC+9",\r\n    "UTC+9.5": "UTC+9:30",\r\n    "UTC+10": "UTC+10",\r\n    "UTC+10.5": "UTC+10:30",\r\n    "UTC+11": "UTC+11",\r\n    "UTC+11.5": "UTC+11:30",\r\n    "UTC+12": "UTC+12",\r\n    "UTC+12.75": "UTC+12:45",\r\n    "UTC+13": "UTC+13",\r\n    "UTC+13.75": "UTC+13:45",\r\n    "UTC+14": "UTC+14"\r\n  }\r\n}', 0, '2020-09-06 18:15:28', '2020-10-12 11:49:03', 1),
+	(6, 0, 'SITE_DATE_FORMAT', 'j \\d\\e F \\d\\e Y', 'general', '{"type_value":"string","validate_as":"text","max_lenght":"50","min_lenght":"5"}', 0, '2020-09-05 15:48:17', '2020-10-12 11:49:07', 1),
+	(7, 1, 'SITE_TIME_FORMAT', 'H:i', 'general', '{"type_value":"string","validate_as":"text","max_lenght":"50","min_lenght":"0"}', 0, '2020-09-06 01:44:30', '2020-10-12 11:49:15', 1),
+	(9, 1, 'SITE_LIST_MAX_ENTRY', '10', 'general', '{"type_value":"number","validate_as":"number","max_lenght":"50","min_lenght":"0"}', 0, '2020-09-06 18:28:31', '2020-10-12 11:49:20', 1),
+	(11, 1, 'SITE_LIST_PUBLIC', 'No', 'general', '{\r\n  "type_value": "boolean",\r\n  "validate_as": "boolean",\r\n  "handle_as": "switch",\r\n  "input_type": "switch",\r\n  "perm_values": ["No", "Si"],\r\n  "true": "Si"\r\n}\r\n', 0, '2020-09-06 19:30:40', '2020-10-12 11:49:30', 1),
+	(12, 1, 'SITE_AUTHOR', 'Gervis Bermudez', 'seo', '{"type_value":"string","validate_as":"name","max_lenght":"50","min_lenght":"5"}', 0, '2020-09-06 18:29:01', '2020-10-12 11:48:11', 1),
+	(13, 0, 'LAST_UPDATE_FILEMANAGER', '2020-11-11 20:07:51', 'general', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "50",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "text",\r\n  "perm_values": null\r\n}', 0, '2020-10-01 12:02:11', '2020-11-11 16:07:51', 1),
+	(14, 1, 'ANALYTICS_ACTIVE', 'On', 'analytics', '{\r\n  "type_value": "boolean",\r\n  "validate_as": "boolean",\r\n  "handle_as": "switch",\r\n  "input_type": "switch",\r\n  "perm_values": ["Off", "On"],\r\n  "true": "On"\r\n}\r\n', 0, '2020-10-12 22:33:36', '2020-10-12 17:21:11', 1),
+	(15, 1, 'ANALYTICS_ID', 'UA-XXXXX-Y', 'analytics', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "50",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "text",\r\n  "perm_values": null\r\n}', 0, '2020-10-12 22:28:02', '2020-10-12 17:00:44', 1),
+	(16, 1, 'ANALYTICS_CODE', '<script> window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date; ga(\'create\', \'UA-XXXXX-Y\', \'auto\'); ga(\'send\', \'pageview\'); </script> <script async src=\'https://www.google-analytics.com/analytics.js\'></script>', 'analytics', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "text",\r\n  "perm_values": null\r\n}', 0, '2020-10-12 22:28:18', '2020-10-12 17:49:52', 1),
+	(17, 1, 'PIXEL_ACTIVE', 'Off', 'pixel', '{\r\n  "type_value": "boolean",\r\n  "validate_as": "boolean",\r\n  "handle_as": "switch",\r\n  "input_type": "switch",\r\n  "perm_values": ["Off", "On"],\r\n  "true": "On"\r\n}\r\n', 0, '2020-10-12 22:33:36', '2020-10-12 17:59:40', 1),
+	(18, 1, 'PIXEL_CODE', '', 'analytics', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "text",\r\n  "perm_values": null\r\n}', 0, '2020-10-12 22:28:18', '2020-10-12 17:50:02', 1),
+	(19, 1, 'THEME_PATH', 'awesomeTheme', 'theme', '{"type_value":"string","validate_as":"text","max_lenght":"50","min_lenght":"5"}', 0, '2020-11-11 19:49:23', '2020-11-11 13:38:15', 1);
 /*!40000 ALTER TABLE `site_config` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.suscriptions
-DROP TABLE IF EXISTS `suscriptions`;
 CREATE TABLE IF NOT EXISTS `suscriptions` (
   `suscriptions_id` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(75) NOT NULL,
@@ -1197,7 +1214,6 @@ DELETE FROM `suscriptions`;
 /*!40000 ALTER TABLE `suscriptions` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.user
-DROP TABLE IF EXISTS `user`;
 CREATE TABLE IF NOT EXISTS `user` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(25) NOT NULL,
@@ -1217,13 +1233,12 @@ CREATE TABLE IF NOT EXISTS `user` (
 DELETE FROM `user`;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
 INSERT INTO `user` (`user_id`, `username`, `password`, `email`, `lastseen`, `usergroup_id`, `status`, `date_create`, `date_update`) VALUES
-	(1, 'gerber', '$2y$10$r0DE7OWmcoEsziRfl.qor.PhSYpYq.p0K6C.xY4oDoF10W5JCPbiq', 'gerber@gmail.com', '2020-10-12 14:42:41', 1, 1, '2020-03-01 16:11:25', '2020-09-09 14:56:41'),
+	(1, 'gerber', '$2y$10$dXvZybPPsoYqgy1Yc7reQOvxxpFqJ/Yw.sHDNXtu/oeH60OSwp2fe', 'gerber@gmail.com', '2020-11-11 15:13:02', 1, 1, '2020-03-01 16:11:25', '2020-11-01 10:50:41'),
 	(2, 'yduran', '$2y$10$.Rd9Ke7opDn2zvjc70DESuilWjm2mIMB9R2qyHyKTQbYQRYxGI6A2', 'yduran@gmail.com', '2020-10-07 20:09:26', 2, 1, '2020-03-01 16:11:25', '2020-09-20 19:05:39'),
 	(3, 'nestor', '$2y$10$todx7BAG8S1cSoKOYxtrPuF412C1FvKuuaJWU1jNb/28ahu0a30GW', 'nestor@email.com', '2020-09-21 00:22:31', 4, 1, '2020-09-20 19:22:31', '2020-09-20 19:22:31');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.usergroup
-DROP TABLE IF EXISTS `usergroup`;
 CREATE TABLE IF NOT EXISTS `usergroup` (
   `usergroup_id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(25) NOT NULL,
@@ -1250,7 +1265,6 @@ INSERT INTO `usergroup` (`usergroup_id`, `name`, `level`, `description`, `user_i
 /*!40000 ALTER TABLE `usergroup` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.usergroup_permisions
-DROP TABLE IF EXISTS `usergroup_permisions`;
 CREATE TABLE IF NOT EXISTS `usergroup_permisions` (
   `usergroup_permisions_id` int(11) NOT NULL AUTO_INCREMENT,
   `usergroup_id` int(11) NOT NULL,
@@ -1280,7 +1294,6 @@ INSERT INTO `usergroup_permisions` (`usergroup_permisions_id`, `usergroup_id`, `
 /*!40000 ALTER TABLE `usergroup_permisions` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.user_data
-DROP TABLE IF EXISTS `user_data`;
 CREATE TABLE IF NOT EXISTS `user_data` (
   `user_data_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
@@ -1293,7 +1306,7 @@ CREATE TABLE IF NOT EXISTS `user_data` (
   KEY `user` (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
 
--- Volcando datos para la tabla start_cms.user_data: ~15 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.user_data: ~17 rows (aproximadamente)
 DELETE FROM `user_data`;
 /*!40000 ALTER TABLE `user_data` DISABLE KEYS */;
 INSERT INTO `user_data` (`user_data_id`, `user_id`, `_key`, `_value`, `status`, `date_create`, `date_update`) VALUES
@@ -1302,13 +1315,13 @@ INSERT INTO `user_data` (`user_data_id`, `user_id`, `_key`, `_value`, `status`, 
 	(3, 1, 'direccion', 'Mara', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:35'),
 	(4, 1, 'telefono', '0414-1672173', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:36'),
 	(5, 1, 'create by', 'gerber', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:38'),
-	(6, 1, 'avatar', '300_3.jpg', 1, '2020-03-01 16:31:46', '2020-09-09 16:03:29'),
+	(6, 1, 'avatar', './public/img/profile/gerber/300_3.jpg', 1, '2020-03-01 16:31:46', '2020-10-28 09:09:27'),
 	(7, 2, 'nombre', 'Yule', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:40'),
 	(8, 2, 'apellido', 'Duran', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:42'),
 	(9, 2, 'direccion', 'Mara', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:43'),
 	(10, 2, 'telefono', '0412-9873920', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:46'),
 	(11, 2, 'create by', 'gerber', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:48'),
-	(12, 2, 'avatar', '300_4.jpg', 1, '2020-05-02 19:21:05', '2020-05-25 11:48:50'),
+	(12, 2, 'avatar', './public/img/profile/yduran/300_11.jpg', 1, '2020-05-02 19:21:05', '2020-10-28 09:10:04'),
 	(13, 3, 'nombre', 'Nestor', 1, '2020-09-20 19:22:31', '2020-09-20 19:22:31'),
 	(14, 3, 'apellido', 'Barroso', 1, '2020-09-20 19:22:31', '2020-09-20 19:22:31'),
 	(15, 3, 'direccion', 'Gascon 1610', 1, '2020-09-20 19:22:31', '2020-09-20 19:22:31'),
@@ -1317,7 +1330,6 @@ INSERT INTO `user_data` (`user_data_id`, `user_id`, `_key`, `_value`, `status`, 
 /*!40000 ALTER TABLE `user_data` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.video
-DROP TABLE IF EXISTS `video`;
 CREATE TABLE IF NOT EXISTS `video` (
   `video_id` int(11) NOT NULL AUTO_INCREMENT,
   `nam` varchar(250) NOT NULL,
@@ -1339,7 +1351,6 @@ DELETE FROM `video`;
 /*!40000 ALTER TABLE `video` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.video-categoria
-DROP TABLE IF EXISTS `video-categoria`;
 CREATE TABLE IF NOT EXISTS `video-categoria` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_video` int(11) NOT NULL,
@@ -1355,3 +1366,4 @@ DELETE FROM `video-categoria`;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
