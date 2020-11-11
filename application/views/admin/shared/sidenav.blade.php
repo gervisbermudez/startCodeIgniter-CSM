@@ -133,5 +133,9 @@
                 </ul>
             </div>
         </li>
+        <li class="show-on-medium-and-down">
+            <a class="waves-effect" href="{{ base_url('admin/configuracion') }}"><i class="material-icons">settings</i>
+                Configuración</a>
+        </li>
     </ul>
 </div>

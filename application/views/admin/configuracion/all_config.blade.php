@@ -144,7 +144,7 @@
                         <div class="info white-text right-align">
                             @{{files.length}}
                             <br />
-                            Create Backup Database
+                            Create Backup
                         </div>
                     </div>
                 </div>
