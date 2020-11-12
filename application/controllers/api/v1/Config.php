@@ -210,9 +210,9 @@ class Config extends REST_Controller
         $response = [];
 
         foreach ($map as $key => $value) {
-            if(is_array($value)){
+            if (is_array($value)) {
                 $folder_name = substr($key, 0, -1);
-                $string = file_get_contents( '.\\themes\\' .  $key . "theme_info.json");
+                $string = file_get_contents('.\\themes\\' . $key . "theme_info.json");
                 $json_a = json_decode($string, true);
                 $response[$folder_name] = $json_a;
             }
@@ -225,6 +225,97 @@ class Config extends REST_Controller
 
         $this->response($response, REST_Controller::HTTP_OK);
 
+    }
+
+    public function check_update_get()
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://raw.githubusercontent.com/gervisbermudez/startCodeIgniter-CSM/master/startcms_info.json');
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $data = curl_exec($ch);
+        curl_close($ch);
+
+        $string = file_get_contents("./startcms_info.json");
+        $local_info = json_decode($string, true);
+        $remote_info = json_decode($data, true);
+
+        if ($remote_info) {
+
+            $this->load->model('Admin/Site_config');
+            $config = new Site_config();
+
+            $config->find_with(['config_name' => 'UPDATER_LAST_CHECK_DATA']);
+            $config->config_value = $data;
+            $config->save();
+
+            $config = new Site_config();
+            $config->find_with(['config_name' => 'UPDATER_LAST_CHECK_UPDATE']);
+            $config->config_value = date("Y-m-d H:i:s");
+            $config->save();
+
+            $response = array(
+                'data' => [
+                    "local" => $local_info,
+                    "remote" => $remote_info,
+                ],
+                "code" => REST_Controller::HTTP_OK,
+            );
+        } else {
+            $response = array(
+                'data' => ["message" => "unnable to check updates"],
+                "code" => REST_Controller::HTTP_BAD_REQUEST,
+            );
+        }
+
+        $this->response($response, REST_Controller::HTTP_OK);
+    }
+
+    public function download_update_get()
+    {
+        $filename = "./temp/startCodeIgniter-CSM-master-" . date("Ymd") . ".zip";
+        $result = file_put_contents($filename, fopen(ADMIN_GIT_MASTERZIP_URL, 'r'));
+        if ($result && file_exists($filename)) {
+            $response = array(
+                'data' => [
+                    "result" => $result,
+                    "downloaded_file" => $filename,
+                    "message" => "Package downloaded successfully!",
+                ],
+                "code" => REST_Controller::HTTP_OK,
+            );
+        } else {
+            $response = array(
+                'data' => ["message" => "Unnable to download the package"],
+                "code" => REST_Controller::HTTP_BAD_REQUEST,
+            );
+        }
+
+        $this->response($response, REST_Controller::HTTP_OK);
+    }
+
+    public function install_downloaded_update_get()
+    {
+        $filename = $this->input->get('packagename');
+        if (file_exists($filename)) {
+            $ignorefiles = ['.', '..', 'config.php', 'database.php'];
+            recurse_copy($source, $destination, $ignorefiles);
+            $response = array(
+                'data' => [
+                    "result" => $result,
+                    "downloaded_file" => $filename,
+                    "message" => "Package installed successfully!",
+                ],
+                "code" => REST_Controller::HTTP_OK,
+            );
+        } else {
+            $response = array(
+                'data' => ["message" => "Unnable to install the package"],
+                "code" => REST_Controller::HTTP_BAD_REQUEST,
+            );
+        }
+
+        $this->response($response, REST_Controller::HTTP_OK);
     }
 
 }

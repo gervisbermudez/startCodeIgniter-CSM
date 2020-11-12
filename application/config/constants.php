@@ -97,6 +97,7 @@ defined('ADMIN_VERSION') or define('ADMIN_VERSION', '1.4.2');
 defined('ADMIN_TITLE') or define('ADMIN_TITLE', 'Start CMS');
 defined('ADMIN_BRAND_NAME') or define('ADMIN_BRAND_NAME', 'Start CMS');
 defined('ADMIN_BRAND_SORT_NAME') or define('ADMIN_BRAND_SORT_NAME', 'Start');
+defined('ADMIN_GIT_MASTERZIP_URL') or define('ADMIN_GIT_MASTERZIP_URL', 'https://github.com/gervisbermudez/startCodeIgniter-CSM/archive/master.zip');
 
 defined('SITE_VERSION') or define('SITE_VERSION', '1.3.2');
 defined('SITE_THEME') or define('SITE_THEME', null);

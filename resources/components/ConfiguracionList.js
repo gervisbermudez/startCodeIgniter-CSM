@@ -2,27 +2,38 @@ var ConfiguracionList = new Vue({
   el: "#root",
   data: {
     configurations: [],
-    tableView: false,
-    loader: true,
+    tableView: !1,
+    loader: !0,
     filter: "",
     sectionActive: "home",
-    routes: ["home", "analytics", "seo", "pixel", "database", "theme"],
+    routes: [
+      "home",
+      "analytics",
+      "seo",
+      "pixel",
+      "database",
+      "theme",
+      "updater",
+    ],
     files: [],
     themes: [],
+    updaterloader: false,
+    updaterInfo: null,
+    updaterProgress: false,
+    updaterInstallProgress: false,
+    updaterPackageDownloaded: false,
+    updaterPackageDownloadedName: "",
   },
   mixins: [mixins],
   computed: {
     seoConfigurations: function () {
-      if (!!this.filter) {
-        let filterTerm = this.filter.toLowerCase();
-        return this.configurations.filter((value, index) => {
-          return (
-            this.searchInObject(value, filterTerm) && value.config_type == "seo"
-          );
-        });
-      } else {
-        return this.filterConfigurations("seo");
+      if (this.filter) {
+        let e = this.filter.toLowerCase();
+        return this.configurations.filter(
+          (t, a) => this.searchInObject(t, e) && "seo" == t.config_type
+        );
       }
+      return this.filterConfigurations("seo");
     },
     generalConfigurations: function () {
       return this.filterConfigurations("general");
@@ -39,228 +50,280 @@ var ConfiguracionList = new Vue({
     themeConfigurations: function () {
       return this.filterConfigurations("theme");
     },
+    updaterConfig: function () {
+      return this.filterConfigurations("updater");
+    },
   },
   methods: {
-    getConfig: function (value, prop = "config_name") {
-      let config_object = null;
-      this.configurations.forEach((config) => {
-        if (config[prop] == value) {
-          config_object = config;
-        }
-      });
-      return config_object;
-    },
-    getConfigValue: function (value, prop = "config_name") {
-      let config_object = this.getConfig(value, prop);
-      return config_object ? config_object.config_value : "";
-    },
-    getConfigValueBoolean: function (value, prop = "config_name") {
-      let config_object = this.getConfig(value, prop);
+    getConfig: function (e, t = "config_name") {
+      let a = null;
       return (
-        config_object &&
-        config_object.config_value == config_object.config_data.true
+        this.configurations.forEach((o) => {
+          o[t] == e && (a = o);
+        }),
+        a
       );
     },
-    updateConfig(e, prop = "config_name") {
-      value = e.target.value;
-      config = this.getConfig(prop);
-      config.config_value = value;
-      this.runSave(config);
+    getConfigValue: function (e, t = "config_name") {
+      let a = this.getConfig(e, t);
+      return a ? a.config_value : "";
     },
-    updateConfigCheckbox(e, prop = "ANALYTICS_ACTIVE") {
-      value = e.target.checked;
-      config = this.getConfig(prop);
-
-      if (value) {
-        config.config_data.perm_values.forEach((element) => {
-          if (element == config.config_data.true) {
-            value = element;
-          }
-        });
-      } else {
-        config.config_data.perm_values.forEach((element) => {
-          if (element != config.config_data.true) {
-            value = element;
-          }
-        });
-      }
-
-      config.config_value = value;
-      this.runSave(config);
+    getConfigValueBoolean: function (e, t = "config_name") {
+      let a = this.getConfig(e, t);
+      return a && a.config_value == a.config_data.true;
     },
-    filterConfigurations: function (config_type) {
-      return this.configurations.filter((value, index) => {
-        return value.config_type == config_type;
-      });
+    updateConfig(e, t = "config_name") {
+      (value = e.target.value),
+        (config = this.getConfig(t)),
+        (config.config_value = value),
+        this.runSave(config);
     },
-    changeSectionActive: function (section) {
-      this.sectionActive = section;
-      switch (section) {
+    updateConfigCheckbox(e, t = "ANALYTICS_ACTIVE") {
+      (value = e.target.checked),
+        (config = this.getConfig(t)),
+        value
+          ? config.config_data.perm_values.forEach((e) => {
+              e == config.config_data.true && (value = e);
+            })
+          : config.config_data.perm_values.forEach((e) => {
+              e != config.config_data.true && (value = e);
+            }),
+        (config.config_value = value),
+        this.runSave(config);
+    },
+    filterConfigurations: function (e) {
+      return this.configurations.filter((t, a) => t.config_type == e);
+    },
+    changeSectionActive: function (e) {
+      switch (((this.sectionActive = e), e)) {
         case "theme":
           this.getThemes();
           break;
         case "database":
           this.getDatabaseBackups();
           break;
-
-        default:
+        case "updater":
           break;
       }
-      var newurl =
+      var t =
         window.location.protocol +
         "//" +
         window.location.host +
         window.location.pathname +
         "?section=" +
-        section;
-      window.history.pushState({ path: newurl }, "", newurl);
+        e;
+      window.history.pushState(
+        {
+          path: t,
+        },
+        "",
+        t
+      );
+    },
+    checkUpdates() {
+      (this.updaterloader = !0),
+        fetch(BASEURL + "api/v1/config/check_update")
+          .then((e) => e.json())
+          .then((e) => {
+            console.log(e),
+              (this.updaterloader = !1),
+              (this.updaterInfo = e.data);
+          })
+          .catch((e) => {
+            (this.updaterloader = !1),
+              console.log(e),
+              M.toast({
+                html: "an unexpected error has occurred",
+              });
+          });
+    },
+    downloadUpdateVersion() {
+      (this.updaterProgress = !0),
+        fetch(BASEURL + "api/v1/config/download_update")
+          .then((e) => e.json())
+          .then((e) => {
+            200 == e.code
+              ? ((this.updaterProgress = !1),
+                (this.updaterPackageDownloadedName = e.data.downloaded_file),
+                (this.updaterPackageDownloaded = !0),
+                M.toast({
+                  html: e.data.message,
+                }))
+              : M.toast({
+                  html: e.data.message,
+                });
+          })
+          .catch((e) => {
+            (this.updaterProgress = !1),
+              console.log(e),
+              M.toast({
+                html: "an unexpected error has occurred",
+              });
+          });
+    },
+    installDownloadedPackage() {
+      (this.updaterInstallProgress = !0),
+        fetch(
+          BASEURL +
+            "api/v1/config/install_downloaded_update?packagename=" +
+            this.updaterPackageDownloadedName
+        )
+          .then((e) => e.json())
+          .then((e) => {
+            200 == e.code
+              ? ((this.updaterInstallProgress = !1),
+                M.toast({
+                  html: e.data.message,
+                }))
+              : M.toast({
+                  html: e.data.message,
+                });
+          })
+          .catch((e) => {
+            (this.updaterInstallProgress = !1),
+              console.log(e),
+              M.toast({
+                html: "an unexpected error has occurred",
+              });
+          });
     },
     getThemes() {
       fetch(BASEURL + "api/v1/config/themes")
-        .then((response) => response.json())
-        .then((response) => {
-          this.themes = response.data;
+        .then((e) => e.json())
+        .then((e) => {
+          this.themes = e.data;
         })
-        .catch((error) => {
-          console.log(error);
+        .catch((e) => {
+          console.log(e),
+            M.toast({
+              html: "an unexpected error has occurred",
+            });
         });
     },
-    getThemePreviewUrl(index, theme) {
-      if (theme.preview) {
-        return BASEURL + 'themes/' + index + '/' + theme.preview;
-      } else {
-        return BASEURL + "public/img/profile/default.png";
-      }
+    getThemePreviewUrl: (e, t) =>
+      t.preview
+        ? BASEURL + "themes/" + e + "/" + t.preview
+        : BASEURL + "public/img/profile/default.png",
+    changeTheme(e) {
+      let t = this.getConfig("THEME_PATH");
+      (t.config_value = e), this.saveConfig(t);
     },
-    changeTheme(value) {
-      let config = this.getConfig("THEME_PATH");
-      config.config_value = value;
-      this.saveConfig(config);
-    },
-    getThemeIsChecked(index) {
-      let config = this.getConfig("THEME_PATH");
-      return (config.config_value == index);
+    getThemeIsChecked(e) {
+      return this.getConfig("THEME_PATH").config_value == e;
     },
     toggleView: function () {
-      this.tableView = !this.tableView;
-      this.initPlugins();
+      (this.tableView = !this.tableView), this.initPlugins();
     },
-    toggleEddit(configuration) {
-      configuration.editable = !configuration.editable;
-      this.$forceUpdate();
+    toggleEddit(e) {
+      (e.editable = !e.editable), this.$forceUpdate();
     },
     resetFilter: function () {
       this.filter = "";
     },
     initPlugins: function () {
       setTimeout(() => {
-        var elems = document.querySelectorAll(".tooltipped");
-        M.Tooltip.init(elems, {});
-        var elems = document.querySelectorAll(".dropdown-trigger");
-        M.Dropdown.init(elems, {});
-        var elems = document.querySelectorAll(".collapsible");
-        M.Collapsible.init(elems, {});
-        var elems = document.querySelectorAll("select");
-        M.FormSelect.init(elems, {});
-      }, 3000);
+        var e = document.querySelectorAll(".tooltipped");
+        M.Tooltip.init(e, {});
+        e = document.querySelectorAll(".dropdown-trigger");
+        M.Dropdown.init(e, {});
+        e = document.querySelectorAll(".collapsible");
+        M.Collapsible.init(e, {});
+        e = document.querySelectorAll("select");
+        M.FormSelect.init(e, {});
+      }, 3e3);
     },
-    saveConfig(configuration) {
-      var self = this;
-      this.toggleEddit(configuration);
-      if (configuration.config_data != "boolean") {
-        let form = new VueForm({
+    saveConfig(e) {
+      if ((this.toggleEddit(e), "boolean" != e.config_data)) {
+        let t = new VueForm({
           field: {
-            value: configuration.config_value,
-            required: true,
-            type: configuration.config_data.validate_as,
-            maxLength: configuration.config_data.max_lenght,
-            minLength: configuration.config_data.min_lenght,
+            value: e.config_value,
+            required: !0,
+            type: e.config_data.validate_as,
+            maxLength: e.config_data.max_lenght,
+            minLength: e.config_data.min_lenght,
           },
         });
-        form.validate();
-        if (form.errors.length > 0) {
-          configuration.validate = false;
-          M.toast({ html: "Verificar la configuracion del campo" });
-        } else {
-          configuration.validate = true;
-          this.runSave(configuration);
-        }
-      } else {
-        this.runSave(configuration);
-      }
+        t.validate(),
+          t.errors.length > 0
+            ? ((e.validate = !1),
+              M.toast({
+                html: "Verificar la configuracion del campo",
+              }))
+            : ((e.validate = !0), this.runSave(e));
+      } else this.runSave(e);
     },
-    runSave(configuration) {
-      var self = this;
-      var url = BASEURL + "api/v1/config";
+    runSave(e) {
+      var t = this,
+        a = BASEURL + "api/v1/config";
       $.ajax({
         type: "POST",
-        url: url,
-        data: configuration,
+        url: a,
+        data: e,
         dataType: "json",
-        success: function (response) {
-          self.debug ? console.log(url, response) : null;
-          if (response.code == 200) {
-            if (typeof callBack == "function") {
-              callBack(response);
-            }
-            M.toast({ html: "Config Saved!" });
-          } else {
-            M.toast({ html: response.responseJSON.error_message });
-          }
+        success: function (e) {
+          t.debug && console.log(a, e),
+            200 == e.code
+              ? ("function" == typeof callBack && callBack(e),
+                M.toast({
+                  html: "Config Saved!",
+                }))
+              : M.toast({
+                  html: e.responseJSON.error_message,
+                });
         },
-        error: function (response) {
-          M.toast({ html: response.responseJSON.error_message });
+        error: function (e) {
+          M.toast({
+            html: e.responseJSON.error_message,
+          });
         },
       });
     },
     getconfigurations: function () {
-      var self = this;
-      var url = BASEURL + "api/v1/config/";
-      fetch(url)
-        .then((response) => response.json())
-        .then((response) => {
-          let configurations = response.data;
-          for (const key in configurations) {
-            if (configurations.hasOwnProperty(key)) {
-              configurations[key].user = new User(configurations[key].user);
+      var e = this,
+        t = BASEURL + "api/v1/config/";
+      fetch(t)
+        .then((e) => e.json())
+        .then((t) => {
+          let a = t.data;
+          for (const e in a)
+            if (a.hasOwnProperty(e)) {
+              a[e].user = new User(a[e].user);
               try {
-                configurations[key].config_data = JSON.parse(
-                  configurations[key].config_data
-                );
-              } catch (error) {
-                configurations[key].config_data = {};
+                a[e].config_data = JSON.parse(a[e].config_data);
+              } catch (t) {
+                a[e].config_data = {};
               }
             }
-          }
-          self.configurations = configurations;
-          self.loader = false;
+          (e.configurations = a), (e.loader = !1);
         })
-        .catch((response) => {
-          M.toast({ html: response.responseJSON.error_message });
-          self.loader = false;
+        .catch((t) => {
+          M.toast({
+            html: t.responseJSON.error_message,
+          }),
+            (e.loader = !1);
         });
     },
-    deleteConfiguration: function (configuration, index) {
-      var self = this;
-      self.loader = true;
-      $.ajax({
-        type: "DELETE",
-        url: BASEURL + "api/v1/configuration/" + configuration.configuration_id,
-        data: {},
-        dataType: "json",
-        success: function (response) {
-          if (response.code == 200) {
-            self.configurations.splice(index, 1);
-          }
-        },
-        error: function (error) {
-          M.toast({ html: response.responseJSON.error_message });
-          self.loader = false;
-        },
-      });
+    deleteConfiguration: function (e, t) {
+      var a = this;
+      (a.loader = !0),
+        $.ajax({
+          type: "DELETE",
+          url: BASEURL + "api/v1/configuration/" + e.configuration_id,
+          data: {},
+          dataType: "json",
+          success: function (e) {
+            200 == e.code && a.configurations.splice(t, 1);
+          },
+          error: function (e) {
+            M.toast({
+              html: response.responseJSON.error_message,
+            }),
+              (a.loader = !1);
+          },
+        });
     },
-    base_url: function (path) {
-      return BASEURL + path;
+    base_url: function (e) {
+      return BASEURL + e;
     },
     reloadFileExplorer() {
       var e = this;
@@ -279,102 +342,98 @@ var ConfiguracionList = new Vue({
       });
     },
     getDatabaseBackups() {
-      var self = this;
-      var params = {
-        path: "./backups/database/",
-      };
+      var e = this;
       $.ajax({
         type: "GET",
         url: BASEURL + "api/v1/files/",
-        data: params,
+        data: {
+          path: "./backups/database/",
+        },
         dataType: "json",
-        success: function (response) {
-          self.fileloader = false;
-          if (response.code == 200 && response.data.length) {
-            self.files = response.data.map((file) => new ExplorerFile(file));
-            self.initPlugins();
-          } else {
-            self.files = [];
-          }
+        success: function (t) {
+          (e.fileloader = !1),
+            200 == t.code && t.data.length
+              ? ((e.files = t.data.map((e) => new ExplorerFile(e))),
+                e.initPlugins())
+              : (e.files = []);
         },
       });
     },
-    deleteFile(file) {
-      var self = this;
-      var file = file;
+    deleteFile(e) {
+      var t = this;
+      e = e;
       $.ajax({
         type: "POST",
-        url: BASEURL + "api/v1/files/delete/" + file.file_id,
+        url: BASEURL + "api/v1/files/delete/" + e.file_id,
         data: {
-          file: file,
+          file: e,
         },
         dataType: "json",
-        success: function (response) {
-          if (response.code == 200) {
-            html = "<span>Done! </span>";
-            M.toast({ html: html });
-            self.getDatabaseBackups();
-            var elems = document.querySelectorAll(".collapsible");
-            var instances = M.Collapsible.init(elems, {});
+        success: function (e) {
+          if (200 == e.code) {
+            (html = "<span>Done! </span>"),
+              M.toast({
+                html: html,
+              }),
+              t.getDatabaseBackups();
+            var a = document.querySelectorAll(".collapsible");
+            M.Collapsible.init(a, {});
           }
         },
       });
     },
     createDatabaseBackup() {
       fetch(BASEURL + "api/v1/config/backup_database")
-        .then((response) => response.json())
-        .then((response) => {
-          if (response.code == "200") {
-            M.toast({ html: response.result });
-            this.reloadFileExplorer();
-          } else {
-            M.toast({ html: response.result });
-          }
+        .then((e) => e.json())
+        .then((e) => {
+          "200" == e.code
+            ? (M.toast({
+                html: e.result,
+              }),
+              this.reloadFileExplorer())
+            : M.toast({
+                html: e.result,
+              });
         })
-        .catch((err) => {
-          M.toast({ html: "Error code: 001" });
+        .catch((e) => {
+          M.toast({
+            html: "Error code: 001",
+          });
         });
     },
   },
   mounted: function () {
     this.$nextTick(function () {
-      this.getconfigurations();
-      window.addEventListener(
-        "popstate",
-        (event) => {
-          try {
-            var search = location.search.substring(1);
-            var search = JSON.parse(
-              '{"' + search.replace(/&/g, '","').replace(/=/g, '":"') + '"}',
-              function (key, value) {
-                return key === "" ? value : decodeURIComponent(value);
-              }
-            );
-
-            if (search.section && this.routes.includes(search.section)) {
-              this.sectionActive = search.section;
-            } else {
+      this.getconfigurations(),
+        window.addEventListener(
+          "popstate",
+          (e) => {
+            try {
+              var t = location.search.substring(1);
+              (t = JSON.parse(
+                '{"' + t.replace(/&/g, '","').replace(/=/g, '":"') + '"}',
+                function (e, t) {
+                  return "" === e ? t : decodeURIComponent(t);
+                }
+              )).section && this.routes.includes(t.section)
+                ? (this.sectionActive = t.section)
+                : (this.sectionActive = "home");
+            } catch (e) {
               this.sectionActive = "home";
             }
-          } catch (e) {
-            this.sectionActive = "home";
-          }
-        },
-        false
-      );
-
-      try {
-        var search = location.search.substring(1);
-        var search = JSON.parse(
-          '{"' + search.replace(/&/g, '","').replace(/=/g, '":"') + '"}',
-          function (key, value) {
-            return key === "" ? value : decodeURIComponent(value);
-          }
+          },
+          !1
         );
-
-        if (search.section && this.routes.includes(search.section)) {
-          this.changeSectionActive(search.section);
-        }
+      try {
+        var e = location.search.substring(1);
+        (e = JSON.parse(
+          '{"' + e.replace(/&/g, '","').replace(/=/g, '":"') + '"}',
+          function (e, t) {
+            return "" === e ? t : decodeURIComponent(t);
+          }
+        )).section &&
+          this.routes.includes(e.section) &&
+          this.changeSectionActive(e.section);
       } catch (e) {
         this.changeSectionActive("home");
       }

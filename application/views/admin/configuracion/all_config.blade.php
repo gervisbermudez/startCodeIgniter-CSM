@@ -150,6 +150,35 @@
                 </div>
             </div>
         </div>
+        <div class="col s12 m3">
+            <div v-on:click="changeSectionActive('updater')" class="config-card card-panel red">
+                <div class="row">
+                    <div class="col s6">
+                        <div class="div">
+                            <i class="material-icons medium white-text">system_update_alt</i>
+                        </div>
+                        <div class="white-text">
+                            Updater
+                        </div>
+                    </div>
+                    <div class="col s6 tooltipped" data-position="bottom" data-tooltip="Ver más">
+                        <div class="info white-text right-align">
+                            <br />
+                            Manual Check <br />
+                            <div class="switch">
+                                <label>
+                                    Off
+                                    <input type="checkbox" :checked="getConfigValueBoolean('UPDATER_MANUAL_CHECK')"
+                                        v-on:change="updateConfigCheckbox($event, 'UPDATER_MANUAL_CHECK')">
+                                    <span class="lever"></span>
+                                    On
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <transition name="fade">
         <div v-show="sectionActive == 'analytics'" class="container form">
@@ -177,8 +206,8 @@
                     <!-- Switch -->
                     <div class="row">
                         <div class="input-field col s6">
-                            <input :value="getConfigValue('ANALYTICS_ID')" placeholder="UA-XXXXX-Y" type="text" class="validate"
-                                v-on:change="updateConfig($event, 'ANALYTICS_ID')">
+                            <input :value="getConfigValue('ANALYTICS_ID')" placeholder="UA-XXXXX-Y" type="text"
+                                class="validate" v-on:change="updateConfig($event, 'ANALYTICS_ID')">
                             <label class="active">ID de seguimiento de GA</label>
                         </div>
                     </div>
@@ -186,8 +215,8 @@
                         <form class="col s12">
                             <div class="row">
                                 <div class="input-field col s6">
-                                    <input :value="getConfigValue('ANALYTICS_CODE')" placeholder="" type="text" class="validate"
-                                        v-on:change="updateConfig($event, 'ANALYTICS_CODE')">
+                                    <input :value="getConfigValue('ANALYTICS_CODE')" placeholder="" type="text"
+                                        class="validate" v-on:change="updateConfig($event, 'ANALYTICS_CODE')">
                                     <label>Head Code</label>
                                 </div>
                             </div>
@@ -224,8 +253,8 @@
                         <form class="col s12">
                             <div class="row">
                                 <div class="input-field col s6">
-                                    <input :value="getConfigValue('PIXEL_CODE')" placeholder="" type="text" class="validate"
-                                        v-on:change="updateConfig($event, 'PIXEL_CODE')">
+                                    <input :value="getConfigValue('PIXEL_CODE')" placeholder="" type="text"
+                                        class="validate" v-on:change="updateConfig($event, 'PIXEL_CODE')">
                                     <label>Head Code</label>
                                 </div>
                             </div>
@@ -526,21 +555,24 @@
                                 <div class="card-image-container">
                                     <img :src="getThemePreviewUrl(index, theme)" />
                                 </div>
-                                <label class="indicator" >
-                                    <input name="group1" type="radio" :checked="getThemeIsChecked(index)" v-on:change="changeTheme(index)"/>
+                                <label class="indicator">
+                                    <input name="group1" type="radio" :checked="getThemeIsChecked(index)"
+                                        v-on:change="changeTheme(index)" />
                                     <span>&nbsp;</span>
                                 </label>
                             </div>
                             <div class="card-content">
                                 <div>
                                     <span class="card-title">@{{theme.name}}
-                                        <a href="#!"><span class="activator right"><i class="material-icons">more_vert</i></span></a>
+                                        <a href="#!"><span class="activator right"><i
+                                                    class="material-icons">more_vert</i></span></a>
                                     </span>
                                     <div class="card-info">
                                         <p>
                                             @{{theme.description}}
                                         </p>
-                                        <a @click="changeTheme(index)" class="waves-effect waves-light btn "><i class="material-icons left">brush</i>Aplicar theme</a>
+                                        <a @click="changeTheme(index)" class="waves-effect waves-light btn "><i
+                                                class="material-icons left">brush</i>Aplicar theme</a>
                                     </div>
                                 </div>
                             </div>
@@ -563,6 +595,101 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </transition>
+    <transition name="fade">
+        <div v-show="sectionActive == 'updater'" class="container form">
+            <div class="row">
+                <div class="col s12">
+                    <h2>Updater Manager</h2>
+                </div>
+            </div>
+            <div class="row" v-if="getConfig('UPDATER_LAST_CHECK_UPDATE')">
+                <div class="col s12">
+                    <p>
+                        <b>Last check</b>: @{{getConfig('UPDATER_LAST_CHECK_UPDATE').config_value}}
+                    </p>
+                    <div v-if="updaterInfo">
+                        <div class="subtitle">
+                            Current Start CMS Version:
+                        </div> 
+                        <ul class="collection" >
+                            <li class="collection-item"><b>Name</b>: @{{updaterInfo.local.name}}</li>
+                            <li class="collection-item"><b>Description</b>: @{{updaterInfo.local.description}}</li>
+                            <li class="collection-item"><b>Version</b>: @{{updaterInfo.local.version}}</li>
+                            <li class="collection-item"><b>Updated</b>: @{{updaterInfo.local.updated}}</li>
+                            <li class="collection-item"><b>Url</b>: @{{updaterInfo.local.url}}</li>
+                        </ul>
+                        <br />
+                    </div>
+                    <div v-if="updaterInfo && (updaterInfo.remote.version > updaterInfo.local.version)">
+                        <div class="subtitle">
+                            Available Start CMS Version:
+                        </div> 
+                        <ul class="collection" >
+                            <li class="collection-item"><b>Name</b>: @{{updaterInfo.remote.name}}</li>
+                            <li class="collection-item"><b>Description</b>: @{{updaterInfo.remote.description}}</li>
+                            <li class="collection-item"><b>Version</b>: @{{updaterInfo.remote.version}}</li>
+                            <li class="collection-item"><b>Updated</b>: @{{updaterInfo.remote.updated}}</li>
+                            <li class="collection-item"><b>Url</b>: @{{updaterInfo.remote.url}}</li>
+                        </ul>
+                        <br />
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 center" v-bind:class="{ hide: !updaterloader }">
+                    Checking Updates...
+                    <br><br>
+                    <div class="preloader-wrapper big active">
+                        <div class="spinner-layer spinner-blue-only">
+                            <div class="circle-clipper left">
+                                <div class="circle"></div>
+                            </div>
+                            <div class="gap-patch">
+                                <div class="circle"></div>
+                            </div>
+                            <div class="circle-clipper right">
+                                <div class="circle"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col s12" v-if="!updaterloader && !updaterInfo">
+                    <p>
+                        <a class="waves-effect waves-light btn" @click="checkUpdates()"><i
+                                class="material-icons left">sync</i> Check for updates</a>
+                    </p>
+                </div>
+                <div class="col s12" v-if="updaterInfo && (updaterInfo.remote.version > updaterInfo.local.version) && !updaterPackageDownloaded">
+                    <div class="download-progress center-align" v-if="updaterProgress">
+                        Downloading package...
+                        <br/>
+                        <br/>
+                        <div class="progress">
+                            <div class="indeterminate"></div>
+                        </div>
+                    </div>
+                    <p v-if="!updaterProgress">
+                        <a class="waves-effect waves-light btn" @click="downloadUpdateVersion()"><i
+                            class="material-icons left">file_download</i> Download Package</a> 
+                    </p>
+                </div>
+                <div class="col s12" v-if="updaterInfo && (updaterInfo.remote.version > updaterInfo.local.version) && updaterPackageDownloaded">
+                    <div class="download-progress center-align" v-if="updaterInstallProgress">
+                        Installing package in progress...
+                        <br/>
+                        <br/>
+                        <div class="progress">
+                            <div class="indeterminate"></div>
+                        </div>
+                    </div>
+                    <p v-if="!updaterInstallProgress">
+                        <a class="waves-effect waves-light btn" @click="installDownloadedPackage()"><i
+                            class="material-icons left">system_update_alt</i> Install Package</a> 
+                    </p>
                 </div>
             </div>
         </div>
