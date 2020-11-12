@@ -76,6 +76,21 @@ gulp.task("release", function () {
   return inc("major");
 });
 
+gulp.task(
+    "patch_series",
+    gulp.series("patch", "version")
+);
+
+gulp.task(
+    "feature_series",
+    gulp.series("feature", "version")
+);
+
+gulp.task(
+    "release_series",
+    gulp.series("release", "version")
+);
+
 gulp.task("concat_widgets", function () {
   return gulp
     .src([
