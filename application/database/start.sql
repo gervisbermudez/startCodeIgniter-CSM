@@ -167,9 +167,9 @@ CREATE TABLE IF NOT EXISTS `file` (
   `status` tinyint(4) DEFAULT 1,
   PRIMARY KEY (`file_id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1278 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1282 DEFAULT CHARSET=latin1;
 
--- Volcando datos para la tabla start_cms.file: ~600 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.file: ~604 rows (aproximadamente)
 DELETE FROM `file`;
 /*!40000 ALTER TABLE `file` DISABLE KEYS */;
 INSERT INTO `file` (`file_id`, `rand_key`, `file_name`, `file_path`, `file_type`, `parent_name`, `user_id`, `shared_user_group_id`, `share_link`, `featured`, `date_create`, `date_update`, `status`) VALUES
@@ -776,8 +776,7 @@ INSERT INTO `file` (`file_id`, `rand_key`, `file_name`, `file_path`, `file_type`
 	(1203, 'fs3z1juYWFRqop5X', 'uploads', './', 'folder', './', 1, 1, 'admin/archivos/shared_file/fs3z1juYWFRqop5X', 0, '2020-10-25 16:10:51', '2020-10-25 13:06:11', 1),
 	(1210, '3t5rPo2aElAc8wms', '01-vuejs', './uploads/', 'jpg', 'uploads', 1, 1, 'admin/archivos/shared_file/3t5rPo2aElAc8wms', 0, '2020-10-25 13:30:32', '2020-10-25 13:30:32', 1),
 	(1211, 'kfReVAiF7wyEvgOZ', 'Flutter-Cover', './uploads/', 'png', 'uploads', 1, 1, 'admin/archivos/shared_file/kfReVAiF7wyEvgOZ', 0, '2020-10-25 13:41:48', '2020-10-25 13:41:48', 1),
-	(1212, 'xe8InLXCicTtmS6s', 'Flutter-Cover', './public/', 'png', 'public', 1, 1, 'admin/archivos/shared_file/xe8InLXCicTtmS6s', 0, '2020-10-25 17:57:02', '2020-10-25 17:57:02', 1),
-	(1213, 'ognjWw2MNuHaSFQG', 'backups', './', 'folder', './', 1, 1, 'admin/archivos/shared_file/ognjWw2MNuHaSFQG', 0, '2020-10-25 17:57:02', '2020-10-25 17:57:02', 1),
+	(1212, 'xe8InLXCicTtmS6s', 'Flutter-Cover', './public/img/', 'png', 'public', 1, 1, 'admin/archivos/shared_file/xe8InLXCicTtmS6s', 0, '2020-10-25 17:57:02', '2020-10-25 17:57:02', 1),
 	(1214, 'H2vGQ4TYdOemgbIL', 'database', './backups/', 'folder', 'backups', 1, 1, 'admin/archivos/shared_file/H2vGQ4TYdOemgbIL', 0, '2020-10-25 17:57:02', '2020-10-25 17:57:02', 1),
 	(1222, 'Z7DazviU4CGNd3Ax', 'changePassword', './public/js/components/', 'Component.min.js', 'components', 1, 1, 'admin/archivos/shared_file/Z7DazviU4CGNd3Ax', 0, '2020-11-11 12:17:19', '2020-11-11 12:17:19', 1),
 	(1223, 'F9WL5ca0j7EPmw62', 'theme_info', './themes/awesomeTheme/', 'json', 'awesomeTheme', 1, 1, 'admin/archivos/shared_file/F9WL5ca0j7EPmw62', 0, '2020-11-11 12:17:19', '2020-11-11 12:17:19', 1),
@@ -833,8 +832,10 @@ INSERT INTO `file` (`file_id`, `rand_key`, `file_name`, `file_path`, `file_type`
 	(1273, 'GWe0YQ51UJLutqFo', 'services', './themes/myGreatTheme/views/site/', 'blade.php', 'site', 1, 1, 'admin/archivos/shared_file/GWe0YQ51UJLutqFo', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
 	(1274, 'Ld4aAnbBKlGzo8Rp', 'sidebar', './themes/myGreatTheme/views/site/', 'blade.php', 'site', 1, 1, 'admin/archivos/shared_file/Ld4aAnbBKlGzo8Rp', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
 	(1275, 'wFEtThjpVZWAn5NJ', 'theme_preview', './themes/myGreatTheme/', 'jpg', 'myGreatTheme', 1, 1, 'admin/archivos/shared_file/wFEtThjpVZWAn5NJ', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
-	(1276, '5CGtZqhwx3VIKOei', 'THEME_PATH', './', 'folder', './', 1, 1, 'admin/archivos/shared_file/5CGtZqhwx3VIKOei', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
-	(1277, 'UAr6MTFcYZsEqpQH', 'cache', './THEME_PATH/', 'folder', 'THEME_PATH', 1, 1, 'admin/archivos/shared_file/UAr6MTFcYZsEqpQH', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1);
+	(1277, 'UAr6MTFcYZsEqpQH', 'cache', './THEME_PATH/', 'folder', 'THEME_PATH', 1, 1, 'admin/archivos/shared_file/UAr6MTFcYZsEqpQH', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
+	(1278, 'l1Ru0IZatvWXmLdM', '20201111231922', './backups/database/', 'gz', 'database', 1, 1, 'admin/archivos/shared_file/l1Ru0IZatvWXmLdM', 0, '2020-11-12 13:31:14', '2020-11-12 13:31:14', 1),
+	(1280, '2RiONtoe6hJd0aDC', 'Start CMS API', './', 'postman_collection.json', './', 1, 1, 'admin/archivos/shared_file/2RiONtoe6hJd0aDC', 0, '2020-11-12 13:31:14', '2020-11-12 13:31:14', 1),
+	(1281, 'gtUdAYMQyk4TeRXJ', 'startcms_info', './', 'json', './', 1, 1, 'admin/archivos/shared_file/gtUdAYMQyk4TeRXJ', 0, '2020-11-12 13:31:14', '2020-11-12 13:31:14', 1);
 /*!40000 ALTER TABLE `file` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.file_activity
@@ -1097,7 +1098,7 @@ CREATE TABLE IF NOT EXISTS `page_data` (
   CONSTRAINT `FK_page_data_page` FOREIGN KEY (`page_id`) REFERENCES `page` (`page_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
--- Volcando datos para la tabla start_cms.page_data: ~2 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.page_data: ~0 rows (aproximadamente)
 DELETE FROM `page_data`;
 /*!40000 ALTER TABLE `page_data` DISABLE KEYS */;
 /*!40000 ALTER TABLE `page_data` ENABLE KEYS */;
@@ -1171,9 +1172,9 @@ CREATE TABLE IF NOT EXISTS `site_config` (
   `date_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `status` int(11) NOT NULL DEFAULT 1,
   PRIMARY KEY (`site_config_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=latin1;
 
--- Volcando datos para la tabla start_cms.site_config: ~15 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.site_config: ~20 rows (aproximadamente)
 DELETE FROM `site_config`;
 /*!40000 ALTER TABLE `site_config` DISABLE KEYS */;
 INSERT INTO `site_config` (`site_config_id`, `user_id`, `config_name`, `config_value`, `config_type`, `config_data`, `readonly`, `date_create`, `date_update`, `status`) VALUES
@@ -1187,13 +1188,16 @@ INSERT INTO `site_config` (`site_config_id`, `user_id`, `config_name`, `config_v
 	(9, 1, 'SITE_LIST_MAX_ENTRY', '10', 'general', '{"type_value":"number","validate_as":"number","max_lenght":"50","min_lenght":"0"}', 0, '2020-09-06 18:28:31', '2020-10-12 11:49:20', 1),
 	(11, 1, 'SITE_LIST_PUBLIC', 'No', 'general', '{\r\n  "type_value": "boolean",\r\n  "validate_as": "boolean",\r\n  "handle_as": "switch",\r\n  "input_type": "switch",\r\n  "perm_values": ["No", "Si"],\r\n  "true": "Si"\r\n}\r\n', 0, '2020-09-06 19:30:40', '2020-10-12 11:49:30', 1),
 	(12, 1, 'SITE_AUTHOR', 'Gervis Bermudez', 'seo', '{"type_value":"string","validate_as":"name","max_lenght":"50","min_lenght":"5"}', 0, '2020-09-06 18:29:01', '2020-10-12 11:48:11', 1),
-	(13, 0, 'LAST_UPDATE_FILEMANAGER', '2020-11-11 20:07:51', 'general', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "50",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "text",\r\n  "perm_values": null\r\n}', 0, '2020-10-01 12:02:11', '2020-11-11 16:07:51', 1),
+	(13, 0, 'LAST_UPDATE_FILEMANAGER', '2020-11-12 17:34:42', 'general', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "50",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "text",\r\n  "perm_values": null\r\n}', 0, '2020-10-01 12:02:11', '2020-11-12 13:34:42', 1),
 	(14, 1, 'ANALYTICS_ACTIVE', 'On', 'analytics', '{\r\n  "type_value": "boolean",\r\n  "validate_as": "boolean",\r\n  "handle_as": "switch",\r\n  "input_type": "switch",\r\n  "perm_values": ["Off", "On"],\r\n  "true": "On"\r\n}\r\n', 0, '2020-10-12 22:33:36', '2020-10-12 17:21:11', 1),
 	(15, 1, 'ANALYTICS_ID', 'UA-XXXXX-Y', 'analytics', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "50",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "text",\r\n  "perm_values": null\r\n}', 0, '2020-10-12 22:28:02', '2020-10-12 17:00:44', 1),
 	(16, 1, 'ANALYTICS_CODE', '<script> window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date; ga(\'create\', \'UA-XXXXX-Y\', \'auto\'); ga(\'send\', \'pageview\'); </script> <script async src=\'https://www.google-analytics.com/analytics.js\'></script>', 'analytics', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "text",\r\n  "perm_values": null\r\n}', 0, '2020-10-12 22:28:18', '2020-10-12 17:49:52', 1),
 	(17, 1, 'PIXEL_ACTIVE', 'Off', 'pixel', '{\r\n  "type_value": "boolean",\r\n  "validate_as": "boolean",\r\n  "handle_as": "switch",\r\n  "input_type": "switch",\r\n  "perm_values": ["Off", "On"],\r\n  "true": "On"\r\n}\r\n', 0, '2020-10-12 22:33:36', '2020-10-12 17:59:40', 1),
 	(18, 1, 'PIXEL_CODE', '', 'analytics', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "text",\r\n  "perm_values": null\r\n}', 0, '2020-10-12 22:28:18', '2020-10-12 17:50:02', 1),
-	(19, 1, 'THEME_PATH', 'awesomeTheme', 'theme', '{"type_value":"string","validate_as":"text","max_lenght":"50","min_lenght":"5"}', 0, '2020-11-11 19:49:23', '2020-11-11 13:38:15', 1);
+	(19, 1, 'THEME_PATH', 'awesomeTheme', 'theme', '{"type_value":"string","validate_as":"text","max_lenght":"50","min_lenght":"5"}', 0, '2020-11-12 20:27:12', '2020-11-11 13:38:15', 1),
+	(20, 1, 'UPDATER_LAST_CHECK_UPDATE', '2020-11-12 20:32:00', 'updater', '{"type_value":"string","validate_as":"text","max_lenght":"50","min_lenght":"5"}', 0, '2020-11-11 19:49:23', '2020-11-11 19:28:47', 1),
+	(21, 1, 'UPDATER_MANUAL_CHECK', 'On', 'updater', '{\r\n  "type_value": "boolean",\r\n  "validate_as": "boolean",\r\n  "handle_as": "switch",\r\n  "input_type": "switch",\r\n  "perm_values": ["Off", "On"],\r\n  "true": "On"\r\n}\r\n', 0, '2020-10-12 22:33:36', '2020-11-11 19:31:03', 1),
+	(22, 1, 'UPDATER_LAST_CHECK_DATA', '{"name":"Start CMS","version":"1.5.4","description":"A simple theme building for StartCMS","url":"https://github.com/gervisbermudez/startCodeIgniter-CSM.git","updated":"11/12/2020 11:0:23"}', 'updater', '{"type_value":"string","validate_as":"text","max_lenght":"50","min_lenght":"5"}', 0, '2020-11-11 19:49:23', '2020-11-11 19:28:47', 1);
 /*!40000 ALTER TABLE `site_config` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.suscriptions
@@ -1233,7 +1237,7 @@ CREATE TABLE IF NOT EXISTS `user` (
 DELETE FROM `user`;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
 INSERT INTO `user` (`user_id`, `username`, `password`, `email`, `lastseen`, `usergroup_id`, `status`, `date_create`, `date_update`) VALUES
-	(1, 'gerber', '$2y$10$dXvZybPPsoYqgy1Yc7reQOvxxpFqJ/Yw.sHDNXtu/oeH60OSwp2fe', 'gerber@gmail.com', '2020-11-11 15:13:02', 1, 1, '2020-03-01 16:11:25', '2020-11-01 10:50:41'),
+	(1, 'gerber', '$2y$10$dXvZybPPsoYqgy1Yc7reQOvxxpFqJ/Yw.sHDNXtu/oeH60OSwp2fe', 'gerber@gmail.com', '2020-11-12 13:19:04', 1, 1, '2020-03-01 16:11:25', '2020-11-01 10:50:41'),
 	(2, 'yduran', '$2y$10$.Rd9Ke7opDn2zvjc70DESuilWjm2mIMB9R2qyHyKTQbYQRYxGI6A2', 'yduran@gmail.com', '2020-10-07 20:09:26', 2, 1, '2020-03-01 16:11:25', '2020-09-20 19:05:39'),
 	(3, 'nestor', '$2y$10$todx7BAG8S1cSoKOYxtrPuF412C1FvKuuaJWU1jNb/28ahu0a30GW', 'nestor@email.com', '2020-09-21 00:22:31', 4, 1, '2020-09-20 19:22:31', '2020-09-20 19:22:31');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
