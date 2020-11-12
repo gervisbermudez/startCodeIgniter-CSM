@@ -238,6 +238,106 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "[GET] Obtener themes instalados",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/config/backup_database",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"config",
+								"backup_database"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[GET] check_update",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/config/themes",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"config",
+								"themes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[GET] download_update",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/config/check_update",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"config",
+								"check_update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[GET] install_downloaded_update",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/config/download_update",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"config",
+								"download_update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[GET] install_downloaded_update",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/config/install_downloaded_update",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"config",
+								"install_downloaded_update"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}

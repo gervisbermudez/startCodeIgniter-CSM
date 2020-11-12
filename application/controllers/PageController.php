@@ -42,6 +42,10 @@ class PageController extends Base_Controller
         $data['footer_includes'] = isset($pageInfo->page_data["footer_includes"]) ? $pageInfo->page_data["footer_includes"] : "";
         $template = $pageInfo->template == 'default' ? 'template' : $pageInfo->template;
 
+        if (getThemePath()) {
+            $this->blade->changePath(getThemePath());
+        }
+
         echo $this->blade->view("site.templates." . $template, $data);
 
     }
@@ -66,6 +70,10 @@ class PageController extends Base_Controller
         $data['layout'] = $pageInfo->layout == 'default' ? 'site' : $pageInfo->layout;
         $template = $pageInfo->template == 'default' ? 'template' : $pageInfo->template;
 
+        if (getThemePath()) {
+            $this->blade->changePath(getThemePath());
+        }
+        
         echo $this->blade->view("site.templates." . $template, $data);
 
     }
