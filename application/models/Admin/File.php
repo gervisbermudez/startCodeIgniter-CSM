@@ -22,6 +22,8 @@ class File extends MY_Model
         'bin\\',
         '.vscode\\',
         'resources\\',
+        'temp\\',
+        'backups\\',
     );
 
     public $exclude_file_types = array(
