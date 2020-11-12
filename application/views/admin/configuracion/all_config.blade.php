@@ -163,7 +163,6 @@
                     </div>
                     <div class="col s6 tooltipped" data-position="bottom" data-tooltip="Ver más">
                         <div class="info white-text right-align">
-                            <br />
                             Manual Check <br />
                             <div class="switch">
                                 <label>
@@ -636,6 +635,9 @@
                             <li class="collection-item"><b>Url</b>: @{{updaterInfo.remote.url}}</li>
                         </ul>
                         <br />
+                    </div>
+                    <div v-if="updaterInfo && (updaterInfo.remote.version <= updaterInfo.local.version)">
+                        You have the last version of Start CMS!
                     </div>
                 </div>
             </div>
