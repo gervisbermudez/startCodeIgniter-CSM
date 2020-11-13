@@ -55,11 +55,7 @@ class Base_Controller extends CI_Controller
     {
         parent::__construct();
 
-        $config = $this->Site_config->all();
-        $config = $config ? $config : [];
-        foreach ($config as $value) {
-            $this->config->set_item($value->config_name, $value->config_value);
-        }
+        $this->load_config();
     }
 
     public function getPageMetas($page)
@@ -108,6 +104,40 @@ class Base_Controller extends CI_Controller
                 $data['h1'] = "404 Page not found :(";
                 $data['header'] = $this->load->view('admin/header', $data, true);
                 echo $this->blade->view("admin.blankpage", $data);
+            }
+        }
+
+    }
+
+    /**
+     * Load especific config
+     */
+    private function load_config()
+    {
+        //Load Database config
+        $config = $this->Site_config->all();
+        $config = $config ? $config : [];
+        foreach ($config as $value) {
+            $this->config->set_item($value->config_name, $value->config_value);
+        }
+
+        $config = [];
+        //Load especific theme config
+        if (getThemePath()) {
+            $configPath = getThemePath() . '/config/';
+            $this->load->helper('directory');
+            $map = directory_map($configPath);
+            foreach ($map as $key => $file) {
+                if (strpos($file, '.php')) {
+                    include $configPath . $file;
+                    foreach ($config as $config_name => $config_value) {
+                        $this->config->set_item($config_name, $config_value);
+                    }
+                }
+            }
+
+            if (isset($route)) {
+                $this->router->routes = array_merge($this->router->routes, $route);
             }
         }
 
