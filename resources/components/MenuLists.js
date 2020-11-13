@@ -1,20 +1,20 @@
-var CategoriesLists = new Vue({
+var MenuLists = new Vue({
   el: "#root",
   data: {
-    categories: [],
+    menus: [],
     tableView: true,
     loader: true,
     filter: "",
   },
   computed: {
-    filterCategories: function () {
+    filterMenus: function () {
       if (!!this.filter) {
         let filterTerm = this.filter.toLowerCase();
-        return this.categories.filter((value, index) => {
+        return this.menus.filter((value, index) => {
           return this.searchInObject(value, filterTerm);
         });
       } else {
-        return this.categories;
+        return this.menus;
       }
     },
   },
@@ -41,25 +41,23 @@ var CategoriesLists = new Vue({
       }
       return BASEURL + "public/img/default.jpg";
     },
-    getCategories: function () {
+    getMenus: function () {
       var self = this;
       $.ajax({
         type: "GET",
-        url: BASEURL + "api/v1/categorie/",
+        url: BASEURL + "api/v1/menus/",
         data: {},
         dataType: "json",
         success: function (response) {
-          let categories = response.data;
-          for (const key in categories) {
-            if (categories.hasOwnProperty(key)) {
-              categories[key].user = new User(categories[key].user);
+          let menus = response.data;
+          for (const key in menus) {
+            if (menus.hasOwnProperty(key)) {
+              menus[key].user = new User(menus[key].user);
             }
           }
-          self.categories = categories;
-          setTimeout(() => {
-            self.loader = false;
-            self.initPlugins();
-          }, 1000);
+          self.menus = menus;
+          self.loader = false;
+          self.initPlugins();
         },
         error: function (error) {
           M.toast({ html: response.responseJSON.error_message });
@@ -77,7 +75,7 @@ var CategoriesLists = new Vue({
         dataType: "json",
         success: function (response) {
           if (response.code == 200) {
-            self.categories.splice(index, 1);
+            self.menus.splice(index, 1);
           }
           setTimeout(() => {
             self.loader = false;
@@ -104,8 +102,7 @@ var CategoriesLists = new Vue({
   },
   mounted: function () {
     this.$nextTick(function () {
-      this.getCategories();
-      this.initPlugins();
+      this.getMenus();
     });
   },
 });

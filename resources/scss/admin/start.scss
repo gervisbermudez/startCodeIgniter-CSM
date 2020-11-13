@@ -1667,6 +1667,29 @@ input#search::placeholder {
   }
 }
 
+
+body.dragging,
+body.dragging * {
+  cursor: move !important;
+}
+
+.dragged {
+  position: absolute;
+  opacity: 0.5;
+  z-index: 2000;
+}
+
+.sorteable {
+  .collapsible-header {
+    position: relative;
+  }
+  i.material-icons.right {
+    cursor: move;
+    position: absolute;
+    right: 10px;
+  }
+}
+
 .files.files-selector nav {
   background-color: #fb9678;
   height: 50px;
@@ -1749,7 +1772,7 @@ input#search::placeholder {
   }
 }
 
-.configuration-root .subtitle{
+.configuration-root .subtitle {
   font-size: 17px;
   font-weight: bold;
   margin: 0px 0px 15px;

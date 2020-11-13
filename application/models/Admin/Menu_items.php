@@ -5,7 +5,7 @@
 class Menu_items extends MY_model
 {
 
-    public $primaryKey = 'menu_id';
+    public $primaryKey = 'menu_item_id';
 
     public function __construct()
     {
