@@ -516,7 +516,11 @@ class MY_model extends CI_Model implements JsonSerializable
                 if (isset($value[3]) && $value[3] == 'delay') {
                     $this->{$key} = ${$key};
                 } else {
-                    $this->{$key} = ${$key}->where(array($value[0] => $this->{$value[0]}));
+                    $where = array($value[0] => $this->{$value[0]});
+                    if(isset($value[3]) && is_array($value[3])){
+                        $where = array_merge($where, $value[3]);
+                    }
+                    $this->{$key} = ${$key}->where($where);
                 }
             }
             foreach ($this->computed as $key => $value) {

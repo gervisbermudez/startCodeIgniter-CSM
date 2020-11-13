@@ -11,6 +11,12 @@ class Menu extends MY_model
         'user' => ['user_id', 'Admin/User', 'user'],
     ];
 
+    public $hasMany = [
+        'menu_items' => ['menu_id', 'Admin/Menu_items', 'Menu_items', [
+            'menu_item_parent_id' => 0
+        ]],
+    ];
+
     public function __construct()
     {
         parent::__construct();
