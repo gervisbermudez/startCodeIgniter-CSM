@@ -124,7 +124,7 @@ class Menus extends REST_Controller
         $config = array(
             array('field' => 'name', 'label' => 'name', 'rules' => 'required|min_length[1]'),
             array('field' => 'template', 'label' => 'description', 'rules' => 'required|min_length[1]'),
-            array('field' => 'status', 'label' => 'status', 'rules' => 'required|integer|is_natural_no_zero'),
+            array('field' => 'status', 'label' => 'status', 'rules' => 'required|integer'),
         );
 
         $form->set_rules($config);
@@ -151,26 +151,11 @@ class Menus extends REST_Controller
         $menu->date_publish = date("Y-m-d H:i:s");
         if ($menu->save()) {
             $this->load->model('Admin/Menu_items');
+            $menu_item = new Menu_items();
+            $menu_item->delete_data(['menu_id' => $menu->menu_id]);
             $menu_items = $this->input->post('menu_items');
-            foreach ($menu_items as $key => $item) {
-                $item = (object) $item;
-                $menu_item = new Menu_items();
-                $item->menu_item_id ? $menu_item->find($item->menu_item_id) : false;
-                $menu_item->menu_id = $menu->menu_id;
-                $menu_item->menu_item_parent_id = $item->menu_item_parent_id;
-                $menu_item->item_type = $item->item_type;
-                $menu_item->item_name = $item->item_name;
-                $menu_item->item_label = $item->item_label;
-                $menu_item->item_link = $item->item_link;
-                $menu_item->item_title = $item->item_title;
-                $menu_item->item_target = $item->item_target;
-                $menu_item->status = $item->status;
-                $menu_item->date_create = $item->date_create;
-                $menu_item->date_publish = $item->date_publish;
-
-                $menu_item->save();
-            }
-
+            $this->save_menu_items($menu_items, $menu);
+            $menu->find($menu->menu_id);
             $response = array(
                 'code' => REST_Controller::HTTP_OK,
                 'data' => $menu,
@@ -184,6 +169,33 @@ class Menus extends REST_Controller
                 'request_data' => $_POST,
             );
             $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
+        }
+    }
+
+    private function save_menu_items($menu_items, $menu, $parent_id = 0)
+    {
+        foreach ($menu_items as $key => $item) {
+            $item = (object) $item;
+            $menu_item_parent_id = ($item->menu_item_parent_id !== '0' ? $item->menu_item_parent_id : $parent_id);
+
+            $menu_item = new Menu_items();
+            $menu_item->menu_id = $menu->menu_id;
+            $menu_item->menu_item_parent_id = $menu_item_parent_id;
+            $menu_item->item_type = $item->item_type;
+            $menu_item->order = $item->order;
+            $menu_item->item_name = $item->item_name;
+            $menu_item->item_label = $item->item_label;
+            $menu_item->item_link = $item->item_link;
+            $menu_item->item_title = $item->item_title;
+            $menu_item->item_target = $item->item_target;
+            $menu_item->status = $item->status;
+            $menu_item->date_create = $item->date_create;
+            $menu_item->date_publish = $item->date_publish;
+            $menu_item->save();
+            
+            if(isset($item->subitems) && count($item->subitems) > 0){
+                $this->save_menu_items($item->subitems, $menu, $menu_item->menu_item_id);
+            }
         }
     }
 

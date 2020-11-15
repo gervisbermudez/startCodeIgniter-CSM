@@ -24,7 +24,10 @@ var MenuNewForm = new Vue({
     ],
     user_id: null,
     user: null,
+    realOrder: {},
+    group: {},
   },
+  mixins: [mixins],
   computed: {
     btnEnable: function () {
       let enable =
@@ -84,6 +87,7 @@ var MenuNewForm = new Vue({
           if (response.code == 200) {
             self.editMode = true;
             self.menu_id = response.data.menu_id;
+            self.menu_items = response.data.menu_items;
             if (typeof callBack == "function") {
               callBack(response);
             }
@@ -99,12 +103,13 @@ var MenuNewForm = new Vue({
       });
     },
     getData: function () {
+      this.setRealOrder();
       return {
         menu_id: this.menu_id || "",
         name: this.name || "",
         template: this.template || "",
         status: this.status ? 1 : 0,
-        menu_items: this.menu_items,
+        menu_items: this.realOrder,
       };
     },
     getSelectedCategorie() {
@@ -168,10 +173,10 @@ var MenuNewForm = new Vue({
         menu_id: this.menu_id,
         menu_item_parent_id: "0",
         item_type: "static_link",
-        item_name: "new-item",
-        item_label: "",
-        item_link: "",
-        item_title: "",
+        item_name: "link-" + this.makeid(3).toLocaleLowerCase(),
+        item_label: "Link Text",
+        item_link: "#!",
+        item_title: "Link Title",
         item_target: "_self",
         date_publish: "",
         date_create: "",
@@ -179,26 +184,81 @@ var MenuNewForm = new Vue({
         status: "1",
         subitems: [],
       });
+      this.removeCollapsideEvent();
+      this.setCollapsibleEvent();
     },
     removeItem(index) {
       this.menu_items.splice(index, 1);
     },
     initPlugins() {
-      var elem = document.querySelector(".collapsible.expandable");
-      var instance = M.Collapsible.init(elem, {
-        accordion: false,
+      setTimeout(() => {
+        var elems = document.querySelectorAll("select");
+        M.FormSelect.init(elems, {});
+        this.group = $(".default").sortable({
+          delay: 500,
+          handle: "i.icon-move",
+          onDrop: ($item, container, _super) => {
+            this.setRealOrder();
+            _super($item, container);
+          },
+        });
+      }, 3000);
+    },
+    setRealOrder() {
+      var data = this.group.sortable("serialize").get();
+      var strData = JSON.stringify(data);
+      var strData = strData.replace(/children/g, "subitems");
+      data = JSON.parse(strData);
+      if (data) {
+        let result = this.getMenuItemsData(data[0]);
+        this.realOrder = result;
+      }
+    },
+    getMenuItemsData(data) {
+      let mergedData = data.map((element, index) => {
+        if (element.subitems && element.subitems[0].length > 0) {
+          element.subitems = this.getMenuItemsData(element.subitems[0]);
+        }
+        let menu_item = this.getMenuItemByName(element.name, this.menu_items);
+        let merge = {
+          ...menu_item,
+          ...element,
+          order: index,
+        };
+        return merge;
       });
-      var elems = document.querySelectorAll("select");
-      M.FormSelect.init(elems, {});
-      var group = $(".collapsible.expandable").sortable({
-        handle: ".collapsible-header i",
-        delay: 500,
-        onDrop: ($item, container, _super) => {
-          var data = group.sortable("serialize");
-          console.log("onDrop", data);
-          _super($item, container);
-        },
-      });
+      return mergedData;
+    },
+    getMenuItemByName(name, menu_items) {
+      var menu_item = null;
+      for (let index = 0; index < menu_items.length; index++) {
+        const element = menu_items[index];
+        if (element.item_name == name) {
+          menu_item = element;
+          break;
+        }
+        if (element.subitems.length > 0) {
+          let result = this.getMenuItemByName(name, element.subitems);
+          if (result && result.item_name == name) {
+            menu_item = result;
+            break;
+          }
+        }
+      }
+      return menu_item;
+    },
+    removeCollapsideEvent() {
+      $(".menuitem .collapsible-header").off();
+    },
+    setCollapsibleEvent() {
+      setTimeout(() => {
+        $(".menuitem .collapsible-header").click(function (element) {
+          element.preventDefault();
+          let $element = $(this);
+          let $parent = $element.parent();
+          $parent.toggleClass("active");
+        });
+      }, 3000);
     },
   },
   mounted: function () {
@@ -206,6 +266,7 @@ var MenuNewForm = new Vue({
       this.debug ? console.log("mounted MenuNewForm") : null;
       this.getTemplates();
       this.checkEditMode();
+      this.setCollapsibleEvent();
     });
   },
 });
