@@ -26,6 +26,7 @@ var MenuNewForm = new Vue({
     user: null,
     realOrder: {},
     group: {},
+    targetItem: {}
   },
   mixins: [mixins],
   computed: {
@@ -130,6 +131,7 @@ var MenuNewForm = new Vue({
               return template.split(".")[0];
             });
             this.initPlugins();
+            this.setCollapsibleEvent();
           }
         })
         .catch((err) => {
@@ -187,8 +189,23 @@ var MenuNewForm = new Vue({
       });
       this.setCollapsibleEvent();
     },
-    removeItem(index) {
-      this.menu_items.splice(index, 1);
+    removeItem(index, items) {
+      items.splice(index, 1);
+    },
+    openPageSelector(item) {
+      this.targetItem = item;
+      let instance = M.Modal.getInstance($(".modal"));
+      instance.open();
+    },
+    copyCallcack(data) {
+      let instance = M.Modal.getInstance($(".modal"));
+      instance.close();
+      this.targetItem.item_link = "/" + data[0].path;
+      this.targetItem.item_name = this.string_to_slug(data[0].title) + '-' + this.makeid(3).toLocaleLowerCase();
+      this.targetItem.item_label = data[0].title;
+      this.targetItem.item_title = data[0].title;
+      this.targetItem.model_id = data[0].page_id;
+      this.targetItem.model = 'page';
     },
     initPlugins() {
       setTimeout(() => {
@@ -199,6 +216,7 @@ var MenuNewForm = new Vue({
           handle: "i.icon-move",
           onDrop: ($item, container, _super) => {
             this.setRealOrder();
+            this.setCollapsibleEvent()
             _super($item, container);
           },
         });
@@ -247,6 +265,14 @@ var MenuNewForm = new Vue({
       }
       return menu_item;
     },
+    isEditable(item) {
+      return !(item.model && item.model_id);
+    },
+    makeEditable(item) {
+      item.model = null;
+      item.model_id = null;
+      item.model_object = null
+    },
     removeCollapsideEvent() {
       $(".menuitem .collapsible-header").off();
     },
@@ -267,7 +293,6 @@ var MenuNewForm = new Vue({
       this.debug ? console.log("mounted MenuNewForm") : null;
       this.getTemplates();
       this.checkEditMode();
-      this.setCollapsibleEvent();
     });
   },
 });

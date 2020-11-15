@@ -57,11 +57,20 @@
 					<div class="collapsible expandable sorteable menuitem">
 						<div class="collapsible-header">
 							<i class="material-icons">navigate_next</i>
-							<i class="material-icons" v-on:click="removeItem(index);">remove_circle</i>
+							<i class="material-icons" v-on:click="removeItem(index, menu_items);">remove_circle</i>
 							@{{item.item_name}}
 							<i class="material-icons right icon-move">reorder</i>
 						</div>
 						<div class="collapsible-body">
+							<a
+							class="waves-effect waves-light btn"
+							href="#!"
+							@click="openPageSelector(item)"
+							>
+								<i class="material-icons left">add_to_photos</i> Seleccionar pagina
+							</a>
+							<br />
+							<br />
 							<div class="input-field">
 								<label class="active" for="'nombre-' + index">Nombre:</label>
 								<input type="text" v-model="item.item_name" :id="'nombre-' + index" required="required"
@@ -72,10 +81,12 @@
 								<input type="text" v-model="item.item_label" :id="'item_label' + index"
 									required="required" value="">
 							</div>
+							
 							<div class="input-field">
 								<label class="active" for="'item_link' + index">Link:</label>
-								<input type="text" v-model="item.item_link" :id="'item_link' + index"
-									required="required" value="">
+								<i class="material-icons prefix" v-if="!isEditable(item)" @click="makeEditable(item);">edit</i>
+								<input type="text" v-model="item.item_link" :disabled="!isEditable(item)" :id="'item_link' + index"
+								required="required" value="">
 							</div>
 							<div class="input-field">
 								<label class="active" for="'item_target' + index">Target:</label>
@@ -95,11 +106,15 @@
 							<div class="collapsible expandable sorteable menuitem">
 								<div class="collapsible-header">
 									<i class="material-icons">navigate_next</i>
-									<i class="material-icons" v-on:click="removeItem(index);">remove_circle</i>
+									<i class="material-icons" v-on:click="removeItem(index, item.subitems);">remove_circle</i>
 									@{{subitem.item_name}}
 									<i class="material-icons right icon-move">reorder</i>
 								</div>
 								<div class="collapsible-body">
+								<a class="waves-effect waves-light btn" href="#!">
+												<i class="material-icons left" >add_to_photos</i> Seleccionar pagina</a>
+												<br>
+												<br>
 									<div class="input-field">
 										<label class="active" for="'nombre-' + index">Nombre:</label>
 										<input type="text" v-model="subitem.item_name" :id="'nombre-' + index"
@@ -110,11 +125,14 @@
 										<input type="text" v-model="subitem.item_label" :id="'item_label' + index"
 											required="required" value="">
 									</div>
+									
 									<div class="input-field">
 										<label class="active" for="'item_link' + index">Link:</label>
-										<input type="text" v-model="subitem.item_link" :id="'item_link' + index"
+										<i class="material-icons prefix" v-if="!isEditable(item)" @click="makeEditable(item);">edit</i>
+										<input type="text" v-model="subitem.item_link" :disabled="!isEditable(item)" :id="'item_link' + index"
 											required="required" value="">
 									</div>
+
 									<div class="input-field">
 										<label class="active" for="'item_target' + index">Target:</label>
 										<input type="text" v-model="subitem.item_target" :id="'item_target' + index"
@@ -131,7 +149,7 @@
 					</ol>
 				</li>
 			</ol>
-			Publicar categoria
+			Activar Menu
 			<br>
 			<div class="input-field">
 				<div class="switch">
@@ -167,14 +185,25 @@
 			</p>
 		</div>
 	</div>
+	<data-selector
+        :modal="'folderSelectorCopy'"
+        :preselected="[]"
+		:mode="'folders'"
+		:models="['pages']"
+        :multiple="false"
+        v-on:notify="copyCallcack"
+        >
+        </data-selector>
 </div>
 <script>
-	const menu_id = <?= json_encode($menu_id ? $menu_id : false);?>;
-	const editMode = <?= json_encode($editMode ? $editMode : 'new');?>;
+	const menu_id = <?=json_encode($menu_id ? $menu_id : false);?>;
+	const editMode = <?=json_encode($editMode ? $editMode : 'new');?>;
 </script>
+	@include('admin.components.DataSelector')
 @endsection
 
 @section('footer_includes')
+<script src="<?=base_url('public/js/components/DataSelector.min.js');?>"></script>
 <script src="{{base_url('public/js/components/MenuNewForm.min.js?v=' . ADMIN_VERSION)}}"></script>
 <script src="{{base_url('public/js/jquery-sortable.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

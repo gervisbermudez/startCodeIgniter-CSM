@@ -177,11 +177,13 @@ class Menus extends REST_Controller
         foreach ($menu_items as $key => $item) {
             $item = (object) $item;
             $menu_item = new Menu_items();
-            $item->menu_item_id ? $menu_item->find($item->menu_item_id) : false;
+            isset($item->menu_item_id) ? $menu_item->find($item->menu_item_id) : false;
             $menu_item->menu_id = $menu->menu_id;
             $menu_item->menu_item_parent_id = $parent_id;
             $menu_item->item_type = $item->item_type;
             $menu_item->order = $item->order;
+            $menu_item->model_id = $item->model_id ? $item->model_id : null;
+            $menu_item->model = $item->model ? $item->model : null;
             $menu_item->item_name = $item->item_name;
             $menu_item->item_label = $item->item_label;
             $menu_item->item_link = $item->item_link;
@@ -191,8 +193,8 @@ class Menus extends REST_Controller
             $menu_item->date_create = $item->date_create;
             $menu_item->date_publish = $item->date_publish;
             $menu_item->save();
-            
-            if(isset($item->subitems) && count($item->subitems) > 0){
+
+            if (isset($item->subitems) && count($item->subitems) > 0) {
                 $this->save_menu_items($item->subitems, $menu, $menu_item->menu_item_id);
             }
         }
