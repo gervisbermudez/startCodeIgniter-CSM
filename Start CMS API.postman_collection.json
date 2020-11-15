@@ -245,7 +245,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{BASEURL}}/api/v1/config/backup_database",
+							"raw": "{{BASEURL}}/api/v1/config/themes",
 							"host": [
 								"{{BASEURL}}"
 							],
@@ -253,7 +253,7 @@
 								"api",
 								"v1",
 								"config",
-								"backup_database"
+								"themes"
 							]
 						}
 					},
@@ -334,6 +334,26 @@
 								"v1",
 								"config",
 								"install_downloaded_update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[GET] backup_database",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/config/backup_database",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"config",
+								"backup_database"
 							]
 						}
 					},
@@ -780,6 +800,58 @@
 									"key": "album_id",
 									"value": ""
 								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Menu",
+			"item": [
+				{
+					"name": "[GET] Menus",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/menus/:id",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"menus",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[GET] Menu Templates",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/menus/templates",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"menus",
+								"templates"
 							]
 						}
 					},
