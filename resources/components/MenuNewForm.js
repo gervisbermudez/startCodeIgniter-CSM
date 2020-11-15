@@ -67,6 +67,7 @@ var MenuNewForm = new Vue({
       var callBack = (response) => {
         var toastHTML = "<span>Menu saved </span>";
         M.toast({ html: toastHTML });
+        this.setCollapsibleEvent();
       };
       this.loader = true;
       this.runSaveData(callBack);
@@ -184,7 +185,6 @@ var MenuNewForm = new Vue({
         status: "1",
         subitems: [],
       });
-      this.removeCollapsideEvent();
       this.setCollapsibleEvent();
     },
     removeItem(index) {
@@ -251,6 +251,7 @@ var MenuNewForm = new Vue({
       $(".menuitem .collapsible-header").off();
     },
     setCollapsibleEvent() {
+      this.removeCollapsideEvent();
       setTimeout(() => {
         $(".menuitem .collapsible-header").click(function (element) {
           element.preventDefault();

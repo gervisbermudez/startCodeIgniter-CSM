@@ -176,11 +176,10 @@ class Menus extends REST_Controller
     {
         foreach ($menu_items as $key => $item) {
             $item = (object) $item;
-            $menu_item_parent_id = ($item->menu_item_parent_id !== '0' ? $item->menu_item_parent_id : $parent_id);
-
             $menu_item = new Menu_items();
+            $item->menu_item_id ? $menu_item->find($item->menu_item_id) : false;
             $menu_item->menu_id = $menu->menu_id;
-            $menu_item->menu_item_parent_id = $menu_item_parent_id;
+            $menu_item->menu_item_parent_id = $parent_id;
             $menu_item->item_type = $item->item_type;
             $menu_item->order = $item->order;
             $menu_item->item_name = $item->item_name;

@@ -53,7 +53,7 @@
 			</div>
 			<br />
 			<ol class="default vertical">
-				<li v-for="(item, index) in menu_items" :key="index" :data-id="index" :data-name="item.item_name">
+				<li v-for="(item, index) in menu_items" :key="index" :data-id="index" :data-name="item.item_name" :data-menuitem="item">
 					<div class="collapsible expandable sorteable menuitem">
 						<div class="collapsible-header">
 							<i class="material-icons">navigate_next</i>
