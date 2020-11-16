@@ -6,6 +6,8 @@ class Events extends MY_model
 {
 
     public $primaryKey = 'event_id';
+    public $softDelete = true;
+
 
     public function __construct()
     {

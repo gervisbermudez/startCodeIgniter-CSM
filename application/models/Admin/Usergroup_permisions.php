@@ -9,6 +9,7 @@ if (!defined('BASEPATH')) {
 class Usergroup_permisions extends MY_model
 {
     public $primaryKey = 'usergroup_permisions_id';
+    public $softDelete = true;
 
     public $hasOne = [
         "permisions_name" => ['permision_id', 'Admin/Permisions', 'Permisions'],

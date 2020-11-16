@@ -7,6 +7,7 @@ class MY_model extends CI_Model implements JsonSerializable
     public $table;
     public $primaryKey = 'id';
     public $timestamps = true;
+    public $softDelete = false;
     public $map = false;
     public $fields = array();
     public $hasData = false;
@@ -39,6 +40,7 @@ class MY_model extends CI_Model implements JsonSerializable
     public function all()
     {
         $this->db->select($this->getFieldsSelectCompile());
+        $this->db->where(array('status' => 1));
         $query = $this->db->get($this->table);
         if ($query->num_rows() > 0) {
 
@@ -171,13 +173,17 @@ class MY_model extends CI_Model implements JsonSerializable
      */
     public function delete()
     {
-        $this->deleting();
-        $result = false;
-        if ($this->map) {
-            $result = $this->delete_data(array($this->primaryKey => $this->{$this->primaryKey}));
-            if ($result) {
-                $this->deleted();
+        if (!$this->softDelete) {
+            $this->deleting();
+            $result = false;
+            if ($this->map) {
+                $result = $this->delete_data(array($this->primaryKey => $this->{$this->primaryKey}));
+                if ($result) {
+                    $this->deleted();
+                }
             }
+        } else {
+            $result = $this->soft_delete(array($this->primaryKey => $this->{$this->primaryKey}));
         }
 
         return $result;
@@ -241,6 +247,26 @@ class MY_model extends CI_Model implements JsonSerializable
             return new Collection($query->result());
         }
         return false;
+    }
+
+    public function soft_delete($where)
+    {
+        if (!$this->softDelete) {
+            return false;
+        }
+        $this->deleting();
+        $result = false;
+        if ($this->map) {
+            $this->status = 0;
+            if (isset($this->date_delete)) {
+                $this->date_delete = date("Y-m-d H:i:s");
+            }
+            $result = $this->save();
+            if ($result) {
+                $this->deleted();
+            }
+        }
+        return $result;
     }
 
     /**
@@ -517,7 +543,7 @@ class MY_model extends CI_Model implements JsonSerializable
                     $this->{$key} = ${$key};
                 } else {
                     $where = array($value[0] => $this->{$value[0]});
-                    if(isset($value[3]) && is_array($value[3])){
+                    if (isset($value[3]) && is_array($value[3])) {
                         $where = array_merge($where, $value[3]);
                     }
                     $this->{$key} = ${$key}->where($where);

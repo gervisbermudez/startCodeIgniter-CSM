@@ -5,6 +5,7 @@
 class Contacts extends MY_model {
 
 	public $primaryKey = 'contacts_id';
+    public $softDelete = true;
 
 	public function __construct()
 	{

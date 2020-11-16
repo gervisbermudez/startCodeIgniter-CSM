@@ -3,6 +3,7 @@
 }
 
 class Relations extends MY_model {
+	public $softDelete = true;
 
 	function __construct()
 	{

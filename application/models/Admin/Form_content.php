@@ -5,6 +5,7 @@
 class Form_content extends MY_Model
 {
     public $primaryKey = 'form_content_id';
+    public $softDelete = true;
 
     public $hasOne = [
         'user' => ['user_id', 'Admin/User', 'User'],

@@ -5,6 +5,7 @@
 class Video extends MY_model {
 
 	public $primaryKey = 'video_id';
+	public $softDelete = true;
 
 	function __construct()
 	{

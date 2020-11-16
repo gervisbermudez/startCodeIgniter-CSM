@@ -9,6 +9,8 @@ class User extends MY_model
     public $primaryKey = 'user_id';
     public $user_data = null;
     public $hasData = true;
+    public $softDelete = true;
+    
     public $hasOne = [
         "usergroup" => ['usergroup_id', 'Admin/Usergroup', 'usergroup'],
     ];
@@ -24,7 +26,7 @@ class User extends MY_model
         $where = "";
 
         if ($user_id) {
-            $where = "WHERE u.user_id = $user_id";
+            $where = " AND u.user_id = $user_id";
         }
 
         $sql = "SELECT u.`user_id`,
@@ -41,7 +43,8 @@ class User extends MY_model
 		FROM (SELECT d.user_id, GROUP_CONCAT('\"', d._key, '\"', ':', '\"', d._value, '\"') AS `data` FROM user_data d GROUP BY d.user_id) s
 		INNER JOIN `user` u ON u.user_id = s.user_id
 		INNER JOIN `usergroup` g ON g.usergroup_id = u.usergroup_id
-		INNER JOIN (" . $this->get_select_json('usergroup') . ") subu ON subu.usergroup_id = u.usergroup_id
+        INNER JOIN (" . $this->get_select_json('usergroup') . ") subu ON subu.usergroup_id = u.usergroup_id
+        WHERE u.status = 1
         $where
         GROUP BY s.user_id;";
         $data = $this->db->query($sql);

@@ -6,6 +6,7 @@ class Site_config extends MY_model
 {
 
     public $primaryKey = 'site_config_id';
+    public $softDelete = true;
 
     public $hasOne = [
         'user' => ['user_id', 'Admin/User', 'user'],

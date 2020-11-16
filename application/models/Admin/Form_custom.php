@@ -5,6 +5,8 @@
 class Form_custom extends MY_Model
 {
     public $primaryKey = 'form_custom_id';
+    public $softDelete = true;
+
 
     public $hasOne = [
         'user' => ['user_id', 'Admin/User', 'User'],
@@ -23,7 +25,9 @@ class Form_custom extends MY_Model
     {
         $sql = "SELECT f.*, u.username
         FROM form_custom f
-        INNER JOIN user u ON u.user_id = f.user_id";
+        INNER JOIN user u ON u.user_id = f.user_id
+        where f.status = 1
+        ";
         return $this->get_query($sql);
     }
 

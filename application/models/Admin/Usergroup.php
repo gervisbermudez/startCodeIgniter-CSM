@@ -9,6 +9,7 @@ if (!defined('BASEPATH')) {
 class Usergroup extends MY_model
 {
     public $primaryKey = 'usergroup_id';
+    public $softDelete = true;
 
     protected $attributes = array(
         'status' => 1,
