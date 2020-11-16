@@ -20,7 +20,7 @@ class Menus extends MY_Controller
 
     }
 
-    public function nueva()
+    public function nuevo()
     {
         $data['title'] = ADMIN_TITLE . " | Menu";
         $data['h1'] = "Nuevo Menu";

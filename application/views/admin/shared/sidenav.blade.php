@@ -79,7 +79,7 @@
                         <a href="{{ base_url('admin/menus/') }}">Todos</a>
                     </li>
                     <li>
-                        <a href="{{ base_url('admin/menus/nueva/') }}">Nuevo</a>
+                        <a href="{{ base_url('admin/menus/nuevo/') }}">Nuevo</a>
                     </li>
                 </ul>
             </div>

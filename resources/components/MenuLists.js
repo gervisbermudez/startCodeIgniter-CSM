@@ -5,6 +5,7 @@ var MenuLists = new Vue({
     tableView: true,
     loader: true,
     filter: "",
+    toDeleteItem: {},
   },
   computed: {
     filterMenus: function () {
@@ -19,8 +20,8 @@ var MenuLists = new Vue({
     },
   },
   methods: {
-    getcontentText: function (categorie) {
-      return categorie.description.substring(0, 50) + "...";
+    getcontentText: function (menu) {
+      return menu.description.substring(0, 50) + "...";
     },
     toggleView: function () {
       this.tableView = !this.tableView;
@@ -29,16 +30,7 @@ var MenuLists = new Vue({
     resetFilter: function () {
       this.filter = "";
     },
-    getPageImagePath(categorie) {
-      if (categorie.imagen_file) {
-        return (
-          BASEURL +
-          categorie.imagen_file.file_path.substr(2) +
-          categorie.imagen_file.file_name +
-          "." +
-          categorie.imagen_file.file_type
-        );
-      }
+    getPageImagePath(menu) {
       return BASEURL + "public/img/default.jpg";
     },
     getMenus: function () {
@@ -87,6 +79,15 @@ var MenuLists = new Vue({
           self.loader = false;
         },
       });
+    },
+    tempDelete: function (menu, index) {
+      this.toDeleteItem.menu = menu;
+      this.toDeleteItem.index = index;
+    },
+    confirmCallback(data) {
+      if (data) {
+        this.deleteItem(this.toDeleteItem.menu, this.toDeleteItem.index);
+      }
     },
     base_url: function (path) {
       return BASEURL + path;

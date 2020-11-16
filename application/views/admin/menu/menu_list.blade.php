@@ -77,7 +77,7 @@
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + menu.menu_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + menu.menu_id' class='dropdown-content'>
                                     <li><a :href="base_url('admin/menus/editar/' + menu.menu_id)">Editar</a></li>
-                                    <li><a href="#!" v-on:click="deleteItem(menu, index);">Borrar</a></li>
+                                    <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(menu, index);">Borrar</a></li>
                                     <li v-if="menu.status == 2"><a :href="base_url('admin/menus/preview?menu_id=' + menu.menu_id)" target="_blank">Preview</a></li>
                                     <li><a :href="base_url(menu.path)" target="_blank">Archivar</a></li>
                                 </ul>
@@ -99,7 +99,7 @@
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown" + menu.menu_id' class='dropdown-content'>
                             <li><a :href="base_url('admin/menus/editar/' + menu.menu_id)">Editar</a></li>
-                            <li><a href="#!" v-on:click="deleteItem(menu, index);">Borrar</a></li>
+                            <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(menu, index);">Borrar</a></li>
                             <li><a :href="base_url(menu.path)" target="_blank">Archivar</a></li>
                         </ul>
                     </div>
@@ -149,11 +149,20 @@
         </div>
     </div>
     <div class="container" v-if="!loader && menus.length == 0" v-cloak>
-        <h4>No hay Categorias</h4>
+        <h4>No hay Menus</h4>
     </div>
+    <confirm-modal 
+        id="deleteModal" 
+        title="Confirmar Borrar"
+        v-on:notify="confirmCallback"
+    >
+        <p>
+            ¿Desea borrar el menu?
+        </p>
+    </confirm-modal>
 </div>
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Crear categoria" href="<?php echo base_url('admin/menus/nueva/') ?>">
+    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Crear Menu" href="<?php echo base_url('admin/menus/nuevo/') ?>">
         <i class="large material-icons">add</i>
     </a>
 </div>

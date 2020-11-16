@@ -542,3 +542,34 @@ Vue.component("userInfo", {
   `,
   props: ["user"],
 });
+
+Vue.component("confirmModal", {
+  props: ["id", "title"],
+  template: `
+    <div :id="id" class="modal confirm-modal">
+    <div class="modal-content">
+          <div class="modal-header">
+            <div class="row">
+              <div class="col s12">
+                <h4>{{title}}</h4>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+              <div class="col s12">
+                  <slot></slot>
+              </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+          <a href="#!" class="modal-action modal-close waves-effect waves-red btn red" @click="onClickButton(false);">Cancelar</a>
+          <a href="#!" class="modal-close waves-effect waves-green btn" @click="onClickButton(true);">Aceptar</a>
+      </div>
+  </div>
+  `,
+  methods: {
+    onClickButton(result) {
+      this.$emit("notify", result);
+    },
+  },
+});

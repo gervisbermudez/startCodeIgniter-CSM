@@ -5,12 +5,11 @@
 class Menu extends MY_model
 {
 
+    public $softDelete = true;
     public $primaryKey = 'menu_id';
-
     public $hasOne = [
         'user' => ['user_id', 'Admin/User', 'user'],
     ];
-
     public $hasMany = [
         'menu_items' => ['menu_id', 'Admin/Menu_items', 'Menu_items', [
             'menu_item_parent_id' => 0
