@@ -77,7 +77,7 @@
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + menu.menu_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + menu.menu_id' class='dropdown-content'>
                                     <li><a :href="base_url('admin/menus/editar/' + menu.menu_id)">Editar</a></li>
-                                    <li><a href="#!" v-on:click="deletePage(page, index);">Borrar</a></li>
+                                    <li><a href="#!" v-on:click="deleteItem(menu, index);">Borrar</a></li>
                                     <li v-if="menu.status == 2"><a :href="base_url('admin/menus/preview?menu_id=' + menu.menu_id)" target="_blank">Preview</a></li>
                                     <li><a :href="base_url(menu.path)" target="_blank">Archivar</a></li>
                                 </ul>
@@ -99,7 +99,7 @@
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown" + menu.menu_id' class='dropdown-content'>
                             <li><a :href="base_url('admin/menus/editar/' + menu.menu_id)">Editar</a></li>
-                            <li><a href="#!" v-on:click="deletePage(page, index);">Borrar</a></li>
+                            <li><a href="#!" v-on:click="deleteItem(menu, index);">Borrar</a></li>
                             <li><a :href="base_url(menu.path)" target="_blank">Archivar</a></li>
                         </ul>
                     </div>

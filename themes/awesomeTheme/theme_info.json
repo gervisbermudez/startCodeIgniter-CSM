@@ -6,5 +6,6 @@
   "author": "Gervis Bermúdez",
   "license": "ISC",
   "preview": "theme_preview.jpg",
-  "updated": "2020-09-06 18:29:01"
+  "updated": "2020-09-06 18:29:01",
+  "menus": ["menu_top"]
 }

@@ -6,7 +6,7 @@ var MenuNewForm = new Vue({
     editMode: false,
     menu_id: null,
     form: {},
-    name: "",
+    name: "New Menu",
     status: false,
     date_publish: "",
     date_create: "",
@@ -14,14 +14,8 @@ var MenuNewForm = new Vue({
     template: "",
     menu_items: [],
     templates: [],
-    categories_type: [
-      "page",
-      "formulario",
-      "video",
-      "foto",
-      "evento",
-      "contenido",
-    ],
+    positions: {},
+    position: "",
     user_id: null,
     user: null,
     realOrder: {},
@@ -109,6 +103,7 @@ var MenuNewForm = new Vue({
       return {
         menu_id: this.menu_id || "",
         name: this.name || "",
+        position: this.position || "",
         template: this.template || "",
         status: this.status ? 1 : 0,
         menu_items: this.realOrder,
@@ -124,7 +119,6 @@ var MenuNewForm = new Vue({
       fetch(url)
         .then((response) => response.json())
         .then((response) => {
-          this.loader = false;
           this.debug ? console.log(url, response) : null;
           if (response.code == 200) {
             this.templates = response.data.map((template) => {
@@ -137,6 +131,28 @@ var MenuNewForm = new Vue({
         .catch((err) => {
           this.debug ? console.log(err) : null;
           this.loader = false;
+        });
+    },
+    getThemesMenuPositions() {
+      var url = BASEURL + "api/v1/config/themes/";
+      fetch(url)
+        .then((response) => response.json())
+        .then((response) => {
+          this.debug ? console.log(url, response) : null;
+          if (response.code == 200) {
+            let postions = [];
+            for (const key in response.data) {
+              if (response.data.hasOwnProperty(key)) {
+                const theme = response.data[key];
+                theme["theme_folder"] = key;
+                postions.push(theme);
+              }
+            }
+            this.positions = postions;
+          }
+        })
+        .catch((err) => {
+          this.debug ? console.log(err) : null;
         });
     },
     checkEditMode() {
@@ -153,6 +169,7 @@ var MenuNewForm = new Vue({
               self.menu_id = response.data.menu_id;
               self.name = response.data.name;
               self.template = response.data.template;
+              self.position = response.data.position;
               self.date_create = response.data.date_create;
               self.date_publish = response.data.date_publish;
               self.status = response.data.status;
@@ -292,6 +309,7 @@ var MenuNewForm = new Vue({
     this.$nextTick(function () {
       this.debug ? console.log("mounted MenuNewForm") : null;
       this.getTemplates();
+      this.getThemesMenuPositions();
       this.checkEditMode();
     });
   },

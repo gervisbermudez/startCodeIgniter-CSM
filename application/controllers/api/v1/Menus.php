@@ -145,6 +145,7 @@ class Menus extends REST_Controller
         $this->input->post('menu_id') ? $menu->find($this->input->post('menu_id')) : false;
         $menu->name = $this->input->post('name');
         $menu->template = $this->input->post('template');
+        $menu->position = $this->input->post('position');
         $menu->user_id = userdata('user_id');
         $menu->status = $this->input->post('status');
         $menu->date_create = date("Y-m-d H:i:s");
@@ -182,8 +183,8 @@ class Menus extends REST_Controller
             $menu_item->menu_item_parent_id = $parent_id;
             $menu_item->item_type = $item->item_type;
             $menu_item->order = $item->order;
-            $menu_item->model_id = $item->model_id ? $item->model_id : null;
-            $menu_item->model = $item->model ? $item->model : null;
+            $menu_item->model_id = isset($item->model_id) ? $item->model_id : null;
+            $menu_item->model = isset($item->model) ? $item->model : null;
             $menu_item->item_name = $item->item_name;
             $menu_item->item_label = $item->item_label;
             $menu_item->item_link = $item->item_link;
@@ -217,10 +218,33 @@ class Menus extends REST_Controller
      *
      * @return Response
      */
-    public function index_delete($id = null)
+    public function index_delete($menu_id = null)
     {
-        $data = array();
-        $this->response($data, REST_Controller::HTTP_NOT_FOUND);
+        if ($menu_id) {
+            $menu = new Menu();
+            $result = $menu->find($menu_id);
+            if ($result) {
+                $response = array(
+                    'code' => REST_Controller::HTTP_OK,
+                    'data' => [
+                        "result" => $menu->delete(),
+                    ],
+                );
+            } else {
+                $response = array(
+                    'code' => REST_Controller::HTTP_NOT_FOUND,
+                    "error_message" => lang('not_found_error'),
+                    'data' => [],
+                );
+            }
+        } else {
+            $response = array(
+                'code' => REST_Controller::HTTP_NOT_FOUND,
+                "error_message" => lang('not_found_error'),
+                'data' => [],
+            );
+        }
+        $this->response($response, REST_Controller::HTTP_OK);
     }
 
     /**

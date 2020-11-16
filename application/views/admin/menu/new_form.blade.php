@@ -31,10 +31,12 @@
 			<input type="hidden" name="id_form" value="">
 			<span class="header grey-text text-darken-2">Datos básicos <i
 					class="material-icons left">description</i></span>
+			<br>
 			<div class="input-field">
 				<label for="nombre">Nombre:</label>
 				<input type="text" v-model="name" id="nombre" name="nombre_form" required="required" value="">
 			</div>
+			<br/>
 			<div class="input-field">
 				<select name="tipo_form" v-model="template">
 					<option value="0" disabled>Selecciona</option>
@@ -44,11 +46,21 @@
 				</select>
 				<label>Template</label>
 			</div>
+			<br/>
+			<div class="input-field">
+				<select v-model="position">
+				<optgroup v-for="(theme, index) in positions" :label="theme.name" :key="index">
+					<option v-for="(menu, i) in theme.menus" :value="theme.theme_folder + '/' + menu" :key="i">@{{menu}}</option>
+				</optgroup>
+				</select>
+				<label>Position</label>
+			</div>
+			<br />
 			Items del Menu:
 			<br />
 			<br />
 			<div>
-				<a href="#!" class="btn" v-on:click="addItem()">Agregar Item <i
+				<a href="#!" class="btn" v-on:click="addItem()">Agregar Menu Item <i
 						class="material-icons right">add_box</i></a>
 			</div>
 			<br />
@@ -106,12 +118,16 @@
 							<div class="collapsible expandable sorteable menuitem">
 								<div class="collapsible-header">
 									<i class="material-icons">navigate_next</i>
-									<i class="material-icons" v-on:click="removeItem(index, item.subitems);">remove_circle</i>
+									<i class="material-icons" v-on:click="removeItem(i, item.subitems);">remove_circle</i>
 									@{{subitem.item_name}}
 									<i class="material-icons right icon-move">reorder</i>
 								</div>
 								<div class="collapsible-body">
-								<a class="waves-effect waves-light btn" href="#!">
+								<a 
+								class="waves-effect waves-light btn" 
+								href="#!"
+								@click="openPageSelector(item)"
+								>
 												<i class="material-icons left" >add_to_photos</i> Seleccionar pagina</a>
 												<br>
 												<br>
@@ -149,15 +165,16 @@
 					</ol>
 				</li>
 			</ol>
-			Activar Menu
 			<br>
+
+			Activar Menu
 			<div class="input-field">
 				<div class="switch">
 					<label>
-						No publicado
+						No Activo
 						<input type="checkbox" name="status_form" value="1" v-model="status">
 						<span class="lever"></span>
-						Publicado
+						Activo
 					</label>
 				</div>
 			</div>

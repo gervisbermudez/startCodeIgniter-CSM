@@ -65,12 +65,12 @@ var MenuLists = new Vue({
         },
       });
     },
-    deletePage: function (categorie, index) {
+    deleteItem: function (menu, index) {
       var self = this;
       self.loader = true;
       $.ajax({
         type: "DELETE",
-        url: BASEURL + "api/v1/categorie/" + categorie.categorie_id,
+        url: BASEURL + "api/v1/menus/" + menu.menu_id,
         data: {},
         dataType: "json",
         success: function (response) {
