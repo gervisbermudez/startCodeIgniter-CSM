@@ -8,7 +8,8 @@ if (!defined('BASEPATH')) {
 
 class Album extends MY_model {
 
-	public $primaryKey = 'album_id';
+    public $primaryKey = 'album_id';
+    public $softDelete = true;
 
 	public $hasOne = [
         'user' => ['user_id', 'Admin/User', 'User'],

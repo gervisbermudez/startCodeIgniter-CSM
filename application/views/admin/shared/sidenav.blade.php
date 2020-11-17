@@ -68,6 +68,22 @@
             <a class="waves-effect" href="{{ base_url('admin/archivos') }}"><i class="material-icons">markunread_mailbox</i>
                 Archivos</a>
         </li>
+        <li class="{{isSectionActive('menu')}}">
+            <div class="collapsible-header">
+                <i class="material-icons">menu</i>
+                <span>Menús </span>
+            </div>
+            <div class="collapsible-body">
+                <ul>
+                    <li>
+                        <a href="{{ base_url('admin/menus/') }}">Todos</a>
+                    </li>
+                    <li>
+                        <a href="{{ base_url('admin/menus/nuevo/') }}">Nuevo</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
         <li class="{{isSectionActive('categorias')}}">
             <div class="collapsible-header">
                 <i class="material-icons">receipt</i>

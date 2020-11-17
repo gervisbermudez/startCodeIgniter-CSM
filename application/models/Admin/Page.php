@@ -8,6 +8,7 @@ class Page extends MY_model
 {
     public $primaryKey = 'page_id';
     public $hasData = true;
+    public $softDelete = true;
     public $hasOne = [
         'user' => ['user_id', 'Admin/User', 'user'],
         'pages_type' => ['page_type_id', 'Admin/Page_type', 'page_type'],
@@ -40,7 +41,9 @@ class Page extends MY_model
                 INNER JOIN user u ON p.`user_id` = u.`user_id`
                 INNER JOIN usergroup ug ON ug.`usergroup_id` = u.`usergroup_id`
                 LEFT JOIN (' . $this->get_select_json('file') . ') file_data ON file_data.file_id = p.mainImage
-                INNER JOIN page_type pt ON pt.`page_type_id` = p.`page_type_id`';
+                INNER JOIN page_type pt ON pt.`page_type_id` = p.`page_type_id`
+                WHERE p.status = 1
+                ';
         $query = $this->db->query($sql);
         if ($query->num_rows() > 0) {
             $data = $query->result();

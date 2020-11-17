@@ -5,7 +5,7 @@
 class Permisions extends MY_model
 {
     public $primaryKey = 'permisions_id';
-
+    public $softDelete = true;
     public function __construct()
     {
         parent::__construct();

@@ -17,7 +17,7 @@ if (!function_exists('getThemePath')) {
         if ($theme_path) {
             return FCPATH . 'themes\\' . $theme_path;
         }
-        if(SITE_THEME){
+        if (SITE_THEME) {
             return FCPATH . 'themes\\' . SITE_THEME;
         }
 
@@ -192,7 +192,6 @@ if (!function_exists('page_meta')) {
     }
 }
 
-
 // Function to remove folders and files
 function rrmdir($dir)
 {
@@ -238,7 +237,7 @@ function recurse_copy($src, $dst, $ignorefiles = [])
     $dir = opendir($src);
     @mkdir($dst);
     while (false !== ($file = readdir($dir))) {
-        if(!in_array($file, $ignorefiles)){
+        if (!in_array($file, $ignorefiles)) {
 
             if (is_dir($src . '/' . $file)) {
                 recurse_copy($src . '/' . $file, $dst . '/' . $file, $ignorefiles);
@@ -248,4 +247,35 @@ function recurse_copy($src, $dst, $ignorefiles = [])
         }
     }
     closedir($dir);
+}
+
+function get_menu($name)
+{
+    $ci = &get_instance();
+    $ci->load->model('Admin/Menu');
+    $menu = new Menu();
+    $result = $menu->find_with(['name' => $name]);
+    return $result ? $menu->as_data() : null;
+}
+
+function render_menu($name)
+{
+    $menu = get_menu($name);
+    if ($menu) {
+        $data["menu"] = $menu;
+
+        $ci = &get_instance();
+        $blade = new Blade();
+
+        if (getThemePath()) {
+            if (file_exists(getThemePath() . '\\views\\site\\templates\\menu\\menu.blade.php')) {
+                $blade->changePath(getThemePath());
+            } else {
+                $blade->changePath(APPPATH);
+            }
+        }
+        $rendered_menu = $blade->view("site.templates.menu." . $menu->template, $data);
+
+        return $rendered_menu;
+    }
 }

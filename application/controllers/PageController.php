@@ -42,9 +42,15 @@ class PageController extends Base_Controller
         $data['footer_includes'] = isset($pageInfo->page_data["footer_includes"]) ? $pageInfo->page_data["footer_includes"] : "";
         $template = $pageInfo->template == 'default' ? 'template' : $pageInfo->template;
 
-        if (getThemePath()) {
+        /* if (getThemePath()) {
             $this->blade->changePath(getThemePath());
-        }
+        } */
+
+        $this->load->model('Admin/Menu');
+        $menu = new Menu();
+        $menu->find_with(['menu_id' => 1]);
+        
+        $data["menu"] = $menu; 
 
         echo $this->blade->view("site.templates." . $template, $data);
 

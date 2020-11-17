@@ -1,26 +1,27 @@
-var CategoriesLists = new Vue({
+var MenuLists = new Vue({
   el: "#root",
   data: {
-    categories: [],
+    menus: [],
     tableView: true,
     loader: true,
     filter: "",
+    toDeleteItem: {},
   },
   computed: {
-    filterCategories: function () {
+    filterMenus: function () {
       if (!!this.filter) {
         let filterTerm = this.filter.toLowerCase();
-        return this.categories.filter((value, index) => {
+        return this.menus.filter((value, index) => {
           return this.searchInObject(value, filterTerm);
         });
       } else {
-        return this.categories;
+        return this.menus;
       }
     },
   },
   methods: {
-    getcontentText: function (categorie) {
-      return categorie.description.substring(0, 50) + "...";
+    getcontentText: function (menu) {
+      return menu.description.substring(0, 50) + "...";
     },
     toggleView: function () {
       this.tableView = !this.tableView;
@@ -29,37 +30,26 @@ var CategoriesLists = new Vue({
     resetFilter: function () {
       this.filter = "";
     },
-    getPageImagePath(categorie) {
-      if (categorie.imagen_file) {
-        return (
-          BASEURL +
-          categorie.imagen_file.file_path.substr(2) +
-          categorie.imagen_file.file_name +
-          "." +
-          categorie.imagen_file.file_type
-        );
-      }
+    getPageImagePath(menu) {
       return BASEURL + "public/img/default.jpg";
     },
-    getCategories: function () {
+    getMenus: function () {
       var self = this;
       $.ajax({
         type: "GET",
-        url: BASEURL + "api/v1/categorie/",
+        url: BASEURL + "api/v1/menus/",
         data: {},
         dataType: "json",
         success: function (response) {
-          let categories = response.data;
-          for (const key in categories) {
-            if (categories.hasOwnProperty(key)) {
-              categories[key].user = new User(categories[key].user);
+          let menus = response.data;
+          for (const key in menus) {
+            if (menus.hasOwnProperty(key)) {
+              menus[key].user = new User(menus[key].user);
             }
           }
-          self.categories = categories;
-          setTimeout(() => {
-            self.loader = false;
-            self.initPlugins();
-          }, 1000);
+          self.menus = menus;
+          self.loader = false;
+          self.initPlugins();
         },
         error: function (error) {
           M.toast({ html: response.responseJSON.error_message });
@@ -67,17 +57,17 @@ var CategoriesLists = new Vue({
         },
       });
     },
-    deletePage: function (categorie, index) {
+    deleteItem: function (menu, index) {
       var self = this;
       self.loader = true;
       $.ajax({
         type: "DELETE",
-        url: BASEURL + "api/v1/categorie/" + categorie.categorie_id,
+        url: BASEURL + "api/v1/menus/" + menu.menu_id,
         data: {},
         dataType: "json",
         success: function (response) {
           if (response.code == 200) {
-            self.categories.splice(index, 1);
+            self.menus.splice(index, 1);
           }
           setTimeout(() => {
             self.loader = false;
@@ -89,6 +79,15 @@ var CategoriesLists = new Vue({
           self.loader = false;
         },
       });
+    },
+    tempDelete: function (menu, index) {
+      this.toDeleteItem.menu = menu;
+      this.toDeleteItem.index = index;
+    },
+    confirmCallback(data) {
+      if (data) {
+        this.deleteItem(this.toDeleteItem.menu, this.toDeleteItem.index);
+      }
     },
     base_url: function (path) {
       return BASEURL + path;
@@ -104,8 +103,7 @@ var CategoriesLists = new Vue({
   },
   mounted: function () {
     this.$nextTick(function () {
-      this.getCategories();
-      this.initPlugins();
+      this.getMenus();
     });
   },
 });

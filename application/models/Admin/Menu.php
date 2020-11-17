@@ -2,33 +2,23 @@
     exit('No direct script access allowed');
 }
 
-class Site_config extends MY_model
+class Menu extends MY_model
 {
 
-    public $primaryKey = 'site_config_id';
     public $softDelete = true;
-
+    public $primaryKey = 'menu_id';
     public $hasOne = [
         'user' => ['user_id', 'Admin/User', 'user'],
+    ];
+    public $hasMany = [
+        'menu_items' => ['menu_id', 'Admin/Menu_items', 'Menu_items', [
+            'menu_item_parent_id' => 0
+        ]],
     ];
 
     public function __construct()
     {
         parent::__construct();
-    }
-
-    /**
-     * Update all config data
-     */
-    public function update_config($data)
-    {
-        foreach ($data as $key => $config) {
-            $this->update_data(
-                array('config_name' => $config['config_name']),
-                array('config_value' => $config['config_value']),
-                $this->table
-            );
-        }
     }
 
     public function filter_results($collection = [])

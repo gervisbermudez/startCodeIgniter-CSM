@@ -1627,8 +1627,16 @@ div.card-image > div > i.material-icons.tooltipped {
   z-index: 9;
 }
 
-.file-explorar-selector {
+.file-explorar-selector,
+.data-selector {
   width: 90%;
+}
+
+.pages .page-card label.checkbox {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 999999;
 }
 
 .user-info-inline {
@@ -1664,6 +1672,102 @@ input#search::placeholder {
   }
   &:hover img.top {
     opacity: 0;
+  }
+}
+
+/*! CSS Used from: https://johnny.github.io/jquery-sortable/css/application.css */
+ol {
+  padding: 0;
+  margin: 0 0 9px 25px;
+}
+ol ol {
+  margin-bottom: 0;
+}
+ol {
+  list-style: decimal;
+}
+li {
+  line-height: 18px;
+}
+:-moz-placeholder {
+  color: #999999;
+}
+:-ms-input-placeholder {
+  color: #999999;
+}
+::-webkit-input-placeholder {
+  color: #999999;
+}
+ol.vertical {
+  margin: 0 0 9px 0;
+  min-height: 10px;
+}
+ol.vertical li {
+  display: block;
+  color: #0088cc;
+}
+.collapsible.active .collapsible-body {
+  display: block;
+}
+ol {
+  list-style-type: none;
+}
+ol.default li {
+  cursor: pointer;
+}
+
+ol.vertical {
+  margin: 0 0 9px 0;
+  min-height: 10px;
+  .collapsible {
+    margin: 0px;
+  }
+}
+/* line 13, /Users/jonasvonandrian/jquery-sortable/source/css/jquery-sortable.css.sass */
+ol.vertical li {
+  display: block;
+  color: #0088cc;
+}
+/* line 20, /Users/jonasvonandrian/jquery-sortable/source/css/jquery-sortable.css.sass */
+ol.vertical li.placeholder {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+/* line 25, /Users/jonasvonandrian/jquery-sortable/source/css/jquery-sortable.css.sass */
+ol.vertical li.placeholder:before {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 0;
+  margin-top: -5px;
+  left: -5px;
+  top: -4px;
+  border: 5px solid transparent;
+  border-left-color: red;
+  border-right: none;
+}
+
+body.dragging,
+body.dragging * {
+  cursor: move !important;
+}
+
+.dragged {
+  position: absolute;
+  opacity: 0.5;
+  z-index: 2000;
+}
+
+.sorteable {
+  .collapsible-header {
+    position: relative;
+  }
+  i.material-icons.right {
+    cursor: move;
+    position: absolute;
+    right: 10px;
   }
 }
 
@@ -1749,7 +1853,7 @@ input#search::placeholder {
   }
 }
 
-.configuration-root .subtitle{
+.configuration-root .subtitle {
   font-size: 17px;
   font-weight: bold;
   margin: 0px 0px 15px;

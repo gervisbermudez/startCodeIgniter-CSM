@@ -5,6 +5,7 @@
 class Suscriptions extends MY_model {
 
 	public $primaryKey = 'suscriptions_id';
+	public $softDelete = true;
 
 	function __construct()
 	{

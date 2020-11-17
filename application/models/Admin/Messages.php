@@ -6,7 +6,8 @@ class Messages extends MY_model
 {
 
 	public $primaryKey = 'messages_id';
-	
+    public $softDelete = true;
+    
     public function __construct()
     {
         parent::__construct();

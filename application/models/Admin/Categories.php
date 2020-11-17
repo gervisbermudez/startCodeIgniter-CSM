@@ -6,6 +6,7 @@ class Categories extends MY_model
 {
 
     public $primaryKey = 'categorie_id';
+    public $softDelete = true;
 
     public $hasOne = [
         'user' => ['user_id', 'Admin/User', 'user'],
