@@ -59,7 +59,7 @@ var AlbumsLists = new Vue({
         },
       });
     },
-    deleteAlbum: function (album, index) {
+    delete: function (album, index) {
       var self = this;
       self.loader = true;
       $.ajax({
@@ -81,6 +81,15 @@ var AlbumsLists = new Vue({
           self.loader = false;
         },
       });
+    },
+    tempDelete: function (item, index) {
+      this.toDeleteItem.item = item;
+      this.toDeleteItem.index = index;
+    },
+    confirmCallback(data) {
+      if (data) {
+        this.delete(this.toDeleteItem.item, this.toDeleteItem.index);
+      }
     },
     initPlugins: function () {
       setTimeout(() => {

@@ -258,7 +258,7 @@ class MY_model extends CI_Model implements JsonSerializable
         $result = false;
         if ($this->map) {
             $this->status = 0;
-            if (isset($this->date_delete)) {
+            if (property_exists($this, 'date_delete')) {
                 $this->date_delete = date("Y-m-d H:i:s");
             }
             $result = $this->save();

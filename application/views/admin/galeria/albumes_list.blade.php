@@ -39,12 +39,7 @@
                     <a href="#!" class='dropdown-trigger' data-target='dropdown-options'><i class="material-icons">more_vert</i></a>
                     <!-- Dropdown Structure -->
                     <ul id='dropdown-options' class='dropdown-content'>
-                        <li><a href="#!">one</a></li>
-                        <li><a href="#!">two</a></li>
-                        <li class="divider" tabindex="-1"></li>
-                        <li><a href="#!">three</a></li>
-                        <li><a href="#!"><i class="material-icons">view_module</i>four</a></li>
-                        <li><a href="#!"><i class="material-icons">cloud</i>five</a></li>
+                        <li><a href="#!">Archivo</a></li>
                     </ul>
                 </li>
             </ul>
@@ -80,7 +75,7 @@
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + album.album_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + album.album_id' class='dropdown-content'>
                                     <li><a :href="base_url('admin/paginas/editar/' + album.album_id)">Editar</a></li>
-                                    <li><a href="#!" v-on:click="deleteAlbum(album, index);">Borrar</a></li>
+                                    <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(album, index);">Borrar</a></li>
                                     <li v-if="album.status == 2"><a :href="base_url('admin/paginas/preview?album_id=' + album.album_id)" target="_blank">Preview</a></li>
                                     <li><a :href="base_url('/admin/galeria/items/' + album.album_id)" target="_blank">Archivar</a></li>
                                 </ul>
@@ -103,7 +98,7 @@
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown" + album.album_id' class='dropdown-content'>
                             <li><a :href="base_url('admin/galeria/editar/' + album.album_id)">Editar</a></li>
-                            <li><a href="#!" v-on:click="deleteAlbum(album, index);">Borrar</a></li>
+                            <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(album, index);">Borrar</a></li>
                             <li v-if="album.status == 2"><a :href="base_url('admin/paginas/preview?album_id=' + album.album_id)" target="_blank">Preview</a></li>
                             <li><a :href="base_url('/admin/galeria/items/' + album.album_id)" target="_blank">Archivar</a></li>
                         </ul>
@@ -149,6 +144,15 @@
     <div class="container" v-if="!loader && albums.length == 0" v-cloak>
         <h4>No hay Albumes</h4>
     </div>
+    <confirm-modal 
+        id="deleteModal" 
+        title="Confirmar Borrar"
+        v-on:notify="confirmCallback"
+    >
+        <p>
+            ¿Desea borrar el album?
+        </p>
+    </confirm-modal>
 </div>
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
     <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Nuevo Album" href="{{base_url('admin/galeria/nuevo/')}}">
