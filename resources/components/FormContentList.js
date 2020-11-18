@@ -7,15 +7,13 @@ var FormContentList = new Vue({
     loader: true,
     filter: "",
   },
+  mixins: [mixins],
   computed: {
     filterContents: function () {
       if (!!this.filter) {
         let filterTerm = this.filter.toLowerCase();
         return this.contents.filter((value, index) => {
-          let result =
-            value.form_custom.form_name.toLowerCase().indexOf(filterTerm) !=
-              -1 || value.user.username.toLowerCase().indexOf(filterTerm) != -1;
-          return result;
+          return this.searchInObject(value, filterTerm);
         });
       } else {
         return this.contents;
@@ -89,6 +87,15 @@ var FormContentList = new Vue({
           self.loader = false;
         },
       });
+    },
+    tempDelete: function (content, index) {
+      this.toDeleteItem.content = content;
+      this.toDeleteItem.index = index;
+    },
+    confirmCallback(data) {
+      if (data) {
+        this.deleteContent(this.toDeleteItem.content, this.toDeleteItem.index);
+      }
     },
     base_url: function (path) {
       return BASEURL + path;

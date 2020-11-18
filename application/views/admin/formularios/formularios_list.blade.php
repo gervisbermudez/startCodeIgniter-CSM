@@ -39,12 +39,7 @@
                     <a href="#!" class='dropdown-trigger' data-target='dropdown-options'><i class="material-icons">more_vert</i></a>
                     <!-- Dropdown Structure -->
                     <ul id='dropdown-options' class='dropdown-content'>
-                        <li><a href="#!">one</a></li>
-                        <li><a href="#!">two</a></li>
-                        <li class="divider" tabindex="-1"></li>
-                        <li><a href="#!">three</a></li>
-                        <li><a href="#!"><i class="material-icons">view_module</i>four</a></li>
-                        <li><a href="#!"><i class="material-icons">cloud</i>five</a></li>
+                        <li><a href="#!">Archivados</a></li>
                     </ul>
                 </li>
             </ul>
@@ -81,7 +76,7 @@
                                 <ul :id='"dropdown_" + form.form_custom_id' class='dropdown-content'>
                                     <li><a :href="base_url('admin/formularios/addData/' + form.form_custom_id)"> Agregar data</a></li>
                                     <li><a :href="base_url('admin/formularios/editForm/' + form.form_custom_id)"> Editar</a></li>
-                                    <li><a href="#!" v-on:click="deleteForm(form, index)"> Borrar</a></li>
+                                    <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(form, index);">Borrar</a></li>
                                 </ul>
                             </td>
                         </tr>
@@ -102,7 +97,7 @@
                         <ul :id='"dropdown" + form.form_custom_id' class='dropdown-content'>
                             <li><a :href="base_url('admin/formularios/addData/' + form.form_custom_id)"> Agregar data</a></li>
                             <li><a :href="base_url('admin/formularios/editForm/' + form.form_custom_id)"> Editar</a></li>
-                            <li><a href="#!" v-on:click="deleteForm(form, index)"> Borrar</a></li>
+                            <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(form, index);">Borrar</a></li>
                         </ul>
                     </div>
                     <div class="card-content">
@@ -154,6 +149,15 @@
     <div class="container" v-if="!loader && forms.length == 0" v-cloak>
         <h4>No hay formularios</h4>
     </div>
+    <confirm-modal
+        id="deleteModal"
+        title="Confirmar Borrar"
+        v-on:notify="confirmCallback"
+    >
+        <p>
+            ¿Desea borrar el formulario?
+        </p>
+    </confirm-modal>
 </div>
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
     <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Nuevo Formulario" href="{{base_url('admin/formularios/nuevo/')}}">

@@ -191,7 +191,12 @@ class Forms extends REST_Controller
      */
     public function index_delete($form_id = null)
     {
-        $result = $this->Form_custom->delete_form($form_id);
+        $form = new Form_custom();
+        $result = $form->find($form_id);
+        if ($result) {
+            $result = $form->delete($form_id);
+        }
+
         if ($result) {
             $response = array(
                 'code' => REST_Controller::HTTP_OK,
@@ -308,7 +313,6 @@ class Forms extends REST_Controller
         }
         $this->response($response, REST_Controller::HTTP_OK);
     }
-
 
     public function data_set_status_post($form_content_id = null)
     {

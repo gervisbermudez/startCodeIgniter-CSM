@@ -85,6 +85,15 @@ var CustomFormLists = new Vue({
         },
       });
     },
+    tempDelete: function (form, index) {
+      this.toDeleteItem.form = form;
+      this.toDeleteItem.index = index;
+    },
+    confirmCallback(data) {
+      if (data) {
+        this.deleteForm(this.toDeleteItem.form, this.toDeleteItem.index);
+      }
+    },
     init: function () {
       setTimeout(() => {
         var elems = document.querySelectorAll(".tooltipped");
