@@ -6,12 +6,10 @@ Vue.component("userCard", {
       debug: DEBUGMODE,
     };
   },
+  mixins: [mixins],
   methods: {
     getUserUrl() {
       return BASEURL + "admin/usuarios/ver/" + this.user.user_id;
-    },
-    base_url: function (path) {
-      return BASEURL + path;
     },
   },
   mounted: function () {
@@ -27,7 +25,9 @@ var usersModule = new Vue({
     loader: true,
     tableView: false,
     filter: "",
+    toDeleteItem: {},
   },
+  mixins: [mixins],
   computed: {
     filterUsers: function () {
       if (!!this.filter) {
@@ -65,7 +65,7 @@ var usersModule = new Vue({
         success: function (response) {
           self.loader = false;
           self.users = response.data.map((element) => {
-            return  new User(element);
+            return new User(element);
           });
           self.initPlugins();
         },
@@ -75,9 +75,6 @@ var usersModule = new Vue({
         },
       });
     },
-    base_url: function (path) {
-      return BASEURL + path;
-    },
     initPlugins: function () {
       setTimeout(() => {
         var elems = document.querySelectorAll(".tooltipped");
@@ -85,6 +82,38 @@ var usersModule = new Vue({
         var elems = document.querySelectorAll(".dropdown-trigger");
         var instances = M.Dropdown.init(elems, {});
       }, 3000);
+    },
+    tempDelete: function (item, index) {
+      this.toDeleteItem.item = item;
+      this.toDeleteItem.index = index;
+    },
+    deleteItem: function (user, index) {
+      var self = this;
+      self.loader = true;
+      $.ajax({
+        type: "DELETE",
+        url: BASEURL + "api/v1/users/" + user.user_id,
+        data: {},
+        dataType: "json",
+        success: function (response) {
+          if (response.code == 200) {
+            self.users.splice(index, 1);
+          }
+          setTimeout(() => {
+            self.loader = false;
+            self.initPlugins();
+          }, 1000);
+        },
+        error: function (error) {
+          M.toast({ html: response.responseJSON.error_message });
+          self.loader = false;
+        },
+      });
+    },
+    confirmCallback(data) {
+      if (data) {
+        this.deleteItem(this.toDeleteItem.item, this.toDeleteItem.index);
+      }
     },
   },
   mounted: function () {

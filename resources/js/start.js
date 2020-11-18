@@ -27,6 +27,15 @@ jQuery(document).ready(function ($) {
 });
 
 var mixins = {
+  data() {
+    return {
+      debug: DEBUGMODE,
+      orderDataConf: {
+        strPropertyName: null,
+        sort_as: "asc",
+      },
+    }
+  },
   filters: {
     capitalize: function (value) {
       if (!value) return "";

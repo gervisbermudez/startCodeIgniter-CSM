@@ -50,7 +50,7 @@ class Usuarios extends MY_Controller
                 'Bloquear' => array('href' => '#!'),
             );
 
-            if ($user_id == $this->session->userdata('user_id')) {
+            if ($user_id == userdata('user_id')) {
                 $links = array(
                     'Editar' => array('href' => base_url('admin/usuarios/edit/' . $user_id)),
                     'Cambiar Contraseña' => array('href' => base_url('admin/usuarios/changePassword/' . $user_id)),

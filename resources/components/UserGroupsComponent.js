@@ -17,11 +17,7 @@ var UserGroupsComponents = new Vue({
       if (!!this.filter) {
         let filterTerm = this.filter.toLowerCase();
         return this.usergroups.filter((value, index) => {
-          let result =
-            value.name.toLowerCase().indexOf(filterTerm) != -1 ||
-            value.level.toLowerCase().indexOf(filterTerm) != -1 ||
-            value.description.toLowerCase().indexOf(filterTerm) != -1;
-          return result;
+          return this.searchInObject(value, filterTerm);
         });
       } else {
         return this.usergroups;
@@ -29,7 +25,6 @@ var UserGroupsComponents = new Vue({
     },
   },
   methods: {
-    
     toggleView: function () {
       this.tableView = !this.tableView;
       this.initPlugins();

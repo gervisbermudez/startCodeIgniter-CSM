@@ -23,12 +23,7 @@
                     <a href="#!" class='dropdown-trigger' data-target='dropdown-options'><i class="material-icons">more_vert</i></a>
                     <!-- Dropdown Structure -->
                     <ul id='dropdown-options' class='dropdown-content'>
-                        <li><a href="#!">one</a></li>
-                        <li><a href="#!">two</a></li>
-                        <li class="divider" tabindex="-1"></li>
-                        <li><a href="#!">three</a></li>
-                        <li><a href="#!"><i class="material-icons">view_module</i>four</a></li>
-                        <li><a href="#!"><i class="material-icons">cloud</i>five</a></li>
+                        <li><a href="#!">Archivados</a></li>
                     </ul>
                 </li>
             </ul>
@@ -52,17 +47,17 @@
                         </div>
                     </div>
                 </div>
-                <div class="row" v-if="tableView && users.length > 0" v-cloak>
+                <div class="row" v-if="tableView && users.length > 0" v-cloak v-show="!loader">
                     <div class="col s12">
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Username</th>
+                                    <th @click="sortData('username', users);" v-bind:class="getSortData('username')">Username</th>
                                     <th>Name</th>
-                                    <th>Role</th>
-                                    <th>lastseen</th>
-                                    <th>Date Create</th>
-                                    <th>Status</th>
+                                    <th @click="sortData('role', users);" v-bind:class="getSortData('role')">Role</th>
+                                    <th @click="sortData('lastseen', users);" v-bind:class="getSortData('lastseen')">lastseen</th>
+                                    <th @click="sortData('date_create', users);" v-bind:class="getSortData('date_create')">Date Create</th>
+                                    <th @click="sortData('status', users);" v-bind:class="getSortData('status')">Status</th>
                                     <th>Options</th>
                                 </tr>
                             </thead>
@@ -81,7 +76,7 @@
                                         <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + user.user_id'><i class="material-icons">more_vert</i></a>
                                         <ul :id='"dropdown" + user.user_id' class='dropdown-content'>
                                             <li><a :href="base_url('admin/usuarios/edit/' + user.user_id)">Editar</a></li>
-                                            <li><a href="#!" v-on:click="deletePage(page, index);">Borrar</a></li>
+                                            <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(user, index);">Borrar</a></li>
                                         </ul>
                                     </td>
                                 </tr>
@@ -89,14 +84,26 @@
                         </table>
                     </div>
                 </div>
-                <div class="row" v-else v-cloak>
-                    <div class="col s12 m4" v-cloak v-show="!loader" v-for="user in filterUsers">
-                        <user-card :user="user" />
+                <div class="row" v-else v-cloak v-show="!loader">
+                    <div class="col s12 m4" v-for="user in filterUsers">
+                        <user-card
+                        :user="user"
+                        v-on:tempDelete="tempDelete"
+                        />
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <confirm-modal
+        id="deleteModal"
+        title="Confirmar Borrar"
+        v-on:notify="confirmCallback"
+    >
+        <p>
+            ¿Desea borrar el Usuario?
+        </p>
+    </confirm-modal>
 </div>
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
     <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Crear Usuario" href="{{base_url('admin/usuarios/agregar/')}} ">
@@ -114,7 +121,7 @@
 					<i class="material-icons">more_vert</i></a>
 				<ul :id='"dropdown" + user.user_id' class='dropdown-content'>
 					<li><a :href="base_url('admin/usuarios/edit/' + user.user_id)">Editar</a></li>
-					<li><a href="#!" v-on:click="deletePage(page, index);">Borrar</a></li>
+                    <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(user, index);">Borrar</a></li>
 				</ul>
 			</a>
 		</div>
