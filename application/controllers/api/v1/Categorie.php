@@ -193,10 +193,28 @@ class Categorie extends REST_Controller
      *
      * @return Response
      */
-    public function index_delete($id = null)
+    public function index_delete($categorie_id = null)
     {
-        $data = array();
-        $this->response($data, REST_Controller::HTTP_NOT_FOUND);
+        $categorie = new Categories();
+        $result = $categorie->find($categorie_id);
+        if ($result) {
+            $result = $categorie->delete($categorie_id);
+        }
+
+        if ($result) {
+            $response = array(
+                'code' => REST_Controller::HTTP_OK,
+                'data' => [],
+            );
+        } else {
+            $response = array(
+                'code' => REST_Controller::HTTP_NOT_FOUND,
+                "error_message" => lang('not_found_error'),
+                'data' => [],
+            );
+        }
+
+        $this->response($response, REST_Controller::HTTP_OK);
     }
 
     /**

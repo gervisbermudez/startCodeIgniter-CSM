@@ -6,6 +6,7 @@ var CategoriesLists = new Vue({
     loader: true,
     filter: "",
   },
+  mixins: [mixins],
   computed: {
     filterCategories: function () {
       if (!!this.filter) {
@@ -67,7 +68,7 @@ var CategoriesLists = new Vue({
         },
       });
     },
-    deletePage: function (categorie, index) {
+    delete: function (categorie, index) {
       var self = this;
       self.loader = true;
       $.ajax({
@@ -89,6 +90,15 @@ var CategoriesLists = new Vue({
           self.loader = false;
         },
       });
+    },
+    tempDelete: function (item, index) {
+      this.toDeleteItem.item = item;
+      this.toDeleteItem.index = index;
+    },
+    confirmCallback(data) {
+      if (data) {
+        this.delete(this.toDeleteItem.item, this.toDeleteItem.index);
+      }
     },
     base_url: function (path) {
       return BASEURL + path;
