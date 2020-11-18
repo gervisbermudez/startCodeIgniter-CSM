@@ -441,7 +441,11 @@ class MY_model extends CI_Model implements JsonSerializable
             return false;
         }
         $this->db->where($data);
-        return $this->db->delete($table_data_name);
+        if (!$this->softDelete) {
+            return $this->db->delete($table_data_name);
+        } else {
+            $this->db->update($table_data_name, ["status" => "0"]);
+        }
     }
 
     /**

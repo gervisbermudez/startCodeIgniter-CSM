@@ -34,6 +34,7 @@ var mixins = {
         strPropertyName: null,
         sort_as: "asc",
       },
+      toDeleteItem: {}
     }
   },
   filters: {

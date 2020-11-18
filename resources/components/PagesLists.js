@@ -89,6 +89,15 @@ var PagesLists = new Vue({
         },
       });
     },
+    tempDelete: function (page, index) {
+      this.toDeleteItem.page = page;
+      this.toDeleteItem.index = index;
+    },
+    confirmCallback(data) {
+      if (data) {
+        this.deletePage(this.toDeleteItem.page, this.toDeleteItem.index);
+      }
+    },
     initPlugins: function () {
       setTimeout(() => {
         var elems = document.querySelectorAll(".tooltipped");
