@@ -2123,23 +2123,4 @@ abstract class REST_Controller extends \CI_Controller
         }
     }
 
-    public function check_token()
-    {
-        $headers = apache_request_headers();
-        if (isset($headers['Authorization'])) {
-            $token = (explode(' ', $headers['Authorization'])[1]);
-            $secret = 'sec!ReT423*&';
-            $result = Token::validate($token, $secret);
-            if (!$result) {
-                $this->response(array(), REST_Controller::HTTP_UNAUTHORIZED);
-                exit();
-            }
-
-        } else {
-            $this->response(array(), REST_Controller::HTTP_UNAUTHORIZED);
-            exit();
-        }
-
-        return;
-    }
 }

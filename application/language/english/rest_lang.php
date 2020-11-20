@@ -3,3 +3,4 @@
 $lang['validations_error'] = 'There are errors of validation';
 $lang['unexpected_error'] = 'An unexpected error has occurred';
 $lang['not_found_error'] = 'Resource not found';
+$lang['user_not_authenticated'] = 'Not authenticated';
