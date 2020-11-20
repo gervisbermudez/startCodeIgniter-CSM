@@ -5,9 +5,19 @@
 class Usuarios extends MY_Controller
 {
 
+    public $routes_permisions = [
+        '/admin\/usuarios/' => ["SELECT_USERS"],
+        '/admin\/usuarios\/ver\/(\d+)/' => ["SELECT_USERS"],
+        '/admin\/usuarios\/edit\/(\d+)/' => ["UPDATE_USER"],
+        '/admin\/usuarios\/changePassword\/(\d+)/' => ["UPDATE_USER"],
+        '/admin\/usuarios\/agregar/' => ["CREATE_USER"],
+        '/admin\/usuarios\/usergroups/' => ["UPDATE_USER"],
+    ];
+
     public function __construct()
     {
         parent::__construct();
+        $this->check_permisions();
         $this->load->model('Admin/User');
     }
 
@@ -73,7 +83,7 @@ class Usuarios extends MY_Controller
     public function edit($id)
     {
         $data['userdata'] = $this->User->find($id);
-        if ($data['userdata'] && has_permisions('UPDATE_USER')) {
+        if ($data['userdata']) {
             $data['action'] = 'Admin/User/save/';
             $data['title'] = ADMIN_TITLE . " | Editar Usuario";
             $data['h1'] = "Editar Usuario";
@@ -138,7 +148,6 @@ class Usuarios extends MY_Controller
             ->set_content_type('application/json')
             ->set_output(json_encode($response));
     }
-
 
     public function usergroups()
     {

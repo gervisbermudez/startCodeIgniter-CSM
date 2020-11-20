@@ -4,10 +4,13 @@
 
 class MY_Controller extends CI_Controller
 {
+    public $routes_permisions = [];
 
     public function __construct()
     {
         parent::__construct();
+        $this->lang->load('admin/admin', 'english');
+
         if (!$this->session->userdata('logged_in')) {
             $uri = urlencode(uri_string());
             redirect('admin/login/?redirect=' . $uri);
@@ -15,7 +18,22 @@ class MY_Controller extends CI_Controller
         if ($this->config->item('enable_profiler')) {
             $this->output->enable_profiler(true);
         }
+    }
 
+    public function check_permisions()
+    {
+        $uri_string = uri_string();
+        $matches = [];
+        foreach ($this->routes_permisions as $patern => $permissions) {
+            if(preg_match($patern, $uri_string, $matches)){
+                foreach ($permissions as $key => $value) {
+                    if(!has_permisions($value)){
+                        $this->showError(lang('not_have_permissions'));
+                        die();
+                    }
+                }
+            }
+        }
     }
 
     public function showError($errorMsg = 'Ocurrio un error inesperado', $data = array('title' => 'Error', 'h1' => 'Error'))

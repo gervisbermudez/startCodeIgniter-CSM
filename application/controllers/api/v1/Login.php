@@ -53,7 +53,6 @@ class Login extends REST_Controller
     public function index_post()
     {
         $this->lang->load('login_lang', 'english');
-        $this->load->helper('language');
 
         if ($this->input->post('username') && $this->input->post('username')) {
             $password = $this->input->post('password');
