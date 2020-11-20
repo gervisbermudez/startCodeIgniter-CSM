@@ -6,12 +6,36 @@ class Usuarios extends MY_Controller
 {
 
     public $routes_permisions = [
-        '/admin\/usuarios/' => ["SELECT_USERS"],
-        '/admin\/usuarios\/ver\/(\d+)/' => ["SELECT_USERS"],
-        '/admin\/usuarios\/edit\/(\d+)/' => ["UPDATE_USER"],
-        '/admin\/usuarios\/changePassword\/(\d+)/' => ["UPDATE_USER"],
-        '/admin\/usuarios\/agregar/' => ["CREATE_USER"],
-        '/admin\/usuarios\/usergroups/' => ["UPDATE_USER"],
+        "index" => [ 
+            "patern" => '/admin\/usuarios/',
+            "required_permissions" => ["SELECT_USERS"],
+            "conditions" => [],
+        ],
+        "ver" => [ 
+            "patern" => '/admin\/usuarios\/ver\/(\d+)/',
+            "required_permissions" => ["SELECT_USERS"],
+            "conditions" => ["check_permissions"],
+        ],
+        "edit" => [ 
+            "patern" => '/admin\/usuarios\/edit\/(\d+)/',
+            "required_permissions" => ["UPDATE_USER"],
+            "conditions" => ["check_permissions"],
+        ],
+        "changePassword" => [ 
+            "patern" => '/admin\/usuarios\/changePassword\/(\d+)/',
+            "required_permissions" => ["UPDATE_USER"],
+            "conditions" => ["check_permissions"],
+        ],
+        "agregar" => [ 
+            "patern" => '/admin\/usuarios\/agregar/',
+            "required_permissions" => ["CREATE_USER"],
+            "conditions" => [],
+        ],
+        "usergroups" => [ 
+            "patern" => '/admin\/usuarios\/usergroups/',
+            "required_permissions" => ["SELECT_USERS"],
+            "conditions" => [],
+        ],
     ];
 
     public function __construct()
@@ -155,6 +179,24 @@ class Usuarios extends MY_Controller
         $data['h1'] = "User Groups";
         $data['header'] = $this->load->view('admin/header', $data, true);
         echo $this->blade->view("admin.user.usergroups", $data);
+    }
+
+    public function usergroups_edit($usergroups_id)
+    {
+        $this->load->model('Admin/Usergroup');
+        $usergroup = new Usergroup();
+        $result = $usergroup->find($id);
+        if ($result) {
+            $data['action'] = 'Admin/User/save/';
+            $data['title'] = ADMIN_TITLE . " | Editar Permisos";
+            $data['h1'] = "Editar Permisos";
+            $data['header'] = $this->load->view('admin/header', $data, true);
+            $data['mode'] = 'new';
+           
+            echo $this->blade->view("admin.user.usergroups_permisions", $data);
+        } else {
+            $this->showError('Usergroup no encontrado');
+        }
     }
 
 }

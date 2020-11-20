@@ -24,7 +24,11 @@ class MY_Controller extends CI_Controller
     {
         $uri_string = uri_string();
         $matches = [];
-        foreach ($this->routes_permisions as $patern => $permissions) {
+        foreach ($this->routes_permisions as $method => $route) {
+
+            $patern = $route["patern"];
+            $permissions = $route["required_permissions"];
+
             if(preg_match($patern, $uri_string, $matches)){
                 foreach ($permissions as $key => $value) {
                     if(!has_permisions($value)){
