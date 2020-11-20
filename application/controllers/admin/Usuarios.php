@@ -73,7 +73,7 @@ class Usuarios extends MY_Controller
     public function edit($id)
     {
         $data['userdata'] = $this->User->find($id);
-        if ($data['userdata']) {
+        if ($data['userdata'] && has_permisions('UPDATE_USER')) {
             $data['action'] = 'Admin/User/save/';
             $data['title'] = ADMIN_TITLE . " | Editar Usuario";
             $data['h1'] = "Editar Usuario";

@@ -94,6 +94,15 @@ if (!function_exists('userdata')) {
     }
 }
 
+if (!function_exists('has_permisions')) {
+    function has_permisions($permision)
+    {
+        $ci = &get_instance();
+        $usergroup_permisions = $ci->session->userdata('usergroup_permisions');
+        return in_array($permision, $usergroup_permisions);
+    }
+}
+
 if (!function_exists('slugify')) {
     function slugify($text)
     {
@@ -120,15 +129,6 @@ if (!function_exists('slugify')) {
         }
 
         return $text;
-    }
-
-}
-
-if (!function_exists('userdata')) {
-    function userdata($text)
-    {
-        $ci = &get_instance();
-        return $ci->session->userdata($text);
     }
 
 }

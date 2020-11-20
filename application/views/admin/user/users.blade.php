@@ -75,8 +75,12 @@
                                     <td>
                                         <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + user.user_id'><i class="material-icons">more_vert</i></a>
                                         <ul :id='"dropdown" + user.user_id' class='dropdown-content'>
+                                            @if(has_permisions('UPDATE_USER'))
                                             <li><a :href="base_url('admin/usuarios/edit/' + user.user_id)">Editar</a></li>
+                                            @endif
+                                            @if(has_permisions('DELETE_USER'))
                                             <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(user, index);">Borrar</a></li>
+                                            @endif
                                         </ul>
                                     </td>
                                 </tr>
@@ -120,8 +124,12 @@
 				<a class='btn-floating halfway-fab waves-effect waves-light dropdown-trigger' href='#!' :data-target='"dropdown" + user.user_id'>
 					<i class="material-icons">more_vert</i></a>
 				<ul :id='"dropdown" + user.user_id' class='dropdown-content'>
+                    @if(has_permisions('UPDATE_USER'))
 					<li><a :href="base_url('admin/usuarios/edit/' + user.user_id)">Editar</a></li>
+                    @endif
+                    @if(has_permisions('DELETE_USER'))
                     <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(user, index);">Borrar</a></li>
+                    @endif
 				</ul>
 			</a>
 		</div>

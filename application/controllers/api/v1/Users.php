@@ -74,12 +74,19 @@ class Users extends REST_Controller
     public function index_get($user_id = null)
     {
         $user = new User();
-        if ($user_id) {
-            $result = $user->find($user_id);
-            $result = $result ? $user : [];
-        } else {
+        if (!$user_id) {
             $result = $this->User->get_full_info($user_id);
+            $response = array(
+                'code' => 200,
+                'data' => $result ? $result : [],
+            );
+            $this->response($response, REST_Controller::HTTP_OK);
+            return;
+        } else {
+            $result = $result ? $user : [];
+            $result = $user->find($user_id);
         }
+        
         if ($result) {
             $response = array(
                 'code' => 200,
@@ -260,9 +267,10 @@ class Users extends REST_Controller
         $usergroup = new Usergroup();
 
         if ($usergroup_id) {
-            $result = $usergroup->find_with(array("usergroup_id" => $usergroup_id));
+            $result = $usergroup->where(array("usergroup_id" => $usergroup_id));
+            $result = $result ? $result->first() : false; 
         } else {
-            $result = $usergroup->where(array('level >=' => userdata('level')));
+            $result = $usergroup->where(array('level >=' => userdata('level'), 'parent_id' => 0));
         }
 
         if ($result) {

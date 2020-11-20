@@ -27,16 +27,12 @@ class Usergroup extends MY_model
         foreach ($collection as &$value) {
             if (isset($value->usergroup_id)) {
                 $Usergroup_permisions = new Usergroup_permisions();
-                $value->{"usergroup_permisions"} = $Usergroup_permisions->where(["usergroup_id" => $value->usergroup_id]);
-            }
-        }
-
-        $this->load->model('Admin/User');
-        foreach ($collection as &$value) {
-            if (isset($value->user_id)) {
-                $user = new User();
-                $user->find($value->user_id);
-                $value->{'user'} = $user;
+                $usergroup_permisions = $Usergroup_permisions->where(["usergroup_id" => $value->usergroup_id]);
+                $value->{"usergroup_permisions"} = $usergroup_permisions ? $usergroup_permisions->toArray() : [];
+                $value->{"usergroup_permisions"} = array_merge(
+                    $this->permisions,
+                    $value->{"usergroup_permisions"}
+                );
             }
         }
 

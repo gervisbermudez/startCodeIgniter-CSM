@@ -15,6 +15,13 @@ class MY_model extends CI_Model implements JsonSerializable
     public $hasMany = [];
     public $protectedFields = array();
     public $computed = array();
+    public $permisions = array(
+        "CREATE",
+        "UPDATE",
+        "DELETE",
+        "SELECT",
+    );
+
     /**
      * The model's default values for attributes.
      *
