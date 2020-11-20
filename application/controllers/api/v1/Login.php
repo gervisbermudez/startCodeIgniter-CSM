@@ -105,6 +105,21 @@ class Login extends REST_Controller
     }
 
     /**
+     * Delete session
+     *
+     * @return Response
+     */
+    public function logout_get()
+    {
+        $this->session->sess_destroy();
+        $response = array(
+            'code' => 200,
+            'data' => true,
+        );
+        $this->response($response, REST_Controller::HTTP_OK);
+    }
+
+    /**
      * Get All Data from this method.
      *
      * @return Response
