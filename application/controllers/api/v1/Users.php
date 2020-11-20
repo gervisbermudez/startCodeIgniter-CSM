@@ -83,8 +83,8 @@ class Users extends REST_Controller
             $this->response($response, REST_Controller::HTTP_OK);
             return;
         } else {
-            $result = $result ? $user : [];
             $result = $user->find($user_id);
+            $result = $result ? $user : [];
         }
         
         if ($result) {

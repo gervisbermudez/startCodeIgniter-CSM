@@ -45,7 +45,7 @@ class User extends MY_model
 		INNER JOIN `usergroup` g ON g.usergroup_id = u.usergroup_id
         INNER JOIN (" . $this->get_select_json('usergroup') . ") subu ON subu.usergroup_id = u.usergroup_id
         WHERE u.status = 1
-        AND u.usergroup_id > '".userdata('usergroup_id')."'
+        AND u.usergroup_id >= '".userdata('usergroup_id')."'
         $where
         GROUP BY s.user_id;";
         $data = $this->db->query($sql);
