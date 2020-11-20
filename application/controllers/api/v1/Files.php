@@ -14,16 +14,14 @@ class Files extends REST_Controller
     {
         parent::__construct();
         $this->output->enable_profiler(false);
-        $this->load->database();
         $this->lang->load('rest_lang', 'english');
-        if (!$this->session->userdata('logged_in')) {
-            $this->lang->load('login_lang', 'english');
+        if (!$this->verify_request()) {
             $this->response([
                 'code' => REST_Controller::HTTP_UNAUTHORIZED,
-                'error_message' => lang('user_not_authenticated'),
             ], REST_Controller::HTTP_UNAUTHORIZED);
             exit();
         }
+        $this->load->database();
         $this->load->model('Admin/File');
 
     }
