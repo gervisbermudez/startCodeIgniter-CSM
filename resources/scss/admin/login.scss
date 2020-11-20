@@ -1,34 +1,63 @@
 @import "components/palette";
 @import "fonts";
+@import "mixins";
 
 body {
   overflow-x: hidden;
   font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  background: url('/public/img/profile/Material-Wallpaper.jpg');
+}
+
+.wallpapper {
+  background: url("/public/img/profile/Material-Wallpaper.jpg");
   background-size: cover;
+  position: absolute;
+  right: 0px !important;
+  height: 100vh;
+  top: 0px;
 }
 
-.card .card-action {
-  border: none;
-  background: none;
+.brand {
+  font-family: Coda;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 30px;
+  line-height: 40px;
+  text-align: center;
+  color: $gray-text;
 }
 
-body:before {
-  content: '';
+.sub-brand {
+  font-family: Coda;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 20px;
+  line-height: 34px;
+  text-align: center;
+  color: $gray-text;
+}
+
+.title {
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 300;
+  font-size: 36px;
+  line-height: 42px;
+  color: $gray-text;
+  margin: 30px 0px 40px;
   display: block;
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  background-color: rgba(0, 0, 0, 0.31);
 }
 
+i.material-icons.prefix {
+  color: #646b7f;
+}
 
-.card-panel.light-blue.center-align {
-  background: transparent !important;
+.img-container.brand-logo {
+  text-align: center;
+  margin: 50px 0px 10px;
 }
 
 [v-cloak] {
-  display: none
+  display: none;
 }
 
 .logo {
@@ -45,6 +74,22 @@ body:before {
 
 .col.s12.m3.l4.login {
   margin: 0 auto;
+}
+
+.action {
+  text-align: center;
+  margin: 30px 0px;
+}
+
+.action .btn {
+  width: 128px;
+  height: 36px;
+}
+
+.remember-check {
+  p {
+    margin-left: 42px;
+  }
 }
 
 .login {
@@ -68,15 +113,17 @@ body:before {
 
   .avatar-username {
     display: block;
-    color: #444;
+    color: $gray-text;
   }
 
   span.name {
-    color: #444;
+    color: $gray-text;
   }
 
   .reset-user {
-    color: #444;
+    display: block;
+    margin-left: 42px;
+    color: $gray-text;
   }
 
   .logo {
@@ -91,7 +138,7 @@ body:before {
     color: #444 !important;
 
     label {
-      color: #444;
+      color: $gray-text;
     }
 
     input {
@@ -99,12 +146,10 @@ body:before {
       color: #5a5a5a !important;
     }
 
-    .input-field>label {
-      color: #444;
+    .input-field > label {
+      color: $gray-text;
     }
-
   }
-
 
   .card-panel {
     box-shadow: none;
@@ -116,5 +161,12 @@ body:before {
   .btn {
     background-color: $color3 !important;
     color: white !important;
+  }
+}
+
+
+@mixin respond-down($lg) {
+  .wallpapper{
+    display: none;
   }
 }
