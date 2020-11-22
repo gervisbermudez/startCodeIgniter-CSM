@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 use Tightenco\Collect\Support\Collection;
 
@@ -10,11 +10,12 @@ class Usergroup extends MY_model
 {
     public $primaryKey = 'usergroup_id';
     public $softDelete = true;
-
     protected $attributes = array(
         'status' => 1,
         'level' => 3,
     );
+
+    public $computed = array('usergroup_permisions' => 'usergroup_permisions');
 
     public function __construct()
     {
@@ -23,30 +24,40 @@ class Usergroup extends MY_model
 
     public function filter_results($collection = [])
     {
-        $this->load->model('Admin/Usergroup_permisions');
-        foreach ($collection as &$value) {
-            if (isset($value->usergroup_id)) {
-                $Usergroup_permisions = new Usergroup_permisions();
-                $usergroup_permisions = $Usergroup_permisions->where(["usergroup_id" => $value->usergroup_id]);
-                $value->{"usergroup_permisions"} = $usergroup_permisions ? $usergroup_permisions->toArray() : [];
-                $value->{"usergroup_permisions"} = array_merge(
-                    $this->permisions,
-                    $value->{"usergroup_permisions"}
-                );
+        $this->load->model('Admin/User');
+        foreach ($collection as $key => &$value) {
+            if (isset($value->user_id) && $value->user_id) {
+                $user = new User();
+                $user->find($value->user_id);
+                $value->{'user'} = $user->as_data();
             }
         }
 
         foreach ($collection as &$value) {
-            if (isset($value->parent_id) && $value->usergroup_id) {
-                $this->load->model('Admin/Usergroup');
-                $Usergroup = new Usergroup();
-                $sub_usergroups = $Usergroup->where(['parent_id' => $value->usergroup_id]);
-
-                $value->{'sub_usergroups'} = $sub_usergroups ? $sub_usergroups : [];
+            if (isset($value->usergroup_id) && $value->usergroup_id) {
+                $value->{'usergroup_permisions'} = $this->get_permisions($value->usergroup_id);
             }
         }
 
         return new Collection($collection);
+    }
+
+    public function usergroup_permisions()
+    {
+        return $this->get_permisions($this->usergroup_id);
+    }
+
+    private function get_permisions($usergroup_id)
+    {
+        $this->load->model('Admin/Usergroup_permisions');
+        $Usergroup_permisions = new Usergroup_permisions();
+        $result = $Usergroup_permisions->where(["usergroup_id" => $usergroup_id]);
+        if($result){
+            $result = array_merge($this->permisions, $result->toArray());
+            return $result;
+        }
+
+        return [];
     }
 
 }

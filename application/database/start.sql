@@ -22,14 +22,16 @@ CREATE TABLE IF NOT EXISTS `album` (
   `status` tinyint(1) NOT NULL DEFAULT 1,
   `date_create` timestamp NOT NULL DEFAULT current_timestamp(),
   `date_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `date_delete` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`album_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 
 -- Volcando datos para la tabla start_cms.album: ~0 rows (aproximadamente)
 DELETE FROM `album`;
 /*!40000 ALTER TABLE `album` DISABLE KEYS */;
-INSERT INTO `album` (`album_id`, `name`, `description`, `date_publish`, `user_id`, `status`, `date_create`, `date_update`) VALUES
-	(1, 'Fotografias del Concierto de Queen', 'Queen are a British rock band formed in London in 1970. Their classic line-up was Freddie Mercury, Brian May, Roger Taylor and John Deacon.', '2020-10-04 19:01:17', 1, 1, '2020-10-12 14:50:32', '2020-10-08 16:11:35');
+INSERT INTO `album` (`album_id`, `name`, `description`, `date_publish`, `user_id`, `status`, `date_create`, `date_update`, `date_delete`) VALUES
+	(1, 'Fotografias del Concierto de Queen', 'Queen are a British rock band formed in London in 1970. Their classic line-up was Freddie Mercury, Brian May, Roger Taylor and John Deacon.', '2020-10-04 19:01:17', 1, 1, '2020-10-12 14:50:32', '2020-10-08 16:11:35', NULL),
+	(9, 'Fotografias del Concierto de Queen', 'Queen are a British rock band formed in London in 1970. Their classic line-up was Freddie Mercury, Brian May, Roger Taylor and John Deacon.', '2020-10-04 19:01:17', 1, 0, '2020-10-12 14:50:32', '2020-11-18 12:23:28', '2020-11-18 16:26:18');
 /*!40000 ALTER TABLE `album` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.album_items
@@ -69,27 +71,27 @@ CREATE TABLE IF NOT EXISTS `categories` (
   `description` text NOT NULL,
   `type` varchar(600) NOT NULL,
   `parent_id` tinyint(1) NOT NULL DEFAULT 0,
-  `date_publish` datetime NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 1,
   `date_create` timestamp NOT NULL DEFAULT current_timestamp(),
   `date_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `status` tinyint(1) NOT NULL DEFAULT 1,
+  `date_delete` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`categorie_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1 COMMENT='Categorias del sistema';
 
 -- Volcando datos para la tabla start_cms.categories: ~10 rows (aproximadamente)
 DELETE FROM `categories`;
 /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
-INSERT INTO `categories` (`categorie_id`, `user_id`, `name`, `description`, `type`, `parent_id`, `date_publish`, `date_create`, `date_update`, `status`) VALUES
-	(4, 1, 'Web Design', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 0, '2020-04-19 10:36:10', '2020-04-19 10:36:14', '2020-09-01 08:57:45', 1),
-	(5, 1, 'Tutorials', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 0, '2020-04-19 10:36:10', '2020-04-19 10:36:14', '2020-09-01 08:57:46', 1),
-	(6, 1, 'Programing languages', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 0, '2020-04-19 10:36:10', '2020-04-19 10:36:14', '2020-09-01 08:57:47', 1),
-	(7, 1, 'Sub Categoria 1', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 4, '2020-04-19 10:36:10', '2020-04-19 10:36:14', '2020-09-01 08:57:49', 1),
-	(8, 2, 'Sub Categoria 2', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 4, '2020-04-19 10:36:10', '2020-04-19 10:36:14', '2020-09-01 08:57:50', 1),
-	(9, 1, 'Sub Categoria 3', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 4, '2020-04-19 10:36:10', '2020-04-19 10:36:14', '2020-09-01 08:57:51', 1),
-	(10, 1, 'Sub Categoria 1', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 5, '2020-04-19 10:36:10', '2020-04-19 10:36:14', '2020-09-01 08:57:52', 1),
-	(11, 2, 'Sub Categoria 2', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 5, '2020-04-19 10:36:10', '2020-04-19 10:36:14', '2020-09-01 08:57:53', 1),
-	(12, 2, 'Sub Categoria 3', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 5, '2020-04-19 10:36:10', '2020-04-19 10:36:14', '2020-09-01 08:57:54', 1),
-	(16, 1, 'WebAPIs', '<p style="margin: 0px 0px 24px; padding: 0px; border: 0px; box-sizing: border-box; max-width: 42rem; color: #333333; font-family: Arial, x-locale-body, sans-serif; font-size: 16px; letter-spacing: -0.04448px;"><span class="seoSummary" style="margin: 0px; padding: 0px; border: 0px;">When writing code for the Web, there are a large number of Web APIs available. Below is a list of all the APIs and interfaces (object types) that you may be able to use while developing your Web app or site.</span></p>\n<p style="margin: 0px 0px 24px; padding: 0px; border: 0px; box-sizing: border-box; max-width: 42rem; color: #333333; font-family: Arial, x-locale-body, sans-serif; font-size: 16px; letter-spacing: -0.04448px;">Web APIs are typically used with JavaScript, although this doesn\'t always have to be the case.</p>', 'page', 0, '2020-09-04 00:05:27', '2020-09-04 00:05:27', '2020-09-03 14:35:55', 1);
+INSERT INTO `categories` (`categorie_id`, `user_id`, `name`, `description`, `type`, `parent_id`, `status`, `date_create`, `date_update`, `date_delete`) VALUES
+	(4, 1, 'Web Design', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 0, 1, '2020-04-19 10:36:14', '2020-09-01 08:57:45', NULL),
+	(5, 1, 'Tutorials', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 0, 1, '2020-04-19 10:36:14', '2020-09-01 08:57:46', NULL),
+	(6, 1, 'Programing languages', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 0, 1, '2020-04-19 10:36:14', '2020-09-01 08:57:47', NULL),
+	(7, 1, 'Sub Categoria 1', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 4, 1, '2020-04-19 10:36:14', '2020-09-01 08:57:49', NULL),
+	(8, 2, 'Sub Categoria 2', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 4, 1, '2020-04-19 10:36:14', '2020-09-01 08:57:50', NULL),
+	(9, 1, 'Sub Categoria 3', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 4, 1, '2020-04-19 10:36:14', '2020-09-01 08:57:51', NULL),
+	(10, 1, 'Sub Categoria 1', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 5, 1, '2020-04-19 10:36:14', '2020-09-01 08:57:52', NULL),
+	(11, 2, 'Sub Categoria 2', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 5, 1, '2020-04-19 10:36:14', '2020-09-01 08:57:53', NULL),
+	(12, 2, 'Sub Categoria 3', 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!', 'page', 5, 1, '2020-04-19 10:36:14', '2020-09-01 08:57:54', NULL),
+	(16, 1, 'WebAPIs', '<p style="margin: 0px 0px 24px; padding: 0px; border: 0px; box-sizing: border-box; max-width: 42rem; color: #333333; font-family: Arial, x-locale-body, sans-serif; font-size: 16px; letter-spacing: -0.04448px;"><span class="seoSummary" style="margin: 0px; padding: 0px; border: 0px;">When writing code for the Web, there are a large number of Web APIs available. Below is a list of all the APIs and interfaces (object types) that you may be able to use while developing your Web app or site.</span></p>\n<p style="margin: 0px 0px 24px; padding: 0px; border: 0px; box-sizing: border-box; max-width: 42rem; color: #333333; font-family: Arial, x-locale-body, sans-serif; font-size: 16px; letter-spacing: -0.04448px;">Web APIs are typically used with JavaScript, although this doesn\'t always have to be the case.</p>', 'page', 0, 0, '2020-09-04 00:05:27', '2020-11-18 09:25:06', NULL);
 /*!40000 ALTER TABLE `categories` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.contacts
@@ -167,9 +169,9 @@ CREATE TABLE IF NOT EXISTS `file` (
   `status` tinyint(4) DEFAULT 1,
   PRIMARY KEY (`file_id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1282 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=1283 DEFAULT CHARSET=latin1;
 
--- Volcando datos para la tabla start_cms.file: ~601 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.file: ~600 rows (aproximadamente)
 DELETE FROM `file`;
 /*!40000 ALTER TABLE `file` DISABLE KEYS */;
 INSERT INTO `file` (`file_id`, `rand_key`, `file_name`, `file_path`, `file_type`, `parent_name`, `user_id`, `shared_user_group_id`, `share_link`, `featured`, `date_create`, `date_update`, `status`) VALUES
@@ -835,7 +837,8 @@ INSERT INTO `file` (`file_id`, `rand_key`, `file_name`, `file_path`, `file_type`
 	(1277, 'UAr6MTFcYZsEqpQH', 'cache', './THEME_PATH/', 'folder', 'THEME_PATH', 1, 1, 'admin/archivos/shared_file/UAr6MTFcYZsEqpQH', 0, '2020-11-11 16:07:51', '2020-11-11 16:07:51', 1),
 	(1278, 'l1Ru0IZatvWXmLdM', '20201111231922', './backups/database/', 'gz', 'database', 1, 1, 'admin/archivos/shared_file/l1Ru0IZatvWXmLdM', 0, '2020-11-12 13:31:14', '2020-11-12 13:31:14', 1),
 	(1280, '2RiONtoe6hJd0aDC', 'Start CMS API', './', 'postman_collection.json', './', 1, 1, 'admin/archivos/shared_file/2RiONtoe6hJd0aDC', 0, '2020-11-12 13:31:14', '2020-11-12 13:31:14', 1),
-	(1281, 'gtUdAYMQyk4TeRXJ', 'startcms_info', './', 'json', './', 1, 1, 'admin/archivos/shared_file/gtUdAYMQyk4TeRXJ', 0, '2020-11-12 13:31:14', '2020-11-12 13:31:14', 1);
+	(1281, 'gtUdAYMQyk4TeRXJ', 'startcms_info', './', 'json', './', 1, 1, 'admin/archivos/shared_file/gtUdAYMQyk4TeRXJ', 0, '2020-11-12 13:31:14', '2020-11-12 13:31:14', 1),
+	(1282, 'Xgxi4qFb2J8BIsWm', 'PVuKqgJQ_400x400', './public/img/profile/nestor/', 'png', 'nestor', 1, 1, 'admin/archivos/shared_file/Xgxi4qFb2J8BIsWm', 0, '2020-11-17 08:47:12', '2020-11-17 08:47:12', 1);
 /*!40000 ALTER TABLE `file` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.file_activity
@@ -865,18 +868,21 @@ CREATE TABLE IF NOT EXISTS `form_content` (
   `form_content_id` int(11) NOT NULL AUTO_INCREMENT,
   `form_custom_id` int(11) NOT NULL DEFAULT 0,
   `form_tab_id` int(11) NOT NULL DEFAULT 0,
-  `date_create` timestamp NULL DEFAULT current_timestamp(),
-  `date_update` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `user_id` int(11) DEFAULT NULL,
   `status` tinyint(4) DEFAULT 1,
+  `date_create` timestamp NULL DEFAULT current_timestamp(),
+  `date_update` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `date_delete` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`form_content_id`),
   KEY `form_custom_id` (`form_custom_id`),
   CONSTRAINT `FK_form_content_form_custom` FOREIGN KEY (`form_custom_id`) REFERENCES `form_custom` (`form_custom_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
 -- Volcando datos para la tabla start_cms.form_content: ~0 rows (aproximadamente)
 DELETE FROM `form_content`;
 /*!40000 ALTER TABLE `form_content` DISABLE KEYS */;
+INSERT INTO `form_content` (`form_content_id`, `form_custom_id`, `form_tab_id`, `user_id`, `status`, `date_create`, `date_update`, `date_delete`) VALUES
+	(40, 22, 47, 1, 1, '2020-11-16 11:03:23', '2020-11-18 09:11:05', NULL);
 /*!40000 ALTER TABLE `form_content` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.form_content_data
@@ -891,11 +897,14 @@ CREATE TABLE IF NOT EXISTS `form_content_data` (
   PRIMARY KEY (`form_custom_data_id`),
   KEY `form_id` (`form_content_id`),
   CONSTRAINT `FK_form_content_data_form_content` FOREIGN KEY (`form_content_id`) REFERENCES `form_content` (`form_content_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
--- Volcando datos para la tabla start_cms.form_content_data: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.form_content_data: ~2 rows (aproximadamente)
 DELETE FROM `form_content_data`;
 /*!40000 ALTER TABLE `form_content_data` DISABLE KEYS */;
+INSERT INTO `form_content_data` (`form_custom_data_id`, `form_content_id`, `form_field_id`, `form_value`, `date_create`, `date_update`, `status`) VALUES
+	(61, 40, 55, '{"title":"Basic Card"}', '2020-11-16 11:03:23', '2020-11-16 11:03:23', 1),
+	(62, 40, 56, '{"text":"I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively."}', '2020-11-16 11:03:23', '2020-11-16 11:03:23', 1);
 /*!40000 ALTER TABLE `form_content_data` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.form_custom
@@ -903,16 +912,20 @@ CREATE TABLE IF NOT EXISTS `form_custom` (
   `form_custom_id` int(11) NOT NULL AUTO_INCREMENT,
   `form_name` varchar(250) DEFAULT NULL,
   `form_description` varchar(250) DEFAULT NULL,
-  `date_create` timestamp NULL DEFAULT current_timestamp(),
-  `date_update` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `user_id` int(11) DEFAULT NULL,
   `status` tinyint(4) DEFAULT 1,
+  `date_create` timestamp NULL DEFAULT current_timestamp(),
+  `date_update` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `date_delete` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`form_custom_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=latin1;
 
--- Volcando datos para la tabla start_cms.form_custom: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.form_custom: ~1 rows (aproximadamente)
 DELETE FROM `form_custom`;
 /*!40000 ALTER TABLE `form_custom` DISABLE KEYS */;
+INSERT INTO `form_custom` (`form_custom_id`, `form_name`, `form_description`, `user_id`, `status`, `date_create`, `date_update`, `date_delete`) VALUES
+	(22, 'Card', 'Cards are a convenient means of displaying content composed of different types of objects. They’re also well-suited for presenting similar objects whose size or supported actions can vary considerably, like photos with captions of variable length.', 1, 1, '2020-11-16 11:02:33', '2020-11-16 11:02:53', NULL),
+	(24, 'Nuevo Formulario', '', 1, 0, '2020-11-18 08:59:23', '2020-11-18 08:59:23', NULL);
 /*!40000 ALTER TABLE `form_custom` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.form_fields
@@ -929,11 +942,15 @@ CREATE TABLE IF NOT EXISTS `form_fields` (
   PRIMARY KEY (`form_field_id`) USING BTREE,
   KEY `form_tab_id` (`form_tab_id`),
   CONSTRAINT `FK_form_fields_form_tabs` FOREIGN KEY (`form_tab_id`) REFERENCES `form_tabs` (`form_tab_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=55 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=latin1;
 
--- Volcando datos para la tabla start_cms.form_fields: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.form_fields: ~2 rows (aproximadamente)
 DELETE FROM `form_fields`;
 /*!40000 ALTER TABLE `form_fields` DISABLE KEYS */;
+INSERT INTO `form_fields` (`form_field_id`, `form_tab_id`, `field_name`, `displayName`, `icon`, `component`, `date_create`, `date_update`, `status`) VALUES
+	(55, 47, 'title', 'Titulo', 'format_color_text', 'formFieldTitle', '2020-11-16 11:02:33', '2020-11-16 11:02:33', 1),
+	(56, 47, 'text', 'Texto', 'short_text', 'formFieldTextArea', '2020-11-16 11:02:33', '2020-11-16 11:02:33', 1),
+	(58, 49, 'title', 'Titulo', 'format_color_text', 'formFieldTitle', '2020-11-18 08:59:23', '2020-11-18 08:59:23', 1);
 /*!40000 ALTER TABLE `form_fields` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.form_fields_data
@@ -948,11 +965,26 @@ CREATE TABLE IF NOT EXISTS `form_fields_data` (
   PRIMARY KEY (`form_field_config_id`),
   KEY `form_id` (`form_field_id`),
   CONSTRAINT `FK_form_fields_data_form_fields` FOREIGN KEY (`form_field_id`) REFERENCES `form_fields` (`form_field_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=273 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=292 DEFAULT CHARSET=latin1;
 
--- Volcando datos para la tabla start_cms.form_fields_data: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.form_fields_data: ~12 rows (aproximadamente)
 DELETE FROM `form_fields_data`;
 /*!40000 ALTER TABLE `form_fields_data` DISABLE KEYS */;
+INSERT INTO `form_fields_data` (`form_field_config_id`, `form_field_id`, `_key`, `_value`, `date_create`, `date_update`, `status`) VALUES
+	(273, 55, 'fieldPlaceholder', 'Card Title', '2020-11-16 11:02:33', '2020-11-16 11:02:33', 1),
+	(274, 55, 'fieldID', 'ZRswElNHjm', '2020-11-16 11:02:33', '2020-11-16 11:02:33', 1),
+	(275, 55, 'fieldName', 'card_title', '2020-11-16 11:02:33', '2020-11-16 11:02:33', 1),
+	(276, 55, 'fielApiID', 'card_title', '2020-11-16 11:02:33', '2020-11-16 11:02:33', 1),
+	(277, 55, 'form_custom_data_id', NULL, '2020-11-16 11:02:33', '2020-11-16 11:02:33', 1),
+	(278, 56, 'fieldID', '9MFrM65Upr', '2020-11-16 11:02:33', '2020-11-16 11:02:33', 1),
+	(279, 56, 'fieldName', 'Card content', '2020-11-16 11:02:33', '2020-11-16 11:02:33', 1),
+	(280, 56, 'fielApiID', 'card_content', '2020-11-16 11:02:33', '2020-11-16 11:02:33', 1),
+	(281, 56, 'form_custom_data_id', NULL, '2020-11-16 11:02:33', '2020-11-16 11:02:33', 1),
+	(287, 58, 'fieldPlaceholder', '', '2020-11-18 08:59:23', '2020-11-18 08:59:23', 1),
+	(288, 58, 'fieldID', 'bq5Qj5O0fV', '2020-11-18 08:59:23', '2020-11-18 08:59:23', 1),
+	(289, 58, 'fieldName', '', '2020-11-18 08:59:23', '2020-11-18 08:59:23', 1),
+	(290, 58, 'fielApiID', '', '2020-11-18 08:59:23', '2020-11-18 08:59:23', 1),
+	(291, 58, 'form_custom_data_id', NULL, '2020-11-18 08:59:23', '2020-11-18 08:59:23', 1);
 /*!40000 ALTER TABLE `form_fields_data` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.form_tabs
@@ -966,11 +998,14 @@ CREATE TABLE IF NOT EXISTS `form_tabs` (
   PRIMARY KEY (`form_tab_id`),
   KEY `form_id` (`form_custom_id`) USING BTREE,
   CONSTRAINT `FK_form_tabs_form_custom` FOREIGN KEY (`form_custom_id`) REFERENCES `form_custom` (`form_custom_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
 
--- Volcando datos para la tabla start_cms.form_tabs: ~0 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.form_tabs: ~1 rows (aproximadamente)
 DELETE FROM `form_tabs`;
 /*!40000 ALTER TABLE `form_tabs` DISABLE KEYS */;
+INSERT INTO `form_tabs` (`form_tab_id`, `form_custom_id`, `tab_name`, `date_create`, `date_update`, `status`) VALUES
+	(47, 22, 'Tab 1', '2020-11-16 11:02:33', '2020-11-16 11:02:33', 1),
+	(49, 24, 'Tab 1', '2020-11-18 08:59:23', '2020-11-18 08:59:23', 1);
 /*!40000 ALTER TABLE `form_tabs` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.mailfolder
@@ -1002,18 +1037,21 @@ CREATE TABLE IF NOT EXISTS `menu` (
   `user_id` int(11) NOT NULL,
   `name` varchar(250) NOT NULL,
   `template` varchar(600) NOT NULL,
+  `position` varchar(600) DEFAULT NULL,
   `date_create` timestamp NOT NULL DEFAULT current_timestamp(),
   `date_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `date_delete` timestamp NOT NULL DEFAULT current_timestamp(),
   `status` tinyint(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`menu_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=latin1 COMMENT='Menus del sistema';
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=latin1 COMMENT='Menus del sistema';
 
--- Volcando datos para la tabla start_cms.menu: ~1 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.menu: ~3 rows (aproximadamente)
 DELETE FROM `menu`;
 /*!40000 ALTER TABLE `menu` DISABLE KEYS */;
-INSERT INTO `menu` (`menu_id`, `user_id`, `name`, `template`, `date_create`, `date_update`, `date_delete`, `status`) VALUES
-	(1, 1, 'top_nav', 'menu', '2020-11-14 00:34:26', '2020-11-13 11:42:27', '2020-11-13 11:18:24', 1);
+INSERT INTO `menu` (`menu_id`, `user_id`, `name`, `template`, `position`, `date_create`, `date_update`, `date_delete`, `status`) VALUES
+	(1, 1, 'top_nav', 'menu', NULL, '2020-11-14 00:34:26', '2020-11-13 11:42:27', '2020-11-13 11:18:24', 1),
+	(39, 1, 'top_nav1', 'menu', NULL, '2020-11-14 00:34:26', '2020-11-16 10:48:09', '2020-11-16 14:50:38', 0),
+	(40, 1, 'top_nav2', 'menu', NULL, '2020-11-14 00:34:26', '2020-11-16 10:48:10', '2020-11-16 14:49:12', 0);
 /*!40000 ALTER TABLE `menu` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.menu_items
@@ -1037,7 +1075,7 @@ CREATE TABLE IF NOT EXISTS `menu_items` (
   PRIMARY KEY (`menu_item_id`) USING BTREE,
   KEY `menu_id` (`menu_id`),
   CONSTRAINT `FK_menu_items_menu` FOREIGN KEY (`menu_id`) REFERENCES `menu` (`menu_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=latin1 COMMENT='Menus del sistema';
+) ENGINE=InnoDB AUTO_INCREMENT=194 DEFAULT CHARSET=latin1 COMMENT='Menus del sistema';
 
 -- Volcando datos para la tabla start_cms.menu_items: ~12 rows (aproximadamente)
 DELETE FROM `menu_items`;
@@ -1135,16 +1173,18 @@ CREATE TABLE IF NOT EXISTS `page` (
   `date_publish` timestamp NULL DEFAULT NULL,
   `date_update` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `date_create` timestamp NULL DEFAULT current_timestamp(),
+  `date_delete` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`page_id`),
   KEY `author` (`user_id`) USING BTREE,
   KEY `type` (`page_type_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=102 DEFAULT CHARSET=latin1;
 
--- Volcando datos para la tabla start_cms.page: ~2 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.page: ~1 rows (aproximadamente)
 DELETE FROM `page`;
 /*!40000 ALTER TABLE `page` DISABLE KEYS */;
-INSERT INTO `page` (`page_id`, `path`, `template`, `title`, `subtitle`, `content`, `page_type_id`, `user_id`, `visibility`, `categorie_id`, `subcategorie_id`, `status`, `layout`, `mainImage`, `date_publish`, `date_update`, `date_create`) VALUES
-	(100, 'blade-templates', 'default', 'Blade Templates', '', '<p><span style="color: rgba(9, 9, 16, 0.7); font-family: scandia-web, sans-serif; font-size: 16px;">Blade is the simple, yet powerful templating engine provided with Laravel. Unlike other popular PHP templating engines, Blade does not restrict you from using plain PHP code in your views. In fact, all Blade views are compiled into plain PHP code and cached until they are modified, meaning Blade adds essentially zero overhead to your application. Blade view files use the&nbsp;</span><code class=" language-php" style="box-sizing: border-box; font-family: source-code-pro, monospace; font-size: 0.8rem; line-height: 1.9; color: #ca473f; background: #fbfbfd; padding: 0px 0.25em; white-space: pre; word-break: normal; overflow-wrap: normal; tab-size: 4; hyphens: none; box-shadow: rgba(0, 0, 0, 0.075) 0px 1px 1px;"><span class="token punctuation" style="box-sizing: border-box; color: #090910;">.</span>blade<span class="token punctuation" style="box-sizing: border-box; color: #090910;">.</span>php</code><span style="color: rgba(9, 9, 16, 0.7); font-family: scandia-web, sans-serif; font-size: 16px;">&nbsp;file extension and are typically stored in the&nbsp;</span><code class=" language-php" style="box-sizing: border-box; font-family: source-code-pro, monospace; font-size: 0.8rem; line-height: 1.9; color: #ca473f; background: #fbfbfd; padding: 0px 0.25em; white-space: pre; word-break: normal; overflow-wrap: normal; tab-size: 4; hyphens: none; box-shadow: rgba(0, 0, 0, 0.075) 0px 1px 1px;">resources<span class="token operator" style="box-sizing: border-box; color: #090910;">/</span>views</code><span style="color: rgba(9, 9, 16, 0.7); font-family: scandia-web, sans-serif; font-size: 16px;">&nbsp;directory.</span></p>', 1, 1, 1, 0, 0, 1, 'default', NULL, '2020-11-13 17:24:15', NULL, '2020-11-13 17:24:15');
+INSERT INTO `page` (`page_id`, `path`, `template`, `title`, `subtitle`, `content`, `page_type_id`, `user_id`, `visibility`, `categorie_id`, `subcategorie_id`, `status`, `layout`, `mainImage`, `date_publish`, `date_update`, `date_create`, `date_delete`) VALUES
+	(100, 'blade-templates', 'default', 'Blade Templates', '', '<p><span style="color: rgba(9, 9, 16, 0.7); font-family: scandia-web, sans-serif; font-size: 16px;">Blade is the simple, yet powerful templating engine provided with Laravel. Unlike other popular PHP templating engines, Blade does not restrict you from using plain PHP code in your views. In fact, all Blade views are compiled into plain PHP code and cached until they are modified, meaning Blade adds essentially zero overhead to your application. Blade view files use the&nbsp;</span><code class=" language-php" style="box-sizing: border-box; font-family: source-code-pro, monospace; font-size: 0.8rem; line-height: 1.9; color: #ca473f; background: #fbfbfd; padding: 0px 0.25em; white-space: pre; word-break: normal; overflow-wrap: normal; tab-size: 4; hyphens: none; box-shadow: rgba(0, 0, 0, 0.075) 0px 1px 1px;"><span class="token punctuation" style="box-sizing: border-box; color: #090910;">.</span>blade<span class="token punctuation" style="box-sizing: border-box; color: #090910;">.</span>php</code><span style="color: rgba(9, 9, 16, 0.7); font-family: scandia-web, sans-serif; font-size: 16px;">&nbsp;file extension and are typically stored in the&nbsp;</span><code class=" language-php" style="box-sizing: border-box; font-family: source-code-pro, monospace; font-size: 0.8rem; line-height: 1.9; color: #ca473f; background: #fbfbfd; padding: 0px 0.25em; white-space: pre; word-break: normal; overflow-wrap: normal; tab-size: 4; hyphens: none; box-shadow: rgba(0, 0, 0, 0.075) 0px 1px 1px;">resources<span class="token operator" style="box-sizing: border-box; color: #090910;">/</span>views</code><span style="color: rgba(9, 9, 16, 0.7); font-family: scandia-web, sans-serif; font-size: 16px;">&nbsp;directory.</span></p>', 1, 1, 1, 0, 0, 1, 'default', NULL, '2020-11-15 21:23:11', '2020-11-16 10:55:53', '2020-11-15 21:23:11', NULL),
+	(101, 'duolingo', 'default', 'Relatos en inglés con Duolingo', NULL, '<p><span style="color: rgba(9, 9, 16, 0.7); font-family: scandia-web, sans-serif; font-size: 16px;">Blade is the simple, yet powerful templating engine provided with Laravel. Unlike other popular PHP templating engines, Blade does not restrict you from using plain PHP code in your views. In fact, all Blade views are compiled into plain PHP code and cached until they are modified, meaning Blade adds essentially zero overhead to your application. Blade view files use the&nbsp;</span><code class=" language-php" style="box-sizing: border-box; font-family: source-code-pro, monospace; font-size: 0.8rem; line-height: 1.9; color: #ca473f; background: #fbfbfd; padding: 0px 0.25em; white-space: pre; word-break: normal; overflow-wrap: normal; tab-size: 4; hyphens: none; box-shadow: rgba(0, 0, 0, 0.075) 0px 1px 1px;"><span class="token punctuation" style="box-sizing: border-box; color: #090910;">.</span>blade<span class="token punctuation" style="box-sizing: border-box; color: #090910;">.</span>php</code><span style="color: rgba(9, 9, 16, 0.7); font-family: scandia-web, sans-serif; font-size: 16px;">&nbsp;file extension and are typically stored in the&nbsp;</span><code class=" language-php" style="box-sizing: border-box; font-family: source-code-pro, monospace; font-size: 0.8rem; line-height: 1.9; color: #ca473f; background: #fbfbfd; padding: 0px 0.25em; white-space: pre; word-break: normal; overflow-wrap: normal; tab-size: 4; hyphens: none; box-shadow: rgba(0, 0, 0, 0.075) 0px 1px 1px;">resources<span class="token operator" style="box-sizing: border-box; color: #090910;">/</span>views</code><span style="color: rgba(9, 9, 16, 0.7); font-family: scandia-web, sans-serif; font-size: 16px;">&nbsp;directory.</span></p>', 1, 1, 1, 0, 0, 0, 'default', NULL, '2020-11-15 21:23:11', '2020-11-18 08:37:30', '2020-11-15 21:23:11', NULL);
 /*!40000 ALTER TABLE `page` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.page_data
@@ -1156,18 +1196,22 @@ CREATE TABLE IF NOT EXISTS `page_data` (
   `status` tinyint(4) NOT NULL DEFAULT 1,
   `date_create` timestamp NOT NULL DEFAULT current_timestamp(),
   `date_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `date_delete` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`page_data_id`) USING BTREE,
   KEY `user` (`page_id`) USING BTREE,
   CONSTRAINT `FK_page_data_page` FOREIGN KEY (`page_id`) REFERENCES `page` (`page_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
--- Volcando datos para la tabla start_cms.page_data: ~3 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.page_data: ~5 rows (aproximadamente)
 DELETE FROM `page_data`;
 /*!40000 ALTER TABLE `page_data` DISABLE KEYS */;
-INSERT INTO `page_data` (`page_data_id`, `page_id`, `_key`, `_value`, `status`, `date_create`, `date_update`) VALUES
-	(35, 100, 'title', 'Blade Templates', 1, '2020-11-13 13:24:02', '2020-11-13 13:24:02'),
-	(36, 100, 'meta', '[{"name":"author","content":"Gervis Mora"},{"name":"keywords","content":"Blade Templates"},{"name":"description","content":"Blade is the simple, yet powerful templating engine provided with Laravel. Unlike other popular PHP templating engines, Blade does not restrict you from using plain PHP code in your views. In fact, al..."},{"name":"ROBOTS","content":"NOODP"},{"name":"GOOGLEBOT","content":"INDEX, FOLLOW"},{"property":"og:title","content":"Blade Templates"},{"property":"og:description","content":"Blade is the simple, yet powerful templating engine provided with Laravel. Unlike other popular PHP templating engines, Blade does not restrict you from using plain PHP code in your views. In fact, al..."},{"property":"og:site_name","content":"Modern Business"},{"property":"og:url","content":"http:\\/\\/localhost:8000\\/blade-templates"},{"property":"og:image","content":""},{"property":"og:type","content":"article"},{"property":"twitter:card","content":"summary"},{"property":"twitter:title","content":"Blade Templates"},{"property":"twitter:description","content":"Blade is the simple, yet powerful templating engine provided with Laravel. Unlike other popular PHP templating engines, Blade does not restrict you from using plain PHP code in your views. In fact, al..."},{"property":"twitter:image","content":""}]', 1, '2020-11-13 13:24:02', '2020-11-13 13:24:02'),
-	(37, 100, 'tags', '["php","laravel","development"]', 1, '2020-11-13 13:24:15', '2020-11-13 13:24:15');
+INSERT INTO `page_data` (`page_data_id`, `page_id`, `_key`, `_value`, `status`, `date_create`, `date_update`, `date_delete`) VALUES
+	(35, 100, 'title', 'Blade Templates', 1, '2020-11-13 13:24:02', '2020-11-13 13:24:02', '2020-11-18 08:28:19'),
+	(36, 100, 'meta', '[{"name":"author","content":"Gervis Mora"},{"name":"keywords","content":"Blade Templates"},{"name":"description","content":"Blade is the simple, yet powerful templating engine provided with Laravel. Unlike other popular PHP templating engines, Blade does not restrict you from using plain PHP code in your views. In fact, al..."},{"name":"ROBOTS","content":"NOODP"},{"name":"GOOGLEBOT","content":"INDEX, FOLLOW"},{"property":"og:title","content":"Blade Templates"},{"property":"og:description","content":"Blade is the simple, yet powerful templating engine provided with Laravel. Unlike other popular PHP templating engines, Blade does not restrict you from using plain PHP code in your views. In fact, al..."},{"property":"og:site_name","content":"Modern Business"},{"property":"og:url","content":"http:\\/\\/localhost:8000\\/blade-templates"},{"property":"og:image","content":""},{"property":"og:type","content":"article"},{"property":"twitter:card","content":"summary"},{"property":"twitter:title","content":"Blade Templates"},{"property":"twitter:description","content":"Blade is the simple, yet powerful templating engine provided with Laravel. Unlike other popular PHP templating engines, Blade does not restrict you from using plain PHP code in your views. In fact, al..."},{"property":"twitter:image","content":""}]', 1, '2020-11-13 13:24:02', '2020-11-18 08:27:10', '2020-11-18 08:28:19'),
+	(37, 100, 'tags', '["php","laravel","development"]', 1, '2020-11-13 13:24:15', '2020-11-18 08:27:12', '2020-11-18 08:28:19'),
+	(42, 101, 'tags', '["php","laravel","development"]', 0, '2020-11-13 13:24:15', '2020-11-18 08:44:09', '2020-11-18 08:28:19'),
+	(43, 101, 'title', 'Blade Templates', 0, '2020-11-13 13:24:02', '2020-11-18 08:44:09', '2020-11-18 08:28:19'),
+	(44, 101, 'meta', '[{"name":"author","content":"Gervis Mora"},{"name":"keywords","content":"Blade Templates"},{"name":"description","content":"Blade is the simple, yet powerful templating engine provided with Laravel. Unlike other popular PHP templating engines, Blade does not restrict you from using plain PHP code in your views. In fact, al..."},{"name":"ROBOTS","content":"NOODP"},{"name":"GOOGLEBOT","content":"INDEX, FOLLOW"},{"property":"og:title","content":"Blade Templates"},{"property":"og:description","content":"Blade is the simple, yet powerful templating engine provided with Laravel. Unlike other popular PHP templating engines, Blade does not restrict you from using plain PHP code in your views. In fact, al..."},{"property":"og:site_name","content":"Modern Business"},{"property":"og:url","content":"http:\\/\\/localhost:8000\\/blade-templates"},{"property":"og:image","content":""},{"property":"og:type","content":"article"},{"property":"twitter:card","content":"summary"},{"property":"twitter:title","content":"Blade Templates"},{"property":"twitter:description","content":"Blade is the simple, yet powerful templating engine provided with Laravel. Unlike other popular PHP templating engines, Blade does not restrict you from using plain PHP code in your views. In fact, al..."},{"property":"twitter:image","content":""}]', 0, '2020-11-13 13:24:02', '2020-11-18 08:44:09', '2020-11-18 08:28:19');
 /*!40000 ALTER TABLE `page_data` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.page_type
@@ -1197,9 +1241,9 @@ CREATE TABLE IF NOT EXISTS `permisions` (
   `date_update` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `status` tinyint(4) NOT NULL DEFAULT 1,
   PRIMARY KEY (`permisions_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4;
 
--- Volcando datos para la tabla start_cms.permisions: ~5 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.permisions: ~28 rows (aproximadamente)
 DELETE FROM `permisions`;
 /*!40000 ALTER TABLE `permisions` DISABLE KEYS */;
 INSERT INTO `permisions` (`permisions_id`, `permision_name`, `date_create`, `date_update`, `status`) VALUES
@@ -1207,7 +1251,33 @@ INSERT INTO `permisions` (`permisions_id`, `permision_name`, `date_create`, `dat
 	(2, 'UPDATE_USER', '2020-09-20 09:51:27', '2020-09-20 09:52:04', 1),
 	(3, 'DELETE_USER', '2020-09-20 09:51:34', '2020-09-20 09:52:05', 1),
 	(4, 'SELECT_USERS', '2020-09-20 09:52:01', '2020-09-20 09:52:06', 1),
-	(5, 'UPDATE_USERS', '2020-09-20 12:13:54', '2020-09-20 12:13:54', 1);
+	(5, 'UPDATE_USERS', '2020-09-20 12:13:54', '2020-09-20 12:13:54', 1),
+	(6, 'CREATE_PAGE', '2020-09-20 09:51:14', '2020-09-20 09:52:03', 1),
+	(7, 'UPDATE_PAGE', '2020-09-20 09:51:27', '2020-09-20 09:52:04', 1),
+	(8, 'DELETE_PAGE', '2020-09-20 09:51:34', '2020-09-20 09:52:05', 1),
+	(9, 'SELECT_PAGES', '2020-09-20 09:52:01', '2020-09-20 09:52:06', 1),
+	(10, 'UPDATE_PAGES', '2020-09-20 12:13:54', '2020-09-20 12:13:54', 1),
+	(11, 'CREATE_FORM_CUSTOM', '2020-09-20 09:51:14', '2020-09-20 09:52:03', 1),
+	(12, 'UPDATE_FORM_CUSTOM', '2020-09-20 09:51:27', '2020-09-20 09:52:04', 1),
+	(13, 'DELETE_FORM_CUSTOM', '2020-09-20 09:51:34', '2020-09-20 09:52:05', 1),
+	(14, 'SELECT_FORM_CUSTOMS', '2020-09-20 09:52:01', '2020-09-20 09:52:06', 1),
+	(15, 'UPDATE_FORM_CUSTOMS', '2020-09-20 12:13:54', '2020-09-20 12:13:54', 1),
+	(16, 'CREATE_MENU', '2020-09-20 09:51:14', '2020-09-20 09:52:03', 1),
+	(17, 'UPDATE_MENU', '2020-09-20 09:51:27', '2020-09-20 09:52:04', 1),
+	(18, 'DELETE_MENU', '2020-09-20 09:51:34', '2020-09-20 09:52:05', 1),
+	(19, 'SELECT_MENUS', '2020-09-20 09:52:01', '2020-09-20 09:52:06', 1),
+	(20, 'UPDATE_MENUS', '2020-09-20 12:13:54', '2020-09-20 12:13:54', 1),
+	(21, 'CREATE_FILE', '2020-09-20 09:51:14', '2020-09-20 09:52:03', 1),
+	(22, 'UPDATE_FILE', '2020-09-20 09:51:27', '2020-09-20 09:52:04', 1),
+	(23, 'DELETE_FILE', '2020-09-20 09:51:34', '2020-09-20 09:52:05', 1),
+	(24, 'SELECT_FILES', '2020-09-20 09:52:01', '2020-09-20 09:52:06', 1),
+	(25, 'UPDATE_FILES', '2020-09-20 12:13:54', '2020-09-20 12:13:54', 1),
+	(26, 'CREATE_CATEGORIE', '2020-09-20 09:51:14', '2020-09-20 09:52:03', 1),
+	(27, 'UPDATE_CATEGORIE', '2020-09-20 09:51:27', '2020-09-20 09:52:04', 1),
+	(28, 'DELETE_CATEGORIE', '2020-09-20 09:51:34', '2020-09-20 09:52:05', 1),
+	(29, 'SELECT_CATEGORIES', '2020-09-20 09:52:01', '2020-09-20 09:52:06', 1),
+	(30, 'UPDATE_CATEGORIES', '2020-09-20 12:13:54', '2020-09-20 12:13:54', 1),
+	(31, 'PUBLISH_PAGES', '2020-09-20 12:13:54', '2020-09-20 12:13:54', 1);
 /*!40000 ALTER TABLE `permisions` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.relations
@@ -1259,12 +1329,12 @@ INSERT INTO `site_config` (`site_config_id`, `user_id`, `config_name`, `config_v
 	(14, 1, 'ANALYTICS_ACTIVE', 'On', 'analytics', '{\r\n  "type_value": "boolean",\r\n  "validate_as": "boolean",\r\n  "handle_as": "switch",\r\n  "input_type": "switch",\r\n  "perm_values": ["Off", "On"],\r\n  "true": "On"\r\n}\r\n', 0, '2020-10-12 22:33:36', '2020-10-12 17:21:11', 1),
 	(15, 1, 'ANALYTICS_ID', 'UA-XXXXX-Y', 'analytics', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "50",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "text",\r\n  "perm_values": null\r\n}', 0, '2020-10-12 22:28:02', '2020-10-12 17:00:44', 1),
 	(16, 1, 'ANALYTICS_CODE', '<script> window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date; ga(\'create\', \'UA-XXXXX-Y\', \'auto\'); ga(\'send\', \'pageview\'); </script> <script async src=\'https://www.google-analytics.com/analytics.js\'></script>', 'analytics', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "text",\r\n  "perm_values": null\r\n}', 0, '2020-10-12 22:28:18', '2020-10-12 17:49:52', 1),
-	(17, 1, 'PIXEL_ACTIVE', 'Off', 'pixel', '{\r\n  "type_value": "boolean",\r\n  "validate_as": "boolean",\r\n  "handle_as": "switch",\r\n  "input_type": "switch",\r\n  "perm_values": ["Off", "On"],\r\n  "true": "On"\r\n}\r\n', 0, '2020-10-12 22:33:36', '2020-10-12 17:59:40', 1),
+	(17, 1, 'PIXEL_ACTIVE', 'On', 'pixel', '{\r\n  "type_value": "boolean",\r\n  "validate_as": "boolean",\r\n  "handle_as": "switch",\r\n  "input_type": "switch",\r\n  "perm_values": ["Off", "On"],\r\n  "true": "On"\r\n}\r\n', 0, '2020-11-19 16:25:06', '2020-10-12 17:59:40', 1),
 	(18, 1, 'PIXEL_CODE', '', 'analytics', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "text",\r\n  "perm_values": null\r\n}', 0, '2020-10-12 22:28:18', '2020-10-12 17:50:02', 1),
-	(19, 1, 'THEME_PATH', 'awesomeTheme', 'theme', '{"type_value":"string","validate_as":"text","max_lenght":"50","min_lenght":"5"}', 0, '2020-11-13 20:17:59', '2020-11-11 13:38:15', 1),
-	(20, 1, 'UPDATER_LAST_CHECK_UPDATE', '2020-11-12 20:32:00', 'updater', '{"type_value":"string","validate_as":"text","max_lenght":"50","min_lenght":"5"}', 0, '2020-11-11 19:49:23', '2020-11-11 19:28:47', 1),
+	(19, 1, 'THEME_PATH', 'awesomeTheme', 'theme', '{"type_value":"string","validate_as":"text","max_lenght":"50","min_lenght":"5"}', 0, '2020-11-19 16:18:58', '2020-11-11 13:38:15', 1),
+	(20, 1, 'UPDATER_LAST_CHECK_UPDATE', '2020-11-19 16:19:09', 'updater', '{"type_value":"string","validate_as":"text","max_lenght":"50","min_lenght":"5"}', 0, '2020-11-11 19:49:23', '2020-11-11 19:28:47', 1),
 	(21, 1, 'UPDATER_MANUAL_CHECK', 'On', 'updater', '{\r\n  "type_value": "boolean",\r\n  "validate_as": "boolean",\r\n  "handle_as": "switch",\r\n  "input_type": "switch",\r\n  "perm_values": ["Off", "On"],\r\n  "true": "On"\r\n}\r\n', 0, '2020-10-12 22:33:36', '2020-11-11 19:31:03', 1),
-	(22, 1, 'UPDATER_LAST_CHECK_DATA', '{"name":"Start CMS","version":"1.5.4","description":"A simple theme building for StartCMS","url":"https://github.com/gervisbermudez/startCodeIgniter-CSM.git","updated":"11/12/2020 11:0:23"}', 'updater', '{"type_value":"string","validate_as":"text","max_lenght":"50","min_lenght":"5"}', 0, '2020-11-11 19:49:23', '2020-11-11 19:28:47', 1);
+	(22, 1, 'UPDATER_LAST_CHECK_DATA', '{"name":"Start CMS","version":"1.5.6","description":"A simple theme building for StartCMS","url":"https://github.com/gervisbermudez/startCodeIgniter-CSM.git","updated":"11/18/2020 12:30:25"}', 'updater', '{"type_value":"string","validate_as":"text","max_lenght":"50","min_lenght":"5"}', 0, '2020-11-11 19:49:23', '2020-11-11 19:28:47', 1);
 /*!40000 ALTER TABLE `site_config` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.suscriptions
@@ -1295,6 +1365,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `status` tinyint(1) NOT NULL DEFAULT 1,
   `date_create` timestamp NOT NULL DEFAULT current_timestamp(),
   `date_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `date_delete` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`user_id`),
   KEY `usergroup_id` (`usergroup_id`),
   CONSTRAINT `FK_user_usergroup` FOREIGN KEY (`usergroup_id`) REFERENCES `usergroup` (`usergroup_id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -1303,10 +1374,10 @@ CREATE TABLE IF NOT EXISTS `user` (
 -- Volcando datos para la tabla start_cms.user: ~3 rows (aproximadamente)
 DELETE FROM `user`;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` (`user_id`, `username`, `password`, `email`, `lastseen`, `usergroup_id`, `status`, `date_create`, `date_update`) VALUES
-	(1, 'gerber', '$2y$10$dXvZybPPsoYqgy1Yc7reQOvxxpFqJ/Yw.sHDNXtu/oeH60OSwp2fe', 'gerber@gmail.com', '2020-11-15 13:20:14', 1, 1, '2020-03-01 16:11:25', '2020-11-01 10:50:41'),
-	(2, 'yduran', '$2y$10$.Rd9Ke7opDn2zvjc70DESuilWjm2mIMB9R2qyHyKTQbYQRYxGI6A2', 'yduran@gmail.com', '2020-10-07 20:09:26', 2, 1, '2020-03-01 16:11:25', '2020-09-20 19:05:39'),
-	(3, 'nestor', '$2y$10$todx7BAG8S1cSoKOYxtrPuF412C1FvKuuaJWU1jNb/28ahu0a30GW', 'nestor@email.com', '2020-09-21 00:22:31', 4, 1, '2020-09-20 19:22:31', '2020-09-20 19:22:31');
+INSERT INTO `user` (`user_id`, `username`, `password`, `email`, `lastseen`, `usergroup_id`, `status`, `date_create`, `date_update`, `date_delete`) VALUES
+	(1, 'gerber', '$2y$10$Qqz3Uy0KGbgHq7WNP2wvsOYkCBFjsFgtbT2sYRx8nYN/9m7IKmQ5G', 'gerber@gmail.com', '2020-11-22 21:51:45', 1, 1, '2020-03-01 16:11:25', '2020-11-17 08:18:25', NULL),
+	(2, 'yduran', '$2y$10$.Rd9Ke7opDn2zvjc70DESuilWjm2mIMB9R2qyHyKTQbYQRYxGI6A2', 'yduran@gmail.com', '2020-11-22 21:52:36', 2, 1, '2020-02-01 16:11:25', '2020-11-17 08:41:49', NULL),
+	(3, 'nestor', '$2y$10$todx7BAG8S1cSoKOYxtrPuF412C1FvKuuaJWU1jNb/28ahu0a30GW', 'nestor@email.com', '2020-11-22 21:58:11', 3, 1, '2020-09-20 19:22:31', '2020-11-17 08:43:31', NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.usergroup
@@ -1320,19 +1391,20 @@ CREATE TABLE IF NOT EXISTS `usergroup` (
   `status` tinyint(1) NOT NULL DEFAULT 1,
   `date_create` timestamp NOT NULL DEFAULT current_timestamp(),
   `date_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `date_delete` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`usergroup_id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 
 -- Volcando datos para la tabla start_cms.usergroup: ~5 rows (aproximadamente)
 DELETE FROM `usergroup`;
 /*!40000 ALTER TABLE `usergroup` DISABLE KEYS */;
-INSERT INTO `usergroup` (`usergroup_id`, `name`, `level`, `description`, `user_id`, `parent_id`, `status`, `date_create`, `date_update`) VALUES
-	(1, 'root', 1, 'All permisions allowed', 0, 0, 1, '2016-08-27 09:22:22', '2020-03-01 16:10:01'),
-	(2, 'Administrador', 2, 'All configurations allowed', 1, 0, 1, '2016-08-27 09:22:22', '2020-10-07 15:27:08'),
-	(3, 'Estandar', 3, 'Not delete permisions allowed', 1, 2, 0, '2016-08-27 08:32:49', '2020-10-07 15:26:30'),
-	(4, 'Publisher', 4, 'Only Insert and Update permisions allowed', 1, 3, 1, '2016-08-28 07:35:50', '2020-10-07 15:42:49'),
-	(5, 'Editor', 5, 'Only insert permisions allowed', 1, 3, 0, '2016-08-29 03:21:39', '2020-10-07 15:42:51');
+INSERT INTO `usergroup` (`usergroup_id`, `name`, `level`, `description`, `user_id`, `parent_id`, `status`, `date_create`, `date_update`, `date_delete`) VALUES
+	(1, 'root', 1, 'All permisions allowed', 1, 0, 1, '2016-08-27 09:22:22', '2020-11-22 15:57:16', NULL),
+	(2, 'Administrador', 2, 'All configurations allowed', 1, 1, 1, '2020-11-22 21:52:24', '2020-11-22 16:22:46', NULL),
+	(3, 'Estandar', 3, 'Not delete permisions allowed', 2, 2, 1, '2020-11-22 21:53:52', '2020-11-22 17:31:42', NULL),
+	(4, 'Publisher', 2, 'Only Insert and Update permisions allowed', 2, 2, 1, '2020-11-22 21:30:44', '2020-11-22 17:31:43', NULL),
+	(5, 'Editor', 5, 'Only insert permisions allowed', 2, 2, 1, '2020-11-22 21:29:15', '2020-11-22 17:31:44', NULL);
 /*!40000 ALTER TABLE `usergroup` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.usergroup_permisions
@@ -1348,9 +1420,9 @@ CREATE TABLE IF NOT EXISTS `usergroup_permisions` (
   KEY `permision_id` (`permision_id`),
   CONSTRAINT `FK_usergroup_permisions_permisions` FOREIGN KEY (`permision_id`) REFERENCES `permisions` (`permisions_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_usergroup_permisions_usergroup` FOREIGN KEY (`usergroup_id`) REFERENCES `usergroup` (`usergroup_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=103 DEFAULT CHARSET=utf8;
 
--- Volcando datos para la tabla start_cms.usergroup_permisions: ~8 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.usergroup_permisions: ~36 rows (aproximadamente)
 DELETE FROM `usergroup_permisions`;
 /*!40000 ALTER TABLE `usergroup_permisions` DISABLE KEYS */;
 INSERT INTO `usergroup_permisions` (`usergroup_permisions_id`, `usergroup_id`, `permision_id`, `status`, `date_create`, `date_update`) VALUES
@@ -1358,10 +1430,91 @@ INSERT INTO `usergroup_permisions` (`usergroup_permisions_id`, `usergroup_id`, `
 	(2, 1, 2, 1, '2020-09-20 09:55:48', '2020-09-20 09:55:48'),
 	(3, 1, 3, 1, '2020-09-20 09:56:09', '2020-09-20 09:56:09'),
 	(4, 1, 4, 1, '2020-09-20 09:56:20', '2020-09-20 09:56:20'),
-	(5, 2, 1, 1, '2020-09-20 12:07:34', '2020-09-20 12:07:34'),
-	(6, 2, 4, 1, '2020-09-20 12:07:52', '2020-09-20 12:07:52'),
-	(7, 2, 2, 1, '2020-09-20 12:08:01', '2020-09-20 12:08:07'),
-	(8, 3, 4, 1, '2020-09-20 12:10:55', '2020-09-20 12:10:55');
+	(10, 1, 5, 1, '2020-09-20 09:55:35', '2020-09-20 09:55:35'),
+	(11, 1, 6, 1, '2020-09-20 09:55:48', '2020-09-20 09:55:48'),
+	(12, 1, 7, 1, '2020-09-20 09:56:09', '2020-09-20 09:56:09'),
+	(13, 1, 8, 1, '2020-09-20 09:56:20', '2020-09-20 09:56:20'),
+	(14, 1, 9, 1, '2020-09-20 12:07:34', '2020-09-20 12:07:34'),
+	(15, 1, 10, 1, '2020-09-20 12:07:52', '2020-09-20 12:07:52'),
+	(16, 1, 11, 1, '2020-09-20 12:08:01', '2020-09-20 12:08:07'),
+	(17, 1, 12, 1, '2020-09-20 12:10:55', '2020-09-20 12:10:55'),
+	(18, 1, 13, 1, '2020-09-20 12:10:55', '2020-09-20 12:10:55'),
+	(19, 1, 14, 1, '2020-09-20 12:10:55', '2020-09-20 12:10:55'),
+	(20, 1, 15, 1, '2020-09-20 12:10:55', '2020-09-20 12:10:55'),
+	(21, 1, 16, 1, '2020-09-20 12:10:55', '2020-09-20 12:10:55'),
+	(22, 1, 17, 1, '2020-09-20 12:10:55', '2020-09-20 12:10:55'),
+	(23, 1, 18, 1, '2020-09-20 12:10:55', '2020-09-20 12:10:55'),
+	(24, 1, 19, 1, '2020-09-20 12:10:55', '2020-09-20 12:10:55'),
+	(25, 1, 20, 1, '2020-09-20 12:10:55', '2020-09-20 12:10:55'),
+	(26, 1, 21, 1, '2020-09-20 12:10:55', '2020-09-20 12:10:55'),
+	(27, 1, 22, 1, '2020-09-20 12:10:55', '2020-09-20 12:10:55'),
+	(28, 1, 23, 1, '2020-09-20 12:10:55', '2020-09-20 12:10:55'),
+	(29, 1, 24, 1, '2020-09-20 12:10:55', '2020-09-20 12:10:55'),
+	(30, 1, 25, 1, '2020-09-20 12:10:55', '2020-09-20 12:10:55'),
+	(31, 1, 26, 1, '2020-09-20 12:10:55', '2020-09-20 12:10:55'),
+	(32, 1, 27, 1, '2020-09-20 12:10:55', '2020-09-20 12:10:55'),
+	(33, 1, 28, 1, '2020-09-20 12:10:55', '2020-09-20 12:10:55'),
+	(34, 1, 29, 1, '2020-09-20 12:10:55', '2020-09-20 12:10:55'),
+	(35, 1, 30, 1, '2020-09-20 12:10:55', '2020-09-20 12:10:55'),
+	(36, 1, 31, 1, '2020-09-20 12:10:55', '2020-09-20 12:10:55'),
+	(40, 5, 2, 1, '2020-11-22 17:29:15', '2020-11-22 17:29:15'),
+	(41, 4, 1, 1, '2020-11-22 17:30:44', '2020-11-22 17:30:44'),
+	(42, 4, 4, 1, '2020-11-22 17:30:44', '2020-11-22 17:30:44'),
+	(43, 4, 2, 1, '2020-11-22 17:30:44', '2020-11-22 17:30:44'),
+	(49, 2, 1, 1, '2020-11-22 17:52:24', '2020-11-22 17:52:24'),
+	(50, 2, 2, 1, '2020-11-22 17:52:24', '2020-11-22 17:52:24'),
+	(51, 2, 3, 1, '2020-11-22 17:52:24', '2020-11-22 17:52:24'),
+	(52, 2, 4, 1, '2020-11-22 17:52:24', '2020-11-22 17:52:24'),
+	(53, 2, 5, 1, '2020-11-22 17:52:24', '2020-11-22 17:52:24'),
+	(54, 2, 6, 1, '2020-11-22 17:52:24', '2020-11-22 17:52:24'),
+	(55, 2, 7, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(56, 2, 8, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(57, 2, 9, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(58, 2, 10, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(59, 2, 11, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(60, 2, 12, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(61, 2, 13, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(62, 2, 14, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(63, 2, 15, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(64, 2, 16, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(65, 2, 17, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(66, 2, 18, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(67, 2, 19, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(68, 2, 20, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(69, 2, 21, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(70, 2, 22, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(71, 2, 23, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(72, 2, 24, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(73, 2, 25, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(74, 2, 26, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(75, 2, 27, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(76, 2, 28, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(77, 2, 29, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(78, 2, 30, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(79, 2, 31, 1, '2020-11-22 17:52:25', '2020-11-22 17:52:25'),
+	(80, 3, 2, 1, '2020-11-22 17:53:52', '2020-11-22 17:53:52'),
+	(81, 3, 6, 1, '2020-11-22 17:53:52', '2020-11-22 17:53:52'),
+	(82, 3, 7, 1, '2020-11-22 17:53:52', '2020-11-22 17:53:52'),
+	(83, 3, 9, 1, '2020-11-22 17:53:52', '2020-11-22 17:53:52'),
+	(84, 3, 10, 1, '2020-11-22 17:53:52', '2020-11-22 17:53:52'),
+	(85, 3, 11, 1, '2020-11-22 17:53:52', '2020-11-22 17:53:52'),
+	(86, 3, 12, 1, '2020-11-22 17:53:52', '2020-11-22 17:53:52'),
+	(87, 3, 14, 1, '2020-11-22 17:53:52', '2020-11-22 17:53:52'),
+	(88, 3, 15, 1, '2020-11-22 17:53:52', '2020-11-22 17:53:52'),
+	(89, 3, 16, 1, '2020-11-22 17:53:52', '2020-11-22 17:53:52'),
+	(90, 3, 17, 1, '2020-11-22 17:53:52', '2020-11-22 17:53:52'),
+	(91, 3, 19, 1, '2020-11-22 17:53:52', '2020-11-22 17:53:52'),
+	(92, 3, 20, 1, '2020-11-22 17:53:52', '2020-11-22 17:53:52'),
+	(93, 3, 21, 1, '2020-11-22 17:53:52', '2020-11-22 17:53:52'),
+	(94, 3, 22, 1, '2020-11-22 17:53:52', '2020-11-22 17:53:52'),
+	(95, 3, 23, 1, '2020-11-22 17:53:52', '2020-11-22 17:53:52'),
+	(96, 3, 24, 1, '2020-11-22 17:53:52', '2020-11-22 17:53:52'),
+	(97, 3, 25, 1, '2020-11-22 17:53:52', '2020-11-22 17:53:52'),
+	(98, 3, 26, 1, '2020-11-22 17:53:52', '2020-11-22 17:53:52'),
+	(99, 3, 27, 1, '2020-11-22 17:53:52', '2020-11-22 17:53:52'),
+	(100, 3, 29, 1, '2020-11-22 17:53:52', '2020-11-22 17:53:52'),
+	(101, 3, 30, 1, '2020-11-22 17:53:52', '2020-11-22 17:53:52'),
+	(102, 3, 31, 1, '2020-11-22 17:53:52', '2020-11-22 17:53:52');
 /*!40000 ALTER TABLE `usergroup_permisions` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.user_data
@@ -1375,9 +1528,9 @@ CREATE TABLE IF NOT EXISTS `user_data` (
   `date_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`user_data_id`),
   KEY `user` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
 
--- Volcando datos para la tabla start_cms.user_data: ~17 rows (aproximadamente)
+-- Volcando datos para la tabla start_cms.user_data: ~19 rows (aproximadamente)
 DELETE FROM `user_data`;
 /*!40000 ALTER TABLE `user_data` DISABLE KEYS */;
 INSERT INTO `user_data` (`user_data_id`, `user_id`, `_key`, `_value`, `status`, `date_create`, `date_update`) VALUES
@@ -1386,18 +1539,20 @@ INSERT INTO `user_data` (`user_data_id`, `user_id`, `_key`, `_value`, `status`, 
 	(3, 1, 'direccion', 'Mara', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:35'),
 	(4, 1, 'telefono', '0414-1672173', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:36'),
 	(5, 1, 'create by', 'gerber', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:38'),
-	(6, 1, 'avatar', './public/img/profile/gerber/300_3.jpg', 1, '2020-03-01 16:31:46', '2020-10-28 09:09:27'),
+	(6, 1, 'avatar', './public/img/profile/nestor/PVuKqgJQ_400x400.png', 1, '2020-03-01 16:31:46', '2020-11-20 11:29:14'),
 	(7, 2, 'nombre', 'Yule', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:40'),
 	(8, 2, 'apellido', 'Duran', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:42'),
 	(9, 2, 'direccion', 'Mara', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:43'),
 	(10, 2, 'telefono', '0412-9873920', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:46'),
 	(11, 2, 'create by', 'gerber', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:48'),
 	(12, 2, 'avatar', './public/img/profile/yduran/300_11.jpg', 1, '2020-05-02 19:21:05', '2020-10-28 09:10:04'),
-	(13, 3, 'nombre', 'Nestor', 1, '2020-09-20 19:22:31', '2020-09-20 19:22:31'),
-	(14, 3, 'apellido', 'Barroso', 1, '2020-09-20 19:22:31', '2020-09-20 19:22:31'),
-	(15, 3, 'direccion', 'Gascon 1610', 1, '2020-09-20 19:22:31', '2020-09-20 19:22:31'),
-	(16, 3, 'telefono', '1157614678', 1, '2020-09-20 19:22:31', '2020-09-20 19:22:31'),
-	(17, 3, 'create_by_id', '2', 1, '2020-09-20 19:22:31', '2020-09-20 19:22:31');
+	(18, 2, 'telefono', '0412-9873920', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:46'),
+	(19, 3, 'nombre', 'Nestor', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:40'),
+	(20, 3, 'apellido', 'Barroso', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:42'),
+	(21, 3, 'direccion', 'Buenos Aires', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:43'),
+	(22, 3, 'telefono', '+54 11 57614678', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:46'),
+	(23, 3, 'create by', 'gerber', 1, '2020-03-01 16:31:46', '2020-05-25 11:48:48'),
+	(24, 3, 'avatar', './public/img/profile/default_profile_1.jpg', 1, '2020-05-02 19:21:05', '2020-11-20 11:29:03');
 /*!40000 ALTER TABLE `user_data` ENABLE KEYS */;
 
 -- Volcando estructura para tabla start_cms.video

@@ -32,17 +32,11 @@
             <ul class="right hide-on-med-and-down">
                 <li><a href="#!" v-on:click="toggleView();"><i class="material-icons">view_module</i></a></li>
 
-                <li><a href="#!" v-on:click="getPages();"><i class="material-icons">refresh</i></a></li>
+                <li><a href="#!" v-on:click="getUserGroups();"><i class="material-icons">refresh</i></a></li>
                 <li>
                     <a href="#!" class='dropdown-trigger' data-target='dropdown-options'><i class="material-icons">more_vert</i></a>
-                    <!-- Dropdown Structure -->
                     <ul id='dropdown-options' class='dropdown-content'>
-                        <li><a href="#!">one</a></li>
-                        <li><a href="#!">two</a></li>
-                        <li class="divider" tabindex="-1"></li>
-                        <li><a href="#!">three</a></li>
-                        <li><a href="#!"><i class="material-icons">view_module</i>four</a></li>
-                        <li><a href="#!"><i class="material-icons">cloud</i>five</a></li>
+                        <li><a href="#!">Archivo</a></li>
                     </ul>
                 </li>
             </ul>
@@ -83,9 +77,9 @@
                                 <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="No permitido">not_interested</i>
                             </td>
                             <td>
-                                <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + usergroup.site_config_id'><i class="material-icons">more_vert</i></a>
-                                <ul :id='"dropdown" + usergroup.site_config_id' class='dropdown-content'>
-                                    <li><a href="#!" v-on:click="toggleEddit(usergroup);">Editar</a></li>
+                                <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + usergroup.usergroup_id'><i class="material-icons">more_vert</i></a>
+                                <ul :id='"dropdown" + usergroup.usergroup_id' class='dropdown-content'>
+                                    <li><a :href="'/admin/usuarios/editGroup/' + usergroup.usergroup_id">Editar</a></li>
                                     <li><a href="#!" v-on:click="deletePage(usergroup, index);">Borrar</a></li>
                                 </ul>
                             </td>
@@ -96,7 +90,7 @@
         </div>
     </div>
     <div class="container" v-if="!loader && usergroups.length == 0" v-cloak>
-        <h4>No hay Configuraciones</h4>
+        <h4>No hay datos para mostrar</h4>
     </div>
 </div>
 @include('admin.components.configurationcomponent')

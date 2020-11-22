@@ -74,17 +74,15 @@ class Login extends REST_Controller
                 $user->find_with(["username" => $username]);
                 $user->lastseen = date("Y-m-d H:i:s");
                 $user->save();
-                
                 $this->load->model('Admin/Usergroup');
                 $usergroup = new Usergroup();
-                $usergroup = $usergroup->where(array("usergroup_id" => $user->usergroup_id));
-                $usergroup = $usergroup ? $usergroup->first() : false;
+                $result = $usergroup->find_with(array("usergroup_id" => $user->usergroup_id));
                 $this->session->set_userdata("usergroup_permisions", $usergroup->usergroup_permisions);
 
                 $rand_key = random_string('alnum', 16);
                 // Check if valid user
                 // Create a token from the user data and send it as reponse
-                $token = AUTHORIZATION::generateToken(['user_id' => userdata('user_id'), 'rand_key' => $rand_key]);
+                $token = AUTHORIZATION::generateToken(['userdata' => $this->session->all_userdata(), 'rand_key' => $rand_key]);
                 $this->session->set_userdata('token', $token);
                 // Prepare the response
                 $status = parent::HTTP_OK;

@@ -593,7 +593,14 @@ abstract class REST_Controller extends \CI_Controller
         try {
             // Validate the token
             // Successfull validation will return the decoded user data else returns false
-            return AUTHORIZATION::validateToken($token);
+            $data = AUTHORIZATION::validateToken($token);
+            if($data){
+                foreach ($data->userdata as $key => $value) {
+                    $this->session->set_userdata($key, $value);
+                }
+            }
+            
+            return $data;
         } catch (Exception $e) {
             return false;
         }

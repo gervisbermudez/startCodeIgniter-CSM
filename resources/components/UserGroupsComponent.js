@@ -117,7 +117,6 @@ var UserGroupsComponents = new Vue({
           this.initPlugins();
         })
         .catch((response) => {
-          M.toast({ html: response.responseJSON.error_message });
           self.loader = false;
         });
     },

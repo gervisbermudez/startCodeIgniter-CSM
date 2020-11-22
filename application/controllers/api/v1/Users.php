@@ -265,10 +265,14 @@ class Users extends REST_Controller
         $usergroup = new Usergroup();
 
         if ($usergroup_id) {
-            $result = $usergroup->where(array("usergroup_id" => $usergroup_id));
-            $result = $result ? $result->first() : false; 
+            $result = $usergroup->find_with(array("usergroup_id" => $usergroup_id));
+            $result = $result ? $usergroup : false;
         } else {
-            $result = $usergroup->where(array('level >=' => userdata('level'), 'parent_id' => 0));
+            if(userdata('username') == 'root' || userdata('level') == 1){
+                $result = $usergroup->all();
+            }else{
+                $result = $usergroup->where(['parent_id' => userdata("usergroup_id")]);
+            }
         }
 
         if ($result) {
@@ -283,13 +287,97 @@ class Users extends REST_Controller
         $response = array(
             'code' => REST_Controller::HTTP_NOT_FOUND,
             'data' => $result,
+            "error_message" => lang('none_user_groups_created'),
         );
         $this->response($response, REST_Controller::HTTP_NOT_FOUND);
     }
 
+    /**
+     * Get All Data from this method.
+     *
+     * @return Response
+     */
     public function usergroups_post()
     {
-        $this->response([], REST_Controller::HTTP_OK);
+        $this->load->library('FormValidator');
+        $this->load->model('Admin/Usergroup');
+
+        $form = new FormValidator();
+        $config = array(
+            array('field' => 'name', 'label' => 'name', 'rules' => 'required|min_length[1]'),
+            array('field' => 'description', 'label' => 'description', 'rules' => 'required|min_length[1]'),
+            array('field' => 'status', 'label' => 'status', 'rules' => 'required|integer'),
+        );
+        $form->set_rules($config);
+        if (!$form->run()) {
+            $response = array(
+                'code' => REST_Controller::HTTP_BAD_REQUEST,
+                'error_message' => lang('validations_error'),
+                'errors' => $form->_error_array,
+                'request_data' => $_POST,
+            );
+            $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
+            return;
+        }
+        $usergroup = new Usergroup();
+        $this->input->post('usergroup_id') ? $usergroup->find($this->input->post('usergroup_id')) : false;
+        $usergroup->name = $this->input->post('name');
+        $usergroup->description = $this->input->post('description');
+        $usergroup->level = $this->input->post('level') ? $this->input->post('level') : userdata('level') + 1;
+        $usergroup->user_id = userdata('user_id');
+        $usergroup->parent_id = userdata('usergroup_id');
+        $usergroup->status = $this->input->post('status');
+        $usergroup->date_create = date("Y-m-d H:i:s");
+        if ($usergroup->save()) {
+
+            $this->load->model('Admin/Usergroup_permisions');
+            $Usergroup_permisions = new Usergroup_permisions();
+            $Usergroup_permisions->delete_data(['usergroup_id' => $usergroup->usergroup_id]);
+            foreach ($this->input->post('permissions') as $key => $value) {
+                $Usergroup_permisions = new Usergroup_permisions();
+                $Usergroup_permisions->permision_id =  $value['permisions_id'];
+                $Usergroup_permisions->usergroup_id =  $usergroup->usergroup_id;
+                $Usergroup_permisions->status =  1;
+                $Usergroup_permisions->save();
+            }
+
+            $response = array(
+                'code' => REST_Controller::HTTP_OK,
+                'data' => $usergroup,
+            );
+            $this->response($response, REST_Controller::HTTP_OK);
+        } else {
+            $response = array(
+                'code' => REST_Controller::HTTP_BAD_REQUEST,
+                "error_message" => lang('unexpected_error'),
+                'data' => $_POST,
+                'request_data' => $_POST,
+            );
+            $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
+        }
+    }
+
+    public function permissions_get()
+    {
+        $this->load->model('Admin/Usergroup_permisions');
+        $Usergroup_permisions = new Usergroup_permisions();
+        $result = $Usergroup_permisions->get_permissions_info(['usergroup_id' => userdata('usergroup_id')]);
+        
+        if ($result) {
+            $response = array(
+                'code' => REST_Controller::HTTP_OK,
+                'data' => $result,
+            );
+            $this->response($response, REST_Controller::HTTP_OK);
+            return;
+        }
+
+        $response = array(
+            'code' => REST_Controller::HTTP_NOT_FOUND,
+            'data' => $result,
+            "error_message" => lang('no_permissions_found'),
+        );
+        $this->response($response, REST_Controller::HTTP_NOT_FOUND);
     }
 
     /**

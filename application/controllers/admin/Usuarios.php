@@ -14,17 +14,17 @@ class Usuarios extends MY_Controller
         "ver" => [ 
             "patern" => '/admin\/usuarios\/ver\/(\d+)/',
             "required_permissions" => ["SELECT_USERS"],
-            "conditions" => ["check_permissions"],
+            "conditions" => ["check_self_permissions"],
         ],
         "edit" => [ 
             "patern" => '/admin\/usuarios\/edit\/(\d+)/',
             "required_permissions" => ["UPDATE_USER"],
-            "conditions" => ["check_permissions"],
+            "conditions" => ["check_self_permissions"],
         ],
         "changePassword" => [ 
             "patern" => '/admin\/usuarios\/changePassword\/(\d+)/',
             "required_permissions" => ["UPDATE_USER"],
-            "conditions" => ["check_permissions"],
+            "conditions" => ["check_self_permissions"],
         ],
         "agregar" => [ 
             "patern" => '/admin\/usuarios\/agregar/',
@@ -181,19 +181,45 @@ class Usuarios extends MY_Controller
         echo $this->blade->view("admin.user.usergroups", $data);
     }
 
-    public function usergroups_edit($usergroups_id)
+    public function editGroup($usergroup_id)
     {
+        
+        $this->output->enable_profiler(false);
+
         $this->load->model('Admin/Usergroup');
         $usergroup = new Usergroup();
-        $result = $usergroup->find($id);
+        $result = $usergroup->find($usergroup_id);
         if ($result) {
             $data['action'] = 'Admin/User/save/';
             $data['title'] = ADMIN_TITLE . " | Editar Permisos";
             $data['h1'] = "Editar Permisos";
             $data['header'] = $this->load->view('admin/header', $data, true);
-            $data['mode'] = 'new';
+            $data['editMode'] = 'edit';
+            $data['usergroup_id'] = $usergroup_id;
            
-            echo $this->blade->view("admin.user.usergroups_permisions", $data);
+            echo $this->blade->view("admin.user.usergroups_permissions", $data);
+        } else {
+            $this->showError('Usergroup no encontrado');
+        }
+    }
+
+    public function newGroup($usergroup_id)
+    {
+        
+        $this->output->enable_profiler(false);
+
+        $this->load->model('Admin/Usergroup');
+        $usergroup = new Usergroup();
+        $result = $usergroup->find($usergroup_id);
+        if ($result) {
+            $data['action'] = 'Admin/User/save/';
+            $data['title'] = ADMIN_TITLE . " | Nuevo Grupo";
+            $data['h1'] = "Nuevo Grupo";
+            $data['header'] = $this->load->view('admin/header', $data, true);
+            $data['editMode'] = 'new';
+            $data['usergroup_id'] = null;
+           
+            echo $this->blade->view("admin.user.usergroups_permissions", $data);
         } else {
             $this->showError('Usergroup no encontrado');
         }

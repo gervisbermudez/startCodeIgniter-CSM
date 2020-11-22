@@ -16,8 +16,13 @@
                         <a class="waves-effect" href="{{ base_url('admin/usuarios/') }}">Todos</a>
                     </li>
                     <li>
+                        <a class="waves-effect" href="{{ base_url('admin/usuarios/usergroups') }}">Grupos</a>
+                    </li>
+                    @if(has_permisions('CREATE_USER'))
+                    <li>
                         <a href="{{ base_url('admin/usuarios/agregar/') }}">Nuevo</a>
                     </li>
+                    @endif
                 </ul>
             </div>
         </li>

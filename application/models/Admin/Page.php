@@ -34,7 +34,7 @@ class Page extends MY_model
      * Return all records found on a table or false if nothing is found
      * @return Collection
      */
-    public function all()
+    public function all($limit = '25', $order = array())
     {
         $sql = 'SELECT p.*, pt.`page_type_name`, u.`username`, ug.`name`, ug.`level`, file_data.file as imagen_file
                 FROM page p

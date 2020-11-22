@@ -158,7 +158,7 @@ var UserNewForm = new Vue({
           }
         },
         error: function (error) {
-          M.toast({ html: response.responseJSON.error_message });
+          M.toast({ html: error.responseJSON.error_message });
           self.loader = false;
         },
       });

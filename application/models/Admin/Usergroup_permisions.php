@@ -35,4 +35,25 @@ class Usergroup_permisions extends MY_model
         return new Collection($permission_array);
     }
 
+    public function get_permissions_info($where)
+    {
+        $this->load->model('Admin/Permisions');
+
+        $this->db->where($where);
+        $query = $this->db->get($this->table);
+        if ($query->num_rows() > 0) {
+            $collection = new Collection($query->result());
+            foreach ($collection as $key => &$value) {
+                if (isset($value->permision_id)) {
+                    $permission = new Permisions();
+                    $value->{'permission'} = $permission->find($value->permision_id);
+                }
+            }
+            return $collection;
+        }
+
+
+        return new Collection();
+    }
+
 }

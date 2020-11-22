@@ -87,6 +87,6 @@
 </div>
 @endsection
 
-@section('footer_includes'):
+@section('footer_includes')
 <script src="{{base_url('public/js/components/loginForm.min.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

@@ -14,6 +14,7 @@ class User extends MY_model
     public $hasOne = [
         "usergroup" => ['usergroup_id', 'Admin/Usergroup', 'usergroup'],
     ];
+    
     public $protectedFields = array('password');
 
     public function __construct()
