@@ -4,6 +4,38 @@
 
 class Formularios extends MY_Controller
 {
+    public $routes_permisions = [
+        "index" => [ 
+            "patern" => '/admin\/formularios/',
+            "required_permissions" => ["SELECT_FORM_CUSTOMS"],
+            "conditions" => [],
+        ],
+        "nuevo" => [ 
+            "patern" => '/admin\/formularios\/nuevo/',
+            "required_permissions" => ["CREATE_FORM_CUSTOM"],
+            "conditions" => [],
+        ],
+        "editForm" => [ 
+            "patern" => '/admin\/formularios\/editForm\/(\d+)/',
+            "required_permissions" => ["UPDATE_FORM_CUSTOM"],
+            "conditions" => ["check_self_permissions"],
+        ],
+        "content" => [ 
+            "patern" => '/admin\/formularios\/content/',
+            "required_permissions" => ["SELECT_CONTENT_DATA"],
+            "conditions" => ["check_self_permissions"],
+        ],
+        "addData" => [ 
+            "patern" => '/admin\/formularios\/addData\/(\d+)/',
+            "required_permissions" => ["CREATE_CONTENT_DATA"],
+            "conditions" => ["check_self_permissions"],
+        ],
+        "editData" => [ 
+            "patern" => '/admin\/formularios\/editData\/(\d+)\/(\d+)/',
+            "required_permissions" => ["UPDATE_CONTENT_DATA"],
+            "conditions" => ["check_self_permissions"],
+        ],
+    ];
 
     public function __construct()
     {

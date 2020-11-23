@@ -56,19 +56,25 @@
             </div>
             <div class="collapsible-body">
                 <ul>
+                @if(has_permisions('SELECT_FORM_CUSTOMS'))
                     <li>
                         <a class="waves-effect" href="{{ base_url('admin/formularios/') }}">Todos</a>
                     </li>
+                @endif
+                @if(has_permisions('CREATE_FORM_CUSTOM'))
                     <li>
                         <a href="{{ base_url('admin/formularios/nuevo') }}">Nuevo</a>
                     </li>
+                @endif
                 </ul>
             </div>
         </li>
+        @if(has_permisions('SELECT_CONTENT_DATA'))
         <li class="{{isSectionActive('admin/formularios/content', 'match')}}">
             <a class="waves-effect" href="{{ base_url('admin/formularios/content') }}"><i class="material-icons">insert_chart</i>
                 Forms Content</a>
         </li>
+        @endif
         <!-- <li class="{{isSectionActive('mensajes')}}">
             <a class="waves-effect" href="{{ base_url('admin/mensajes/') }}"><i class="material-icons">email</i>
                 Mensajes</a>
@@ -76,10 +82,13 @@
         <li class="{{isSectionActive('suscriptores')}}">
             <a class="waves-effect" href="{{ base_url('admin/suscriptores/') }}"><i class="material-icons">supervisor_account</i> Suscriptores</a>
         </li>
+        @if(has_permisions('SELECT_FILES'))
         <li class="{{isSectionActive('archivos')}}">
             <a class="waves-effect" href="{{ base_url('admin/archivos') }}"><i class="material-icons">markunread_mailbox</i>
                 Archivos</a>
         </li>
+        @endif
+        @if(has_permisions('SELECT_MENUS'))
         <li class="{{isSectionActive('menu')}}">
             <div class="collapsible-header">
                 <i class="material-icons">menu</i>
@@ -87,28 +96,36 @@
             </div>
             <div class="collapsible-body">
                 <ul>
+
                     <li>
                         <a href="{{ base_url('admin/menus/') }}">Todos</a>
                     </li>
+                    @if(has_permisions('CREATE_MENU'))
                     <li>
                         <a href="{{ base_url('admin/menus/nuevo/') }}">Nuevo</a>
                     </li>
+                    @endif
                 </ul>
             </div>
         </li>
+        @endif
         <li class="{{isSectionActive('categorias')}}">
             <div class="collapsible-header">
                 <i class="material-icons">receipt</i>
                 <span>Categorias</span>
             </div>
             <div class="collapsible-body">
-                <ul>
+                    <ul>
+                    @if(has_permisions('SELECT_CATEGORIES'))
                     <li>
                         <a href="{{ base_url('admin/categorias/') }}">Todas</a>
                     </li>
+                    @endif 
+                    @if(has_permisions('CREATE_CATEGORIE'))
                     <li>
                         <a href="{{ base_url('admin/categorias/nueva/') }}">Nueva</a>
                     </li>
+                    @endif
                 </ul>
             </div>
         </li>

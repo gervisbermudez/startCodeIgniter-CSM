@@ -34,14 +34,8 @@
                 <li><a href="#!" v-on:click="getPages();"><i class="material-icons">refresh</i></a></li>
                 <li>
                     <a href="#!" class='dropdown-trigger' data-target='dropdown-options'><i class="material-icons">more_vert</i></a>
-                    <!-- Dropdown Structure -->
                     <ul id='dropdown-options' class='dropdown-content'>
-                        <li><a href="#!">one</a></li>
-                        <li><a href="#!">two</a></li>
-                        <li class="divider" tabindex="-1"></li>
-                        <li><a href="#!">three</a></li>
-                        <li><a href="#!"><i class="material-icons">view_module</i>four</a></li>
-                        <li><a href="#!"><i class="material-icons">cloud</i>five</a></li>
+                        <li><a href="#!">Archivo</a></li>
                     </ul>
                 </li>
             </ul>

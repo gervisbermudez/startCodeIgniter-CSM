@@ -4,6 +4,23 @@
 
 class Menus extends MY_Controller
 {
+    public $routes_permisions = [
+        "index" => [ 
+            "patern" => '/admin\/menus/',
+            "required_permissions" => ["SELECT_MENUS"],
+            "conditions" => [],
+        ],
+        "nuevo" => [ 
+            "patern" => '/admin\/menus\/nuevo/',
+            "required_permissions" => ["CREATE_MENU"],
+            "conditions" => [],
+        ],
+        "editForm" => [ 
+            "patern" => '/admin\/menus\/editForm\/(\d+)/',
+            "required_permissions" => ["UPDATE_MENU"],
+            "conditions" => ["check_self_permissions"],
+        ],
+    ];
 
     public function __construct()
     {

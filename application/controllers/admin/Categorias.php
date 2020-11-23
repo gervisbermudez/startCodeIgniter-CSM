@@ -5,6 +5,24 @@
 class Categorias extends MY_Controller
 {
 
+    public $routes_permisions = [
+        "index" => [ 
+            "patern" => '/admin\/categorias/',
+            "required_permissions" => ["SELECT_CATEGORIES"],
+            "conditions" => [],
+        ],
+        "nueva" => [ 
+            "patern" => '/admin\/categorias\/nueva/',
+            "required_permissions" => ["CREATE_CATEGORIE"],
+            "conditions" => [],
+        ],
+        "editar" => [ 
+            "patern" => '/admin\/categorias\/editar\/(\d+)/',
+            "required_permissions" => ["UPDATE_CATEGORIE"],
+            "conditions" => ["check_self_permissions"],
+        ],
+    ];
+
     public function __construct()
     {
         parent::__construct();
@@ -27,7 +45,6 @@ class Categorias extends MY_Controller
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['categorie_id'] = '';
         $data['editMode'] = 'new';
-
         echo $this->blade->view("admin.categorias.new_form", $data);
     }
 
@@ -38,72 +55,7 @@ class Categorias extends MY_Controller
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['categorie_id'] = $categorie_id;
         $data['editMode'] = 'edit';
-
         echo $this->blade->view("admin.categorias.new_form", $data);
-    }
-
-    public function ajax_get_categorie_type()
-    {
-        $this->output->enable_profiler(false);
-        $categorie_type = $this->input->post('categorie_type');
-
-        if ($categorie_type) {
-            $categories = new Categories();
-            $categories = $categories->where(array('type' => $categorie_type, 'parent_id' => '0'));
-
-            $response = array(
-                'code' => 200,
-                'data' => $categories ? $categories : [],
-            );
-
-            $this->output
-                ->set_content_type('application/json')
-                ->set_output(json_encode($response));
-        } else {
-            $error_message = 'Tipo no encontrada';
-            $response = array(
-                'code' => 404,
-                'error_message' => $error_message,
-                'data' => $_POST,
-            );
-            $this->output
-                ->set_status_header(404)
-                ->set_content_type('application/json')
-                ->set_output(json_encode($response));
-        }
-
-    }
-
-    public function ajax_get_subcategorie_type()
-    {
-        $this->output->enable_profiler(false);
-        $parent_id = $this->input->post('parent_id');
-
-        if ($parent_id) {
-            $categories = new Categories();
-            $categories = $categories->where(array('parent_id' => $parent_id));
-
-            $response = array(
-                'code' => 200,
-                'data' => $categories ? $categories : [],
-            );
-
-            $this->output
-                ->set_content_type('application/json')
-                ->set_output(json_encode($response));
-        } else {
-            $error_message = 'Tipo no encontrada';
-            $response = array(
-                'code' => 404,
-                'error_message' => $error_message,
-                'data' => $_POST,
-            );
-            $this->output
-                ->set_status_header(404)
-                ->set_content_type('application/json')
-                ->set_output(json_encode($response));
-        }
-
     }
 
 }
