@@ -79,8 +79,12 @@
                             <td>
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + page.page_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + page.page_id' class='dropdown-content'>
+                                @if(has_permisions('UPDATE_PAGES'))
                                     <li><a :href="base_url('admin/paginas/editar/' + page.page_id)">Editar</a></li>
+                                @endif
+                                @if(has_permisions('DELETE_PAGE'))
                                     <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(page, index);">Borrar</a></li>
+                                @endif
                                     <li v-if="page.status == 2"><a :href="base_url('admin/paginas/preview?page_id=' + page.page_id)" target="_blank">Preview</a></li>
                                     <li><a :href="base_url(page.path)" target="_blank">Archivar</a></li>
                                 </ul>
@@ -101,8 +105,12 @@
                         <a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href='#!' :data-target='"dropdown" + page.page_id'>
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown" + page.page_id' class='dropdown-content'>
+                                @if(has_permisions('UPDATE_PAGE'))
                             <li><a :href="base_url('admin/paginas/editar/' + page.page_id)">Editar</a></li>
+                                @endif
+                                @if(has_permisions('DELETE_PAGE'))
                             <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(page, index);">Borrar</a></li>
+                                @endif
                             <li v-if="page.status == 2"><a :href="base_url('admin/paginas/preview?page_id=' + page.page_id)" target="_blank">Preview</a></li>
                             <li><a :href="base_url(page.path)" target="_blank">Archivar</a></li>
                         </ul>

@@ -4,6 +4,24 @@
 class Paginas extends MY_Controller
 {
 
+    public $routes_permisions = [
+        "index" => [ 
+            "patern" => '/admin\/paginas/',
+            "required_permissions" => ["SELECT_PAGES"],
+            "conditions" => [],
+        ],
+        "nueva" => [ 
+            "patern" => '/admin\/paginas\/nueva/',
+            "required_permissions" => ["CREATE_PAGE"],
+            "conditions" => [],
+        ],
+        "editar" => [ 
+            "patern" => '/admin\/paginas\/editar\/(\d+)/',
+            "required_permissions" => ["UPDATE_PAGE"],
+            "conditions" => ["check_self_permissions"],
+        ],
+    ];
+
     public function __construct()
     {
         parent::__construct();
@@ -27,8 +45,7 @@ class Paginas extends MY_Controller
 
     public function nueva()
     {
-
-        $data['title'] = ADMIN_TITLE . " | Nueva Paginas";
+        $data['title'] = ADMIN_TITLE . " | Nueva Pagina";
         $data['h1'] = "Nueva Pagina";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['action'] = base_url('admin/paginas/save/');

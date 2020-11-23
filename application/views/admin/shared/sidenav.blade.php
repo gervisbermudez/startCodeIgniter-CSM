@@ -12,9 +12,11 @@
             </div>
             <div class="collapsible-body">
                 <ul>
+                    @if(has_permisions('SELECT_USERS'))
                     <li>
                         <a class="waves-effect" href="{{ base_url('admin/usuarios/') }}">Todos</a>
                     </li>
+                    @endif
                     <li>
                         <a class="waves-effect" href="{{ base_url('admin/usuarios/usergroups') }}">Grupos</a>
                     </li>
@@ -33,12 +35,17 @@
             </div>
             <div class="collapsible-body">
                 <ul>
+                @if(has_permisions('SELECT_PAGES'))
                     <li>
                         <a class="waves-effect" href="{{ base_url('admin/paginas/') }}">Todas</a>
                     </li>
+                @endif
+                @if(has_permisions('CREATE_PAGE'))
                     <li>
                         <a href="{{ base_url('admin/paginas/nueva/') }}">Nueva</a>
                     </li>
+                @endif
+
                 </ul>
             </div>
         </li>
