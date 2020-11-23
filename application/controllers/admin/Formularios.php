@@ -40,6 +40,7 @@ class Formularios extends MY_Controller
     public function __construct()
     {
         parent::__construct();
+        $this->check_permisions();
         $this->load->model('Admin/Form_custom');
     }
 
