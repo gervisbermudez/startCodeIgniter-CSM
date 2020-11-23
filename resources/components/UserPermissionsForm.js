@@ -87,7 +87,7 @@ var UserPermissionsForm = new Vue({
         description: this.description || "",
         status: this.status ? 1 : 0,
         parent_id: this.parent_id,
-        permissions: this.checkedPermissions
+        permissions: this.checkedPermissions,
       };
     },
     getUserGroups: function () {
@@ -122,13 +122,30 @@ var UserPermissionsForm = new Vue({
           this.debug ? console.log(url, response) : null;
           if (response.code == 200) {
             this.permissions = response.data.map((permission, index) => {
+              let permision_name = permission.permission.permision_name;
+              let permission_type = permision_name.split(
+                "_"
+              )[0];
+              let module = permision_name.substring(permision_name.indexOf("_") + 1);
               return {
                 ...permission.permission,
+                permission_type: permission_type,
+                module: module,
                 enabled: this.usergroup_permisions.includes(
-                  permission.permission.permision_name
+                  permision_name
                 ),
               };
             });
+            let compare  = function ( a, b ) {
+              if ( a.module < b.module ){
+                return -1;
+              }
+              if ( a.module > b.module ){
+                return 1;
+              }
+              return 0;
+            }
+            this.permissions = this.permissions.sort(compare);
           }
         })
         .catch((err) => {
@@ -178,15 +195,16 @@ var UserPermissionsForm = new Vue({
         M.FormSelect.init(elems, {});
       }, 3000);
     },
-    setRealOrder() {
-      var data = this.group.sortable("serialize").get();
-      var strData = JSON.stringify(data);
-      var strData = strData.replace(/children/g, "subitems");
-      data = JSON.parse(strData);
-      if (data) {
-        let result = this.getMenuItemsData(data[0]);
-        this.realOrder = result;
-      }
+    checkAll($event, permission_type) {
+      this.setChecked($event.target.checked, permission_type);
+    },
+    setChecked: function (checked, type) {
+      this.permissions = this.permissions.map((permission) => {
+        if (permission.permission_type == type) {
+          permission.enabled = checked;
+        }
+        return permission;
+      });
     },
   },
   mounted: function () {

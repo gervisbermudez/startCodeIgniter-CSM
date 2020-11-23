@@ -41,6 +41,43 @@
 				<label for="description">Description:</label>
 				<input type="text" v-model="description" id="description" name="description_form" required="required" value="">
 			</div>
+			<p>
+				Check all permissions by type:
+			</p>
+			<div class="row">
+				<div class="col s12 m2">
+					<p>
+						<label>
+							<input type="checkbox" @change="checkAll($event, 'CREATE')"/>
+							<span>All CREATE</span>
+						</label>
+					</p>
+				</div>
+				<div class="col s12 m2">
+					<p>
+						<label>
+							<input type="checkbox" @change="checkAll($event, 'UPDATE')"/>
+							<span>All UPDATE</span>
+						</label>
+					</p>
+				</div>
+				<div class="col s12 m2">
+					<p>
+						<label>
+							<input type="checkbox" @change="checkAll($event, 'DELETE')"/>
+							<span>All DELETE</span>
+						</label>
+					</p>
+				</div>
+				<div class="col s12 m2">
+					<p>
+						<label>
+							<input type="checkbox" @change="checkAll($event, 'SELECT')"/>
+							<span>All SELECT</span>
+						</label>
+					</p>
+				</div>
+			</div>
 			<p v-for="(permission, index) in permissions" :key="index">
 				<label>
 					<input type="checkbox" :value="permission.permission_name" v-model="permission.enabled"/>
