@@ -18,19 +18,7 @@
     </div>
     <div class="row">
         <div class="col s12 center" v-bind:class="{ hide: !loader }">
-            <div class="preloader-wrapper big active">
-                <div class="spinner-layer spinner-blue-only">
-                    <div class="circle-clipper left">
-                        <div class="circle"></div>
-                    </div>
-                    <div class="gap-patch">
-                        <div class="circle"></div>
-                    </div>
-                    <div class="circle-clipper right">
-                        <div class="circle"></div>
-                    </div>
-                </div>
-            </div>
+        <preloader />
         </div>
         <div id="form" class="col s12" v-bind:class="{'m10': user_id}" v-cloak v-show="!loader">
             <input type="hidden" name="id_form" value="">

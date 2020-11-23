@@ -14,19 +14,7 @@
     </div>
     <div class="row" id="form">
         <div class="col s12 center" v-bind:class="{ hide: !loader }">
-            <div class="preloader-wrapper big active">
-                <div class="spinner-layer spinner-blue-only">
-                    <div class="circle-clipper left">
-                        <div class="circle"></div>
-                    </div>
-                    <div class="gap-patch">
-                        <div class="circle"></div>
-                    </div>
-                    <div class="circle-clipper right">
-                        <div class="circle"></div>
-                    </div>
-                </div>
-            </div>
+        <preloader />
         </div>
         <div class="col s12">
             <ul class="tabs" id="formTabs">

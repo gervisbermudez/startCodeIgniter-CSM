@@ -18,19 +18,7 @@
         <div class="col s12">
             <div class="row">
                 <div class="col s12 center" v-bind:class="{ hide: !loader }">
-                    <div class="preloader-wrapper big active">
-                        <div class="spinner-layer spinner-blue-only">
-                            <div class="circle-clipper left">
-                                <div class="circle"></div>
-                            </div>
-                            <div class="gap-patch">
-                                <div class="circle"></div>
-                            </div>
-                            <div class="circle-clipper right">
-                                <div class="circle"></div>
-                            </div>
-                        </div>
-                    </div>
+                    <preloader />
                 </div>
                 <div class="row" v-cloak v-show="!loader">
                     <div class="col s12 m2 tree">
@@ -141,19 +129,7 @@
                         </div>
                         <div class="row filelist">
                             <div class="col s12 center"  v-bind:class="{ hide: !fileloader }">
-                                <div class="preloader-wrapper big active">
-                                    <div class="spinner-layer spinner-blue-only">
-                                        <div class="circle-clipper left">
-                                            <div class="circle"></div>
-                                        </div>
-                                        <div class="gap-patch">
-                                            <div class="circle"></div>
-                                        </div>
-                                        <div class="circle-clipper right">
-                                            <div class="circle"></div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <preloader />
                             </div>
                             <div v-if="recentlyFiles.length">
                                 <div class="col s12">
