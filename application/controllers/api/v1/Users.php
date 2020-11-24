@@ -380,6 +380,29 @@ class Users extends REST_Controller
         $this->response($response, REST_Controller::HTTP_NOT_FOUND);
     }
 
+    public function allpermissions_get()
+    {
+        $this->load->model('Admin/Permissions');
+        $Permissions = new Permissions();
+        $result = $Permissions->all();
+        
+        if ($result) {
+            $response = array(
+                'code' => REST_Controller::HTTP_OK,
+                'data' => $result,
+            );
+            $this->response($response, REST_Controller::HTTP_OK);
+            return;
+        }
+
+        $response = array(
+            'code' => REST_Controller::HTTP_NOT_FOUND,
+            'data' => $result,
+            "error_message" => lang('no_permissions_found'),
+        );
+        $this->response($response, REST_Controller::HTTP_NOT_FOUND);
+    }
+
     /**
      *
      * @api {get} /users/timeline/:user_id Get a lists of users

@@ -225,4 +225,12 @@ class Usuarios extends MY_Controller
         }
     }
 
+    public function permissions()
+    {
+        $data['title'] = ADMIN_TITLE . " | permissions";
+        $data['h1'] = "permissions";
+        $data['header'] = $this->load->view('admin/header', $data, true);
+        echo $this->blade->view("admin.user.permissions", $data);
+    }
+
 }

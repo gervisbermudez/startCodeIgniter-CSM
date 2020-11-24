@@ -81,7 +81,6 @@
         <h4>No hay datos para mostrar</h4>
     </div>
 </div>
-@include('admin.components.configurationcomponent')
 @endsection
 
 @section('footer_includes')
