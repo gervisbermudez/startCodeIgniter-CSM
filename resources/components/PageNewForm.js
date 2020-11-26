@@ -117,7 +117,7 @@ var PageNewForm = new Vue({
   computed: {
     btnEnable: function () {
       let enable =
-        (!!this.form.fields.title.value && !!this.path) ||
+        (!!this.form.fields.title.value && !!this.path && !!this.content) ||
         false;
       if (enable) {
         this.autoSave();
