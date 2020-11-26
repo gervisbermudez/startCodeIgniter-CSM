@@ -279,3 +279,30 @@ function render_menu($name)
         return $rendered_menu;
     }
 }
+
+function system_logger($type, $type_id, $token, $comment = '')
+{
+
+    $ci = &get_instance();
+    $ci->load->model('Admin/Site_config');
+    $Site_config = new Site_config();
+    $result = $Site_config->find_with(["config_name" => 'SYSTEM_LOGGER']);
+    $logger_active = false;
+    if ($result && $Site_config->config_value) {
+        $logger_active = true;
+    }
+    if ($logger_active) {
+        $ci->load->model('Admin/Logger');
+        $Logger = new Logger();
+        $Logger->logger_id = null;
+        $Logger->user_id = userdata('user_id');
+        $Logger->type_id = $type_id;
+        $Logger->type = $type;
+        $Logger->token = $token;
+        $Logger->comment = $comment;
+        $Logger->status = 1;
+        $Logger->date_create = date("Y-m-d H:i:s");
+        return $Logger->save();
+    }
+    return false;
+}

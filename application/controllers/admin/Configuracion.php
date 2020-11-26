@@ -22,4 +22,13 @@ class Configuracion extends MY_Controller
         echo $this->blade->view("admin.configuracion.all_config", $data);
     }
 
+    public function logger()
+    {
+        $data['title'] = ADMIN_TITLE . " | System Log";
+        $data['h1'] = "Logger";
+        $data['header'] = $this->load->view('admin/header', $data, true);
+
+        echo $this->blade->view("admin.configuracion.all_logger", $data);
+    }
+
 }

@@ -90,6 +90,7 @@ var dataTable = Vue.component("dataTable", {
     },
     getData: function () {
       var self = this;
+      self.loader = true;
       var url = BASEURL + this.endpoint;
       fetch(url)
         .then((response) => response.json())
@@ -125,7 +126,11 @@ var dataTable = Vue.component("dataTable", {
           self.loader = false;
         });
     },
-    getContent(item, label) {
+    getContent(item, colum) {
+      let label = colum.colum;
+      if (colum.format && typeof colum.format == "function") {
+        return colum.format(item, colum)
+      }
       let result = "";
       switch (label) {
         case "user":

@@ -14,11 +14,11 @@
                 </div>
             </form>
             <ul class="right hide-on-med-and-down">
-                <li><a href="#!" v-on:click="toggleView();"><i class="material-icons">view_module</i></a></li>
+                <li><a v-on:click="toggleView();"><i class="material-icons">view_module</i></a></li>
 
-                <li><a href="#!" v-on:click="getData();"><i class="material-icons">refresh</i></a></li>
+                <li><a v-on:click="getData();"><i class="material-icons">refresh</i></a></li>
                 <li>
-                    <a href="#!" class='dropdown-trigger' data-target='dropdown-options'><i class="material-icons">more_vert</i></a>
+                    <a class='dropdown-trigger' data-target='dropdown-options'><i class="material-icons">more_vert</i></a>
                     <ul id='dropdown-options' class='dropdown-content'>
                         <li><a href="#!">Archivo</a></li>
                     </ul>
@@ -38,7 +38,7 @@
                     <tbody>
                         <tr v-for="(item, index) in data" :key="index">
 							<td v-for="(colum, i) in colums" :key="i" >
-								<span v-if="colum.colum !== 'options'" v-html="getContent(item, colum.colum)"></span>
+								<span v-if="colum.colum !== 'options'" v-html="getContent(item, colum)"></span>
 								<span v-else>
 									<a class='dropdown-trigger' :data-target='"dropdown" + index'><i class="material-icons">more_vert</i></a>
 									<ul :id='"dropdown" + index' class='dropdown-content'>

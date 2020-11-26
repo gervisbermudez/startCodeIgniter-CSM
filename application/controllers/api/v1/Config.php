@@ -316,4 +316,41 @@ class Config extends REST_Controller
         $this->response($response, REST_Controller::HTTP_OK);
     }
 
+    public function systemlogger_get($logger_id = null)
+    {
+        $this->load->model('Admin/Logger');
+
+        $Logger = new Logger();
+        if ($logger_id) {
+            $result = $Logger->where(["site_config_id" => $logger_id]);
+            $result = $result ? $result->first() : [];
+        } else {
+            $result = $Logger->all();
+        }
+
+        if ($result) {
+            $response = array(
+                'code' => 200,
+                'data' => $result,
+            );
+            $this->response($response, REST_Controller::HTTP_OK);
+            return;
+        }
+
+        if ($logger_id) {
+            $response = array(
+                'code' => REST_Controller::HTTP_NOT_FOUND,
+                "error_message" => lang('not_found_error'),
+                'data' => [],
+            );
+        } else {
+            $response = array(
+                'code' => REST_Controller::HTTP_OK,
+                'data' => [],
+                'requets_data' => $_POST,
+            );
+        }
+        $this->response($response, REST_Controller::HTTP_OK);
+    }
+
 }

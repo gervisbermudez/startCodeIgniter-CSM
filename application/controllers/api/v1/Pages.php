@@ -121,6 +121,7 @@ class Pages extends REST_Controller
         $page->{"page_data"} = $this->input->post('page_data');
 
         if ($page->save()) {
+            system_logger('pages', $page->page_id, ($this->input->post('page_id') ? "updated" : "created"), ($this->input->post('page_id') ? "A page has been updated" : "A page has been created"));
             $response = array(
                 'code' => REST_Controller::HTTP_OK,
                 'data' => $page,
@@ -163,6 +164,7 @@ class Pages extends REST_Controller
         $page = new Page();
         $page->find($id);
         if ($page->delete()) {
+            system_logger('pages', $page->page_id, ("deleted"), ( "A page has been deleted"));
             $response = array(
                 'code' => REST_Controller::HTTP_OK,
                 'data' => $page,
