@@ -28,7 +28,7 @@ var PageNewForm = new Vue({
     }),
     status: false,
     path: "",
-    content: "",
+    content: "Content of the page",
     visibility: 1,
     publishondate: true,
     datepublish: "",
@@ -116,9 +116,7 @@ var PageNewForm = new Vue({
   mixins: [mixins],
   computed: {
     btnEnable: function () {
-      let enable =
-        (!!this.form.fields.title.value && !!this.path && !!this.content) ||
-        false;
+      let enable = (!!this.form.fields.title.value && !!this.path) || false;
       if (enable) {
         this.autoSave();
       }
@@ -357,7 +355,7 @@ var PageNewForm = new Vue({
         path: this.getPagePath || "",
         page_type_id: this.page_type_id || 1,
         status: this.status ? 1 : 2,
-        content: wp.data.select( "core/editor" ).getEditedPostContent() || "",
+        content: wp.data.select("core/editor").getEditedPostContent() || "Content of the page...",
         page_id: this.page_id || null,
         publishondate: this.publishondate,
         date_publish: this.getDateTimePublish,
@@ -643,7 +641,7 @@ var PageNewForm = new Vue({
       }, 1000);
     },
     setEditorContent: function (page) {
-      console.log({page});
+      console.log({ page });
       let content = {
         id: 1,
         content: {
