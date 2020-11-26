@@ -1877,3 +1877,40 @@ th.sort_desc {
   background: url("/public/img/sort_desc.png") no-repeat center right;
   cursor: pointer;
 }
+
+.is-fullscreen-mode #root {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  z-index: 999999999999;
+  background: #fff !important;
+  height: 100vh;
+  width: 100%;
+  div#editor {
+    position: relative;
+    height: calc(100%);
+    max-height: 100%;
+    width: 100%;
+    overflow-y: auto;
+  }
+  .components-drop-zone__provider {
+    overflow-y: overlay;
+  }
+  .edit-post-header {
+    padding: 8px 22px 8px 8px;
+  }
+}
+
+.components-toolbar.components-toolbar.edit-post-fullscreen-mode-close__toolbar {
+  display: none;
+}
+
+@media (min-width: 782px) {
+  .edit-post-layout.is-sidebar-opened .edit-post-layout__content {
+    margin-right: auto !important;
+  }
+}
+
+.components-popover input[type="search"].editor-inserter__search {
+  width: auto;
+}

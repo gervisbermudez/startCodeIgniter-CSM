@@ -1,7 +1,7 @@
 var runningAutoSave = false;
 
 var PageNewForm = new Vue({
-  el: "#root",
+  el: "#PageNewForm-root",
   data: {
     debug: DEBUGMODE,
     loader: true,
@@ -117,7 +117,7 @@ var PageNewForm = new Vue({
   computed: {
     btnEnable: function () {
       let enable =
-        (!!this.form.fields.title.value && !!this.path && !!this.content) ||
+        (!!this.form.fields.title.value && !!this.path) ||
         false;
       if (enable) {
         this.autoSave();
@@ -357,7 +357,7 @@ var PageNewForm = new Vue({
         path: this.getPagePath || "",
         page_type_id: this.page_type_id || 1,
         status: this.status ? 1 : 2,
-        content: this.content || "",
+        content: wp.data.select( "core/editor" ).getEditedPostContent() || "",
         page_id: this.page_id || null,
         publishondate: this.publishondate,
         date_publish: this.getDateTimePublish,
@@ -521,6 +521,7 @@ var PageNewForm = new Vue({
     checkEditMode() {
       var page_id = document.getElementById("page_id").value;
       var editMode = document.getElementById("editMode").value;
+      localStorage.removeItem("g-editor-page");
       if (page_id && editMode == "edit") {
         var self = this;
         self.editMode = true;
@@ -531,7 +532,6 @@ var PageNewForm = new Vue({
             self.loader = false;
             self.debug ? console.log(url, response) : null;
             if (response.code == 200) {
-              alert;
               self.form.fields.title.value = response.data.page.title;
               self.form.fields.subtitle.value = response.data.page.subtitle;
               self.page_id = response.data.page.page_id;
@@ -570,12 +570,8 @@ var PageNewForm = new Vue({
                 let layout = value.split(".")[0];
                 return layout == "site" ? "default" : layout;
               });
-              setTimeout(() => {
-                tinymce.editors["id_cazary"].setContent(
-                  response.data.page.content
-                );
-                self.content = response.data.page.content;
-              }, 5000);
+              self.content = response.data.page;
+              self.setEditorContent(response.data.page);
             }
             setTimeout(() => {
               M.updateTextFields();
@@ -645,6 +641,36 @@ var PageNewForm = new Vue({
         var elems = document.querySelectorAll("select");
         var instances = M.FormSelect.init(elems, {});
       }, 1000);
+    },
+    setEditorContent: function (page) {
+      console.log({page});
+      let content = {
+        id: 1,
+        content: {
+          raw: page.content,
+          rendered: page.content,
+        },
+        date: "2020-11-24T21:22:54.913Z",
+        date_gmt: "2020-11-24T21:22:54.913Z",
+        title: { raw: "Preview page", rendered: "Preview page" },
+        excerpt: { raw: "", rendered: "" },
+        status: "draft",
+        revisions: { count: 0, last_id: 0 },
+        parent: 0,
+        theme_style: true,
+        type: "page",
+        link: "http://localhost:8000/preview",
+        categories: [],
+        featured_media: 0,
+        permalink_template: "http://localhost:8000/preview",
+        preview_link: "http://localhost:8000/preview",
+        _links: {
+          "wp:action-assign-categories": [],
+          "wp:action-create-categories": [],
+        },
+      };
+
+      localStorage.setItem("g-editor-page", JSON.stringify(content));
     },
   },
   mounted: function () {
