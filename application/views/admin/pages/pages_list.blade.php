@@ -105,8 +105,9 @@
                     </div>
                     <div class="card-content">
                         <div>
-                            <span class="card-title"><a :href="base_url(page.path)" target="_blank">@{{page.title}}</a> <i v-if="page.visibility == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Publico">public</i>
-                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Privado">lock</i>
+                            <span class="card-title"><a :href="base_url(page.path)" target="_blank">@{{page.title}}</a> 
+                                <i v-if="page.status == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Publicado">public</i>
+                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Borrador">edit</i>
                             </span>
                             <div class="card-info">
                                 <p>

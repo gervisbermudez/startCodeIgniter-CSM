@@ -19,13 +19,12 @@ class Menu_items extends MY_model
 
             if ($value->model && $value->model_id) {
                 switch ($value->model) {
-                    case 'pages':
+                    case 'page':
                         $this->load->model('Admin/Page');
                         $page = new Page();
                         $result = $page->find($value->model_id);
                         if ($result) {
-                            $value->item_link = '/' . $page->path;
-                            $value->{'model_object'} = $page;
+                            $value->item_link = base_url($page->path);
                         }
                         break;
 

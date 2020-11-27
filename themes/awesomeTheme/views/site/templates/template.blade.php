@@ -4,13 +4,8 @@
 
 @section('content')
 <div class="container">
-    <h1>
-        {{$page->title}}
-    </h1>
-    <h2>
-        {{$page->subtitle}}
-    </h2>
     <div class="article">
+        <h1 class="mt-4 mb-3">{{$page->title}}<small>{{$page->subtitle}}</small></h1>
         <?= $page->content ?>
     </div>
 </div>

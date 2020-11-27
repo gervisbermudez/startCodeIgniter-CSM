@@ -36,7 +36,7 @@ class PageController extends Base_Controller
 
         $data['page'] = $pageInfo;
         $data['meta'] = $this->getPageMetas($pageInfo);
-        $data['title'] = $pageInfo->page_data["title"] ? $pageInfo->page_data["title"] : $pageInfo->title;
+        $data['title'] = $pageInfo->page_data["title"] ? config("SITE_TITLE") . " - " . $pageInfo->page_data["title"] : config("SITE_TITLE") . " - " . $pageInfo->title;
         $data['layout'] = $pageInfo->layout == 'default' ? 'site' : $pageInfo->layout;
         $data['headers_includes'] = isset($pageInfo->page_data["headers_includes"]) ? $pageInfo->page_data["headers_includes"] : "";
         $data['footer_includes'] = isset($pageInfo->page_data["footer_includes"]) ? $pageInfo->page_data["footer_includes"] : "";
@@ -51,6 +51,10 @@ class PageController extends Base_Controller
         $menu->find_with(['menu_id' => 1]);
         
         $data["menu"] = $menu; 
+
+        if (getThemePath()) {
+            $this->blade->changePath(getThemePath());
+        }
 
         echo $this->blade->view("site.templates." . $template, $data);
 
@@ -70,7 +74,7 @@ class PageController extends Base_Controller
         $data['page'] = $pageInfo;
         $data['meta'] = $this->getPageMetas($pageInfo);
 
-        $data['title'] = $pageInfo->page_data["title"] ? $pageInfo->page_data["title"] : $pageInfo->title;
+        $data['title'] = $pageInfo->page_data["title"] ? config("SITE_TITLE") . " - " . $pageInfo->page_data["title"] : config("SITE_TITLE") . " - " . $pageInfo->title;
         $data['headers_includes'] = isset($pageInfo->page_data["headers_includes"]) ? $pageInfo->page_data["headers_includes"] : "";
         $data['footer_includes'] = isset($pageInfo->page_data["footer_includes"]) ? $pageInfo->page_data["footer_includes"] : "";
         $data['layout'] = $pageInfo->layout == 'default' ? 'site' : $pageInfo->layout;

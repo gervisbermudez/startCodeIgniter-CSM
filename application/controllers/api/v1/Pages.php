@@ -40,7 +40,9 @@ class Pages extends REST_Controller
             $result = $page->find($page_id);
             $result = $result ? $page : [];
         } else {
-            $result = $page->all();
+            $result = $page->where(['status' => '1']);
+            $archived = $page->where(['status' => '2']);
+            $result = ($result && $archived) ? ($result->concat($archived)) : [];
         }
 
         if ($result) {
