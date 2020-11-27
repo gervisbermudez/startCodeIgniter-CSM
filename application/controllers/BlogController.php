@@ -11,13 +11,14 @@ class BlogController extends Base_Controller
         $this->load->model('Admin/Page');
     }
 
-    function list() {
+    function list()
+    {
         $data['title'] = config("SITE_TITLE") . " - Blog";
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
+        $data['blogs'] = $this->Page->where(['page_type_id' => 2, "status" => 1]);
         echo $this->blade->view("site.blogList", $data);
-
     }
 
     private function renderpage($page)
@@ -28,6 +29,9 @@ class BlogController extends Base_Controller
             $data['title'] = config("SITE_TITLE") . " - " . $page->title;
             $data['layout'] = $page->layout == 'default' ? 'site' : $page->layout;
             $template = $page->template == 'default' ? 'template' : $page->template;
+            if (getThemePath()) {
+                $this->blade->changePath(getThemePath());
+            }
             echo $this->blade->view("site.templates." . $template, $data);
         } else {
             $this->error404();
@@ -54,5 +58,4 @@ class BlogController extends Base_Controller
         $pages->find_with(array('path' => 'blog/' . $categorie . '/' . $subcategorie . '/' . $path, 'status' => 1));
         $this->renderpage($pages);
     }
-
 }

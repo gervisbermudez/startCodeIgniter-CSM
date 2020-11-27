@@ -13,7 +13,7 @@
     <!-- Page Heading/Breadcrumbs -->
     <h1 class="mt-4 mb-3">{{$page->title}}
         <small>by
-            <a href="#"></a>
+            <a href="#">{{$page->user->username}}</a>
         </small>
     </h1>
 

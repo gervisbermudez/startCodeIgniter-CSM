@@ -70,7 +70,6 @@ $route['faq'] = 'SiteController/faq';
 $route['pricing'] = 'SiteController/pricing';
 $route['sidebar'] = 'SiteController/sidebar';
 $route['full-width'] = 'SiteController/fullWidth';
-$route['blog-post'] = 'SiteController/blogPost';
 $route['blog'] = 'BlogController/list';
 $route['portfolio'] = 'SiteController/portfolio';
 $route['portfolio-item'] = 'SiteController/portfolioItem';
