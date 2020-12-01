@@ -14,11 +14,12 @@ if (!function_exists('getThemePath')) {
     {
         $ci = &get_instance();
         $theme_path = $ci->config->item("THEME_PATH");
+        $theme_path = str_replace('\\', '/', $theme_path);
         if ($theme_path) {
-            return FCPATH . 'themes\\' . $theme_path;
+            return FCPATH . 'themes/' . $theme_path;
         }
         if (SITE_THEME) {
-            return FCPATH . 'themes\\' . SITE_THEME;
+            return FCPATH . 'themes/' . SITE_THEME;
         }
 
         return null;

@@ -210,7 +210,8 @@ class Config extends REST_Controller
         foreach ($map as $key => $value) {
             if (is_array($value)) {
                 $folder_name = substr($key, 0, -1);
-                $string = file_get_contents('.\\themes\\' . $key . "theme_info.json");
+                $folder = str_replace('\\', '/', $key);
+                $string = file_get_contents(FCPATH . 'themes/' . $folder . "theme_info.json");
                 $json_a = json_decode($string, true);
                 $response[$folder_name] = $json_a;
             }

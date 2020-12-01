@@ -32,8 +32,8 @@ class Blade
      */
     public function changePath($path)
     {
-        $this->views = $path . '\\views';
-        $this->cache = $path . '\\cache';
+        $this->views = $path . '/views';
+        $this->cache = $path . '/cache';
         $this->BladeOne = new BladeOne($this->views, $this->cache, BladeOne::MODE_AUTO);
     }
 

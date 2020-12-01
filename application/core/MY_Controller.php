@@ -29,9 +29,9 @@ class MY_Controller extends CI_Controller
             $patern = $route["patern"];
             $permissions = $route["required_permissions"];
 
-            if(preg_match($patern, $uri_string, $matches)){
+            if (preg_match($patern, $uri_string, $matches)) {
                 foreach ($permissions as $key => $value) {
-                    if(!has_permisions($value)){
+                    if (!has_permisions($value)) {
                         $this->showError(lang('not_have_permissions'));
                         die();
                     }
@@ -149,11 +149,13 @@ class Base_Controller extends CI_Controller
             $configPath = getThemePath() . '/config/';
             $this->load->helper('directory');
             $map = directory_map($configPath);
-            foreach ($map as $key => $file) {
-                if (strpos($file, '.php')) {
-                    include $configPath . $file;
-                    foreach ($config as $config_name => $config_value) {
-                        $this->config->set_item($config_name, $config_value);
+            if ($map) {
+                foreach ($map as $key => $file) {
+                    if (strpos($file, '.php')) {
+                        include $configPath . $file;
+                        foreach ($config as $config_name => $config_value) {
+                            $this->config->set_item($config_name, $config_value);
+                        }
                     }
                 }
             }
