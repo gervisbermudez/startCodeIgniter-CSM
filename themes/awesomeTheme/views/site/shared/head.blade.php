@@ -5,6 +5,8 @@
 <?php echo page_meta($meta); ?>
 @endisset
 <title>{{$title}}</title>
+<link rel="alternate" type="application/rss+xml" title="{{config("SITE_TITLE")}} &raquo; Feed" href="{{base_url('feed')}}" />
+
 <!-- Bootstrap Core CSS -->
 <?php echo link_tag(getThemePublicPath() . 'bootstrap/css/bootstrap.min.css'); ?>
 <!-- Custom CSS -->

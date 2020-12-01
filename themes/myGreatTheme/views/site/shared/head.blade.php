@@ -5,6 +5,7 @@
 <?php echo page_meta($meta); ?>
 @endisset
 <title>{{$title}}</title>
+<link rel="alternate" type="application/rss+xml" title="{{config("SITE_TITLE")}} &raquo; Feed" href="{{base_url('feed')}}" />
 <!-- Materialize Core CSS -->
 <?php echo link_tag(getThemePublicPath() . 'css/materialize.css'); ?>
 <!-- Custom CSS -->

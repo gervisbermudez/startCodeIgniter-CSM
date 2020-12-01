@@ -58,6 +58,7 @@ $route['admin/offline'] = 'admin/admin/offline';
 $route['admin/paginas/preview'] = 'PageController/preview';
 
 //Blog pages
+$route['feed'] = 'BlogController/blogFeed';
 $route['blog/(:any)'] = 'BlogController/get_blog/$1';
 $route['blog/(:any)/(:any)'] = 'BlogController/get_blog_categorie/$1/$2';
 $route['blog/(:any)/(:any)/(:any)'] = 'BlogController/get_blog_subcategorie/$1/$2/$3';

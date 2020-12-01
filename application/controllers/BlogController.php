@@ -58,4 +58,20 @@ class BlogController extends Base_Controller
         $pages->find_with(array('path' => 'blog/' . $categorie . '/' . $subcategorie . '/' . $path, 'status' => 1));
         $this->renderpage($pages);
     }
+
+    public function blogFeed()
+    {
+        $this->load->helper('xml');
+        $this->load->helper('text');
+        $data['feed_name'] = config("SITE_TITLE");
+        $data['encoding'] = 'UTF-8';
+        $data['feed_url'] = base_url('feed');
+        $data['page_description'] = config("SITE_DESCRIPTION");
+        $data['page_language'] = 'en-en';
+        $data['creator_email'] = config("SITE_ADMIN_EMAIL");
+        $data['site_language'] = config("SITE_LANGUAGE");
+        $data['posts'] = $this->Page->where(['page_type_id' => 2, "status" => 1]);
+        header("Content-Type: application/rss+xml");
+        echo $this->blade->view("admin.xml.rss", $data);
+    }
 }
