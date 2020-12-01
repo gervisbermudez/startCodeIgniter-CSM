@@ -11,6 +11,18 @@ nav .brand-logo {
   color: #444;
 }
 
+li.breadcrumb-item {
+  display: inline-block;
+  color: #444;
+  vertical-align: top;
+  display: inline-block;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 17px;
+  margin: 0 10px 0 8px;
+  -webkit-font-smoothing: antialiased;
+}
+
 p {
   line-height: 2rem;
 }
@@ -23,13 +35,21 @@ p {
   min-height: 380px;
   line-height: 0;
   height: auto;
-  color: rgba(255,255,255,.9);
+  color: rgba(255, 255, 255, 0.9);
 }
-  .parallax-container .section {
-    width: 100%;
-  }
+.parallax-container .section {
+  width: 100%;
+}
 
-@media only screen and (max-width : 992px) {
+img.card-img-top {
+  max-width: 100%;
+}
+
+figure.wp-block-image img {
+  max-width: 100%;
+}
+
+@media only screen and (max-width: 992px) {
   .parallax-container .section {
     position: absolute;
     top: 40%;
@@ -39,7 +59,7 @@ p {
   }
 }
 
-@media only screen and (max-width : 600px) {
+@media only screen and (max-width: 600px) {
   #index-banner .section {
     top: 0;
   }
@@ -70,7 +90,7 @@ nav.breadcrumbs {
 }
 
 .card-header {
-  padding: .75rem 1.25rem;
+  padding: 0.75rem 1.25rem;
   margin-bottom: 0;
-  border-bottom: 1px solid rgba(0,0,0,.125);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
 }

@@ -44,7 +44,7 @@
         </div>
 
         <!-- Sidebar Widgets Column -->
-        <div class="col-md-4">
+        <div class="col m4">
 
             <!-- Search Widget -->
             <div class="card mb-4">

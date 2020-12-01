@@ -60,6 +60,61 @@ class PageController extends Base_Controller
 
     }
 
+    public function home()
+    {
+        $home_page = config("SITE_HOME_PAGE");
+        if($home_page){
+            $pageInfo = new Page();
+            $result = $pageInfo->find_with(array('page_id' => $home_page, 'status' => 1));
+
+            if (!$result) {
+                //Not found Page
+                $this->error404();
+                return;
+            }
+
+            //Is the page published?
+            $date_now = new DateTime();
+            $pagePublishTime = DateTime::createFromFormat('Y-m-d H:i:s', $pageInfo->date_publish);
+
+            if ($date_now < $pagePublishTime) {
+                //Not found Page
+                $this->error404();
+                return;
+            }
+
+            $data['page'] = $pageInfo;
+            $data['meta'] = $this->getPageMetas($pageInfo);
+            $data['title'] = $pageInfo->page_data["title"] ? config("SITE_TITLE") . " - " . $pageInfo->page_data["title"] : config("SITE_TITLE") . " - " . $pageInfo->title;
+            $data['layout'] = $pageInfo->layout == 'default' ? 'site' : $pageInfo->layout;
+            $data['headers_includes'] = isset($pageInfo->page_data["headers_includes"]) ? $pageInfo->page_data["headers_includes"] : "";
+            $data['footer_includes'] = isset($pageInfo->page_data["footer_includes"]) ? $pageInfo->page_data["footer_includes"] : "";
+            $template = $pageInfo->template == 'default' ? 'template' : $pageInfo->template;
+
+            /* if (getThemePath()) {
+            $this->blade->changePath(getThemePath());
+            } */
+
+            $this->load->model('Admin/Menu');
+            $menu = new Menu();
+            $menu->find_with(['menu_id' => 1]);
+
+            $data["menu"] = $menu;
+
+            if (getThemePath()) {
+                $this->blade->changePath(getThemePath());
+            }
+
+            echo $this->blade->view("site.templates." . $template, $data);
+        }else{
+            $data['title'] = config("SITE_TITLE") . " - Home";
+            if (getThemePath()) {
+                $this->blade->changePath(getThemePath());
+            }
+            echo $this->blade->view("site.home", $data);
+        }
+    }
+
     public function preview()
     {
         $pageInfo = new Page();

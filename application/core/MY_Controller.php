@@ -117,7 +117,10 @@ class Base_Controller extends CI_Controller
         $data['title'] = "404";
         $url = uri_string();
         if (stristr($url, 'admin') === false) {
-            echo $this->blade->view("error404", $data);
+            if (getThemePath()) {
+                $this->blade->changePath(getThemePath());
+            }
+            echo $this->blade->view("site.error404", $data);
         } else {
             if (!$this->session->userdata('logged_in')) {
                 $uri = str_replace('/', '_', uri_string());

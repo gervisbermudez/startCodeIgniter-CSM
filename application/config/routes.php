@@ -49,7 +49,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | Examples:    my-controller/index    -> my_controller/index
 |        my-controller/my-method    -> my_controller/my_method
  */
-$route['default_controller'] = 'SiteController';
+$route['default_controller'] = 'PageController/home';
 $route['404_override'] = 'PageController';
 $route['translate_uri_dashes'] = false;
 $route['admin'] = 'admin/admin';
@@ -61,6 +61,7 @@ $route['sitemap'] = 'PageController/siteMap';
 
 //Blog pages
 $route['feed'] = 'BlogController/blogFeed';
+$route['blog'] = 'BlogController/list';
 $route['blog/(:any)'] = 'BlogController/get_blog/$1';
 $route['blog/(:any)/(:any)'] = 'BlogController/get_blog_categorie/$1/$2';
 $route['blog/(:any)/(:any)/(:any)'] = 'BlogController/get_blog_subcategorie/$1/$2/$3';
