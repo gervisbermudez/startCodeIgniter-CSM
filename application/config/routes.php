@@ -64,15 +64,3 @@ $route['feed'] = 'BlogController/blogFeed';
 $route['blog/(:any)'] = 'BlogController/get_blog/$1';
 $route['blog/(:any)/(:any)'] = 'BlogController/get_blog_categorie/$1/$2';
 $route['blog/(:any)/(:any)/(:any)'] = 'BlogController/get_blog_subcategorie/$1/$2/$3';
-
-//Site Pages
-$route['about'] = 'SiteController/about';
-$route['services'] = 'SiteController/services';
-$route['contact'] = 'SiteController/contact';
-$route['faq'] = 'SiteController/faq';
-$route['pricing'] = 'SiteController/pricing';
-$route['sidebar'] = 'SiteController/sidebar';
-$route['full-width'] = 'SiteController/fullWidth';
-$route['blog'] = 'BlogController/list';
-$route['portfolio'] = 'SiteController/portfolio';
-$route['portfolio-item'] = 'SiteController/portfolioItem';

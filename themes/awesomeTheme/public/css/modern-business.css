@@ -23,4 +23,11 @@ body {
 
 figure.wp-block-image img {
   max-width: 100%;
+  margin: auto;
+  display: inherit;
+}
+
+small {
+  display: inline-block;
+  margin: 0px 10px;
 }

@@ -1919,6 +1919,11 @@ a.components-button.editor-post-preview {
   display: none;
 }
 
+iframe.components-sandbox {
+  width: 100%;
+  border: none;
+}
+
 .preview-container {
   position: relative;
   overflow: hidden;
