@@ -56,6 +56,8 @@ $route['admin'] = 'admin/admin';
 $route['admin/offline'] = 'admin/admin/offline';
 //Pages system
 $route['admin/paginas/preview'] = 'PageController/preview';
+$route['sitemap\.xml'] = 'PageController/siteMap';
+$route['sitemap'] = 'PageController/siteMap';
 
 //Blog pages
 $route['feed'] = 'BlogController/blogFeed';

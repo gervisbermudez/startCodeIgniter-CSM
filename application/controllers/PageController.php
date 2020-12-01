@@ -43,14 +43,14 @@ class PageController extends Base_Controller
         $template = $pageInfo->template == 'default' ? 'template' : $pageInfo->template;
 
         /* if (getThemePath()) {
-            $this->blade->changePath(getThemePath());
+        $this->blade->changePath(getThemePath());
         } */
 
         $this->load->model('Admin/Menu');
         $menu = new Menu();
         $menu->find_with(['menu_id' => 1]);
-        
-        $data["menu"] = $menu; 
+
+        $data["menu"] = $menu;
 
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
@@ -83,9 +83,16 @@ class PageController extends Base_Controller
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
-        
+
         echo $this->blade->view("site.templates." . $template, $data);
 
+    }
+
+    public function siteMap()
+    {
+        $data['pages'] = $this->Page->where(["status" => 1]);
+        header("Content-Type: text/xml;charset=iso-8859-1");
+        echo $this->blade->view("admin.xml.sitemap", $data);
     }
 
 }
