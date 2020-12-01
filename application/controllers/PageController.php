@@ -63,7 +63,7 @@ class PageController extends Base_Controller
     public function preview()
     {
         $pageInfo = new Page();
-        $result = $pageInfo->find_with(array('page_id' => $this->input->get('page_id'), 'status' => 2));
+        $result = $pageInfo->find_with(array('page_id' => $this->input->get('page_id')));
 
         if (!$result) {
             //Not found Page

@@ -602,3 +602,41 @@ Vue.component("confirmModal", {
     },
   },
 });
+
+Vue.component("preview", {
+  props: ["url"],
+  data() {
+    return {
+      fullScreen: false,
+      previewUrl: ''
+    }
+  },
+  template: `
+  <div class="preview-container" v-bind:class="{fixed: fullScreen}">
+    <div class="preview-options">
+    <input type="text" name="url" id="url" v-model="previewUrl">
+    <a href="#!" class="option"><i class="material-icons" v-on:click="togglePreview();">zoom_out_map</i></a>
+    <a href="#!" class="option"><i class="material-icons" v-on:click="expand();">aspect_ratio</i></a>
+    </div>
+    <iframe class="responsive-iframe" :src="previewUrl"></iframe>
+  </div>
+  `,
+  watch: {
+    url: function (val) {
+      this.previewUrl = val;
+    }
+  },
+  mounted() {
+    this.$nextTick(function () {
+      this.previewUrl = this.url;
+    });
+  },
+  methods: {
+    togglePreview() {
+      this.fullScreen = !this.fullScreen;
+    },
+    expand() {
+      this.$emit("expand");
+    },
+  },
+});

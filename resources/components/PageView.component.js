@@ -112,6 +112,7 @@ var PageNewForm = new Vue({
         content: "",
       },
     ],
+    fullView: false,
   },
   mixins: [mixins],
   computed: {
@@ -167,6 +168,12 @@ var PageNewForm = new Vue({
     },
   },
   methods: {
+    toggleFullView: function () {
+        this.fullView = !this.fullView;
+    },
+    expandView: function () {
+      this.fullView = !this.fullView;
+    },
     addCustomMeta() {
       this.customMetas.push({
         name: "",
@@ -254,26 +261,6 @@ var PageNewForm = new Vue({
       let slug = this.string_to_slug(value);
       this.path = slug;
       this.setMetaContent(BASEURL + slug, "og:url");
-    },
-    string_to_slug: function (str) {
-      if (str.length == 0) return "";
-
-      str = str.replace(/^\s+|\s+$/g, ""); // trim
-      str = str.toLowerCase();
-
-      // remove accents, swap ñ for n, etc
-      var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
-      var to = "aaaaeeeeiiiioooouuuunc------";
-      for (var i = 0, l = from.length; i < l; i++) {
-        str = str.replace(new RegExp(from.charAt(i), "g"), to.charAt(i));
-      }
-
-      str = str
-        .replace(/[^a-z0-9 -]/g, "") // remove invalid chars
-        .replace(/\s+/g, "-") // collapse whitespace and replace by -
-        .replace(/-+/g, "-"); // collapse dashes
-
-      return str;
     },
     validateField(field) {
       let self = UserNewForm;
@@ -383,143 +370,12 @@ var PageNewForm = new Vue({
       });
       return tags;
     },
-    getTemplates() {
-      var self = this;
-      var url = BASEURL + "api/v1/pages/templates";
-      $.ajax({
-        type: "GET",
-        url: url,
-        data: {},
-        dataType: "json",
-        success: function (response) {
-          self.loader = false;
-          self.debug ? console.log(url, response) : null;
-          if (response.code == 200) {
-            self.templates = response.data.templates.map(function (value) {
-              let template = value.split(".")[0];
-              return template == "template" ? "default" : template;
-            });
-            self.layouts = response.data.layouts.map(function (value) {
-              let layout = value.split(".")[0];
-              return layout == "site" ? "default" : layout;
-            });
-          }
-        },
-        error: function (error) {
-          self.debug ? console.log(error) : null;
-          self.loader = false;
-        },
-      });
-    },
-    getSelectedPageType() {
-      return this.pageTypes.filter((value, index) => {
-        return this.page_type_id == value.page_type_id;
-      });
-    },
-    getSelectedCategorie() {
-      return this.categories.filter((value, index) => {
-        return this.categorie_id == value.categorie_id;
-      });
-    },
-    getSelectedSubCategorie() {
-      return this.subcategories.filter((value, index) => {
-        return this.subcategorie_id == value.categorie_id;
-      });
-    },
-    serverValidation(field) {
-      var self = this;
-      var url = BASEURL + "admin/usuarios/ajax_check_field";
-      $.ajax({
-        type: "POST",
-        url: url,
-        data: {
-          field: field,
-          value: self.form.fields[field].value,
-        },
-        dataType: "json",
-        success: function (response) {
-          self.debug ? console.log(url, response) : null;
-          if (response.code) {
-            self.form.fields[field].valid = response.data;
-            if (response.data) {
-              self.form.markFieldAsValid(field);
-            } else {
-              self.form.fields[field].errorText =
-                "The " + field + " is already registered";
-            }
-            self.$forceUpdate();
-          }
-        },
-      });
-    },
-    getPageTypes() {
-      var self = this;
-      var url = BASEURL + "api/v1/pages/types";
-      $.ajax({
-        type: "GET",
-        url: url,
-        data: {},
-        dataType: "json",
-        success: function (response) {
-          self.debug ? console.log(url, response) : null;
-          self.loader = false;
-          if (response.code == 200) {
-            self.pageTypes = response.data;
-          }
-        },
-        error: function (error) {
-          self.debug ? console.log(error) : null;
-          self.loader = false;
-        },
-      });
-    },
-    getCategories() {
-      var self = this;
-      var url = BASEURL + "api/v1/categorie/type/page";
-      $.ajax({
-        type: "GET",
-        url: url,
-        data: {},
-        dataType: "json",
-        success: function (response) {
-          self.loader = false;
-          self.debug ? console.log(url, response) : null;
-          if (response.code == 200) {
-            self.categories = response.data;
-          }
-        },
-        error: function (error) {
-          self.debug ? console.log(error) : null;
-          self.loader = false;
-        },
-      });
-    },
-    getSubCategories() {
-      var self = this;
-      var url = BASEURL + "api/v1/categorie/subcategorie/" + self.categorie_id;
-      $.ajax({
-        type: "GET",
-        url: url,
-        data: {},
-        dataType: "json",
-        success: function (response) {
-          self.debug ? console.log(url, response) : null;
-          self.loader = false;
-          if (response.code == 200) {
-            self.subcategories = response.data;
-            PageNewForm.initSelects();
-          }
-        },
-        error: function (error) {
-          self.debug ? console.log(error) : null;
-          self.loader = false;
-        },
-      });
+    getUrl(){
+        return BASEURL + this.path
     },
     checkEditMode() {
       var page_id = document.getElementById("page_id").value;
       var editMode = document.getElementById("editMode").value;
-      localStorage.removeItem("g-editor-page");
       if (page_id && editMode == "edit") {
         var self = this;
         self.editMode = true;
@@ -543,75 +399,18 @@ var PageNewForm = new Vue({
               self.pageTypes = response.data.page_types;
               self.page_type_id = response.data.page.page_type_id;
               self.page_data = response.data.page.page_data;
-              const instance = M.Chips.getInstance(
-                document.getElementById("pageTags")
-              );
-              self.page_data.tags
-                ? self.page_data.tags.forEach((element) => {
-                    instance.addChip({
-                      tag: element,
-                    });
-                  })
-                : null;
-              response.data.page.page_data.meta
-                ? (self.metas = response.data.page.page_data.meta)
-                : null;
               self.user = new User(response.data.page.user);
-              if (response.data.page.main_image) {
-                self.mainImage.push(response.data.page.main_image);
-              }
-              self.templates = response.data.templates.map(function (value) {
-                let template = value.split(".")[0];
-                return template == "template" ? "default" : template;
-              });
-              self.layouts = response.data.layouts.map(function (value) {
-                let layout = value.split(".")[0];
-                return layout == "site" ? "default" : layout;
-              });
               self.content = response.data.page;
               self.setEditorContent(response.data.page);
             }
-            setTimeout(() => {
-              M.updateTextFields();
-            }, 1000);
           })
           .catch((response) => {
-            M.toast({ html: response.responseJSON.error_message });
             self.loader = false;
           });
-      } else {
-        this.getPageTypes();
-        this.getTemplates();
       }
     },
-    copyCallcack(files) {
-      let file = files[0];
-      this.mainImage.push(file);
-      let instance = M.Modal.getInstance($("#fileUploader"));
-      instance.close();
-    },
     initPlugins() {
-      M.Chips.init(document.getElementById("pageTags"), {});
-      tinymce.init({
-        selector: "#id_cazary",
-        plugins: ["link table code"],
-        setup: (editor) => {
-          editor.on("Change", (e) => {
-            PageNewForm.content = tinymce.editors["id_cazary"].getContent();
-            let content = this.getcontentText(PageNewForm.content, 200);
-            content = content.replace(/(\r\n|\n|\r)/gm, "");
-            this.setMetaContent(content, "description");
-            this.setMetaContent(content, "og:description");
-            this.setMetaContent(content, "twitter:description");
-          });
-        },
-      });
       setTimeout(() => {
-        M.Tabs.init(document.getElementById("formTabs"), {});
-        var elems = document.getElementById("pageMetas");
-        var instances = M.Collapsible.init(elems, {
-          accordion: false,
-        });
         var elems = document.querySelectorAll(".datepicker");
         M.Datepicker.init(elems, {
           format: "yyyy-mm-dd",
@@ -631,7 +430,6 @@ var PageNewForm = new Vue({
             ).value;
           },
         });
-        this.initSelects();
       }, 1000);
     },
     initSelects() {
@@ -667,7 +465,7 @@ var PageNewForm = new Vue({
           "wp:action-create-categories": [],
         },
       };
- 
+
       localStorage.setItem("g-editor-page", JSON.stringify(content));
     },
   },
@@ -676,7 +474,6 @@ var PageNewForm = new Vue({
       this.debug ? console.log("mounted PageNewForm") : null;
       this.initPlugins();
       this.checkEditMode();
-      this.getCategories();
     });
   },
 });
