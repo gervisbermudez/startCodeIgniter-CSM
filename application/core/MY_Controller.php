@@ -78,6 +78,10 @@ class Base_Controller extends CI_Controller
         parent::__construct();
 
         $this->load_config();
+        $this->load->library('Track_Visitor');
+        if(config('SITEM_TRACK_VISITORS') == 'Si'){
+            $this->track_visitor->visitor_track();
+        }
     }
 
     public function getPageMetas($page)
