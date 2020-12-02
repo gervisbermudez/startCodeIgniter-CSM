@@ -10,11 +10,31 @@ Vue.component("configuration", {
     };
   },
   mixins: [mixins],
+  computed: {
+    isChecked() {
+      return (this.configuration.config_value == this.configuration.config_data.true);
+    },
+  },
   methods: {
     toggleEddit() {
       this.configuration.editable = !this.configuration.editable;
       this.$forceUpdate();
     },
+    switchCahnged($event) {
+      let isChecked = $event.target.checked;
+      if (isChecked) {
+        this.configuration.config_value = this.configuration.config_data.true;
+      } else {
+        this.configuration.config_value = this.configuration.config_data.true;
+        this.configuration.config_data.perm_values.forEach((element) => {
+          if (element != this.configuration.config_data.true) {
+            this.configuration.config_value = element;
+          }
+        });
+      }
+      this.runSave();
+    },
+
     saveConfig() {
       var self = this;
       this.toggleEddit();

@@ -5,7 +5,7 @@
 				<div class="switch" v-if="handle_value_as == 'switch'">
 					<label>
 						@{{configuration.config_data.perm_values[0]}}
-						<input type="checkbox" v-model="configuration.config_value" v-on:change="saveConfig();">
+						<input type="checkbox" :checked="isChecked" v-on:change="switchCahnged($event);">
 						<span class="lever"></span>
 						@{{configuration.config_data.perm_values[1]}}
 					</label>
