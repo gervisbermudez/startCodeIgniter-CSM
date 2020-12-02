@@ -44,8 +44,21 @@ class MY_model extends CI_Model implements JsonSerializable
      * Return all records found on a table or false if nothing is found
      * @return Collection
      */
-    public function all()
+    public function all($limit = array(), $order = array())
     {
+        if($limit && is_array($limit)){
+            if(isset($limit[1])){
+                $this->db->limit($limit[0], $limit[1]);
+            } else{
+                $this->db->limit($limit[0]);
+            }
+        }
+        if ($order) {
+            $this->db->order_by($order[0], $order[1]);
+        } else {
+            $this->db->order_by($this->primaryKey, 'ASC');
+        }
+
         $this->db->select($this->getFieldsSelectCompile());
         $this->db->where(array('status' => 1));
         $query = $this->db->get($this->table);
@@ -55,6 +68,43 @@ class MY_model extends CI_Model implements JsonSerializable
         }
 
         return false;
+    }
+
+    public function pager()
+    {
+        $pagination_info = $this->get_pagination_info();
+        $limit = [$pagination_info["per_page"], $pagination_info["offset"]];
+        return $this->all($limit);
+    }
+
+    public function get_pagination_info()
+    {
+        if (isset($_GET['page'])) {
+            $current_page = $_GET['page'];
+        } else {
+            $current_page = 1;
+        }
+        $per_page = 25;
+        $total_rows = $this->get_count_all();
+        $offset = (($current_page - 1) * $per_page) + 1;
+        $total_pages = ceil($total_rows / $per_page);
+
+        return [
+            "current_page" => $current_page,
+            "per_page" => $per_page,
+            "total_rows" => $total_rows,
+            "offset" => $offset,
+            "total_pages" => $total_pages,
+            "first_page" => 1,
+            "last_page" => $total_pages,
+            "next_page" => $current_page + 1,
+            "prev_page" => $current_page - 1,
+        ];
+    }
+
+    public function get_count_all()
+    {
+        return $this->db->count_all($this->table);
     }
 
     /**
@@ -218,7 +268,13 @@ class MY_model extends CI_Model implements JsonSerializable
      */
     public function get_data($where = 'all', $limit = '', $order = array())
     {
-        $limit ? $this->db->limit($limit) : null;
+        if($limit && is_array($limit)){
+            if(isset($limit[1])){
+                $this->db->limit($limit[0], $limit[1]);
+            } else{
+                $this->db->limit($limit[0]);
+            }
+        }
 
         if ($order) {
             $this->db->order_by($order[0], $order[1]);

@@ -53,6 +53,16 @@
                 </table>
             </div>
         </div>
+        <div class="row" v-if="showPagination">
+            <div class="col s12">
+                <ul class="pagination">
+                    <li v-for="(link, index) in paginatorLinks" :key="index" :class="link.class">
+                        <a v-if="link.class !== 'disabled'" v-on:click="pagerTo(link.page);" v-html="link.label"></a>
+                        <a v-else v-html="link.label"></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
     <div class="container" v-if="!loader && data.length == 0" v-cloak>
         <h4>No hay datos para mostrar</h4>
@@ -67,7 +77,7 @@
         </p>
     </confirm-modal>
     <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-        <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" 
+        <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped"
         v-on:click="createItem()"
         data-position="left" data-delay="50" data-tooltip="Add item">
             <i class="large material-icons">add</i>

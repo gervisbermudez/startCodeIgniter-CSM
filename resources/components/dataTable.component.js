@@ -18,6 +18,11 @@ var dataTable = Vue.component("dataTable", {
       required: false,
       default: null,
     },
+    pagination: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     module: {
       type: String,
       required: false,
@@ -26,6 +31,9 @@ var dataTable = Vue.component("dataTable", {
   data: function () {
     return {
       data: [],
+      showPagination: false,
+      paginator: {},
+      paginatorLinks: [],
       labels: [
         {
           colum: "name",
@@ -69,12 +77,43 @@ var dataTable = Vue.component("dataTable", {
       this.tableView = !this.tableView;
       this.initPlugins();
     },
+    set_paginatorLinks: function () {
+      if (this.showPagination) {
+        let links = [];
+        links.push({
+          page: this.paginator.prev_page,
+          label: '<i class="material-icons">chevron_left</i>',
+          class: this.paginator.prev_page == 0 ? "disabled" : "waves-effect",
+        });
+        for (let index = 1; index <= this.paginator.total_pages; index++) {
+          links.push({
+            page: index,
+            label: index,
+            class:
+              this.paginator.current_page == index ? "active" : "waves-effect",
+          });
+        }
+        links.push({
+          page: this.paginator.next_page,
+          label: '<i class="material-icons">chevron_right</i>',
+          class:
+            this.paginator.next_page > this.paginator.total_pages
+              ? "disabled"
+              : "waves-effect",
+        });
+        return (this.paginatorLinks = links);
+      }
+      return null;
+    },
     toggleEddit(configuration) {
       configuration.editable = !configuration.editable;
       this.$forceUpdate();
     },
     resetFilter: function () {
       this.filter = "";
+    },
+    pagerTo(page) {
+      this.getData(page);
     },
     initPlugins: function () {
       setTimeout(() => {
@@ -88,10 +127,14 @@ var dataTable = Vue.component("dataTable", {
         M.FormSelect.init(elems, {});
       }, 3000);
     },
-    getData: function () {
+    getData: function (page = 1) {
       var self = this;
       self.loader = true;
-      var url = BASEURL + this.endpoint;
+      if (this.pagination) {
+        var url = BASEURL + this.endpoint + "?page=" + page;
+      } else {
+        var url = BASEURL + this.endpoint;
+      }
       fetch(url)
         .then((response) => response.json())
         .then((response) => {
@@ -118,6 +161,19 @@ var dataTable = Vue.component("dataTable", {
               };
             });
           }
+          if (response.current_page && this.pagination) {
+            this.showPagination = true;
+            this.paginator.current_page = response.current_page;
+            this.paginator.per_page = response.per_page;
+            this.paginator.total_rows = response.total_rows;
+            this.paginator.offset = response.offset;
+            this.paginator.total_pages = response.total_pages;
+            this.paginator.first_page = response.first_page;
+            this.paginator.last_page = response.last_page;
+            this.paginator.next_page = response.next_page;
+            this.paginator.prev_page = response.prev_page;
+            this.set_paginatorLinks();
+          }
           self.data = data;
           self.loader = false;
           this.initPlugins();
@@ -129,7 +185,7 @@ var dataTable = Vue.component("dataTable", {
     getContent(item, colum) {
       let label = colum.colum;
       if (colum.format && typeof colum.format == "function") {
-        return colum.format(item, colum)
+        return colum.format(item, colum);
       }
       let result = "";
       switch (label) {
@@ -177,7 +233,7 @@ var dataTable = Vue.component("dataTable", {
         name: "edit",
         params: {
           data: {
-            mode: "new"
+            mode: "new",
           },
         },
       });

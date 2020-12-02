@@ -86,28 +86,11 @@ class Config extends REST_Controller
         }
 
         if ($result) {
-            $response = array(
-                'code' => 200,
-                'data' => $result,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($result);
             return;
         }
 
-        if ($site_config_id) {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => [],
-                'requets_data' => $_POST,
-            );
-        }
-        $this->response($response, REST_Controller::HTTP_OK);
+        $this->response_error(lang('not_found_error'));
     }
 
     /**
@@ -127,23 +110,11 @@ class Config extends REST_Controller
         $configuration->date_create = date("Y-m-d H:i:s");
 
         if ($configuration->save()) {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => $configuration,
-            );
-
-            $this->response($response, REST_Controller::HTTP_OK);
-
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_BAD_REQUEST,
-                "error_message" => lang('unexpected_error'),
-                'data' => $_POST,
-                'request_data' => $_POST,
-            );
-
-            $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
+            $this->response_ok($configuration);
+            return;
         }
+
+        $this->response_error(lang('unexpected_error'), REST_Controller::HTTP_BAD_REQUEST);
 
     }
 
@@ -156,7 +127,6 @@ class Config extends REST_Controller
     {
         $data = array();
         $this->response($data, REST_Controller::HTTP_NOT_FOUND);
-
     }
 
     /**
@@ -212,7 +182,7 @@ class Config extends REST_Controller
                 $folder_name = substr($key, 0, -1);
                 $folder = str_replace('\\', '/', $key);
                 $file_path = FCPATH . 'themes/' . $folder . "theme_info.json";
-                if(file_exists($file_path)){
+                if (file_exists($file_path)) {
                     $string = file_get_contents($file_path);
                     $json_a = json_decode($string, true);
                     $response[$folder_name] = $json_a;
@@ -329,32 +299,15 @@ class Config extends REST_Controller
             $result = $Logger->where(["site_config_id" => $logger_id]);
             $result = $result ? $result->first() : [];
         } else {
-            $result = $Logger->all();
+            $result = $Logger->pager();
         }
 
         if ($result) {
-            $response = array(
-                'code' => 200,
-                'data' => $result,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($result, $Logger->get_pagination_info());
             return;
         }
 
-        if ($logger_id) {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => [],
-                'requets_data' => $_POST,
-            );
-        }
-        $this->response($response, REST_Controller::HTTP_OK);
+        $this->response_error(lang('not_found_error'), $Logger->get_pagination_info());
     }
 
 }

@@ -9,6 +9,7 @@
     :module="'usuarios/permissions/'"
     :colums="colums"
     :index_data="index_data"
+    :pagination="true"
   ></router-view>
 </div>
 @endsection

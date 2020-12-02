@@ -2130,4 +2130,30 @@ abstract class REST_Controller extends \CI_Controller
         }
     }
 
+    public function response_ok($result, $extradata = array())
+    {
+        $response = array(
+            'code' => 200,
+            'data' => $result,
+        );
+
+        $response = array_merge($response, $extradata);
+
+        $this->response($response, REST_Controller::HTTP_OK);
+    }
+
+    public function response_error($error_message, $extradata = array(), $code = REST_Controller::HTTP_NOT_FOUND)
+    {
+        $response = array(
+            'code' => $code,
+            'data' => [],
+            "error_message" => $error_message,
+            'requets_data' => $_POST,
+        );
+
+        $response = array_merge($response, $extradata);
+
+        $this->response($response, REST_Controller::HTTP_OK);
+    }
+
 }
