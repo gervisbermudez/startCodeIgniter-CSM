@@ -68,6 +68,9 @@ class Track_Visitor {
             if (in_array($this->ci->input->server('REMOTE_ADDR'), $this->IP_IGNORE_LIST)) {
                 $proceed = FALSE;
             }
+            if(userdata('logged_in')){
+                $proceed = false;
+            }
             if ($proceed === TRUE) {
                 $this->log_visitor();
             }
@@ -90,7 +93,7 @@ class Track_Visitor {
                 $query_string = strlen($query_params) ? $query_params : '';
                 $data = array(
                     'no_of_visits' => $no_of_visits,
-                    'ip_address' => $this->ci->input->server('REMOTE_ADDR'),
+                    'client_ip' => $this->ci->input->server('REMOTE_ADDR'),
                     'requested_url' => $this->ci->input->server('REQUEST_URI'),
                     'referer_page' => $this->ci->agent->referrer(),
                     'user_agent' => $this->ci->agent->agent_string(),

@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS `user_tracking` (
   `user_tracking_id` int(11) NOT NULL AUTO_INCREMENT,
   `site_log_id` int(11) NOT NULL DEFAULT 0,
   `visits_count` int(11) NOT NULL DEFAULT 0,
+  `no_of_visits` int(11) NOT NULL DEFAULT 0,
   `client_ip` varchar(500) NOT NULL DEFAULT '0',
   `user_agent` varchar(500) NOT NULL DEFAULT '0',
   `requested_url` varchar(500) NOT NULL DEFAULT '0',
@@ -28,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `user_tracking` (
   `date_update` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `date_delete` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`user_tracking_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Volcando datos para la tabla start_cms.user_tracking: ~0 rows (aproximadamente)
 DELETE FROM `user_tracking`;
