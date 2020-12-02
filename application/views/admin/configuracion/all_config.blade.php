@@ -4,11 +4,12 @@
 @endsection
 
 @section('head_includes')
-<link rel="stylesheet" href="<?=base_url('public/css/admin/form.min.css')?>">
+
 @endsection
 
 @section('content')
 <div id="root" class="configuration-root">
+    <transition>
     <div class="row" v-show="sectionActive == 'home'">
         <div class="col s12 m3">
             <div v-on:click="changeSectionActive('general')" class="config-card card-panel blue">
@@ -179,6 +180,7 @@
             </div>
         </div>
     </div>
+    </transition>
     <transition name="fade">
         <div v-show="sectionActive == 'analytics'" class="container form">
             <div class="row">
