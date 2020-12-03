@@ -1,6 +1,15 @@
 Vue.component("FileExplorerSelector", {
   template: "#file-explorar-selector",
-  props: ["mode", "multiple", "filter", "modal", "ignore", "preselected", "uploader", "initialdir"], //mode Can be "all", "files", "folders"
+  props: [
+    "mode",
+    "multiple",
+    "filter",
+    "modal",
+    "ignore",
+    "preselected",
+    "uploader",
+    "initialdir",
+  ], //mode Can be "all", "files", "folders"
   data: function () {
     return {
       debug: DEBUGMODE,
@@ -17,10 +26,10 @@ Vue.component("FileExplorerSelector", {
     };
   },
   mixins: [mixins],
-  watch: { 
-    initialdir: function(newVal) {
+  watch: {
+    initialdir: function (newVal) {
       this.curDir = newVal;
-    }
+    },
   },
   computed: {
     selected() {
@@ -96,14 +105,14 @@ Vue.component("FileExplorerSelector", {
         url: BASEURL + "api/v1/files/make_dir",
         data: {
           path: self.curDir,
-          new_folder_name: $("#folder_name").val()
+          new_folder_name: $("#folder_name").val(),
         },
         dataType: "json",
         success: function (response) {
           console.log(response);
           self.create_folder_process = false;
           self.navigateFiles(self.curDir);
-        } 
+        },
       });
     },
     showCheckbox(file) {
@@ -173,6 +182,7 @@ Vue.component("FileExplorerSelector", {
           icon = "far fa-folder";
           break;
         case "jpg":
+        case "jpeg":
         case "png":
         case "gif":
           icon = "fas fa-file-image";
@@ -217,6 +227,7 @@ Vue.component("FileExplorerSelector", {
     isImage(file) {
       if (
         file.file_type == "jpg" ||
+        file.file_type == "jpeg" ||
         file.file_type == "png" ||
         file.file_type == "gif"
       ) {
@@ -336,17 +347,18 @@ Vue.component("FileExplorerSelector", {
       }, 3000);
     },
     initUploader() {
-        $("#input-100").fileinput({
+      $("#input-100")
+        .fileinput({
           uploadUrl: BASEURL + "admin/archivos/ajax_upload_file",
           enableResumableUpload: true,
           resumableUploadOptions: {
-          // uncomment below if you wish to test the file for previous partial uploaded chunks
-          // to the server and resume uploads from that point afterwards
-          // testUrl: "http://localhost/test-upload.php"
+            // uncomment below if you wish to test the file for previous partial uploaded chunks
+            // to the server and resume uploads from that point afterwards
+            // testUrl: "http://localhost/test-upload.php"
           },
           uploadExtraData: {
-              'uploadToken': 'SOME-TOKEN', // for access control / security
-              'curDir': this.curDir || "./uploads/"
+            uploadToken: "SOME-TOKEN", // for access control / security
+            curDir: this.curDir || "./uploads/",
           },
           showCancel: true,
           initialPreview: [],
@@ -357,54 +369,69 @@ Vue.component("FileExplorerSelector", {
             showZoom: false,
             showDrag: true,
             removeIcon: '<i class="fas fa-trash"></i>',
-            removeClass: 'btn btn-sm btn-kv btn-default btn-outline-secondary',
-            removeErrorClass: 'btn btn-sm btn-kv btn-danger',
-            removeTitle: 'Remove file',
+            removeClass: "btn btn-sm btn-kv btn-default btn-outline-secondary",
+            removeErrorClass: "btn btn-sm btn-kv btn-danger",
+            removeTitle: "Remove file",
             uploadIcon: '<i class="fas fa-upload"></i>',
-            uploadClass: 'btn btn-sm btn-kv btn-default btn-outline-secondary',
-            uploadTitle: 'Upload file',
+            uploadClass: "btn btn-sm btn-kv btn-default btn-outline-secondary",
+            uploadTitle: "Upload file",
             uploadRetryIcon: '<i class="glyphicon glyphicon-repeat"></i>',
-            uploadRetryTitle: 'Retry upload',
+            uploadRetryTitle: "Retry upload",
             downloadIcon: '<i class="fas fa-download"></i>',
-            downloadClass: 'btn btn-sm btn-kv btn-default btn-outline-secondary',
-            downloadTitle: 'Download file',
+            downloadClass:
+              "btn btn-sm btn-kv btn-default btn-outline-secondary",
+            downloadTitle: "Download file",
             zoomIcon: '<i class="fas fa-search-plus"></i>',
-            zoomClass: 'btn btn-sm btn-kv btn-default btn-outline-secondary',
-            zoomTitle: 'View Details',
+            zoomClass: "btn btn-sm btn-kv btn-default btn-outline-secondary",
+            zoomTitle: "View Details",
             dragIcon: '<i class="fas fa-arrows-alt"></i>',
-            dragClass: 'text-info',
-            dragTitle: 'Move / Rearrange',
+            dragClass: "text-info",
+            dragTitle: "Move / Rearrange",
             dragSettings: {},
-            indicatorNew: '<i class="glyphicon glyphicon-plus-sign text-warning"></i>',
-            indicatorSuccess: '<i class="glyphicon glyphicon-ok-sign text-success"></i>',
-            indicatorError: '<i class="glyphicon glyphicon-exclamation-sign text-danger"></i>',
-            indicatorLoading: '<i class="glyphicon glyphicon-hourglass text-muted"></i>',
-            indicatorPaused: '<i class="glyphicon glyphicon-pause text-primary"></i>',
-            indicatorNewTitle: 'Not uploaded yet',
-            indicatorSuccessTitle: 'Uploaded',
-            indicatorErrorTitle: 'Upload Error',
-            indicatorLoadingTitle: 'Uploading ...',
-            indicatorPausedTitle: 'Upload Paused'
+            indicatorNew:
+              '<i class="glyphicon glyphicon-plus-sign text-warning"></i>',
+            indicatorSuccess:
+              '<i class="glyphicon glyphicon-ok-sign text-success"></i>',
+            indicatorError:
+              '<i class="glyphicon glyphicon-exclamation-sign text-danger"></i>',
+            indicatorLoading:
+              '<i class="glyphicon glyphicon-hourglass text-muted"></i>',
+            indicatorPaused:
+              '<i class="glyphicon glyphicon-pause text-primary"></i>',
+            indicatorNewTitle: "Not uploaded yet",
+            indicatorSuccessTitle: "Uploaded",
+            indicatorErrorTitle: "Upload Error",
+            indicatorLoadingTitle: "Uploading ...",
+            indicatorPausedTitle: "Upload Paused",
           },
-      uploadIcon: '<i class="fas fa-upload"></i>',
-      removeIcon: '<i class="fas fa-trash"></i>',
-      overwriteInitial: false,
+          uploadIcon: '<i class="fas fa-upload"></i>',
+          removeIcon: '<i class="fas fa-trash"></i>',
+          overwriteInitial: false,
           // initialPreview: [],          // if you have previously uploaded preview files
           // initialPreviewConfig: [],    // if you have previously uploaded preview files
-      deleteUrl: "http://localhost/file-delete.php",
-      progressClass: 'determinate progress-bar bg-success progress-bar-success progress-bar-striped active',
-      progressInfoClass: 'determinate progress-bar bg-info progress-bar-info progress-bar-striped active',
-      progressCompleteClass: 'determinate progress-bar bg-success progress-bar-success',
-      progressPauseClass: 'determinate progress-bar bg-primary progress-bar-primary progress-bar-striped active',
-      progressErrorClass: 'determinate progress-bar bg-danger progress-bar-danger',
-        }).on('fileuploaded', (event, previewId, index, fileId) => {
-        let instance = M.Tabs.init(document.getElementById("selectorTabs"), {});
-        instance.select('selector');
-        this.updateSelector()
-      });
+          deleteUrl: "http://localhost/file-delete.php",
+          progressClass:
+            "determinate progress-bar bg-success progress-bar-success progress-bar-striped active",
+          progressInfoClass:
+            "determinate progress-bar bg-info progress-bar-info progress-bar-striped active",
+          progressCompleteClass:
+            "determinate progress-bar bg-success progress-bar-success",
+          progressPauseClass:
+            "determinate progress-bar bg-primary progress-bar-primary progress-bar-striped active",
+          progressErrorClass:
+            "determinate progress-bar bg-danger progress-bar-danger",
+        })
+        .on("fileuploaded", (event, previewId, index, fileId) => {
+          let instance = M.Tabs.init(
+            document.getElementById("selectorTabs"),
+            {}
+          );
+          instance.select("selector");
+          this.updateSelector();
+        });
     },
     destroyFileinputInstance() {
-      $("#input-100").fileinput('destroy');
+      $("#input-100").fileinput("destroy");
     },
     updateSelector() {
       if (!this.preselected) {
@@ -416,7 +443,7 @@ Vue.component("FileExplorerSelector", {
         this.navigateFiles(this.root);
       }
       this.init();
-    }
+    },
   },
   filters: {
     shortName: function (value) {

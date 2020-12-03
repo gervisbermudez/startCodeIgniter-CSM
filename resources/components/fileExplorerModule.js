@@ -120,6 +120,7 @@ var fileExplorerModule = new Vue({
           icon = "far fa-folder";
           break;
         case "jpg":
+        case "jpeg":
         case "png":
         case "gif":
           icon = "fas fa-file-image";
@@ -164,6 +165,7 @@ var fileExplorerModule = new Vue({
     isImage(file) {
       if (
         file.file_type == "jpg" ||
+        file.file_type == "jpeg" ||
         file.file_type == "png" ||
         file.file_type == "gif"
       ) {
