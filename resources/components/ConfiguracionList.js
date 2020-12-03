@@ -53,6 +53,9 @@ var ConfiguracionList = new Vue({
     updaterConfig: function () {
       return this.filterConfigurations("updater");
     },
+    loggerConfig: function () {
+      return this.filterConfigurations("logger");
+    },
   },
   methods: {
     getConfig: function (e, t = "config_name") {

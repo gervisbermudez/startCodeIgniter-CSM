@@ -54,9 +54,9 @@
             </div>
         </div>
         <div class="col s12 m3">
-            <div v-on:click="changeSectionActive('analytics')" class="config-card card-panel teal">
+            <div class="config-card card-panel teal">
                 <div class="row">
-                    <div class="col s6">
+                    <div class="col s6" v-on:click="changeSectionActive('analytics')">
                         <div class="div">
                             <i class="material-icons medium white-text">insert_chart</i>
                         </div>
@@ -103,9 +103,9 @@
             </div>
         </div>
         <div class="col s12 m3">
-            <div v-on:click="changeSectionActive('pixel')" class="config-card card-panel deep-purple">
+            <div class="config-card card-panel deep-purple">
                 <div class="row">
-                    <div class="col s6">
+                    <div class="col s6" v-on:click="changeSectionActive('pixel')">
                         <div class="div">
                             <i class="material-icons medium white-text">insert_chart</i>
                         </div>
@@ -131,9 +131,9 @@
             </div>
         </div>
         <div class="col s12 m3">
-            <div v-on:click="changeSectionActive('database')" class="config-card card-panel amber">
+            <div class="config-card card-panel amber">
                 <div class="row">
-                    <div class="col s6">
+                    <div class="col s6" v-on:click="changeSectionActive('database')">
                         <div class="div">
                             <i class="material-icons medium white-text">sd_card</i>
                         </div>
@@ -179,13 +179,41 @@
                 </div>
             </div>
         </div>
+        <div class="col s12 m3">
+            <div class="config-card card-panel indigo">
+                <div class="row">
+                    <div class="col s6" v-on:click="changeSectionActive('logger')">
+                        <div class="div">
+                            <i class="material-icons medium white-text">list</i>
+                        </div>
+                        <div class="white-text">
+                            Logger
+                        </div>
+                    </div>
+                    <div class="col s6 tooltipped" data-position="bottom" data-tooltip="Ver más">
+                        <div class="info white-text right-align">
+                            System logger <br />
+                            <div class="switch">
+                                <label>
+                                    Off
+                                    <input type="checkbox" :checked="getConfigValueBoolean('SYSTEM_LOGGER')"
+                                        v-on:change="updateConfigCheckbox($event, 'SYSTEM_LOGGER')">
+                                    <span class="lever"></span>
+                                    On
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     </transition>
     <transition name="fade">
         <div v-show="sectionActive == 'analytics'" class="container form">
             <div class="row">
                 <div class="col s12">
-                    <h2>Google Analytics</h2>
+                    <h4>Google Analytics</h4>
                 </div>
             </div>
             <div class="row">
@@ -231,7 +259,7 @@
         <div v-show="sectionActive == 'pixel'" class="container form">
             <div class="row">
                 <div class="col s12">
-                    <h2>Facebook Pixel</h2>
+                    <h4>Facebook Pixel</h4>
                 </div>
             </div>
             <div class="row">
@@ -475,7 +503,7 @@
         <div v-show="sectionActive == 'database'" class="container form">
             <div class="row">
                 <div class="col s12">
-                    <h2>Manage Database</h2>
+                    <h4>Manage database backup</h4>
                 </div>
             </div>
             <div class="row">
@@ -521,7 +549,7 @@
         <div v-show="sectionActive == 'theme'" class="container form">
             <div class="row">
                 <div class="col s12">
-                    <h2>Manage Themes</h2>
+                    <h4>Manage Themes</h4>
                 </div>
             </div>
             <div class="row pages">
@@ -580,7 +608,7 @@
         <div v-show="sectionActive == 'updater'" class="container form">
             <div class="row">
                 <div class="col s12">
-                    <h2>Updater Manager</h2>
+                    <h4>Updater Manager</h4>
                 </div>
             </div>
             <div class="row" v-if="getConfig('UPDATER_LAST_CHECK_UPDATE')">
@@ -591,7 +619,7 @@
                     <div v-if="updaterInfo">
                         <div class="subtitle">
                             Current Start CMS Version:
-                        </div> 
+                        </div>
                         <ul class="collection" >
                             <li class="collection-item"><b>Name</b>: @{{updaterInfo.local.name}}</li>
                             <li class="collection-item"><b>Description</b>: @{{updaterInfo.local.description}}</li>
@@ -604,7 +632,7 @@
                     <div v-if="updaterInfo && (updaterInfo.remote.version > updaterInfo.local.version)">
                         <div class="subtitle">
                             Available Start CMS Version:
-                        </div> 
+                        </div>
                         <ul class="collection" >
                             <li class="collection-item"><b>Name</b>: @{{updaterInfo.remote.name}}</li>
                             <li class="collection-item"><b>Description</b>: @{{updaterInfo.remote.description}}</li>
@@ -642,7 +670,7 @@
                     </div>
                     <p v-if="!updaterProgress">
                         <a class="waves-effect waves-light btn" @click="downloadUpdateVersion()"><i
-                            class="material-icons left">file_download</i> Download Package</a> 
+                            class="material-icons left">file_download</i> Download Package</a>
                     </p>
                 </div>
                 <div class="col s12" v-if="updaterInfo && (updaterInfo.remote.version > updaterInfo.local.version) && updaterPackageDownloaded">
@@ -656,9 +684,112 @@
                     </div>
                     <p v-if="!updaterInstallProgress">
                         <a class="waves-effect waves-light btn" @click="installDownloadedPackage()"><i
-                            class="material-icons left">system_update_alt</i> Install Package</a> 
+                            class="material-icons left">system_update_alt</i> Install Package</a>
                     </p>
                 </div>
+            </div>
+        </div>
+    </transition>
+    <transition name="fade">
+        <div v-show="sectionActive == 'logger'">
+            <div class="col s12 center" v-bind:class="{ hide: !loader }">
+                <br><br>
+                <preloader />
+            </div>
+            <nav class="page-navbar" v-cloak v-show="!loader && configurations.length > 0">
+                <div class="nav-wrapper">
+                    <form>
+                        <div class="input-field">
+                            <input class="input-search" type="search" placeholder="Buscar..." v-model="filter">
+                            <label class="label-icon" for="search"><i class="material-icons">search</i></label>
+                            <i class="material-icons" v-on:click="resetFilter();">close</i>
+                        </div>
+                    </form>
+                    <ul class="right hide-on-med-and-down">
+                        <li><a href="#!" v-on:click="toggleView();"><i class="material-icons">view_module</i></a></li>
+
+                        <li><a href="#!" v-on:click="getPages();"><i class="material-icons">refresh</i></a></li>
+                        <li>
+                            <a href="#!" class='dropdown-trigger' data-target='dropdown-options'><i
+                                    class="material-icons">more_vert</i></a>
+                            <!-- Dropdown Structure -->
+                            <ul id='dropdown-options' class='dropdown-content'>
+                                <li><a href="#!">one</a></li>
+                                <li><a href="#!">two</a></li>
+                                <li class="divider" tabindex="-1"></li>
+                                <li><a href="#!">three</a></li>
+                                <li><a href="#!"><i class="material-icons">view_module</i>four</a></li>
+                                <li><a href="#!"><i class="material-icons">cloud</i>five</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <div class="configurations" v-cloak v-if="!loader && configurations.length > 0">
+                <div class="row" v-if="tableView">
+                    <div class="col s12">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Current Value</th>
+                                    <th>Categorie</th>
+                                    <th>Author</th>
+                                    <th>Publish Date</th>
+                                    <th>Status</th>
+                                    <th>Options</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(configuration, index) in loggerConfig" :key="index">
+                                    <td>@{{configuration.config_name}}</td>
+                                    <td>
+                                        <div class="input-field" v-if="configuration.editable">
+                                            <input id="last_name" type="text" class="validate"
+                                                v-model="configuration.config_value"
+                                                v-on:blur="saveConfig(configuration);">
+                                        </div>
+                                        <div v-else>
+                                            @{{configuration.config_value}}
+                                        </div>
+                                    </td>
+                                    <td>@{{configuration.config_type}}</td>
+                                    <td><a
+                                            :href="base_url('admin/usuarios/ver/' + configuration.user_id)">@{{configuration.user.get_fullname()}}</a>
+                                    </td>
+                                    <td>
+                                        @{{configuration.date_publish ? configuration.date_publish : configuration.date_create}}
+                                    </td>
+                                    <td>
+                                        <i v-if="configuration.status == 1" class="material-icons tooltipped"
+                                            data-position="bottom" data-delay="50" data-tooltip="Publicado">publish</i>
+                                        <i v-else class="material-icons tooltipped" data-position="bottom"
+                                            data-delay="50" data-tooltip="Borrador">edit</i>
+                                    </td>
+                                    <td>
+                                        <a class='dropdown-trigger' href='#!'
+                                            :data-target='"dropdown" + configuration.site_config_id'><i
+                                                class="material-icons">more_vert</i></a>
+                                        <ul :id='"dropdown" + configuration.site_config_id' class='dropdown-content'>
+                                            <li><a href="#!" v-on:click="toggleEddit(configuration);">Editar</a></li>
+                                            <li><a href="#!" v-on:click="deletePage(configuration, index);">Borrar</a>
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row" v-else>
+                    <div class="col s12">
+                        <configuration v-for="(configuration, index) in loggerConfig" :key="index"
+                            :configuration="configuration"></configuration>
+                    </div>
+                </div>
+            </div>
+            <div class="container" v-if="!loader && configurations.length == 0" v-cloak>
+                <h4>No hay Configuraciones</h4>
             </div>
         </div>
     </transition>
