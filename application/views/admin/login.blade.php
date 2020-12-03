@@ -3,7 +3,7 @@
 @section('content')
 <div class="cont" id="root">
     <div class="row">
-        <div class="col s5">
+        <div class="col s12 l5">
             <div class="row">
                 <div class="col s12" v-show="!loader">
                     <div class="img-container brand-logo">
@@ -82,7 +82,7 @@
                 </div>
             </div>
         </div>
-        <div class="col s7 wallpapper"></div>
+        <div class="col l7 hide-on-med-and-down wallpapper"></div>
     </div>
 </div>
 @endsection
