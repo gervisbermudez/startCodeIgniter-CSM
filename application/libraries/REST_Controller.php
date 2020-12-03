@@ -2142,7 +2142,7 @@ abstract class REST_Controller extends \CI_Controller
         $this->response($response, REST_Controller::HTTP_OK);
     }
 
-    public function response_error($error_message, $extradata = array(), $code = REST_Controller::HTTP_NOT_FOUND)
+    public function response_error($error_message, $extradata = array(), $code = REST_Controller::HTTP_NOT_FOUND, $response_code = REST_Controller::HTTP_OK)
     {
         $response = array(
             'code' => $code,
@@ -2153,7 +2153,7 @@ abstract class REST_Controller extends \CI_Controller
 
         $response = array_merge($response, $extradata);
 
-        $this->response($response, REST_Controller::HTTP_OK);
+        $this->response($response, $response_code);
     }
 
 }

@@ -1,15 +1,12 @@
-<?php
+<?php if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 require APPPATH . 'libraries/REST_Controller.php';
 
 class Categorie extends REST_Controller
 {
 
-    /**
-     * Get All Data from this method.
-     *
-     * @return Response
-     */
     public function __construct()
     {
         parent::__construct();
@@ -86,28 +83,11 @@ class Categorie extends REST_Controller
         }
 
         if ($result) {
-            $response = array(
-                'code' => 200,
-                'data' => $result,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($result);
             return;
         }
 
-        if ($categorie_id) {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => [],
-                'requets_data' => $_POST,
-            );
-        }
-        $this->response($response, REST_Controller::HTTP_OK);
+        $this->response_error(lang('not_found_error'));
     }
 
     /**
@@ -131,13 +111,7 @@ class Categorie extends REST_Controller
         $form->set_rules($config);
 
         if (!$form->run()) {
-            $response = array(
-                'code' => REST_Controller::HTTP_BAD_REQUEST,
-                'error_message' => lang('validations_error'),
-                'errors' => $form->_error_array,
-                'request_data' => $_POST,
-            );
-            $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
+            $this->response_error(lang('validations_error'), ['errors' => $form->_error_array], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
 
@@ -154,24 +128,11 @@ class Categorie extends REST_Controller
         $categorie->date_publish = date("Y-m-d H:i:s");
         $categorie->parent_id = $this->input->post('parent_id');
         if ($categorie->save()) {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => $categorie,
-            );
-
-            $this->response($response, REST_Controller::HTTP_OK);
-
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_BAD_REQUEST,
-                "error_message" => lang('unexpected_error'),
-                'data' => $_POST,
-                'request_data' => $_POST,
-            );
-
-            $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
+            $this->response_ok($categorie);
+            return;
         }
 
+        $this->response_error(lang('unexpected_error'), [], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
     }
 
     /**
@@ -200,19 +161,11 @@ class Categorie extends REST_Controller
         }
 
         if ($result) {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => [],
-            );
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
+            $this->response_ok($result);
+            return;
         }
 
-        $this->response($response, REST_Controller::HTTP_OK);
+        $this->response_error(lang('not_found_error'));
     }
 
     /**
@@ -274,27 +227,11 @@ class Categorie extends REST_Controller
         }
 
         if ($result) {
-            $response = array(
-                'code' => 200,
-                'data' => $result,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($result);
             return;
         }
 
-        if ($categorie_id) {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => [],
-            );
-        }
-        $this->response($response, REST_Controller::HTTP_OK);
+        $this->response_error(lang('not_found_error'));
     }
 
     /**
@@ -384,20 +321,11 @@ class Categorie extends REST_Controller
         $result = $categorie->where(array('parent_id' => '0', 'type' => $type));
 
         if ($result) {
-            $response = array(
-                'code' => 200,
-                'data' => $result,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($result);
             return;
         }
 
-        $response = array(
-            'code' => REST_Controller::HTTP_OK,
-            'data' => [],
-        );
-
-        $this->response($response, REST_Controller::HTTP_OK);
+        $this->response_error(lang('not_found_error'));
     }
 
     /**
@@ -456,19 +384,11 @@ class Categorie extends REST_Controller
         );
 
         if ($result) {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => $result,
-            );
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                'error_message' => lang('not_found_error'),
-                'data' => [],
-                'filters' => $_GET
-            );
-        }
-        $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($result);
+            return;
+        } 
+        
+        $this->response_error(lang('not_found_error'));
     }
 
 }

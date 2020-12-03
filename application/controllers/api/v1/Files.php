@@ -1,15 +1,10 @@
-<?php
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); 
 
 require APPPATH . 'libraries/REST_Controller.php';
 
 class Files extends REST_Controller
 {
 
-    /**
-     * Get All Data from this method.
-     *
-     * @return Response
-     */
     public function __construct()
     {
         parent::__construct();
@@ -50,65 +45,16 @@ class Files extends REST_Controller
         }
 
         if ($result) {
-            $response = array(
-                'code' => 200,
-                'data' => $result,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($result);
             return;
         }
 
-        if ($file_id) {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => [],
-            );
-        }
-        $this->response($response, REST_Controller::HTTP_OK);
+        $this->response_error(lang('not_found_error'));
     }
 
-    /**
-     * @api {post} /login/ Auth the client into the Start CMS API
-     * @apiName login
-     * @apiGroup Login
-     *
-     * @apiParam {string} username The username of the user.
-     * @apiParam {string} password The password of the user.
-     *
-     *
-     * @apiSuccess {integer} status The status code of the request.
-     * @apiSuccess {string} token  The JWT token.
-     * @apiSuccessExample {json} Success-Response:
-     * HTTP/1.1 200 OK
-     * {
-     *     "status": 200,
-     *     "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMTgifQ.NftK7Sr9Iez248IvAaSg4qmZRYVA9IlDoWOSS-sARWQ"
-     * }
-     *
-     * @apiError UserOrPasswordNotFound The <code>username</code> or <code>password</code> was not found.
-     * @apiErrorExample {json} Error-Response:
-     * HTTP/1.1 401 Unauthorized
-     * {
-     *   "error_message": "Username or password not found",
-     *   "error_code": 3
-     * }
-     * @apiError Unauthorized Invalid <code>username</code> or <code>password</code>
-     * @apiErrorExample {json} Error-Response:
-     * HTTP/1.1 401 Unauthorized
-     * {
-     *   "error_message": "Invalid username or password",
-     *   "error_code": 2
-     * }
-     */
     public function index_post()
     {
-
+        $this->response(array('Metodo no permitido'), REST_Controller::HTTP_METHOD_NOT_ALLOWED);  
     }
 
     /**
@@ -119,7 +65,6 @@ class Files extends REST_Controller
     public function index_put()
     {
         $this->response(array('Metodo no permitido'), REST_Controller::HTTP_METHOD_NOT_ALLOWED);
-
     }
 
     /**
@@ -152,18 +97,10 @@ class Files extends REST_Controller
         if ($result) {
             unlink($file->file_path . $file->file_name . '.' . $file->file_type);
             $file->delete();
-            $response = array(
-                'code' => 200,
-                'data' => $result,
-            );
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
-        }
-        $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($result);
+            return;
+        } 
+        $this->response_error(lang('not_found_error')); 
     }
 
     public function featured_file_post()
@@ -174,37 +111,19 @@ class Files extends REST_Controller
         if ($result) {
             $file->featured = $post_file["featured"];
             $result = $file->save();
-            $response = array(
-                'code' => 200,
-                'data' => $result,
-            );
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
-        }
-        $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($result);
+            return;
+        } 
+        $this->response_error(lang('not_found_error'));
     }
 
     public function reload_file_explorer_post($folder = null)
     {
         $file = new File();
-
         if ($folder != null) {
             $file->current_folder = $folder . '/';
         }
-
-        $response = array(
-            'code' => 200,
-            'data' => [
-                'result' => $file->map_files(),
-            ],
-        );
-
-        $this->response($response, REST_Controller::HTTP_OK);
-
+        $this->response_ok(['result' => $file->map_files()]);
     }
 
     public function move_file_post()
@@ -218,18 +137,11 @@ class Files extends REST_Controller
             $file_model->save();
             $file_name = $file['file_name'] . '.' . $file['file_type'];
             $rename = rename($file['file_path'] . $file_name, $newPath . $file_name);
-            $response = array(
-                'code' => 200,
-                'data' => $rename,
-            );
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
-        }
-        $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($rename);
+            return;
+        } 
+        
+        $this->response_error(lang('not_found_error'));
     }
 
     public function copy_file_post()
@@ -251,11 +163,7 @@ class Files extends REST_Controller
             $result = $file_model->set_data($insert_array);
         }
 
-        $response = array(
-            'code' => 200,
-            'data' => $result,
-        );
-        $this->response($response, REST_Controller::HTTP_OK);
+        $this->response_ok($result);
     }
 
     public function make_dir_post()
@@ -263,7 +171,7 @@ class Files extends REST_Controller
         $path = $this->input->post('path');
         $new_folder_name = $this->input->post('new_folder_name');
         $result = false;
-        if(!is_dir($path . $new_folder_name)){
+        if (!is_dir($path . $new_folder_name)) {
             $result = mkdir($path . $new_folder_name);
         }
         if ($result) {
@@ -286,14 +194,10 @@ class Files extends REST_Controller
                 'code' => 200,
                 'data' => $folder,
             );
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
-        }
-        $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($folder);
+        } 
+        
+        $this->response_error(lang('not_found_error')); 
     }
 
     public function rename_file_post()
@@ -308,18 +212,9 @@ class Files extends REST_Controller
                 $file['file_path'] . $file['file_name'] . '.' . $file['file_type'],
                 $file['file_path'] . $file['new_name'] . '.' . $file['file_type']
             );
-            $response = array(
-                'code' => 200,
-                'data' => $rename,
-            );
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
-        }
-        $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($result);
+        } 
+        $this->response_error(lang('not_found_error'));
     }
 
     public function filter_files_post()
@@ -327,12 +222,7 @@ class Files extends REST_Controller
         $filter_name = $this->input->post('filter_name');
         $filter_value = $this->input->post('filter_value');
         $result = $this->File->get_filter_files($filter_name, $filter_value, null, array('date_update', "DESC"));
-        $response = array(
-            'code' => 200,
-            'data' => $result,
-        );
-
-        $this->response($response, REST_Controller::HTTP_OK);
+        $this->response_ok($result);
     }
 
 }

@@ -1,15 +1,9 @@
-<?php
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); 
 
 require APPPATH . 'libraries/REST_Controller.php';
 
 class Menus extends REST_Controller
 {
-
-    /**
-     * Get All Data from this method.
-     *
-     * @return Response
-     */
     public function __construct()
     {
         parent::__construct();
@@ -41,7 +35,7 @@ class Menus extends REST_Controller
      *       "data": [
      *           {
      *               "menu_id": "4",
-     *               "name": "Categoria 1",
+     *               "name": "Manu 1",
      *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
      *               "type": "page",
      *               "menu_item_parent_id": "0",
@@ -52,7 +46,7 @@ class Menus extends REST_Controller
      *           },
      *           {
      *               "menu_id": "5",
-     *               "name": "Categoria 2",
+     *               "name": "Manu 2",
      *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
      *               "type": "page",
      *               "menu_item_parent_id": "0",
@@ -64,7 +58,7 @@ class Menus extends REST_Controller
      *       ]
      *   }
      *
-     * @apiError CategorieNotFound The id of the User was not found.
+     * @apiError ManuNotFound The id of the User was not found.
      *
      * @apiErrorExample Error-Response:
      *     HTTP/1.1 404 Not Found
@@ -85,28 +79,12 @@ class Menus extends REST_Controller
         }
 
         if ($result) {
-            $response = array(
-                'code' => 200,
-                'data' => $result,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($result);
             return;
         }
 
-        if ($menu_id) {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => [],
-                'requets_data' => $_POST,
-            );
-        }
-        $this->response($response, REST_Controller::HTTP_OK);
+        $this->response_error(lang('not_found_error'));
+
     }
 
     /**
@@ -118,28 +96,17 @@ class Menus extends REST_Controller
     {
         $this->load->library('FormValidator');
         $form = new FormValidator();
-
         $config = array(
             array('field' => 'name', 'label' => 'name', 'rules' => 'required|min_length[1]'),
             array('field' => 'template', 'label' => 'description', 'rules' => 'required|min_length[1]'),
             array('field' => 'status', 'label' => 'status', 'rules' => 'required|integer'),
         );
-
         $form->set_rules($config);
-
         if (!$form->run()) {
-            $response = array(
-                'code' => REST_Controller::HTTP_BAD_REQUEST,
-                'error_message' => lang('validations_error'),
-                'errors' => $form->_error_array,
-                'request_data' => $_POST,
-            );
-            $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
+            $this->response_error(lang('validations_error'), ['errors' => $form->_error_array], REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
-
         $menu = new Menu();
-
         $this->input->post('menu_id') ? $menu->find($this->input->post('menu_id')) : false;
         $menu->name = $this->input->post('name');
         $menu->template = $this->input->post('template');
@@ -155,20 +122,9 @@ class Menus extends REST_Controller
             $menu_items = $this->input->post('menu_items');
             $this->save_menu_items($menu_items, $menu);
             $menu->find($menu->menu_id);
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => $menu,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_BAD_REQUEST,
-                "error_message" => lang('unexpected_error'),
-                'data' => $_POST,
-                'request_data' => $_POST,
-            );
-            $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
+            $this->response_ok($menu);
         }
+        $this->response_error(lang('unexpected_error'), [], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
     }
 
     private function save_menu_items($menu_items, $menu, $parent_id = 0)
@@ -222,27 +178,15 @@ class Menus extends REST_Controller
             $menu = new Menu();
             $result = $menu->find($menu_id);
             if ($result) {
-                $response = array(
-                    'code' => REST_Controller::HTTP_OK,
-                    'data' => [
-                        "result" => $menu->delete(),
-                    ],
-                );
+                $this->response_ok(["result" => $menu->delete()]);
+                return;
             } else {
-                $response = array(
-                    'code' => REST_Controller::HTTP_NOT_FOUND,
-                    "error_message" => lang('not_found_error'),
-                    'data' => [],
-                );
+                $this->response_error(lang('not_found_error'));
+                return;
             }
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
         }
-        $this->response($response, REST_Controller::HTTP_OK);
+        $this->response_error(lang('not_found_error'));
+        return;
     }
 
     /**
@@ -260,7 +204,7 @@ class Menus extends REST_Controller
      *       "data": [
      *           {
      *               "menu_id": "4",
-     *               "name": "SubCategoria 1",
+     *               "name": "SubMenu 1",
      *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
      *               "type": "page",
      *               "menu_item_parent_id": "0",
@@ -271,7 +215,7 @@ class Menus extends REST_Controller
      *           },
      *           {
      *               "menu_id": "5",
-     *               "name": "SubCategoria 2",
+     *               "name": "SubMenu 2",
      *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
      *               "type": "page",
      *               "menu_item_parent_id": "0",
@@ -304,27 +248,16 @@ class Menus extends REST_Controller
         }
 
         if ($result) {
-            $response = array(
-                'code' => 200,
-                'data' => $result,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($result);
             return;
         }
 
         if ($menu_id) {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => [],
-            );
+            $this->response_error(lang('not_found_error'));
+            return;
         }
-        $this->response($response, REST_Controller::HTTP_OK);
+
+        $this->response_error(lang('not_found_error'));
     }
 
     /**
@@ -375,7 +308,7 @@ class Menus extends REST_Controller
      *       "data": [
      *           {
      *               "menu_id": "4",
-     *               "name": "Categoria 1",
+     *               "name": "Menu 1",
      *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
      *               "type": "page",
      *               "menu_item_parent_id": "0",
@@ -386,7 +319,7 @@ class Menus extends REST_Controller
      *           },
      *           {
      *               "menu_id": "5",
-     *               "name": "Categoria 2",
+     *               "name": "Menu 2",
      *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
      *               "type": "page",
      *               "menu_item_parent_id": "0",
@@ -412,22 +345,11 @@ class Menus extends REST_Controller
     {
         $menu = new Menu();
         $result = $menu->where(array('menu_item_parent_id' => '0', 'type' => $type));
-
-        if ($result) {
-            $response = array(
-                'code' => 200,
-                'data' => $result,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
+        if ($result) {;
+            $this->response_ok($result);
             return;
         }
-
-        $response = array(
-            'code' => REST_Controller::HTTP_OK,
-            'data' => [],
-        );
-
-        $this->response($response, REST_Controller::HTTP_OK);
+        $this->response_error(lang('not_found_error'));
     }
 
     /**
@@ -444,7 +366,7 @@ class Menus extends REST_Controller
      *       "data": [
      *           {
      *               "menu_id": "4",
-     *               "name": "Categoria 1",
+     *               "name": "Menu 1",
      *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
      *               "type": "page",
      *               "menu_item_parent_id": "0",
@@ -455,7 +377,7 @@ class Menus extends REST_Controller
      *           },
      *           {
      *               "menu_id": "5",
-     *               "name": "Categoria 2",
+     *               "name": "Menu 2",
      *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
      *               "type": "page",
      *               "menu_item_parent_id": "0",
@@ -479,26 +401,13 @@ class Menus extends REST_Controller
      */
     public function filter_get()
     {
-
         $menu = new Menu();
-        $result = $menu->where(
-            $_GET
-        );
-
+        $result = $menu->where($_GET);
         if ($result) {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => $result,
-            );
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                'error_message' => lang('not_found_error'),
-                'data' => [],
-                'filters' => $_GET
-            );
+
+            $this->response_ok($result);
         }
-        $this->response($response, REST_Controller::HTTP_OK);
+        $this->response_error(lang('not_found_error'), ['filters' => $_GET]);
     }
 
     public function templates_get()
@@ -509,12 +418,7 @@ class Menus extends REST_Controller
             $directory = getThemePath() . 'views\\site\\templates\\menu';
         }
         $map = directory_map($directory);
-        $response = array(
-            'code' => REST_Controller::HTTP_OK,
-            'data' => $map,
-        );
-        $this->response($response, REST_Controller::HTTP_OK);
-
+        $this->response_ok($map);
     }
 
 }

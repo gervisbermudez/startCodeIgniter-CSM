@@ -22,7 +22,6 @@ class Pages extends REST_Controller
             exit();
         }
 
-
         $this->load->database();
         $this->load->model('Admin/Page');
 
@@ -42,15 +41,11 @@ class Pages extends REST_Controller
         } else {
             $result = $page->where(['status' => '1']);
             $archived = $page->where(['status' => '2']);
-            $result = ($result && $archived) ? ($result->concat($archived)) : [];
+            $result = ($result && $archived) ? ($archived->concat($result)) : [];
         }
 
         if ($result) {
-            $response = array(
-                'code' => 200,
-                'data' => $result,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($result);
             return;
         }
 
@@ -124,23 +119,10 @@ class Pages extends REST_Controller
 
         if ($page->save()) {
             system_logger('pages', $page->page_id, ($this->input->post('page_id') ? "updated" : "created"), ($this->input->post('page_id') ? "A page has been updated" : "A page has been created"));
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => $page,
-            );
-
-            $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($page);
 
         } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_BAD_REQUEST,
-                "error_message" => lang('unexpected_error'),
-                'data' => $_POST,
-                'request_data' => $_POST,
-            );
-
-            $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
-
+            $this->response_error(lang('unexpected_error'), [], REST_Controller::HTTP_BAD_REQUEST);
         }
     }
 
@@ -166,20 +148,10 @@ class Pages extends REST_Controller
         $page = new Page();
         $page->find($id);
         if ($page->delete()) {
-            system_logger('pages', $page->page_id, ("deleted"), ( "A page has been deleted"));
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => $page,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
-            return;
+            system_logger('pages', $page->page_id, ("deleted"), ("A page has been deleted"));
+            $this->response_ok($page);
         } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                'error_message' => lang('not_found_error'),
-                'data' => $_POST,
-            );
-            $this->response($response, REST_Controller::HTTP_NOT_FOUND);
+            $this->response_error(lang('not_found_error'));
         }
     }
 
@@ -191,20 +163,11 @@ class Pages extends REST_Controller
         $result = $page_type->all();
 
         if ($result) {
-            $response = array(
-                'code' => 200,
-                'data' => $result,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($result);
             return;
         }
 
-        $response = array(
-            'code' => REST_Controller::HTTP_NOT_FOUND,
-            "error_message" => lang('not_found_error'),
-            'data' => [],
-        );
-        $this->response($response, REST_Controller::HTTP_NOT_FOUND);
+        $this->response_error(lang('not_found_error'));
 
     }
 
@@ -239,12 +202,7 @@ class Pages extends REST_Controller
         }
 
         if (!$result) {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
-            $this->response($response, REST_Controller::HTTP_NOT_FOUND);
+            $this->response_error(lang('not_found_error'));
             return;
         }
 
@@ -253,12 +211,7 @@ class Pages extends REST_Controller
         $page_types = $page_type->all();
 
         if (!$page_types) {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
-            $this->response($response, REST_Controller::HTTP_NOT_FOUND);
+            $this->response_error(lang('not_found_error'));
             return;
         }
 

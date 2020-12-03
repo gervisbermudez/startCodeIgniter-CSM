@@ -15,14 +15,19 @@
 							"name": "[GET] Usergroups",
 							"request": {
 								"method": "GET",
-								"header": [],
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyZGF0YSI6eyJsb2dnZWRfaW4iOnRydWUsInVzZXJfaWQiOiIyIiwidXNlcm5hbWUiOiJ5ZHVyYW4iLCJlbWFpbCI6InlkdXJhbkBnbWFpbC5jb20iLCJsYXN0c2VlbiI6IjIwMjAtMTEtMjIgMTc6NTI6NDMiLCJ1c2VyZ3JvdXBfaWQiOiIyIiwic3RhdHVzIjoiMSIsIm5vbWJyZSI6Ill1bGUiLCJhcGVsbGlkbyI6IkR1cmFuIiwiZGlyZWNjaW9uIjoiTWFyYSIsInRlbGVmb25vIjoiMDQxMi05ODczOTIwIiwiY3JlYXRlIGJ5IjoiZ2VyYmVyIiwiYXZhdGFyIjoiLlwvcHVibGljXC9pbWdcL3Byb2ZpbGVcL3lkdXJhblwvMzAwXzExLmpwZyIsInJvbGUiOiJBZG1pbmlzdHJhZG9yIiwibGV2ZWwiOiIyIiwidXNlcmdyb3VwX3Blcm1pc2lvbnMiOlsiQ1JFQVRFIiwiVVBEQVRFIiwiREVMRVRFIiwiU0VMRUNUIiwiQ1JFQVRFX1VTRVIiLCJTRUxFQ1RfVVNFUlMiLCJVUERBVEVfVVNFUiJdfSwicmFuZF9rZXkiOiJNVDl5WnE1VWpEdktOMVZsIn0.eBPCY7RFAqn3y2wLt2vCpK1nZYqG7bLSY6Fg-_3Ry1k",
+										"type": "text"
+									}
+								],
 								"url": {
-									"raw": "{{BASEURL}}/api/v1/users/usergroups/:usergroup_id",
+									"raw": "{{BASEURL}}api/v1/users/usergroups/:usergroup_id",
 									"host": [
-										"{{BASEURL}}"
+										"{{BASEURL}}api"
 									],
 									"path": [
-										"api",
 										"v1",
 										"users",
 										"usergroups",
@@ -31,11 +36,37 @@
 									"variable": [
 										{
 											"key": "usergroup_id",
-											"value": "2"
+											"value": ""
 										}
 									]
 								},
 								"description": "Obetner un listado de grupos de usuarios"
+							},
+							"response": []
+						},
+						{
+							"name": "[GET] Usergroups Permissions",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{BASEURL}}/api/v1/users/permissions",
+									"host": [
+										"{{BASEURL}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"permissions"
+									]
+								}
 							},
 							"response": []
 						}
@@ -49,7 +80,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{BASEURL}}/api/v1/users/",
+							"raw": "{{BASEURL}}/api/v1/users/:user_id",
 							"host": [
 								"{{BASEURL}}"
 							],
@@ -57,7 +88,13 @@
 								"api",
 								"v1",
 								"users",
-								""
+								":user_id"
+							],
+							"variable": [
+								{
+									"key": "user_id",
+									"value": ""
+								}
 							]
 						},
 						"description": "ajax_save_user"
@@ -212,6 +249,55 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "[POST] Logout",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "gerber",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Argentina.2020",
+									"type": "text"
+								}
+							],
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/login/logut",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"login",
+								"logut"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
@@ -354,6 +440,26 @@
 								"v1",
 								"config",
 								"backup_database"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[GET] systemlogger",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/config/systemlogger",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"config",
+								"systemlogger"
 							]
 						}
 					},
@@ -588,7 +694,7 @@
 							]
 						},
 						"url": {
-							"raw": "{{BASEURL}}/api/v1/forms/:id",
+							"raw": "{{BASEURL}}/api/v1/forms/:form_id",
 							"host": [
 								"{{BASEURL}}"
 							],
@@ -596,11 +702,11 @@
 								"api",
 								"v1",
 								"forms",
-								":id"
+								":form_id"
 							],
 							"variable": [
 								{
-									"key": "id",
+									"key": "form_id",
 									"value": ""
 								}
 							]
@@ -627,7 +733,7 @@
 							]
 						},
 						"url": {
-							"raw": "{{BASEURL}}/api/v1/forms/data/:id",
+							"raw": "{{BASEURL}}/api/v1/forms/data/:form_id",
 							"host": [
 								"{{BASEURL}}"
 							],
@@ -636,11 +742,11 @@
 								"v1",
 								"forms",
 								"data",
-								":id"
+								":form_id"
 							],
 							"variable": [
 								{
-									"key": "id",
+									"key": "form_id",
 									"value": ""
 								}
 							]
@@ -817,7 +923,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{BASEURL}}/api/v1/menus/:id",
+							"raw": "{{BASEURL}}/api/v1/menus/:menu_id",
 							"host": [
 								"{{BASEURL}}"
 							],
@@ -825,11 +931,11 @@
 								"api",
 								"v1",
 								"menus",
-								":id"
+								":menu_id"
 							],
 							"variable": [
 								{
-									"key": "id",
+									"key": "menu_id",
 									"value": ""
 								}
 							]
@@ -852,6 +958,32 @@
 								"v1",
 								"menus",
 								"templates"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[DELETE] Menu",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASEURL}}/api/v1/menus/:id",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"menus",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "34"
+								}
 							]
 						}
 					},

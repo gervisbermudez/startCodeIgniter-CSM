@@ -1,15 +1,10 @@
-<?php
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); 
 
 require APPPATH . 'libraries/REST_Controller.php';
 
 class Users extends REST_Controller
 {
 
-    /**
-     * Get All Data from this method.
-     *
-     * @return Response
-     */
     public function __construct()
     {
         parent::__construct();
@@ -74,31 +69,16 @@ class Users extends REST_Controller
         $user = new User();
         if (!$user_id) {
             $result = $this->User->get_full_info($user_id);
-            $response = array(
-                'code' => 200,
-                'data' => $result ? $result : [],
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($result);
             return;
-        } else {
-            $result = $user->find($user_id);
-            $result = $result ? $user : [];
         }
-        
+        $result = $user->find($user_id);
         if ($result) {
-            $response = array(
-                'code' => 200,
-                'data' => $result,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
+            $result = $result ? $user : [];
+            $this->response_ok($result);
             return;
         }
-
-        $response = array(
-            'code' => REST_Controller::HTTP_NOT_FOUND,
-            'data' => [],
-        );
-        $this->response($response, REST_Controller::HTTP_NOT_FOUND);
+        $this->response_error(lang('not_found_error'));
     }
 
     /**
@@ -162,61 +142,37 @@ class Users extends REST_Controller
     public function index_post()
     {
         $this->load->library('FormValidator');
-
         $form = new FormValidator();
-
         $config = array(
             array('field' => 'username', 'label' => 'username', 'rules' => 'required|min_length[5]|max_length[18]|alpha_numeric'),
             array('field' => 'password', 'label' => 'password', 'rules' => 'required|min_length[5]|max_length[18]|regex_match[/^(?=.*?[0-9])(?=.*?[A-Z])(?=.*?[#.?!@$%^&*\-_]).{8,}$/]'),
             array('field' => 'email', 'label' => 'email', 'rules' => 'required|valid_email'),
             array('field' => 'usergroup_id', 'label' => 'usergroup_id', 'rules' => 'required|integer|is_natural_no_zero'),
         );
-
         $form->set_rules($config);
-
         if (!$form->run()) {
-            $response = array(
-                'code' => REST_Controller::HTTP_BAD_REQUEST,
-                'error_message' => lang('new_user_validations_error'),
-                'errors' => $form->_error_array,
-                'request_data' => $_POST,
-            );
-            $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
+            $this->response_error(lang('new_user_validations_error'), ['errors' => $form->_error_array], REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
-
-        $usuario = new User();
-        $this->input->post('user_id') ? $usuario->find($this->input->post('user_id')) : false;
-        $usuario->username = $this->input->post('username');
-        $usuario->password = password_hash($this->input->post('password'), PASSWORD_DEFAULT);
-        $usuario->email = $this->input->post('email');
-        $usuario->lastseen = date("Y-m-d H:i:s");
-        $usuario->usergroup_id = $this->input->post('usergroup_id');
-        $usuario->status = 1;
-        $usuario->user_data = $this->input->post('user_data');
+        $user = new User();
+        $this->input->post('user_id') ? $user->find($this->input->post('user_id')) : false;
+        $user->username = $this->input->post('username');
+        $user->password = password_hash($this->input->post('password'), PASSWORD_DEFAULT);
+        $user->email = $this->input->post('email');
+        $user->lastseen = date("Y-m-d H:i:s");
+        $user->usergroup_id = $this->input->post('usergroup_id');
+        $user->status = 1;
+        $user->user_data = $this->input->post('user_data');
         if (!$this->input->post('user_id')) {
-            $usuario->user_data['create_by_id'] = userdata('user_id');
+            $user->user_data['create_by_id'] = userdata('user_id');
         }
-
-        if ($usuario->save()) {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => $usuario,
-            );
-
-            $this->response($response, REST_Controller::HTTP_OK);
+        if ($user->save()) {
+            system_logger('users', $user->user_id, ($this->input->post('user_id') ? "updated" : "created"),
+                ($this->input->post('user_id') ? "A user has been updated" : "A user has been created"));
+            $this->response_ok($user);
             return;
-
-        } else {
-
-            $response = array(
-                'code' => REST_Controller::HTTP_INTERNAL_SERVER_ERROR,
-                'error_message' => lang('new_user_unexpected_error'),
-                'data' => $_POST,
-            );
-
-            $this->response($response, REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
         }
+        $this->response_error(lang('new_user_unexpected_error'), [], REST_Controller::HTTP_INTERNAL_SERVER_ERROR, REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -236,60 +192,37 @@ class Users extends REST_Controller
      *
      * @return Response
      */
-    public function index_delete($id = null)
+    public function index_delete($user_id = null)
     {
-        $usuario = new User();
-        $usuario->find($id);
-        if ($usuario->delete()) {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => $usuario,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
+        $user = new User();
+        $user->find($user_id);
+        if ($user->delete()) {
+            system_logger('users', $user->user_id, ("deleted"), ("A user has been deleted"));
+            $this->response_ok($user);
             return;
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                'error_message' => lang('user_not_found_error'),
-                'data' => $_POST,
-            );
-            $this->response($response, REST_Controller::HTTP_NOT_FOUND);
         }
+        $this->response_error(lang('user_not_found_error'));
     }
 
     public function usergroups_get($usergroup_id = null)
     {
-
         $this->load->model('Admin/Usergroup');
-
         $usergroup = new Usergroup();
-
         if ($usergroup_id) {
             $result = $usergroup->find_with(array("usergroup_id" => $usergroup_id));
             $result = $result ? $usergroup : false;
         } else {
-            if(userdata('username') == 'root' || userdata('level') == 1){
+            if (userdata('username') == 'root' || userdata('level') == 1) {
                 $result = $usergroup->all();
-            }else{
+            } else {
                 $result = $usergroup->where(['parent_id' => userdata("usergroup_id")]);
             }
         }
-
         if ($result) {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => $result,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($result);
             return;
         }
-
-        $response = array(
-            'code' => REST_Controller::HTTP_NOT_FOUND,
-            'data' => $result,
-            "error_message" => lang('none_user_groups_created'),
-        );
-        $this->response($response, REST_Controller::HTTP_NOT_FOUND);
+        $this->response_error(lang('none_user_groups_created'));
     }
 
     /**
@@ -310,13 +243,7 @@ class Users extends REST_Controller
         );
         $form->set_rules($config);
         if (!$form->run()) {
-            $response = array(
-                'code' => REST_Controller::HTTP_BAD_REQUEST,
-                'error_message' => lang('validations_error'),
-                'errors' => $form->_error_array,
-                'request_data' => $_POST,
-            );
-            $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
+            $this->response_error(lang('validations_error'), ['errors' => $form->_error_array], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
         $usergroup = new Usergroup();
@@ -329,31 +256,19 @@ class Users extends REST_Controller
         $usergroup->status = $this->input->post('status');
         $usergroup->date_create = date("Y-m-d H:i:s");
         if ($usergroup->save()) {
-
             $this->load->model('Admin/Usergroup_permisions');
             $Usergroup_permisions = new Usergroup_permisions();
             $Usergroup_permisions->delete_data(['usergroup_id' => $usergroup->usergroup_id]);
             foreach ($this->input->post('permissions') as $key => $value) {
                 $Usergroup_permisions = new Usergroup_permisions();
-                $Usergroup_permisions->permision_id =  $value['permisions_id'];
-                $Usergroup_permisions->usergroup_id =  $usergroup->usergroup_id;
-                $Usergroup_permisions->status =  1;
+                $Usergroup_permisions->permision_id = $value['permisions_id'];
+                $Usergroup_permisions->usergroup_id = $usergroup->usergroup_id;
+                $Usergroup_permisions->status = 1;
                 $Usergroup_permisions->save();
             }
-
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => $usergroup,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($usergroup);
         } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_BAD_REQUEST,
-                "error_message" => lang('unexpected_error'),
-                'data' => $_POST,
-                'request_data' => $_POST,
-            );
-            $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
+            $this->response_error(lang('unexpected_error'), [], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
         }
     }
 
@@ -362,22 +277,13 @@ class Users extends REST_Controller
         $this->load->model('Admin/Usergroup_permisions');
         $Usergroup_permisions = new Usergroup_permisions();
         $result = $Usergroup_permisions->get_permissions_info(['usergroup_id' => userdata('usergroup_id')]);
-        
+
         if ($result) {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => $result,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($result);
             return;
         }
 
-        $response = array(
-            'code' => REST_Controller::HTTP_NOT_FOUND,
-            'data' => $result,
-            "error_message" => lang('no_permissions_found'),
-        );
-        $this->response($response, REST_Controller::HTTP_NOT_FOUND);
+        $this->response_error(lang('no_permissions_found'));
     }
 
     public function allpermissions_get()
@@ -385,22 +291,13 @@ class Users extends REST_Controller
         $this->load->model('Admin/Permissions');
         $Permissions = new Permissions();
         $result = $Permissions->all();
-        
+
         if ($result) {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => $result,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($result);
             return;
         }
 
-        $response = array(
-            'code' => REST_Controller::HTTP_NOT_FOUND,
-            'data' => $result,
-            "error_message" => lang('no_permissions_found'),
-        );
-        $this->response($response, REST_Controller::HTTP_NOT_FOUND);
+        $this->response_error(lang('no_permissions_found'));
     }
 
     /**
@@ -478,67 +375,44 @@ class Users extends REST_Controller
             $result = $user->find($user_id);
             $result = $result ? $user : [];
             if ($result) {
-                $response = array(
-                    'code' => 200,
-                    'data' => $user->get_timeline($user_id),
-                );
-                $this->response($response, REST_Controller::HTTP_OK);
+                $this->response_ok($user->get_timeline($user_id));
                 return;
             }
         }
 
-        $response = array(
-            'code' => REST_Controller::HTTP_NOT_FOUND,
-            'data' => [],
-        );
-        $this->response($response, REST_Controller::HTTP_NOT_FOUND);
+        $this->response_error(lang('not_found_error'));
     }
 
     public function avatar_post()
     {
-
         $user_id = $this->input->post('user_id');
         $avatar = $this->input->post('avatar');
-
-        $usuario = new User();
+        $user = new User();
         $result = false;
-
-        $result_find = $usuario->find($user_id);
-
+        $result_find = $user->find($user_id);
         if ($result_find) {
-            $usuario->user_data['avatar'] = $avatar;
-            $result = $usuario->save();
+            $user->user_data['avatar'] = $avatar;
+            $result = $user->save();
             if ($result) {
-                $response = array(
-                    'code' => REST_Controller::HTTP_OK,
-                    'data' => $result,
-
-                );
-                $this->response($response, REST_Controller::HTTP_OK);
+                $this->response_ok($result);
                 return;
             }
         }
-
-        $response = array(
-            'code' => REST_Controller::HTTP_BAD_REQUEST,
-            'data' => $result,
-            'user' => $usuario,
-        );
-        $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
+        $this->response_error(lang('not_found_error'), ['user' => $user], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
     }
 
     public function changePassword_post()
     {
         $user_id = $this->input->post('user_id');
         $currentPassword = $this->input->post('currentPassword');
-        $usuario = new User();
+        $user = new User();
         $result = false;
-        $result_find = $usuario->find($user_id);
+        $result_find = $user->find($user_id);
         if ($result_find) {
             $this->load->model('Admin/LoginMod');
-            $login_data = $this->LoginMod->isLoged($usuario->username, $currentPassword);
+            $login_data = $this->LoginMod->isLoged($user->username, $currentPassword);
             if ($login_data) {
-                $result = $usuario->update_data(["user_id" => $user_id], ["password" => password_hash($this->input->post('password'), PASSWORD_DEFAULT)]);
+                $result = $user->update_data(["user_id" => $user_id], ["password" => password_hash($this->input->post('password'), PASSWORD_DEFAULT)]);
                 if ($result) {
                     $response = array(
                         'code' => REST_Controller::HTTP_OK,
@@ -562,11 +436,6 @@ class Users extends REST_Controller
             $this->response($response, REST_Controller::HTTP_OK);
             return;
         }
-        $response = array(
-            'code' => REST_Controller::HTTP_BAD_REQUEST,
-            'data' => $result,
-            'error_message' => lang('user_not_found_error'),
-        );
-        $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
+        $this->response_error(lang('user_not_found_error'), [], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
     }
 }

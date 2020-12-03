@@ -1,4 +1,4 @@
-<?php
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); 
 
 require APPPATH . 'libraries/REST_Controller.php';
 
@@ -74,28 +74,11 @@ class Forms extends REST_Controller
         }
 
         if ($result) {
-            $response = array(
-                'code' => 200,
-                'data' => $result,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($result);
             return;
         }
 
-        if ($form_id) {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => [],
-            );
-        }
-
-        $this->response($response, REST_Controller::HTTP_OK);
+        $this->response_error(lang('not_found_error'));
     }
 
     /**
@@ -152,23 +135,10 @@ class Forms extends REST_Controller
         }
 
         if ($result) {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => [
-                    'form_custom_id' => $result,
-                ],
-            );
-
-            $this->response($response, REST_Controller::HTTP_OK);
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_BAD_REQUEST,
-                "error_message" => lang('unexpected_error'),
-                'data' => $_POST,
-            );
-
-            $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
+            $this->response_ok(['form_custom_id' => $result]);
         }
+
+        $this->response_error(lang('unexpected_error'), [], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
     }
 
     /**
@@ -194,21 +164,12 @@ class Forms extends REST_Controller
         if ($result) {
             $result = $form->delete($form_id);
         }
-
         if ($result) {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => [],
-            );
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
+            $this->response_ok($result);
+            return;
         }
 
-        $this->response($response, REST_Controller::HTTP_OK);
+        $this->response_error(lang('not_found_error'));
 
     }
 
@@ -229,20 +190,11 @@ class Forms extends REST_Controller
         }
 
         if ($result) {
-            $response = array(
-                'code' => 200,
-                'data' => $result,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($result);
             return;
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                'data' => [],
-            );
         }
 
-        $this->response($response, REST_Controller::HTTP_OK);
+        $this->response_error(lang('not_found_error'));
     }
 
     /**
@@ -261,19 +213,9 @@ class Forms extends REST_Controller
             $result = $this->Form_content->save_data_form((object) $data);
         }
         if ($result) {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => $result,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_BAD_REQUEST,
-                "error_message" => lang('unexpected_error'),
-                'data' => $_POST,
-            );
-            $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
+            $this->response_ok($result);
         }
+        $this->response_error(lang('unexpected_error'), [], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
     }
 
     /**
@@ -298,18 +240,9 @@ class Forms extends REST_Controller
         $Form_conten->find($form_content_id);
         $result = $Form_conten->delete();
         if ($result) {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => [],
-            );
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
+            $this->response_ok($result);
         }
-        $this->response($response, REST_Controller::HTTP_OK);
+        $this->response_error(lang('not_found_error'));
     }
 
     public function data_set_status_post($form_content_id = null)
@@ -320,17 +253,8 @@ class Forms extends REST_Controller
         $Form_conten->status = $this->input->post('status');
         $result = $Form_conten->save();
         if ($result) {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => [],
-            );
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
+            $this->response_ok($result);
         }
-        $this->response($response, REST_Controller::HTTP_OK);
+        $this->response_error(lang('not_found_error'));
     }
 }

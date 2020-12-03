@@ -1,15 +1,12 @@
-<?php
+<?php if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 require APPPATH . 'libraries/REST_Controller.php';
 
 class Albumes extends REST_Controller
 {
 
-    /**
-     * Get All Data from this method.
-     *
-     * @return Response
-     */
     public function __construct()
     {
         parent::__construct();
@@ -43,27 +40,16 @@ class Albumes extends REST_Controller
         }
 
         if ($result) {
-            $response = array(
-                'code' => 200,
-                'data' => $result,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($result);
             return;
         }
 
         if ($album_id) {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => [],
-            );
+            $this->response_error(lang('not_found_error'));
+            return;
         }
-        $this->response($response, REST_Controller::HTTP_OK);
+
+        $this->response_ok([]);
     }
 
     /**
@@ -108,8 +94,8 @@ class Albumes extends REST_Controller
 
             $album_items = $this->input->post("album_items");
             $this->load->model('Admin/Album_items');
-                if ($album_items) {
-                    foreach ($album_items as $value) {
+            if ($album_items) {
+                foreach ($album_items as $value) {
                     $item = new Album_items();
                     $value['album_item_id'] ? $item->find($value['album_item_id']) : false;
                     $item->album_id = $album->album_id;
@@ -122,24 +108,11 @@ class Albumes extends REST_Controller
                 }
             }
 
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => $album,
-            );
-
-            $this->response($response, REST_Controller::HTTP_OK);
-
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_BAD_REQUEST,
-                "error_message" => lang('unexpected_error'),
-                'data' => $_POST,
-                'request_data' => $_POST,
-            );
-
-            $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
+            $this->response_ok($album);
 
         }
+
+        $this->response_error(lang('unexpected_error'), [], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
     }
 
     /**
@@ -164,20 +137,11 @@ class Albumes extends REST_Controller
         $album = new Album();
         $album->find($id);
         if ($album->delete()) {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => $album,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($album);
             return;
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                'error_message' => lang('not_found_error'),
-                'data' => $_POST,
-            );
-            $this->response($response, REST_Controller::HTTP_NOT_FOUND);
         }
+
+        $this->response_error(lang('not_found_error'));
     }
 
     /**
@@ -191,20 +155,10 @@ class Albumes extends REST_Controller
         $album_items = new Album_items();
         $album_items->find($item_album_id);
         if ($album_items->delete()) {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => $album_items,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
+            $this->response_ok($album_items);
             return;
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                'error_message' => lang('not_found_error'),
-                'data' => $_POST,
-            );
-            $this->response($response, REST_Controller::HTTP_NOT_FOUND);
         }
+        $this->response_error(lang('not_found_error'));
     }
 
 }
