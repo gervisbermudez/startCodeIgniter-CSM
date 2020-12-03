@@ -8,7 +8,7 @@
         </li>
         <li class="{{isSectionActive('usuarios')}}">
             <div class="collapsible-header">
-                <i class="material-icons">perm_identity</i> <span>Usuarios</span>
+                <i class="material-icons">people</i> <span>Usuarios</span>
             </div>
             <div class="collapsible-body">
                 <ul>

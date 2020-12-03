@@ -3,7 +3,7 @@ var PagesLists = new Vue({
   data: {
     debug: DEBUGMODE,
     pages: [],
-    tableView: false,
+    tableView: true,
     loader: true,
     filter: "",
   },
