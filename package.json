@@ -1,6 +1,6 @@
 {
   "name": "startcodeigneitercsm",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "A simple CSM building with codeigneiter",
   "main": "index.js",
   "scripts": {
