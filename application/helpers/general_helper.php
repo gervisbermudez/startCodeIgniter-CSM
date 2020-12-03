@@ -34,7 +34,8 @@ if (!function_exists("config")) {
         if ($config) {
             return $config;
         }
-        return '';
+        $config = $ci->Site_config->where(['config_name' => $config_name]);
+        return $config ? $config->first()->config_value : null;
     }
 }
 

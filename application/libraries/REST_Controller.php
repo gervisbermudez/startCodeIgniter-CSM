@@ -670,7 +670,7 @@ abstract class REST_Controller extends \CI_Controller
 
         // They provided a key, but it wasn't valid, so get them out of here
         if ($this->config->item('rest_enable_keys') && $use_key && $this->_allow === false) {
-            if ($this->config->item('rest_enable_logging') && $log_method) {
+            if (config("SYSTEM_API_LOGGER") == 'Si' && $log_method) {
                 $this->_log_request();
             }
 
@@ -687,7 +687,7 @@ abstract class REST_Controller extends \CI_Controller
 
         // Check to see if this key has access to the requested controller
         if ($this->config->item('rest_enable_keys') && $use_key && empty($this->rest->key) === false && $this->_check_access() === false) {
-            if ($this->config->item('rest_enable_logging') && $log_method) {
+            if (config("SYSTEM_API_LOGGER") == 'Si' && $log_method) {
                 $this->_log_request();
             }
 
@@ -719,7 +719,7 @@ abstract class REST_Controller extends \CI_Controller
             // If no level is set, or it is lower than/equal to the key's level
             $authorized = $level <= $this->rest->level;
             // IM TELLIN!
-            if ($this->config->item('rest_enable_logging') && $log_method) {
+            if (config("SYSTEM_API_LOGGER") == 'Si' && $log_method) {
                 $this->_log_request($authorized);
             }
             if ($authorized === false) {
@@ -736,7 +736,7 @@ abstract class REST_Controller extends \CI_Controller
         }
 
         // No key stuff, but record that stuff is happening
-        elseif ($this->config->item('rest_enable_logging') && $log_method) {
+        elseif (config("SYSTEM_API_LOGGER") == 'Si' && $log_method) {
             $this->_log_request($authorized = true);
         }
 
