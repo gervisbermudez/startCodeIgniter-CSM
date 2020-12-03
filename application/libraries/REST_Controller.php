@@ -1,8 +1,6 @@
 <?php
 
 defined('BASEPATH') or exit('No direct script access allowed');
-use ReallySimpleJWT\Token;
-
 
 /**
  * CodeIgniter Rest Controller
@@ -585,7 +583,7 @@ abstract class REST_Controller extends \CI_Controller
         $headers = $this->input->request_headers();
         // Extract the token
         $token = isset($headers['Authorization']) ? $headers['Authorization'] : '';
-        if(!$token && userdata('logged_in')){
+        if (!$token && userdata('logged_in')) {
             $token = userdata('token');
         }
         // Use try-catch
@@ -594,12 +592,12 @@ abstract class REST_Controller extends \CI_Controller
             // Validate the token
             // Successfull validation will return the decoded user data else returns false
             $data = AUTHORIZATION::validateToken($token);
-            if($data){
+            if ($data) {
                 foreach ($data->userdata as $key => $value) {
                     $this->session->set_userdata($key, $value);
                 }
             }
-            
+
             return $data;
         } catch (Exception $e) {
             return false;
@@ -608,11 +606,11 @@ abstract class REST_Controller extends \CI_Controller
 
     public function failed_auth()
     {
-            $this->lang->load('login_lang', 'english');
-            $this->response([
-                'code' => REST_Controller::HTTP_UNAUTHORIZED,
-                'error_message' => lang('user_not_authenticated'),
-            ], REST_Controller::HTTP_UNAUTHORIZED);
+        $this->lang->load('login_lang', 'english');
+        $this->response([
+            'code' => REST_Controller::HTTP_UNAUTHORIZED,
+            'error_message' => lang('user_not_authenticated'),
+        ], REST_Controller::HTTP_UNAUTHORIZED);
     }
 
     /**
@@ -1091,6 +1089,8 @@ abstract class REST_Controller extends \CI_Controller
                     'ip_address' => $this->input->ip_address(),
                     'time' => time(),
                     'authorized' => $authorized,
+                    'status' => '1',
+                    'date_create' => date("Y-m-d H:i:s"),
                 ]);
 
         // Get the last insert id to update at a later stage of the request
@@ -2029,7 +2029,7 @@ abstract class REST_Controller extends \CI_Controller
 
         return $this->rest->db->update(
             $this->config->item('rest_logs_table'), $payload, [
-                'id' => $this->_insert_id,
+                'api_log_id' => $this->_insert_id,
             ]);
     }
 
@@ -2047,7 +2047,7 @@ abstract class REST_Controller extends \CI_Controller
 
         return $this->rest->db->update(
             $this->config->item('rest_logs_table'), $payload, [
-                'id' => $this->_insert_id,
+                'api_log_id' => $this->_insert_id,
             ]);
     }
 
