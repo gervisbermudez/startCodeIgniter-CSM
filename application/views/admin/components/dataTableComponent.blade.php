@@ -44,7 +44,7 @@
 									<ul :id='"dropdown" + index' class='dropdown-content'>
 										<li><a v-on:click="editItem(item, index);">Edit</a></li>
 										<li><a class="modal-trigger" href="#deleteModal" v-on:click="deleteItem(item, index);">Delete</a></li>
-										<li><a href="#!" v-on:click="archiveItem(item, index);">Archive</a></li>
+										<li><a v-on:click="archiveItem(item, index);">Archive</a></li>
 									</ul>
 								</span>
 							</td>

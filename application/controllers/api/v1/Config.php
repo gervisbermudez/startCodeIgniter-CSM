@@ -307,4 +307,44 @@ class Config extends REST_Controller
         $this->response_error(lang('not_found_error'), $Logger->get_pagination_info());
     }
 
+    public function apilogger_get($api_log_id = null)
+    {
+        $this->load->model('Admin/Api_logs');
+
+        $Api_logs = new Api_logs();
+        if ($api_log_id) {
+            $result = $Api_logs->where(["site_config_id" => $api_log_id]);
+            $result = $result ? $result->first() : [];
+        } else {
+            $result = $Api_logs->pager();
+        }
+
+        if ($result) {
+            $this->response_ok($result, $Api_logs->get_pagination_info());
+            return;
+        }
+
+        $this->response_error(lang('not_found_error'), $Api_logs->get_pagination_info());
+    }
+
+    public function usertrackinglogger_get($api_log_id = null)
+    {
+        $this->load->model('Admin/User_tracking');
+
+        $User_tracking = new User_tracking();
+        if ($api_log_id) {
+            $result = $User_tracking->where(["site_config_id" => $api_log_id]);
+            $result = $result ? $result->first() : [];
+        } else {
+            $result = $User_tracking->pager();
+        }
+
+        if ($result) {
+            $this->response_ok($result, $User_tracking->get_pagination_info());
+            return;
+        }
+
+        $this->response_error(lang('not_found_error'), $User_tracking->get_pagination_info());
+    }
+
 }

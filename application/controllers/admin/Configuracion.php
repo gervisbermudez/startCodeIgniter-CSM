@@ -31,4 +31,22 @@ class Configuracion extends MY_Controller
         echo $this->blade->view("admin.configuracion.all_logger", $data);
     }
 
+    public function apilogger()
+    {
+        $data['title'] = ADMIN_TITLE . " | API Log";
+        $data['h1'] = "API Log";
+        $data['header'] = $this->load->view('admin/header', $data, true);
+
+        echo $this->blade->view("admin.configuracion.all_apilogger", $data);
+    }
+
+    public function usertrackinglogger()
+    {
+        $data['title'] = ADMIN_TITLE . " | User Tracking Log";
+        $data['h1'] = "User Tracking Log";
+        $data['header'] = $this->load->view('admin/header', $data, true);
+
+        echo $this->blade->view("admin.configuracion.all_usertrackinglogger", $data);
+    }
+
 }
