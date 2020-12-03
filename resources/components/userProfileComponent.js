@@ -1,58 +1,3 @@
-Vue.component("formCustom", {
-  template: "#form-custom-template",
-  props: ["form"],
-  data: function () {
-    return {
-      debug: DEBUGMODE,
-    };
-  },
-  mixins: [mixins],
-  methods: {},
-  mounted: function () {
-    this.$nextTick(function () {});
-  },
-});
-
-Vue.component("pageCard", {
-  template: "#page-card-template",
-  props: ["page"],
-  data: function () {
-    return {
-      debug: DEBUGMODE,
-    };
-  },
-  mixins: [mixins],
-  methods: {
-    getcontentText: function (page) {
-      var span = document.createElement("span");
-      span.innerHTML = page.content;
-      let text = span.textContent || span.innerText;
-      return text.substring(0, 220) + "...";
-    },
-    getPageImagePath() {
-      if (this.imagen_file) {
-        return (
-          BASEURL +
-          this.imagen_file.file_path.substr(2) +
-          this.imagen_file.file_name +
-          "." +
-          this.imagen_file.file_type
-        );
-      }
-      return BASEURL + "public/img/default.jpg";
-    },
-    getPageFullPath: function (page) {
-      if (page.status == 1) {
-        return BASEURL + page.path;
-      }
-      return BASEURL + "admin/paginas/editar/" + page.page_id;
-    },
-  },
-  mounted: function () {
-    this.$nextTick(function () {});
-  },
-});
-
 var userProfile = new Vue({
   el: "#root",
   data: {
@@ -76,6 +21,30 @@ var userProfile = new Vue({
     },
   },
   methods: {
+    getcontentText: function (page) {
+      var span = document.createElement("span");
+      span.innerHTML = page.content;
+      let text = span.textContent || span.innerText;
+      return text.substring(0, 220) + "...";
+    },
+    getPageImagePath(page) {
+      if (page.imagen_file) {
+        return (
+          BASEURL +
+          page.imagen_file.file_path.substr(2) +
+          page.imagen_file.file_name +
+          "." +
+          page.imagen_file.file_type
+        );
+      }
+      return BASEURL + "public/img/default.jpg";
+    },
+    getPageFullPath: function (page) {
+      if (page.status == 1) {
+        return BASEURL + page.path;
+      }
+      return BASEURL + "admin/paginas/editar/" + page.page_id;
+    },
     getUser() {
       var self = this;
       self.loader = true;
@@ -108,6 +77,9 @@ var userProfile = new Vue({
             self.debug ? console.log(url, response) : null;
             self.loader = false;
             let timelineData = response.data.map((item, index) => {
+              if (item.user) {
+                item.user = new User(item.user);
+              }
               switch (item.model_type) {
                 case "page":
                   return new Page(item);
