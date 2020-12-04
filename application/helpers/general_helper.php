@@ -132,7 +132,6 @@ if (!function_exists('slugify')) {
 
         return $text;
     }
-
 }
 
 if (!function_exists('script')) {
@@ -140,7 +139,6 @@ if (!function_exists('script')) {
     {
         return '<script src="' . base_url($url) . '"></script>';
     }
-
 }
 
 if (!function_exists("time_ago")) {
@@ -209,7 +207,6 @@ function rrmdir($dir)
     } else if (file_exists($dir)) {
         unlink($dir);
     }
-
 }
 
 // Function to Copy folders and files
@@ -227,11 +224,9 @@ function rcopy($src, $dst)
                 rcopy("$src/$file", "$dst/$file");
             }
         }
-
     } else if (file_exists($src)) {
         copy($src, $dst);
     }
-
 }
 
 function recurse_copy($src, $dst, $ignorefiles = [])

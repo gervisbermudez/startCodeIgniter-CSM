@@ -46,10 +46,10 @@ class MY_model extends CI_Model implements JsonSerializable
      */
     public function all($limit = array(), $order = array())
     {
-        if($limit && is_array($limit)){
-            if(isset($limit[1])){
+        if ($limit && is_array($limit)) {
+            if (isset($limit[1])) {
                 $this->db->limit($limit[0], $limit[1]);
-            } else{
+            } else {
                 $this->db->limit($limit[0]);
             }
         }
@@ -169,6 +169,23 @@ class MY_model extends CI_Model implements JsonSerializable
         return false;
     }
 
+    public function search($str_term)
+    {
+        $this->db->select('*');
+        $this->db->from($this->table);
+        $table_fields = $this->db->list_fields($this->table);
+        foreach ($table_fields as $key => $value) {
+            $this->db->or_like($value, $str_term);
+        }
+
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            $result = new Collection($this->filter_results($query->result()));
+            return $result;
+        }
+        return [];
+    }
+
     /**
      * Set current object data on database, this method will performs a insert or update sql depends of
      * map atribute
@@ -205,7 +222,6 @@ class MY_model extends CI_Model implements JsonSerializable
             if ($result) {
                 $this->updated();
             }
-
         } else {
             $this->creating();
             $result = $this->db->insert($this->table, $data);
@@ -268,10 +284,10 @@ class MY_model extends CI_Model implements JsonSerializable
      */
     public function get_data($where = 'all', $limit = '', $order = array())
     {
-        if($limit && is_array($limit)){
-            if(isset($limit[1])){
+        if ($limit && is_array($limit)) {
+            if (isset($limit[1])) {
                 $this->db->limit($limit[0], $limit[1]);
-            } else{
+            } else {
                 $this->db->limit($limit[0]);
             }
         }
@@ -287,7 +303,6 @@ class MY_model extends CI_Model implements JsonSerializable
             if ($query->num_rows() > 0) {
                 return new Collection($query->result());
             }
-
         } else {
             $query = $this->db->get_where($this->table, $where);
             if ($query->num_rows() > 0) {
@@ -458,7 +473,6 @@ class MY_model extends CI_Model implements JsonSerializable
             );
 
             $this->db->insert($table_data_name, $insert);
-
         }
     }
 
@@ -533,7 +547,6 @@ class MY_model extends CI_Model implements JsonSerializable
 
     public function creating()
     {
-
     }
 
     public function created()
@@ -545,7 +558,6 @@ class MY_model extends CI_Model implements JsonSerializable
 
     public function updating()
     {
-
     }
 
     public function updated()
@@ -557,17 +569,14 @@ class MY_model extends CI_Model implements JsonSerializable
 
     public function saving()
     {
-
     }
 
     public function saved()
     {
-
     }
 
     public function deleting()
     {
-
     }
 
     public function deleted()
@@ -579,12 +588,10 @@ class MY_model extends CI_Model implements JsonSerializable
 
     public function restoring()
     {
-
     }
 
     public function restored()
     {
-
     }
 
     /**

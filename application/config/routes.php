@@ -54,6 +54,7 @@ $route['404_override'] = 'PageController';
 $route['translate_uri_dashes'] = false;
 $route['admin'] = 'admin/admin';
 $route['admin/offline'] = 'admin/admin/offline';
+$route['admin/search'] = 'admin/admin/search';
 //Pages system
 $route['admin/paginas/preview'] = 'PageController/preview';
 $route['sitemap\.xml'] = 'PageController/siteMap';

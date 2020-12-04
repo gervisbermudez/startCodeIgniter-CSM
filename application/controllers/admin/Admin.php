@@ -30,4 +30,20 @@ class Admin extends MY_Controller
         echo $this->blade->view("admin.blankpage", $data);
     }
 
+    public function search()
+    {
+        $data['username'] = $this->session->userdata('username');
+        $data['title'] = ADMIN_TITLE . ' | Dashboard';
+        $data['header'] = "";
+        $data['h1'] = 'Search result';
+        $str_term = $this->input->get('q');
+        $data['pages'] = [];
+        if($str_term){
+            $this->load->model('Admin/Page');
+            $pages = new Page();
+            $data['pages'] = $pages->search($str_term);
+        }
+        echo $this->blade->view("admin.search_results", $data);
+    }
+
 }
