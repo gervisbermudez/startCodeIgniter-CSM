@@ -51,10 +51,10 @@ mysql, mysqli, postgre, odbc, mssql, sqlite, oci8
 $active_group = 'default';
 $active_record = true;
 
-$db['default']['hostname'] = 'localhost';
-$db['default']['username'] = 'root';
-$db['default']['password'] = '';
-$db['default']['database'] = 'start_cms';
+$db['default']['hostname'] = getenv('DATABASE_HOSTNAME');
+$db['default']['username'] = getenv('DATABASE_USER');
+$db['default']['password'] = getenv('DATABASE_PASSWORD');
+$db['default']['database'] = getenv('DATABASE_DATABASE');
 $db['default']['dbdriver'] = 'mysqli';
 $db['default']['dbprefix'] = '';
 $db['default']['pconnect'] = true;
