@@ -16,10 +16,10 @@ if (!function_exists('getThemePath')) {
         $theme_path = $ci->config->item("THEME_PATH");
         $theme_path = str_replace('\\', '/', $theme_path);
         if ($theme_path) {
-            return FCPATH . 'themes/' . $theme_path;
+            return FCPATH . 'themes' . '/' . $theme_path;
         }
         if (SITE_THEME) {
-            return FCPATH . 'themes/' . SITE_THEME;
+            return FCPATH . 'themes' . '/' . SITE_THEME;
         }
 
         return null;
@@ -46,7 +46,7 @@ if (!function_exists('getThemePublicPath')) {
         $config = new stdClass();
         $theme_path = $ci->config->item("THEME_PATH");
         if ($theme_path) {
-            return 'themes/' . $theme_path . '/public/';
+            return 'themes' . '/' . $theme_path . '/' . 'public' . '/';
         }
         return '';
     }

@@ -208,3 +208,4 @@ doc/*
 /startCodeIgniter-CSM-master/
 /cache
 backups/database/*
+themes/myGreatTheme/cache/*

@@ -11,5 +11,7 @@
     </div>
     @include('site.shared.footer')
     @yield('footer_includes')
+    <script src="{{base_url(getThemePublicPath())}}js/jquery.slim.min.js"></script>
+    <script src="{{base_url(getThemePublicPath())}}bootstrap/js/bootstrap.min.js"></script>
 </body>
 </html>

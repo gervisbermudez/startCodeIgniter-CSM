@@ -20,12 +20,11 @@ class PageController extends Base_Controller
             $this->error404();
             return;
         }
-        if (getThemePath()) {
-            $this->blade->changePath(getThemePath());
-        }
-
-        echo $this->blade->view("site.templates." . $data["template"], $data);
-
+        //Load local theme Controller 
+        include getThemePath() . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'ThemeController.php';
+        $themeController = new ThemeController();
+        
+        echo $themeController->render($data);
     }
 
     public function home()
@@ -38,11 +37,11 @@ class PageController extends Base_Controller
                 $this->error404();
                 return;
             }
-            if (getThemePath()) {
-                $this->blade->changePath(getThemePath());
-            }
 
-            echo $this->blade->view("site.templates." . $data["template"], $data);
+            //Load local theme Controller 
+            include getThemePath() . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'ThemeController.php';
+            $themeController = new ThemeController();
+            echo $themeController->render($data);
         } else {
             // Show default
             $data['title'] = config("SITE_TITLE") . " - Home";
@@ -66,11 +65,11 @@ class PageController extends Base_Controller
             $this->error404();
             return;
         }
-        if (getThemePath()) {
-            $this->blade->changePath(getThemePath());
-        }
-
-        echo $this->blade->view("site.templates." . $data["template"], $data);
+        
+        //Load local theme Controller 
+        include getThemePath() . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'ThemeController.php';
+        $themeController = new ThemeController();
+        echo $themeController->render($data);
 
     }
 

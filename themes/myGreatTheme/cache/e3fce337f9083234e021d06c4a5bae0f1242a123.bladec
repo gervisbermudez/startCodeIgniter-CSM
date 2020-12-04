@@ -5,6 +5,7 @@
 <?php echo page_meta($meta); ?>
 <?php endif; ?>
 <title><?php echo static::e($title); ?></title>
+<link rel="alternate" type="application/rss+xml" title="<?php echo static::e(config("SITE_TITLE")); ?> &raquo; Feed" href="<?php echo static::e(base_url('feed')); ?>" />
 <!-- Materialize Core CSS -->
 <?php echo link_tag(getThemePublicPath() . 'css/materialize.css'); ?>
 <!-- Custom CSS -->
