@@ -20,11 +20,8 @@ class PageController extends Base_Controller
             $this->error404();
             return;
         }
-        //Load local theme Controller 
-        include getThemePath() . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'ThemeController.php';
-        $themeController = new ThemeController();
-        
-        echo $themeController->render($data);
+        //Load local theme Controller
+        echo $this->themeController->render($data);
     }
 
     public function home()
@@ -37,19 +34,13 @@ class PageController extends Base_Controller
                 $this->error404();
                 return;
             }
-
-            //Load local theme Controller 
-            include getThemePath() . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'ThemeController.php';
-            $themeController = new ThemeController();
-            echo $themeController->render($data);
+            echo $this->themeController->render($data);
         } else {
             // Show default
             $data['title'] = config("SITE_TITLE") . " - Home";
             $data['layout'] = 'site';
-            if (getThemePath()) {
-                $this->blade->changePath(getThemePath());
-            }
-            echo $this->blade->view("site.home", $data);
+            $data['template'] = 'home';
+            echo $this->themeController->home($data, '');
         }
     }
 
@@ -66,11 +57,9 @@ class PageController extends Base_Controller
             $this->error404();
             return;
         }
-        
-        //Load local theme Controller 
-        include getThemePath() . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'ThemeController.php';
-        $themeController = new ThemeController();
-        echo $themeController->render($data);
+
+        //Load local theme Controller
+        echo $this->themeController->render($data);
 
     }
 
@@ -79,36 +68,6 @@ class PageController extends Base_Controller
         $data['pages'] = $this->Page->where(["status" => 1]);
         header("Content-Type: text/xml;charset=iso-8859-1");
         echo $this->blade->view("admin.xml.sitemap", $data);
-    }
-
-    private function get_page_info($where)
-    {
-        $pageInfo = new Page();
-        $data['result'] = $pageInfo->find_with($where);
-        if (!$data['result']) {
-            //Not found Page
-            return null;
-        }
-        //Is the page published?
-        $date_now = new DateTime();
-        $data['pagePublishTime'] = DateTime::createFromFormat('Y-m-d H:i:s', $pageInfo->date_publish);
-
-        if ($date_now < $data['pagePublishTime']) {
-            return null;
-        }
-
-        $data['page'] = $pageInfo;
-        $data['meta'] = $this->getPageMetas($pageInfo);
-        $data['title'] = $pageInfo->page_data["title"] ? config("SITE_TITLE") . " - " . $pageInfo->page_data["title"] : config("SITE_TITLE") . " - " . $pageInfo->title;
-        $data['layout'] = $pageInfo->layout == 'default' ? 'site' : $pageInfo->layout;
-        $data['headers_includes'] = isset($pageInfo->page_data["headers_includes"]) ? $pageInfo->page_data["headers_includes"] : "";
-        $data['footer_includes'] = isset($pageInfo->page_data["footer_includes"]) ? $pageInfo->page_data["footer_includes"] : "";
-        $data['template'] = $pageInfo->template == 'default' ? 'templates.template' : $pageInfo->template;
-        $this->load->model('Admin/Menu');
-        $menu = new Menu();
-        $menu->find_with(['menu_id' => 1]);
-        $data["menu"] = $menu;
-        return $data;
     }
 
 }

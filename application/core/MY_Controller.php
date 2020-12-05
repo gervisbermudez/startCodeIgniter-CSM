@@ -73,15 +73,20 @@ class MY_Controller extends CI_Controller
 class Base_Controller extends CI_Controller
 {
 
+    public $themeController = null;
+
     public function __construct()
     {
         parent::__construct();
 
         $this->load_config();
         $this->load->library('Track_Visitor');
-        if(config('SITEM_TRACK_VISITORS') == 'Si'){
+        if (config('SITEM_TRACK_VISITORS') == 'Si') {
             $this->track_visitor->visitor_track();
         }
+        //Load local theme Controller
+        include getThemePath() . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'ThemeController.php';
+        $this->themeController = new ThemeController();
     }
 
     public function getPageMetas($page)
@@ -121,10 +126,20 @@ class Base_Controller extends CI_Controller
         $data['title'] = "404";
         $url = uri_string();
         if (stristr($url, 'admin') === false) {
-            if (getThemePath()) {
-                $this->blade->changePath(getThemePath());
+            $page_id = config("SITE_ERROR_404_PAGE");
+            if ($page_id) {
+                $data = $this->get_page_info(array('page_id' => $page_id, 'status' => 1));
+                if ($data == null) {
+                    $this->error404();
+                    return;
+                }
+                echo $this->themeController->render($data);
+            } else {
+                if (getThemePath()) {
+                    $this->blade->changePath(getThemePath());
+                }
+                echo $this->blade->view("site.error404", $data);
             }
-            echo $this->blade->view("site.error404", $data);
         } else {
             if (!$this->session->userdata('logged_in')) {
                 $uri = str_replace('/', '_', uri_string());
@@ -136,6 +151,36 @@ class Base_Controller extends CI_Controller
             }
         }
 
+    }
+
+    public function get_page_info($where)
+    {
+        $pageInfo = new Page();
+        $data['result'] = $pageInfo->find_with($where);
+        if (!$data['result']) {
+            //Not found Page
+            return null;
+        }
+        //Is the page published?
+        $date_now = new DateTime();
+        $data['pagePublishTime'] = DateTime::createFromFormat('Y-m-d H:i:s', $pageInfo->date_publish);
+
+        if ($date_now < $data['pagePublishTime']) {
+            return null;
+        }
+
+        $data['page'] = $pageInfo;
+        $data['meta'] = $this->getPageMetas($pageInfo);
+        $data['title'] = $pageInfo->page_data["title"] ? config("SITE_TITLE") . " - " . $pageInfo->page_data["title"] : config("SITE_TITLE") . " - " . $pageInfo->title;
+        $data['layout'] = $pageInfo->layout == 'default' ? 'site' : $pageInfo->layout;
+        $data['headers_includes'] = isset($pageInfo->page_data["headers_includes"]) ? $pageInfo->page_data["headers_includes"] : "";
+        $data['footer_includes'] = isset($pageInfo->page_data["footer_includes"]) ? $pageInfo->page_data["footer_includes"] : "";
+        $data['template'] = $pageInfo->template;
+        $this->load->model('Admin/Menu');
+        $menu = new Menu();
+        $menu->find_with(['menu_id' => 1]);
+        $data["menu"] = $menu;
+        return $data;
     }
 
     /**

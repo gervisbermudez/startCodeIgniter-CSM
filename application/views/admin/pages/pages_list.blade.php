@@ -51,7 +51,7 @@
                     <tbody>
                         <tr v-for="(page, index) in filterPages" :key="index">
                             <td>@{{page.title}}</td>
-                            <td><a :href="base_url('admin/paginas/view/' + page.user_id)" target="_blank">@{{page.path}}</a></td>
+                            <td><a :href="base_url('admin/paginas/view/' + page.page_id)" target="_blank">@{{page.path}}</a></td>
                             <td><a :href="base_url('admin/usuarios/ver/' + page.user_id)">@{{page.user.get_fullname()}}</a></td>
                             <td>
                                 @{{page.date_publish ? page.date_publish : page.date_create}}
