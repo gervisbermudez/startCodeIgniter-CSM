@@ -1,7 +1,0 @@
-<nav class="white" role="navigation">
-	<div class="nav-wrapper container">
- <a id="logo-container" href="<?php echo static::e(base_url()); ?>" class="brand-logo">Start CMS</a>
- <?php echo render_menu('top_nav'); ?>
-
-	</div>
-</nav>
