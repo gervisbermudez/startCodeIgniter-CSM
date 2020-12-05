@@ -94,27 +94,51 @@ class Base_Controller extends CI_Controller
         if ($page->page_data["meta"]) {
             function convertArrayToObject($value)
             {
-                return (Array) $value;
+                $value = (Array) $value;
+                if (isset($value['property']) && $value['property'] == 'og:image') {
+                    if ($value['content'] != '') {
+                        $value['content'] = base_url($value['content']);
+                    } else {
+                        $value['content'] = base_url('public/img/default.jpg');
+                    }
+                }
+                if (isset($value['name']) && $value['name'] == 'twitter:image') {
+                    if ($value['content'] != '') {
+                        $value['content'] = base_url($value['content']);
+                    } else {
+                        $value['content'] = base_url('public/img/default.jpg');
+                    }
+                }
+                return $value;
             }
             return array_map("convertArrayToObject", $page->page_data["meta"]);
 
         }
 
+        $description = character_limiter(strip_tags($page->content), 120);
+        $url = base_url($page->path);
+        if (isset($page->main_image)) {
+            $imagen_url = base_url($page->main_image->file_front_path);
+        } else {
+            $imagen_url = base_url('public/img/default.jpg');
+        }
+
         $default_metas = array(
             array('name' => 'keywords', 'content' => $page->title),
-            array('name' => 'description', 'content' => $page->title),
+            array('name' => 'description', 'content' => $description),
             array('name' => 'ROBOTS', 'content' => 'NOODP'),
             array('name' => 'GOOGLEBOT', 'content' => 'INDEX, FOLLOW'),
             array('property' => 'og:title', 'content' => $page->title),
-            array('property' => 'og:description', 'content' => $page->title),
-            array('property' => 'og:site_name', 'content' => $page->title),
-            array('property' => 'og:url', 'content' => $page->title),
-            array('property' => 'og:image', 'content' => $page->title),
+            array('property' => 'og:description', 'content' => $description),
+            array('property' => 'og:site_name', 'content' => config('SITE_TITLE')),
+            array('property' => 'og:url', 'content' => $url),
+            array('property' => 'og:image', 'content' => $imagen_url),
             array('property' => 'og:type', 'content' => $page->title),
             array('name' => 'twitter:card', 'content' => 'summary'),
             array('name' => 'twitter:title', 'content' => $page->title),
-            array('name' => 'twitter:description', 'content' => $page->title),
-            array('name' => 'twitter:image', 'content' => $page->title),
+            array('name' => 'twitter:site', 'content' => $page->title),
+            array('name' => 'twitter:description', 'content' => $description),
+            array('name' => 'twitter:image', 'content' => $imagen_url),
         );
         return $default_metas;
     }

@@ -96,19 +96,23 @@ var PageNewForm = new Vue({
         content: "article",
       },
       {
-        property: "twitter:card",
+        name: "twitter:card",
         content: "summary",
       },
       {
-        property: "twitter:title",
+        name: "twitter:site",
         content: "",
       },
       {
-        property: "twitter:description",
+        name: "twitter:title",
         content: "",
       },
       {
-        property: "twitter:image",
+        name: "twitter:description",
+        content: "",
+      },
+      {
+        name: "twitter:image",
         content: "",
       },
     ],
@@ -180,6 +184,15 @@ var PageNewForm = new Vue({
         this.metas.splice(index, 1);
       }
     },
+    getMeta(strProperty) {
+      let result_meta = false;
+      this.metas.forEach((meta) => {
+        if (meta.property == strProperty || meta.name == strProperty) {
+          result_meta = meta;
+        }
+      });
+      return result_meta;
+    },
     setMetaContent(strValue, strProperty, index) {
       if (index !== undefined) {
         this.metas[index].content = strValue;
@@ -242,6 +255,8 @@ var PageNewForm = new Vue({
       }
       if (this.mainImage.length == 0) {
         this.mainImage = [];
+        this.setMetaContent("", 'og:image');
+        this.setMetaContent("", 'twitter:image');
       }
     },
     getFileImagenPath(file) {
@@ -349,6 +364,21 @@ var PageNewForm = new Vue({
       });
     },
     getData: function () {
+      let content = this.getcontentText(
+        wp.data.select("core/editor").getEditedPostContent()
+      );
+      let meta = this.getMeta("description");
+      if (meta && meta.content == "" || meta.content == "...") {
+        this.setMetaContent(content, "description");
+      }
+      meta = this.getMeta("og:description");
+      if (meta && meta.content == "" || meta.content == "...") {
+        this.setMetaContent(content, "og:description");
+      }
+      meta = this.getMeta("twitter:description");
+      if (meta && meta.content == "" || meta.content == "...") {
+        this.setMetaContent(content, "twitter:description");
+      }
       return {
         title: this.form.fields.title.value || "",
         subtitle: this.form.fields.subtitle.value || "",
@@ -586,12 +616,14 @@ var PageNewForm = new Vue({
       } else {
         this.getPageTypes();
         this.getTemplates();
-        
       }
     },
     copyCallcack(files) {
       let file = files[0];
       this.mainImage.push(file);
+      file = new ExplorerFile(file);
+      this.setMetaContent(file.get_relative_file_path(), 'og:image');
+      this.setMetaContent(file.get_relative_file_path(), 'twitter:image');
       let instance = M.Modal.getInstance($("#fileUploader"));
       instance.close();
     },

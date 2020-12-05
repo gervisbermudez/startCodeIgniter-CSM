@@ -26,10 +26,10 @@
             <pubDate><?php echo ($post->date_create) ?></pubDate>
             <guid isPermaLink="false"><?php echo site_url($post->path) ?></guid>
             <description>
-                <![CDATA[<?php echo character_limiter($post->content, 200); ?>]]>
+                <![CDATA[<?php echo character_limiter(strip_tags($post->content), 200); ?>]]>
             </description>
             <content:encoded>
-                <![CDATA[<?php echo character_limiter($post->content, 200); ?> ]]>
+                <![CDATA[<?php echo character_limiter(strip_tags($post->content), 200); ?> ]]>
             </content:encoded>
             <wfw:commentRss><?php echo site_url($post->path) ?>/feed/</wfw:commentRss>
             <slash:comments>0</slash:comments>
