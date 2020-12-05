@@ -49,11 +49,6 @@ $active_group = 'default';
 $active_record = TRUE;
 
 $db['default']['hostname'] = 'localhost';
-/*
-$db['default']['username'] = 'promovid';
-$db['default']['password'] = 'q8b778&id=cK768Bd';
-$db['default']['database'] = 'promovid_sbadmin';
-*/
 $db['default']['username'] = 'root';
 $db['default']['password'] = '';
 $db['default']['database'] = 'start_cms';
