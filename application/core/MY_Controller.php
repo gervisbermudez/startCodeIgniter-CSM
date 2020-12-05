@@ -175,7 +175,7 @@ class Base_Controller extends CI_Controller
         $data['layout'] = $pageInfo->layout == 'default' ? 'site' : $pageInfo->layout;
         $data['headers_includes'] = isset($pageInfo->page_data["headers_includes"]) ? $pageInfo->page_data["headers_includes"] : "";
         $data['footer_includes'] = isset($pageInfo->page_data["footer_includes"]) ? $pageInfo->page_data["footer_includes"] : "";
-        $data['template'] = $pageInfo->template;
+        $data['template'] = $pageInfo->template == 'default' ? 'templates.default' : $pageInfo->template;
         $this->load->model('Admin/Menu');
         $menu = new Menu();
         $menu->find_with(['menu_id' => 1]);
