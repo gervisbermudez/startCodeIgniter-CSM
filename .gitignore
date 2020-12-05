@@ -211,3 +211,4 @@ backups/database/*
 themes/myGreatTheme/cache/*
 application/config/production/*
 themes/*
+uploads/*
