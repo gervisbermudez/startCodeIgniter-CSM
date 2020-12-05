@@ -173,16 +173,9 @@ class Pages extends REST_Controller
 
     public function templates_get()
     {
-        $this->load->helper('directory');
-        $layouts = directory_map('./application/views/site/layouts', 1);
-        $templates = directory_map('./application/views/site/templates', 1);
-
         $response = array(
             'code' => REST_Controller::HTTP_OK,
-            'data' => [
-                'layouts' => $layouts ? $layouts : [],
-                'templates' => $templates ? $templates : [],
-            ]
+            'data' => getTemplates()
         );
 
         $this->response($response, REST_Controller::HTTP_OK);
@@ -215,18 +208,15 @@ class Pages extends REST_Controller
             return;
         }
 
-        //Templates
-
-        $layouts = directory_map('./application/views/site/layouts', 1);
-        $templates = directory_map('./application/views/site/templates', 1);
+        $themeTemplates = getTemplates();
 
         $response = array(
             'code' => 200,
             'data' => array(
                 'page' => $page,
                 'page_types' => $page_types,
-                'layouts' => $layouts ? $layouts : [],
-                'templates' => $templates ? $templates : [],
+                'layouts' => $themeTemplates['layouts'],
+                'templates' => $themeTemplates['templates'],
             ),
         );
 

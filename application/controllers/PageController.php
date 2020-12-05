@@ -45,6 +45,7 @@ class PageController extends Base_Controller
         } else {
             // Show default
             $data['title'] = config("SITE_TITLE") . " - Home";
+            $data['layout'] = 'site';
             if (getThemePath()) {
                 $this->blade->changePath(getThemePath());
             }
@@ -102,7 +103,7 @@ class PageController extends Base_Controller
         $data['layout'] = $pageInfo->layout == 'default' ? 'site' : $pageInfo->layout;
         $data['headers_includes'] = isset($pageInfo->page_data["headers_includes"]) ? $pageInfo->page_data["headers_includes"] : "";
         $data['footer_includes'] = isset($pageInfo->page_data["footer_includes"]) ? $pageInfo->page_data["footer_includes"] : "";
-        $data['template'] = $pageInfo->template == 'default' ? 'template' : $pageInfo->template;
+        $data['template'] = $pageInfo->template == 'default' ? 'templates.template' : $pageInfo->template;
         $this->load->model('Admin/Menu');
         $menu = new Menu();
         $menu->find_with(['menu_id' => 1]);

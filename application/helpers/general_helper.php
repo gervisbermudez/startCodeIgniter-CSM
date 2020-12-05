@@ -9,11 +9,40 @@ if (!function_exists('fnGetTitle')) {
     }
 }
 
+function getTemplates()
+{
+    $ci = &get_instance();
+    $ci->load->helper('directory');
+    $layouts = directory_map(getThemePath() . '/views/site/layouts', 1);
+    $templates = directory_map(getThemePath() . '/views/site/templates', 1);
+    $pages = directory_map(getThemePath() . '/views/site', 1);
+
+    function filter_files($strName)
+    {
+        return !(strpos($strName, "\\"));
+    }
+
+    function add_folder_path($strName)
+    {
+        return "templates." . $strName;
+    }
+
+    $layouts = array_filter($layouts, 'filter_files');
+    $templates = array_filter($templates, 'filter_files');
+    $templates = array_map('add_folder_path', $templates);
+    $pages = array_filter($pages, 'filter_files');
+
+    return [
+        'layouts' => $layouts ? $layouts : [],
+        'templates' => $templates ? array_merge($templates, $pages) : [],
+    ];
+}
+
 if (!function_exists('getThemePath')) {
     function getThemePath()
     {
         $ci = &get_instance();
-        $theme_path = $ci->config->item("THEME_PATH");
+        $theme_path = config("THEME_PATH");
         $theme_path = str_replace('\\', '/', $theme_path);
         if ($theme_path) {
             return FCPATH . 'themes' . '/' . $theme_path;

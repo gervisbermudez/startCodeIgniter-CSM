@@ -355,7 +355,9 @@ var PageNewForm = new Vue({
         path: this.getPagePath || "",
         page_type_id: this.page_type_id || 1,
         status: this.status ? 1 : 2,
-        content: wp.data.select("core/editor").getEditedPostContent() || "Content of the page...",
+        content:
+          wp.data.select("core/editor").getEditedPostContent() ||
+          "Content of the page...",
         page_id: this.page_id || null,
         publishondate: this.publishondate,
         date_publish: this.getDateTimePublish,
@@ -396,13 +398,14 @@ var PageNewForm = new Vue({
           self.debug ? console.log(url, response) : null;
           if (response.code == 200) {
             self.templates = response.data.templates.map(function (value) {
-              let template = value.split(".")[0];
+              let template = value.split(".blade")[0];
               return template == "template" ? "default" : template;
             });
             self.layouts = response.data.layouts.map(function (value) {
               let layout = value.split(".")[0];
               return layout == "site" ? "default" : layout;
             });
+            self.initPlugins();
           }
         },
         error: function (error) {
@@ -561,7 +564,7 @@ var PageNewForm = new Vue({
                 self.mainImage.push(response.data.page.main_image);
               }
               self.templates = response.data.templates.map(function (value) {
-                let template = value.split(".")[0];
+                let template = value.split(".blade")[0];
                 return template == "template" ? "default" : template;
               });
               self.layouts = response.data.layouts.map(function (value) {
@@ -574,6 +577,7 @@ var PageNewForm = new Vue({
             setTimeout(() => {
               M.updateTextFields();
             }, 1000);
+            this.initPlugins();
           })
           .catch((response) => {
             M.toast({ html: response.responseJSON.error_message });
@@ -582,6 +586,7 @@ var PageNewForm = new Vue({
       } else {
         this.getPageTypes();
         this.getTemplates();
+        
       }
     },
     copyCallcack(files) {
@@ -591,22 +596,8 @@ var PageNewForm = new Vue({
       instance.close();
     },
     initPlugins() {
-      M.Chips.init(document.getElementById("pageTags"), {});
-      tinymce.init({
-        selector: "#id_cazary",
-        plugins: ["link table code"],
-        setup: (editor) => {
-          editor.on("Change", (e) => {
-            PageNewForm.content = tinymce.editors["id_cazary"].getContent();
-            let content = this.getcontentText(PageNewForm.content, 200);
-            content = content.replace(/(\r\n|\n|\r)/gm, "");
-            this.setMetaContent(content, "description");
-            this.setMetaContent(content, "og:description");
-            this.setMetaContent(content, "twitter:description");
-          });
-        },
-      });
       setTimeout(() => {
+        M.Chips.init(document.getElementById("pageTags"), {});
         M.Tabs.init(document.getElementById("formTabs"), {});
         var elems = document.getElementById("pageMetas");
         var instances = M.Collapsible.init(elems, {
@@ -667,14 +658,13 @@ var PageNewForm = new Vue({
           "wp:action-create-categories": [],
         },
       };
- 
+
       localStorage.setItem("g-editor-page", JSON.stringify(content));
     },
   },
   mounted: function () {
     this.$nextTick(function () {
       this.debug ? console.log("mounted PageNewForm") : null;
-      this.initPlugins();
       this.checkEditMode();
       this.getCategories();
     });

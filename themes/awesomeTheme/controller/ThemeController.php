@@ -19,7 +19,7 @@ class ThemeController
         if (getThemePath()) {
             $this->blade->changePath(getThemePath());
         }
-        return $this->blade->view("site.templates." . $data["template"], $data);
+        return $this->blade->view("site." . $data["template"], $data);
     }
 
 }
