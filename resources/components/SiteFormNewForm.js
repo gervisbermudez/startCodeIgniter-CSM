@@ -1,18 +1,44 @@
-var MenuNewForm = new Vue({
+var SiteFormNewForm = new Vue({
   el: "#root",
   data: {
     debug: DEBUGMODE,
     loader: true,
     editMode: false,
-    menu_id: null,
+    siteform_id: null,
     form: {},
-    name: "New Menu",
+    name: "New Form",
     status: false,
     date_publish: "",
     date_create: "",
     date_update: "",
     template: "",
-    menu_items: [],
+    siteform_items: [],
+    items_types: [
+      "text",
+      "textarea",
+      "select",
+      "button",
+      "checkbox",
+      "color",
+      "date",
+      "datetime-local",
+      "email",
+      "file",
+      "hidden",
+      "image",
+      "month",
+      "number",
+      "password",
+      "radio",
+      "range",
+      "reset",
+      "search",
+      "submit",
+      "tel",
+      "time",
+      "url",
+      "week",
+    ],
     templates: [],
     positions: {},
     position: "",
@@ -20,13 +46,12 @@ var MenuNewForm = new Vue({
     user: null,
     realOrder: {},
     group: {},
-    targetItem: {}
+    targetItem: {},
   },
   mixins: [mixins],
   computed: {
     btnEnable: function () {
-      let enable =
-        this.name && this.template && this.menu_items.length > 0 ? true : false;
+      let enable = this.name && this.template ? true : false;
       return enable;
     },
   },
@@ -60,7 +85,7 @@ var MenuNewForm = new Vue({
     save() {
       var self = this;
       var callBack = (response) => {
-        var toastHTML = "<span>Menu saved </span>";
+        var toastHTML = "<span>Siteform saved </span>";
         M.toast({ html: toastHTML });
         this.setCollapsibleEvent();
       };
@@ -69,7 +94,7 @@ var MenuNewForm = new Vue({
     },
     runSaveData(callBack) {
       var self = this;
-      var url = BASEURL + "api/v1/menus";
+      var url = BASEURL + "api/v1/siteforms";
       $.ajax({
         type: "POST",
         url: url,
@@ -82,8 +107,7 @@ var MenuNewForm = new Vue({
           }, 1500);
           if (response.code == 200) {
             self.editMode = true;
-            self.menu_id = response.data.menu_id;
-            self.menu_items = response.data.menu_items;
+            self.siteforms_id = response.data.siteform_id;
             if (typeof callBack == "function") {
               callBack(response);
             }
@@ -99,23 +123,27 @@ var MenuNewForm = new Vue({
       });
     },
     getData: function () {
-      this.setRealOrder();
       return {
-        menu_id: this.menu_id || "",
+        siteform_id: this.siteform_id || "",
         name: this.name || "",
-        position: this.position || "",
         template: this.template || "",
         status: this.status ? 1 : 0,
-        menu_items: this.realOrder,
+        siteform_items: this.siteform_items.map((item) => {
+          return {
+            ...item,
+            properties: JSON.stringify(item.properties),
+            data: JSON.stringify(item.data),
+          };
+        }),
       };
     },
     getSelectedCategorie() {
       return this.categories.filter((value, index) => {
-        return this.menu_id == value.menu_id;
+        return this.siteform_id == value.siteform_id;
       });
     },
     getTemplates() {
-      var url = BASEURL + "api/v1/menus/templates/";
+      var url = BASEURL + "api/v1/siteforms/templates/";
       fetch(url)
         .then((response) => response.json())
         .then((response) => {
@@ -133,40 +161,18 @@ var MenuNewForm = new Vue({
           this.loader = false;
         });
     },
-    getThemesMenuPositions() {
-      var url = BASEURL + "api/v1/config/themes/";
-      fetch(url)
-        .then((response) => response.json())
-        .then((response) => {
-          this.debug ? console.log(url, response) : null;
-          if (response.code == 200) {
-            let postions = [];
-            for (const key in response.data) {
-              if (response.data.hasOwnProperty(key)) {
-                const theme = response.data[key];
-                theme["theme_folder"] = key;
-                postions.push(theme);
-              }
-            }
-            this.positions = postions;
-          }
-        })
-        .catch((err) => {
-          this.debug ? console.log(err) : null;
-        });
-    },
     checkEditMode() {
       var self = this;
-      if (menu_id && editMode == "edit") {
+      if (siteform_id && editMode == "edit") {
         self.editMode = true;
-        var url = BASEURL + "api/v1/menus/" + menu_id;
+        var url = BASEURL + "api/v1/siteforms/" + siteform_id;
         fetch(url)
           .then((response) => response.json())
           .then((response) => {
             self.loader = false;
             self.debug ? console.log(url, response) : null;
             if (response.code == 200) {
-              self.menu_id = response.data.menu_id;
+              self.siteform_id = response.data.siteform_id;
               self.name = response.data.name;
               self.template = response.data.template;
               self.position = response.data.position;
@@ -174,7 +180,13 @@ var MenuNewForm = new Vue({
               self.date_publish = response.data.date_publish;
               self.status = response.data.status;
               self.user_id = response.data.user_id;
-              self.menu_items = response.data.menu_items;
+              self.siteform_items = response.data.siteform_items.map((item) => {
+                return {
+                  ...item,
+                  properties: JSON.stringify(item.properties),
+                  data: JSON.stringify(item.data),
+                };
+              });
               self.user = new User(response.data.user);
             }
             this.initPlugins();
@@ -189,21 +201,24 @@ var MenuNewForm = new Vue({
       }
     },
     addItem() {
-      this.menu_items.push({
-        menu_item_id: "",
-        menu_id: this.menu_id,
-        menu_item_parent_id: "0",
-        item_type: "static_link",
-        item_name: "link-" + this.makeid(3).toLocaleLowerCase(),
-        item_label: "Link Text",
-        item_link: "#!",
-        item_title: "Link Title",
-        item_target: "_self",
+      this.siteform_items.push({
+        siteform_item_id: "",
+        siteform_id: this.siteform_id,
+        siteform_item_parent_id: "0",
+        item_type: "text",
+        item_name: "Field-" + this.makeid(3).toLocaleLowerCase(),
+        item_label: "field Text",
+        item_title: "Field Title",
+        item_placeholder: "Field Title",
+        item_placeholder: "Field Title",
+        item_class: "",
         date_publish: "",
         date_create: "",
         date_update: "",
         status: "1",
-        subitems: [],
+        order: "1",
+        data: "{}",
+        properties: "{}",
       });
       this.setCollapsibleEvent();
     },
@@ -219,11 +234,14 @@ var MenuNewForm = new Vue({
       let instance = M.Modal.getInstance($(".modal"));
       instance.close();
       this.targetItem.item_link = "/" + data[0].path;
-      this.targetItem.item_name = this.string_to_slug(data[0].title) + '-' + this.makeid(3).toLocaleLowerCase();
+      this.targetItem.item_name =
+        this.string_to_slug(data[0].title) +
+        "-" +
+        this.makeid(3).toLocaleLowerCase();
       this.targetItem.item_label = data[0].title;
       this.targetItem.item_title = data[0].title;
       this.targetItem.model_id = data[0].page_id;
-      this.targetItem.model = 'page';
+      this.targetItem.model = "page";
     },
     initPlugins() {
       setTimeout(() => {
@@ -234,7 +252,7 @@ var MenuNewForm = new Vue({
           handle: "i.icon-move",
           onDrop: ($item, container, _super) => {
             this.setRealOrder();
-            this.setCollapsibleEvent()
+            this.setCollapsibleEvent();
             _super($item, container);
           },
         });
@@ -242,22 +260,27 @@ var MenuNewForm = new Vue({
     },
     setRealOrder() {
       var data = this.group.sortable("serialize").get();
-      var strData = JSON.stringify(data);
-      var strData = strData.replace(/children/g, "subitems");
-      data = JSON.parse(strData);
-      if (data) {
-        let result = this.getMenuItemsData(data[0]);
-        this.realOrder = result;
-      }
+        console.log(data);
+        data[0].forEach((element, index) => {
+            this.siteform_items = this.siteform_items.map(item => {
+                if (item.item_name == element.name) {
+                    item.order = index;
+                }
+                return item;
+            })
+        });
     },
     getMenuItemsData(data) {
       let mergedData = data.map((element, index) => {
         if (element.subitems && element.subitems[0].length > 0) {
           element.subitems = this.getMenuItemsData(element.subitems[0]);
         }
-        let menu_item = this.getMenuItemByName(element.name, this.menu_items);
+        let siteform_item = this.getMenuItemByName(
+          element.name,
+          this.siteform_items
+        );
         let merge = {
-          ...menu_item,
+          ...siteform_item,
           ...element,
           order: index,
         };
@@ -265,23 +288,23 @@ var MenuNewForm = new Vue({
       });
       return mergedData;
     },
-    getMenuItemByName(name, menu_items) {
-      var menu_item = null;
-      for (let index = 0; index < menu_items.length; index++) {
-        const element = menu_items[index];
+    getMenuItemByName(name, siteform_items) {
+      var siteform_item = null;
+      for (let index = 0; index < siteform_items.length; index++) {
+        const element = siteform_items[index];
         if (element.item_name == name) {
-          menu_item = element;
+          siteform_item = element;
           break;
         }
         if (element.subitems.length > 0) {
           let result = this.getMenuItemByName(name, element.subitems);
           if (result && result.item_name == name) {
-            menu_item = result;
+            siteform_item = result;
             break;
           }
         }
       }
-      return menu_item;
+      return siteform_item;
     },
     isEditable(item) {
       return !(item.model && item.model_id);
@@ -289,7 +312,7 @@ var MenuNewForm = new Vue({
     makeEditable(item) {
       item.model = null;
       item.model_id = null;
-      item.model_object = null
+      item.model_object = null;
     },
     removeCollapsideEvent() {
       $(".menuitem .collapsible-header").off();
@@ -310,7 +333,6 @@ var MenuNewForm = new Vue({
     this.$nextTick(function () {
       this.debug ? console.log("mounted MenuNewForm") : null;
       this.getTemplates();
-      this.getThemesMenuPositions();
       this.checkEditMode();
     });
   },

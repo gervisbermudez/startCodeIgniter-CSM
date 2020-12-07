@@ -75,6 +75,22 @@
                 Forms Content</a>
         </li>
         @endif
+        <li class="{{isSectionActive('eventos')}}">
+            <div class="collapsible-header">
+                <i class="material-icons">assistant</i>
+                <span>Site Forms</span>
+            </div>
+            <div class="collapsible-body">
+                <ul>
+                    <li>
+                        <a class="waves-effect" href="{{ base_url('admin/siteforms') }}">Todos</a>
+                    </li>
+                    <li>
+                        <a href="{{ base_url('admin/siteforms/nuevo/') }}">Nuevo</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
         <!-- <li class="{{isSectionActive('mensajes')}}">
             <a class="waves-effect" href="{{ base_url('admin/mensajes/') }}"><i class="material-icons">email</i>
                 Mensajes</a>

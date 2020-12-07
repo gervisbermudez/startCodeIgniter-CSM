@@ -43,16 +43,30 @@ if (!function_exists('getThemePath')) {
     {
         $ci = &get_instance();
         $theme_path = config("THEME_PATH");
-        $theme_path = str_replace('\\', '/', $theme_path);
         if ($theme_path) {
-            return FCPATH . 'themes' . '/' . $theme_path;
+            return str_replace('\\', '/', FCPATH . 'themes' . '/' . $theme_path);
         }
         if (SITE_THEME) {
-            return FCPATH . 'themes' . '/' . SITE_THEME;
+            return str_replace('\\', '/', FCPATH . 'themes' . '/' . SITE_THEME);
         }
 
         return null;
     }
+}
+
+function render_form($siteform_name)
+{
+    $ci = &get_instance();
+    $ci->load->model('Admin/SiteForm');
+    $siteform = new SiteForm();
+    $result = $siteform->find_with(['name' => $siteform_name]);
+    if (!$result) {
+        return '';
+    }
+    if (getThemePath()) {
+        $ci->blade->changePath(getThemePath());
+    }
+    return $ci->blade->view("site.templates.forms." . $siteform->template, ['siteform' => $siteform]);
 }
 
 if (!function_exists("config")) {

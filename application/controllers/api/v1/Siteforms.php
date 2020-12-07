@@ -2,7 +2,7 @@
 
 require APPPATH . 'libraries/REST_Controller.php';
 
-class Menus extends REST_Controller
+class Siteforms extends REST_Controller
 {
     public function __construct()
     {
@@ -18,15 +18,15 @@ class Menus extends REST_Controller
         }
 
         $this->load->database();
-        $this->load->model('Admin/Menu');
+        $this->load->model('Admin/SiteForm');
     }
 
     /**
-     * @api {get} /api/v1/categorie/:menu_id Request Categorie information
+     * @api {get} /api/v1/categorie/:siteform_id Request Categorie information
      * @apiName GetCategorie
      * @apiGroup Categorie
      *
-     * @apiParam {Number} menu_id Categorie unique ID.
+     * @apiParam {Number} siteform_id Categorie unique ID.
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
@@ -34,7 +34,7 @@ class Menus extends REST_Controller
      *       "code": 200,
      *       "data": [
      *           {
-     *               "menu_id": "4",
+     *               "siteform_id": "4",
      *               "name": "Manu 1",
      *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
      *               "type": "page",
@@ -45,7 +45,7 @@ class Menus extends REST_Controller
      *               "status": "1"
      *           },
      *           {
-     *               "menu_id": "5",
+     *               "siteform_id": "5",
      *               "name": "Manu 2",
      *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
      *               "type": "page",
@@ -68,14 +68,14 @@ class Menus extends REST_Controller
      *     "data": []
      * }
      */
-    public function index_get($menu_id = null)
+    public function index_get($siteform_id = null)
     {
-        $menu = new Menu();
-        if ($menu_id) {
-            $result = $menu->find_with(array('menu_id' => $menu_id));
-            $result = $result ? $menu->as_data() : [];
+        $siteform = new SiteForm();
+        if ($siteform_id) {
+            $result = $siteform->find_with(array('siteform_id' => $siteform_id));
+            $result = $result ? $siteform->as_data() : [];
         } else {
-            $result = $menu->all();
+            $result = $siteform->all();
         }
 
         if ($result) {
@@ -106,54 +106,40 @@ class Menus extends REST_Controller
             $this->response_error(lang('validations_error'), ['errors' => $form->_error_array], REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
-        $menu = new Menu();
-        $this->input->post('menu_id') ? $menu->find($this->input->post('menu_id')) : false;
-        $menu->name = $this->input->post('name');
-        $menu->template = $this->input->post('template');
-        $menu->position = $this->input->post('position');
-        $menu->user_id = userdata('user_id');
-        $menu->status = $this->input->post('status');
-        $menu->date_create = date("Y-m-d H:i:s");
-        $menu->date_publish = date("Y-m-d H:i:s");
-        if ($menu->save()) {
-            $this->load->model('Admin/Menu_items');
-            $menu_item = new Menu_items();
-            $menu_item->delete_data(['menu_id' => $menu->menu_id]);
-            $menu_items = $this->input->post('menu_items');
-            $this->save_menu_items($menu_items, $menu);
-            $menu->find($menu->menu_id);
-            $this->response_ok($menu);
+        $siteform = new SiteForm();
+        $this->input->post('siteform_id') ? $siteform->find($this->input->post('siteform_id')) : false;
+        $siteform->name = $this->input->post('name');
+        $siteform->template = $this->input->post('template');
+        $siteform->user_id = userdata('user_id');
+        $siteform->status = $this->input->post('status');
+        $siteform->date_create = date("Y-m-d H:i:s");
+        $siteform->date_publish = date("Y-m-d H:i:s");
+        if ($siteform->save()) {
+            $siteform_items = $this->input->post('siteform_items');
+            
+            foreach ($siteform_items as $key => $item) {
+                $item = (object) $item;
+                $siteform_item = new siteform_items();
+                isset($item->siteform_item_id) ? $siteform_item->find($item->siteform_item_id) : false;
+                $siteform_item->siteform_id = $siteform->siteform_id;
+                $siteform_item->order = isset($item->order) ? $item->order : '0';
+                $siteform_item->item_type = $item->item_type;
+                $siteform_item->item_name = $item->item_name;
+                $siteform_item->item_label = $item->item_label;
+                $siteform_item->item_class = $item->item_class;
+                $siteform_item->item_title = $item->item_title;
+                $siteform_item->item_placeholder = $item->item_placeholder;
+                $siteform_item->properties = $item->properties;
+                $siteform_item->data = $item->data;
+                $siteform_item->status = $item->status;
+                $siteform_item->date_create = $item->date_create;
+                $siteform_item->date_publish = $item->date_publish;
+                $siteform_item->save();
+            }
+            $this->response_ok($siteform);
             return;
         }
         $this->response_error(lang('unexpected_error'), [], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
-    }
-
-    private function save_menu_items($menu_items, $menu, $parent_id = 0)
-    {
-        foreach ($menu_items as $key => $item) {
-            $item = (object) $item;
-            $menu_item = new Menu_items();
-            isset($item->menu_item_id) ? $menu_item->find($item->menu_item_id) : false;
-            $menu_item->menu_id = $menu->menu_id;
-            $menu_item->menu_item_parent_id = $parent_id;
-            $menu_item->item_type = $item->item_type;
-            $menu_item->order = $item->order;
-            $menu_item->model_id = isset($item->model_id) ? $item->model_id : null;
-            $menu_item->model = isset($item->model) ? $item->model : null;
-            $menu_item->item_name = $item->item_name;
-            $menu_item->item_label = $item->item_label;
-            $menu_item->item_link = $item->item_link;
-            $menu_item->item_title = $item->item_title;
-            $menu_item->item_target = $item->item_target;
-            $menu_item->status = $item->status;
-            $menu_item->date_create = $item->date_create;
-            $menu_item->date_publish = $item->date_publish;
-            $menu_item->save();
-
-            if (isset($item->subitems) && count($item->subitems) > 0) {
-                $this->save_menu_items($item->subitems, $menu, $menu_item->menu_item_id);
-            }
-        }
     }
 
     /**
@@ -173,13 +159,13 @@ class Menus extends REST_Controller
      *
      * @return Response
      */
-    public function index_delete($menu_id = null)
+    public function index_delete($siteform_id = null)
     {
-        if ($menu_id) {
-            $menu = new Menu();
-            $result = $menu->find($menu_id);
+        if ($siteform_id) {
+            $siteform = new SiteForm();
+            $result = $siteform->find($siteform_id);
             if ($result) {
-                $this->response_ok(["result" => $menu->delete()]);
+                $this->response_ok(["result" => $siteform->delete()]);
                 return;
             } else {
                 $this->response_error(lang('not_found_error'));
@@ -191,12 +177,12 @@ class Menus extends REST_Controller
     }
 
     /**
-     * @api {get} /api/v1/categorie/subcategorie/:menu_id/:submenu_id Request SubCategorie information
+     * @api {get} /api/v1/categorie/subcategorie/:siteform_id/:subsiteform_id Request SubCategorie information
      * @apiName GetSubCategorie
      * @apiGroup Categorie
      *
-     * @apiParam {Number} menu_id Categorie unique ID.
-     * @apiParam {Number} submenu_id SubCategorie unique ID.
+     * @apiParam {Number} siteform_id Categorie unique ID.
+     * @apiParam {Number} subsiteform_id SubCategorie unique ID.
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
@@ -204,8 +190,8 @@ class Menus extends REST_Controller
      *       "code": 200,
      *       "data": [
      *           {
-     *               "menu_id": "4",
-     *               "name": "SubMenu 1",
+     *               "siteform_id": "4",
+     *               "name": "SubSiteForm 1",
      *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
      *               "type": "page",
      *               "menu_item_parent_id": "0",
@@ -215,8 +201,8 @@ class Menus extends REST_Controller
      *               "status": "1"
      *           },
      *           {
-     *               "menu_id": "5",
-     *               "name": "SubMenu 2",
+     *               "siteform_id": "5",
+     *               "name": "SubSiteForm 2",
      *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
      *               "type": "page",
      *               "menu_item_parent_id": "0",
@@ -238,14 +224,14 @@ class Menus extends REST_Controller
      *     "data": []
      * }
      */
-    public function subcategorie_get($menu_id, $submenu_id = null)
+    public function subcategorie_get($siteform_id, $subsiteform_id = null)
     {
-        $menu = new Menu();
-        if ($submenu_id) {
-            $result = $menu->where(array('menu_item_parent_id' => $menu_id, 'menu_id' => $submenu_id));
+        $siteform = new SiteForm();
+        if ($subsiteform_id) {
+            $result = $siteform->where(array('menu_item_parent_id' => $siteform_id, 'siteform_id' => $subsiteform_id));
             $result = $result ? $result->first() : [];
         } else {
-            $result = $menu->where(array('menu_item_parent_id' => $menu_id));
+            $result = $siteform->where(array('menu_item_parent_id' => $siteform_id));
         }
 
         if ($result) {
@@ -253,7 +239,7 @@ class Menus extends REST_Controller
             return;
         }
 
-        if ($menu_id) {
+        if ($siteform_id) {
             $this->response_error(lang('not_found_error'));
             return;
         }
@@ -308,8 +294,8 @@ class Menus extends REST_Controller
      *       "code": 200,
      *       "data": [
      *           {
-     *               "menu_id": "4",
-     *               "name": "Menu 1",
+     *               "siteform_id": "4",
+     *               "name": "SiteForm 1",
      *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
      *               "type": "page",
      *               "menu_item_parent_id": "0",
@@ -319,8 +305,8 @@ class Menus extends REST_Controller
      *               "status": "1"
      *           },
      *           {
-     *               "menu_id": "5",
-     *               "name": "Menu 2",
+     *               "siteform_id": "5",
+     *               "name": "SiteForm 2",
      *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
      *               "type": "page",
      *               "menu_item_parent_id": "0",
@@ -344,8 +330,8 @@ class Menus extends REST_Controller
      */
     public function type_get($type = 0)
     {
-        $menu = new Menu();
-        $result = $menu->where(array('menu_item_parent_id' => '0', 'type' => $type));
+        $siteform = new SiteForm();
+        $result = $siteform->where(array('menu_item_parent_id' => '0', 'type' => $type));
         if ($result) {;
             $this->response_ok($result);
             return;
@@ -366,8 +352,8 @@ class Menus extends REST_Controller
      *       "code": 200,
      *       "data": [
      *           {
-     *               "menu_id": "4",
-     *               "name": "Menu 1",
+     *               "siteform_id": "4",
+     *               "name": "SiteForm 1",
      *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
      *               "type": "page",
      *               "menu_item_parent_id": "0",
@@ -377,8 +363,8 @@ class Menus extends REST_Controller
      *               "status": "1"
      *           },
      *           {
-     *               "menu_id": "5",
-     *               "name": "Menu 2",
+     *               "siteform_id": "5",
+     *               "name": "SiteForm 2",
      *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
      *               "type": "page",
      *               "menu_item_parent_id": "0",
@@ -402,8 +388,8 @@ class Menus extends REST_Controller
      */
     public function filter_get()
     {
-        $menu = new Menu();
-        $result = $menu->where($_GET);
+        $siteform = new SiteForm();
+        $result = $siteform->where($_GET);
         if ($result) {
 
             $this->response_ok($result);
@@ -414,9 +400,9 @@ class Menus extends REST_Controller
     public function templates_get()
     {
         $this->load->helper('directory');
-        $directory = APPPATH . '/views/site/templates/menu';
+        $directory = APPPATH . '/views/site/templates/forms';
         if (getThemePath()) {
-            $directory = getThemePath() . '/views/site/templates/menu';
+            $directory = getThemePath() . '/views/site/templates/forms';
         }
         $map = directory_map($directory);
         $this->response_ok($map);
