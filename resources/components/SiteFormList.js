@@ -53,7 +53,7 @@ var PermissionsData = new Vue({
   computed: {},
   methods: {
     editItem(data) {
-      console.log({ data });
+      window.location = `${BASEURL}admin/siteforms/editar/${data.item.siteform_id}`;
       return;
     },
     deleteItem(data) {

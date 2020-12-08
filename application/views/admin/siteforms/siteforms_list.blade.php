@@ -10,7 +10,7 @@
     :colums="colums"
     :index_data="index_data"
     :pagination="true"
-    v-on:editItem="editItem"
+    v-on:edit="editItem"
   ></router-view>
 </div>
 @endsection
