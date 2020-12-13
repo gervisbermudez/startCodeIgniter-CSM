@@ -26,6 +26,10 @@ jQuery(document).ready(function ($) {
   }
 });
 
+function getFuncName() { 
+  return getFuncName.caller.name 
+} 
+
 var mixins = {
   data() {
     return {

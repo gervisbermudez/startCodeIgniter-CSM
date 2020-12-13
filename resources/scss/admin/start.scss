@@ -1953,7 +1953,7 @@ iframe.components-sandbox {
       float: left;
     }
 
-    .option{
+    .option {
       line-height: 32px;
       display: block;
       float: left;
@@ -1961,7 +1961,7 @@ iframe.components-sandbox {
       i {
         display: inline-block;
         line-height: 33px;
-    }
+      }
     }
   }
   .responsive-iframe {
@@ -1973,4 +1973,8 @@ iframe.components-sandbox {
     width: 100%;
     height: 100%;
   }
+}
+
+.collapsible.expandable .btn i.material-icons.right {
+  position: static;
 }

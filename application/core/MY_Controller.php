@@ -80,6 +80,7 @@ class Base_Controller extends CI_Controller
         parent::__construct();
 
         $this->load_config();
+        $this->lang->load('site', 'english');
         $this->load->library('Track_Visitor');
         if (config('SITEM_TRACK_VISITORS') == 'Si') {
             $this->track_visitor->visitor_track();
@@ -87,6 +88,7 @@ class Base_Controller extends CI_Controller
         //Load local theme Controller
         include getThemePath() . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'ThemeController.php';
         $this->themeController = new ThemeController();
+        $this->output->enable_profiler(true);
     }
 
     public function getPageMetas($page)

@@ -1,11 +1,14 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); 
+<?php if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 /**
  * Description of track_visitor
  *
  * @author https://roytuts.com
  */
-class Track_Visitor {
+class Track_Visitor
+{
     /*
      * Defines how many seconds a hit should be rememberd for. This prevents the
      * database from perpetually increasing in size. Thirty days (the default)
@@ -16,27 +19,27 @@ class Track_Visitor {
     //private $HIT_OLD_AFTER_SECONDS = 2592000; // default: 30 days.
 
     /*
-     * Don't count hits from search robots and crawlers. 
+     * Don't count hits from search robots and crawlers.
      */
-    private $IGNORE_SEARCH_BOTS = TRUE;
+    private $IGNORE_SEARCH_BOTS = true;
 
     /*
      * Don't count the hit if the browser sends the DNT: 1 header.
      */
-    private $HONOR_DO_NOT_TRACK = FALSE;
+    private $HONOR_DO_NOT_TRACK = false;
 
     /*
      * ignore controllers e.g. 'admin'
      */
     private $CONTROLLER_IGNORE_LIST = array(
-        'admin'
+        'admin',
     );
 
     /*
      * ignore ip address
      */
     private $IP_IGNORE_LIST = array(
-        '127.0.0.1'
+        '127.0.0.1',
     );
 
     /*
@@ -44,41 +47,44 @@ class Track_Visitor {
      */
     private $site_log = "user_tracking";
 
-    function __construct() {
-        $this->ci = & get_instance();
+    public function __construct()
+    {
+        $this->ci = &get_instance();
         $this->ci->load->library('user_agent');
     }
 
-    public function visitor_track() {
-        $track_visitor = TRUE;
-        if (isset($track_visitor) && $track_visitor === TRUE) {
-            $proceed = TRUE;
+    public function visitor_track()
+    {
+        $track_visitor = true;
+        if (isset($track_visitor) && $track_visitor === true) {
+            $proceed = true;
             if ($this->IGNORE_SEARCH_BOTS && $this->is_search_bot()) {
-                $proceed = FALSE;
+                $proceed = false;
             }
             if ($this->HONOR_DO_NOT_TRACK && !allow_tracking()) {
-                $proceed = FALSE;
+                $proceed = false;
             }
             foreach ($this->CONTROLLER_IGNORE_LIST as $controller) {
-                if (strpos(trim($this->ci->router->fetch_class()), $controller) !== FALSE) {
-                    $proceed = FALSE;
+                if (strpos(trim($this->ci->router->fetch_class()), $controller) !== false) {
+                    $proceed = false;
                     break;
                 }
             }
             if (in_array($this->ci->input->server('REMOTE_ADDR'), $this->IP_IGNORE_LIST)) {
-                $proceed = FALSE;
-            }
-            if(userdata('logged_in')){
                 $proceed = false;
             }
-            if ($proceed === TRUE) {
+            if (userdata('logged_in')) {
+                $proceed = false;
+            }
+            if ($proceed === true) {
                 $this->log_visitor();
             }
         }
     }
 
-    private function log_visitor() {
-        if ($this->track_session() === TRUE) {
+    private function log_visitor()
+    {
+        if ($this->track_session() === true) {
             //update the visitor log in the database, based on the current visitor
             //id held in $_SESSION["visitor_id"]
             $temp_visitor_id = $this->ci->session->userdata('visitor_id');
@@ -98,9 +104,11 @@ class Track_Visitor {
                     'referer_page' => $this->ci->agent->referrer(),
                     'user_agent' => $this->ci->agent->agent_string(),
                     'page_name' => $page_name,
-                    'query_string' => $query_string
+                    'query_string' => $query_string,
                 );
                 $this->ci->db->insert($this->site_log, $data);
+                $user_tracking_id = $this->ci->db->insert_id();
+                $this->ci->session->set_userdata('user_tracking_id', $user_tracking_id);
                 $this->ci->session->set_userdata('current_page', $current_page);
             }
         } else {
@@ -114,28 +122,29 @@ class Track_Visitor {
                 'referer_page' => $this->ci->agent->referrer(),
                 'user_agent' => $this->ci->agent->agent_string(),
                 'page_name' => $page_name,
-                'query_string' => $query_string
+                'query_string' => $query_string,
             );
             $result = $this->ci->db->insert($this->site_log, $data);
-            if ($result === FALSE) {
+            if ($result === false) {
                 /**
                  * find the next available visitor_id for the database
                  * to assign to this person
                  */
-                $this->ci->session->set_userdata('track_session', FALSE);
+                $this->ci->session->set_userdata('track_session', false);
             } else {
                 /**
                  * find the next available visitor_id for the database
                  * to assign to this person
                  */
-                $this->ci->session->set_userdata('track_session', TRUE);
+                $this->ci->session->set_userdata('track_session', true);
                 $entry_id = $this->ci->db->insert_id();
+                $this->ci->session->set_userdata('user_tracking_id', $entry_id);
                 $query = $this->ci->db->query('select max(visits_count) as next from ' .
-                        $this->site_log . ' limit 1');
+                    $this->site_log . ' limit 1');
                 $count = 0;
                 if ($query->num_rows() == 1) {
                     $row = $query->row();
-                    if ($row->next == NULL || $row->next == 0) {
+                    if ($row->next == null || $row->next == 0) {
                         $count = 1;
                     } else {
                         $count++;
@@ -145,7 +154,7 @@ class Track_Visitor {
                 //Note, that we do it in this way to prevent a "race condition"
                 $this->ci->db->where('site_log_id', $entry_id);
                 $data = array(
-                    'visits_count' => $count
+                    'visits_count' => $count,
                 );
                 $this->ci->db->update($this->site_log, $data);
                 //place the current visitor_id into the session so we can use it on
@@ -154,25 +163,28 @@ class Track_Visitor {
                 //save the current page to session so we don't track if someone just refreshes the page
                 $current_page = current_url();
                 $this->ci->session->set_userdata('current_page', $current_page);
+
             }
         }
     }
 
     /**
      * check track_session
-     * 
-     * @return	bool
+     *
+     * @return    bool
      */
-    private function track_session() {
-        return ($this->ci->session->userdata('track_session') === TRUE ? TRUE : FALSE);
+    private function track_session()
+    {
+        return ($this->ci->session->userdata('track_session') === true ? true : false);
     }
 
     /**
      * check whether bot
-     * 
-     * @return	bool
+     *
+     * @return    bool
      */
-    private function is_search_bot() {
+    private function is_search_bot()
+    {
         // Of course, this is not perfect, but it at least catches the major
         // search engines that index most often.
         $spiders = array(
@@ -558,17 +570,19 @@ class Track_Visitor {
             "yodao",
             "zao/",
             "zippp",
-            "zyborg"
+            "zyborg",
         );
 
         $agent = strtolower($this->ci->agent->agent_string());
 
         foreach ($spiders as $spider) {
-            if (strpos($agent, $spider) !== FALSE)
-                return TRUE;
+            if (strpos($agent, $spider) !== false) {
+                return true;
+            }
+
         }
 
-        return FALSE;
+        return false;
     }
 
 }

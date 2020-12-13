@@ -63,9 +63,16 @@ function render_form($siteform_name)
     if (!$result) {
         return '';
     }
+
     if (getThemePath()) {
         $ci->blade->changePath(getThemePath());
     }
+    
+    $siteforms = $ci->session->userdata('siteforms');
+    if(!$siteforms && !isset($siteforms[$siteform_name])){
+        $ci->session->set_userdata('siteforms', [$siteform_name => ['submited' => 0]]);
+    }
+
     return $ci->blade->view("site.templates.forms." . $siteform->template, ['siteform' => $siteform]);
 }
 

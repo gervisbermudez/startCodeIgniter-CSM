@@ -15,6 +15,8 @@ class SiteForm extends MY_model
         "siteform_items" => ["siteform_id", "Admin/Siteform_items", 'siteform_items']
     ];
 
+    public $computed = array("properties" => "properties_to_json");
+
     public function __construct()
     {
         parent::__construct();
@@ -32,6 +34,11 @@ class SiteForm extends MY_model
         }
 
         return $collection;
+    }
+
+    public function properties_to_json()
+    {
+        return json_decode($this->properties);
     }
 
 }

@@ -44,6 +44,52 @@ class PageController extends Base_Controller
         }
     }
 
+    public function formsubmit()
+    {
+        $siteform_id = $this->input->post('form_reference');
+        $this->load->model('Admin/SiteForm');
+        $siteform = new SiteForm();
+        $result = $siteform->where(['siteform_id' => $siteform_id]);
+        if ($result) {
+            $siteforms = $this->session->userdata('siteforms');
+            if ($siteforms && isset($siteforms[$result->first()->name])) {
+                $submited_form = $siteforms[$result->first()->name];
+                $date = new DateTime();
+                if (isset($submited_form['timestamp'])) {
+                    $datetime2 = DateTime::createFromFormat('Y-m-d H:i:s', $submited_form['timestamp']);
+                    $interval = $date->diff($datetime2);
+                    if ($interval->format('%I') >= 3) {
+                        $this->process_form_submit();
+
+                    }
+                } else {
+                    $this->process_form_submit();
+                }
+                $submited = [$result->first()->name => ['submited' => $submited_form['submited'] + 1, "timestamp" => $date->format('Y-m-d H:i:s')]];
+                $this->session->set_userdata('siteforms', $submited);
+                $data['title'] = config("SITE_TITLE") . " - Submited Form";
+                $data['layout'] = 'site';
+                $data['template'] = 'templates.default';
+                $data['page'] = (Object) ["title" => lang('form_submited_title'), "subtitle" => "", "content" => lang("form_submited_message")];
+                echo $this->themeController->render($data, '');
+            }
+        }else{
+            redirect("/");
+        }
+    }
+
+    public function process_form_submit()
+    {
+        $this->load->model('Admin/Siteform_submit');
+        $siteform_submit = new Siteform_submit();
+        $siteform_submit->siteform_id = $this->input->post('form_reference');
+        $siteform_submit->user_tracking_id = userdata('user_tracking_id');
+        unset($_POST['form_reference']);
+        $siteform_submit->status = 1;
+        $siteform_submit->siteform_submit_data = $_POST;
+        $save_result = $siteform_submit->save();
+    }
+
     public function preview()
     {
         // Check user logged first

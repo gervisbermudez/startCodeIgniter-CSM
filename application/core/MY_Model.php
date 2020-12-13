@@ -458,7 +458,7 @@ class MY_model extends CI_Model implements JsonSerializable
     {
         $table_data_name = $this->table . '_data';
         $foreing_id = $this->{$this->primaryKey};
-        $data = $this->{$table_data_name} ? $this->{$table_data_name} : [];
+        $data = isset($this->{$table_data_name}) ? $this->{$table_data_name} : [];
         foreach ($data as $key => $value) {
 
             if (gettype($value) == "object" || gettype($value) == "array") {

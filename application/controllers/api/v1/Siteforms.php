@@ -110,6 +110,7 @@ class Siteforms extends REST_Controller
         $this->input->post('siteform_id') ? $siteform->find($this->input->post('siteform_id')) : false;
         $siteform->name = $this->input->post('name');
         $siteform->template = $this->input->post('template');
+        $siteform->properties = $this->input->post('properties');
         $siteform->user_id = userdata('user_id');
         $siteform->status = $this->input->post('status');
         $siteform->date_create = date("Y-m-d H:i:s");

@@ -59,6 +59,9 @@ $route['admin/search'] = 'admin/admin/search';
 $route['admin/paginas/preview'] = 'PageController/preview';
 $route['sitemap\.xml'] = 'PageController/siteMap';
 $route['sitemap'] = 'PageController/siteMap';
+$route['form/submit'] = 'PageController/formsubmit';
+$route['form/success'] = 'PageController/formsuccess';
+$route['form/error'] = 'PageController/formerror';
 
 //Blog pages
 $route['feed'] = 'BlogController/blogFeed';

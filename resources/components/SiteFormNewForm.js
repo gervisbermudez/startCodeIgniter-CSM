@@ -40,8 +40,7 @@ var SiteFormNewForm = new Vue({
       "week",
     ],
     templates: [],
-    positions: {},
-    position: "",
+    properties: [],
     user_id: null,
     user: null,
     realOrder: {},
@@ -93,6 +92,8 @@ var SiteFormNewForm = new Vue({
       this.runSaveData(callBack);
     },
     runSaveData(callBack) {
+      this.debug ? console.log(`${getFuncName()} fired`) : null;
+
       var self = this;
       var url = BASEURL + "api/v1/siteforms";
       $.ajax({
@@ -123,10 +124,13 @@ var SiteFormNewForm = new Vue({
       });
     },
     getData: function () {
+      this.debug ? console.log(`${getFuncName()} fired`) : null;
+
       return {
         siteform_id: this.siteform_id || "",
         name: this.name || "",
         template: this.template || "",
+        properties: JSON.stringify(this.properties),
         status: this.status ? 1 : 0,
         siteform_items: this.siteform_items.map((item) => {
           return {
@@ -143,6 +147,7 @@ var SiteFormNewForm = new Vue({
       });
     },
     getTemplates() {
+      this.debug ? console.log(`${getFuncName()} fired`) : null;
       var url = BASEURL + "api/v1/siteforms/templates/";
       fetch(url)
         .then((response) => response.json())
@@ -162,6 +167,7 @@ var SiteFormNewForm = new Vue({
         });
     },
     checkEditMode() {
+      this.debug ? console.log(`${getFuncName()} fired`) : null;
       var self = this;
       if (siteform_id && editMode == "edit") {
         self.editMode = true;
@@ -175,24 +181,18 @@ var SiteFormNewForm = new Vue({
               self.siteform_id = response.data.siteform_id;
               self.name = response.data.name;
               self.template = response.data.template;
-              self.position = response.data.position;
+              self.properties = response.data.properties;
               self.date_create = response.data.date_create;
               self.date_publish = response.data.date_publish;
               self.status = response.data.status;
               self.user_id = response.data.user_id;
-              self.siteform_items = response.data.siteform_items.map((item) => {
-                return {
-                  ...item,
-                  properties: JSON.stringify(item.properties),
-                  data: JSON.stringify(item.data),
-                };
-              });
+              self.siteform_items = response.data.siteform_items;
               self.user = new User(response.data.user);
             }
             this.initPlugins();
           })
-          .catch((response) => {
-            M.toast({ html: response.responseJSON.error_message });
+          .catch((error) => {
+            console.error(error);
             self.loader = false;
           });
       } else {
@@ -200,30 +200,62 @@ var SiteFormNewForm = new Vue({
         this.initPlugins();
       }
     },
+    addPropertie(properties) {
+      properties.push({
+        name: "propertie_name",
+        value: "propertie_value",
+      });
+    },
+    removePropertie(properties, index) {
+      properties.splice(index, 1);
+    },
     addItem() {
-      this.siteform_items.push({
+      this.debug ? console.log(`${getFuncName()} fired`) : null;
+
+      let item_model = {
         siteform_item_id: "",
         siteform_id: this.siteform_id,
-        siteform_item_parent_id: "0",
+        order: "0",
         item_type: "text",
         item_name: "Field-" + this.makeid(3).toLocaleLowerCase(),
-        item_label: "field Text",
-        item_title: "Field Title",
-        item_placeholder: "Field Title",
-        item_placeholder: "Field Title",
+        item_label: "Field Name:",
         item_class: "",
-        date_publish: "",
-        date_create: "",
-        date_update: "",
+        item_title: "Field Title",
+        item_placeholder: "Field Placelholder",
+        properties: [],
+        data: [],
+        date_publish: "0000-00-00 00:00:00",
+        date_create: "0000-00-00 00:00:00",
+        date_update: "0000-00-00 00:00:00",
         status: "1",
-        order: "1",
-        data: "{}",
-        properties: "{}",
-      });
+      };
+      this.siteform_items.push(item_model);
       this.setCollapsibleEvent();
+      setTimeout(() => {
+        var elems = document.querySelectorAll("select");
+        M.FormSelect.init(elems, {});
+      }, 3000);
     },
     removeItem(index, items) {
       items.splice(index, 1);
+    },
+    handlerSelect($event, item) {
+      switch ($event.target.value) {
+        case "select":
+          let exist = item.data.some((element) => {
+            return element.name == "select_options";
+          });
+          if (!exist) {
+            item.data.push({
+              name: "select_options",
+              value: [],
+            });
+          }
+          break;
+
+        default:
+        break;
+      }
     },
     openPageSelector(item) {
       this.targetItem = item;
@@ -244,6 +276,8 @@ var SiteFormNewForm = new Vue({
       this.targetItem.model = "page";
     },
     initPlugins() {
+      this.debug ? console.log(`${getFuncName()} fired`) : null;
+
       setTimeout(() => {
         var elems = document.querySelectorAll("select");
         M.FormSelect.init(elems, {});
@@ -259,18 +293,21 @@ var SiteFormNewForm = new Vue({
       }, 3000);
     },
     setRealOrder() {
+      this.debug ? console.log(`${getFuncName()} fired`) : null;
+
       var data = this.group.sortable("serialize").get();
-        console.log(data);
-        data[0].forEach((element, index) => {
-            this.siteform_items = this.siteform_items.map(item => {
-                if (item.item_name == element.name) {
-                    item.order = index;
-                }
-                return item;
-            })
+      console.log(data);
+      data[0].forEach((element, index) => {
+        this.siteform_items = this.siteform_items.map((item) => {
+          if (item.item_name == element.name) {
+            item.order = index;
+          }
+          return item;
         });
+      });
     },
     getMenuItemsData(data) {
+      this.debug ? console.log(`${getFuncName()} fired`) : null;
       let mergedData = data.map((element, index) => {
         if (element.subitems && element.subitems[0].length > 0) {
           element.subitems = this.getMenuItemsData(element.subitems[0]);
@@ -315,9 +352,12 @@ var SiteFormNewForm = new Vue({
       item.model_object = null;
     },
     removeCollapsideEvent() {
+      this.debug ? console.log(`${getFuncName()} fired`) : null;
+
       $(".menuitem .collapsible-header").off();
     },
     setCollapsibleEvent() {
+      this.debug ? console.log(`${getFuncName()} fired`) : null;
       this.removeCollapsideEvent();
       setTimeout(() => {
         $(".menuitem .collapsible-header").click(function (element) {
@@ -331,7 +371,7 @@ var SiteFormNewForm = new Vue({
   },
   mounted: function () {
     this.$nextTick(function () {
-      this.debug ? console.log("mounted MenuNewForm") : null;
+      this.debug ? console.log("mounted SiteFormNewForm") : null;
       this.getTemplates();
       this.checkEditMode();
     });
