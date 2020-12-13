@@ -88,7 +88,6 @@ class Base_Controller extends CI_Controller
         //Load local theme Controller
         include getThemePath() . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'ThemeController.php';
         $this->themeController = new ThemeController();
-        $this->output->enable_profiler(true);
     }
 
     public function getPageMetas($page)
