@@ -78,7 +78,7 @@ class PageController extends Base_Controller
         }
     }
 
-    public function process_form_submit()
+    private function process_form_submit()
     {
         $this->load->model('Admin/Siteform_submit');
         $siteform_submit = new Siteform_submit();
