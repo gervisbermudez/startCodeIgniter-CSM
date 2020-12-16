@@ -8,7 +8,6 @@ class Eventos extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('Admin/Events');
     }
 
     public function index()
@@ -16,7 +15,6 @@ class Eventos extends MY_Controller
         $data['title'] = ADMIN_TITLE . " | Eventos";
         $data['h1'] = "Eventos";
         $data['header'] = $this->load->view('admin/header', $data, true);
-        $data['eventos'] = $this->Events->all();
 
         echo $this->blade->view("admin.eventos.eventos_list", $data);
 

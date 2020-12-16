@@ -247,14 +247,18 @@ var dataTable = Vue.component("dataTable", {
       return;
     },
     createItem() {
-      this.$router.push({
-        name: "edit",
-        params: {
-          data: {
-            mode: "new",
+      if (this.$listeners && this.$listeners.new) {
+        this.$emit("new");
+      } else {        
+        this.$router.push({
+          name: "edit",
+          params: {
+            data: {
+              mode: "new",
+            },
           },
-        },
-      });
+        });
+      }
     },
     deleteItem(item, index) {
       if (this.$listeners && this.$listeners.delete) {
