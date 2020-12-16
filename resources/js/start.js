@@ -4,7 +4,30 @@ jQuery(document).ready(function ($) {
   $("a.sidenav-trigger-lg").click(function (e) {
     $("body").toggleClass("sidenav-open");
     $("#slide-out").removeAttr("style");
+    if ($("body").hasClass("sidenav-open")) {
+      localStorage.setItem("sidenav-open", "sidenav-open");
+    } else {
+      localStorage.removeItem("sidenav-open", "sidenav-open");
+    }
   });
+
+  $(".sidenav").hover(
+    function () {
+      // over
+      $this = $(this);
+      $this.getNiceScroll().remove();
+      $this.toggleClass("animate-open");
+      setTimeout(() => {
+        $(".sidenav").niceScroll();
+      }, 400);
+    },
+    function () {
+      // out
+      $this = $(this);
+      $this.getNiceScroll().remove();
+      $this.toggleClass("animate-open");
+    }
+  );
 
   $(".sidenav").niceScroll();
 
@@ -24,11 +47,15 @@ jQuery(document).ready(function ($) {
     $("html").toggleClass("dark-mode");
     $("#darkmode-switch").prop("checked", true);
   }
+
+  if (localStorage.getItem("sidenav-open")) {
+    $("body").toggleClass("sidenav-open");
+  }
 });
 
-function getFuncName() { 
-  return getFuncName.caller.name 
-} 
+function getFuncName() {
+  return getFuncName.caller.name;
+}
 
 var mixins = {
   data() {
@@ -38,8 +65,8 @@ var mixins = {
         strPropertyName: null,
         sort_as: "asc",
       },
-      toDeleteItem: {}
-    }
+      toDeleteItem: {},
+    };
   },
   filters: {
     capitalize: function (value) {
@@ -557,7 +584,6 @@ Vue.component("userInfo", {
   props: ["user"],
 });
 
-
 Vue.component("preloader", {
   template: `
   <div class="preloader-wrapper big active">
@@ -612,8 +638,8 @@ Vue.component("preview", {
   data() {
     return {
       fullScreen: false,
-      previewUrl: ''
-    }
+      previewUrl: "",
+    };
   },
   template: `
   <div class="preview-container" v-bind:class="{fixed: fullScreen}">
@@ -627,7 +653,7 @@ Vue.component("preview", {
   watch: {
     url: function (val) {
       this.previewUrl = val;
-    }
+    },
   },
   mounted() {
     this.$nextTick(function () {

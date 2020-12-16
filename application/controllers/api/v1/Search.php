@@ -112,6 +112,8 @@ class Search extends REST_Controller
             $album = new Album();
             $data['albumes'] = $album->search($str_term);
 
+        }else{
+            $data = [];
         }
         $this->response_ok($data);
     }

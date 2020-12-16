@@ -169,9 +169,20 @@ $sidemenuWidth: 210px;
     -webkit-transition: 0.3s ease all;
     transition: 0.3s ease all;
     height: 100vh;
+    overflow: hidden;
 
-    &:hover {
-      width: $sidemenuWidth;
+    &.animate-open {
+      width: $sidemenuWidth !important;
+      -webkit-transition: 0.3s ease all;
+      transition: 0.3s ease all;
+
+      .collapsible-header span {
+        display: inline-block;
+      }
+
+      .active .collapsible-body {
+        display: block !important;
+      }
     }
 
     i.material-icons {
@@ -330,16 +341,12 @@ body.sidenav-open {
   .sidenav {
     width: 50px;
 
-    .collapsible-body {
-      display: none !important;
+    .collapsible-header span {
+      display: none;
     }
 
-    &:hover {
-      width: $sidemenuWidth;
-
-      .active .collapsible-body {
-        display: block !important;
-      }
+    .collapsible-body {
+      display: none !important;
     }
   }
 
@@ -2108,6 +2115,9 @@ iframe.components-sandbox {
     line-height: 24px;
     display: initial;
     margin: 10px 10px;
+    &:after {
+      content: " results";
+    }
   }
 
   .file .card-content {

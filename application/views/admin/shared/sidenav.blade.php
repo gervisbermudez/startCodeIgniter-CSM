@@ -75,7 +75,7 @@
                 Forms Content</a>
         </li>
         @endif
-        <li class="{{isSectionActive('eventos')}}">
+        <li class="{{isSectionActive('siteforms')}}">
             <div class="collapsible-header">
                 <i class="material-icons">assistant</i>
                 <span>Site Forms</span>
