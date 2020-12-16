@@ -75,6 +75,10 @@
                 Forms Content</a>
         </li>
         @endif
+        <li class="{{isSectionActive('calendario')}}">
+        <a class="waves-effect" href="{{ base_url('admin/calendario') }}"><i class="material-icons">event_note</i>
+                Calendario</a>
+        </li>
         <li class="{{isSectionActive('siteforms')}}">
             <div class="collapsible-header">
                 <i class="material-icons">assistant</i>
