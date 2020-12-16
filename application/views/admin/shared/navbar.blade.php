@@ -1,5 +1,9 @@
 <nav class="main-navbar">
     <div class="nav-wrapper">
+        <form method="GET" action="{{base_url('admin/search/')}}" class="input-field search-top">
+            <i class="material-icons prefix">search</i>
+            <input placeholder="Search..." name="q" type="text" class="validate">
+        </form>
         <a href="#" data-target="slide-out" class="sidenav-trigger show-on-medium-and-down"><i class="material-icons">menu</i></a>
         <a class='dropdown-trigger right' href='#' data-target='user_dropdown'>
             @if (userdata('avatar'))

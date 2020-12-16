@@ -4,7 +4,7 @@
         <br><br>
         <preloader />
     </div>
-    <nav class="page-navbar" v-cloak v-show="!loader && data.length > 0">
+    <nav class="page-navbar" v-cloak v-show="!loader && data.length > 0" v-if="search_input">
         <div class="nav-wrapper">
             <form>
                 <div class="input-field">
@@ -64,7 +64,7 @@
             </div>
         </div>
     </div>
-    <div class="container" v-if="!loader && data.length == 0" v-cloak>
+    <div class="container" v-if="!loader && data.length == 0 && show_empty_input" v-cloak>
         <h4>No hay datos para mostrar</h4>
     </div>
     <confirm-modal

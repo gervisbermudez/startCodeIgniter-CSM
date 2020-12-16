@@ -23,9 +23,24 @@ var dataTable = Vue.component("dataTable", {
       required: false,
       default: false,
     },
+    search_input: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
+    show_empty_input: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
     module: {
       type: String,
       required: false,
+    },
+    preset_data: {
+      type: Array,
+      required: false,
+      default: null,
     },
   },
   data: function () {
@@ -139,28 +154,6 @@ var dataTable = Vue.component("dataTable", {
         .then((response) => response.json())
         .then((response) => {
           let data = response.data;
-          data.map((element) => {
-            if (element.user) {
-              element.user = new User(element.user);
-            } else {
-              element.user = new User({});
-            }
-            return element;
-          });
-          if (data.length && !this.colums) {
-            this.labels = Object.keys(data[0]);
-            if (this.hideids) {
-              this.labels = this.labels.filter((label) => {
-                return label.indexOf("_id") == -1;
-              });
-            }
-            this.colums = this.labels.map((label) => {
-              return {
-                colum: label,
-                label: label,
-              };
-            });
-          }
           if (response.current_page && this.pagination) {
             this.showPagination = true;
             this.paginator.current_page = response.current_page;
@@ -174,13 +167,38 @@ var dataTable = Vue.component("dataTable", {
             this.paginator.prev_page = response.prev_page;
             this.set_paginatorLinks();
           }
-          self.data = data;
+          self.data = this.preProssesData(data);
           self.loader = false;
           this.initPlugins();
         })
         .catch((response) => {
           self.loader = false;
         });
+    },
+    preProssesData(data) {
+      data.map((element) => {
+        if (element.user) {
+          element.user = new User(element.user);
+        } else {
+          element.user = new User({});
+        }
+        return element;
+      });
+      if (data.length && !this.colums) {
+        this.labels = Object.keys(data[0]);
+        if (this.hideids) {
+          this.labels = this.labels.filter((label) => {
+            return label.indexOf("_id") == -1;
+          });
+        }
+        this.colums = this.labels.map((label) => {
+          return {
+            colum: label,
+            label: label,
+          };
+        });
+      }
+      return data;
     },
     getContent(item, colum) {
       let label = colum.colum;
@@ -286,9 +304,13 @@ var dataTable = Vue.component("dataTable", {
     this.$nextTick(function () {
       if (this.endpoint) {
         this.getData();
+      } else if (this.preset_data) {
+        this.data = this.preProssesData(this.preset_data);
+        this.loader = false;
       } else {
         this.loader = false;
       }
+
       this.$root.$on("eventing", (data) => {
         this.data[data.index] = data.item;
       });
