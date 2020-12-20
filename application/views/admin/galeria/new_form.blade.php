@@ -31,7 +31,7 @@
             <div id="introduction" class="section scrollspy">
                 <label for="id_cazary">Descripcion del Album:</label>
                 <div class="input-field">
-                    <textarea id="id_cazary" v-model="description" name="descripcion_form"></textarea>
+                    <textarea id="id_cazary" v-model="content" name="content"></textarea>
                 </div>
                 <br>
             </div>

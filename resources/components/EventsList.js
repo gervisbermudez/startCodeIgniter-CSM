@@ -30,8 +30,8 @@ var EventsList = new Vue({
   mixins: [mixins],
   computed: {},
   methods: {
-    editItem(data) {
-      window.location = `${BASEURL}admin/siteforms/editar/${data.item.siteform_id}`;
+    editEvent(data) {
+      window.location = `${BASEURL}admin/eventos/editar/${data.item.event_id}`;
       return;
     },
     deleteItem(data) {
@@ -41,11 +41,11 @@ var EventsList = new Vue({
     archiveItem(data) {
       console.log({ data });
       return;
-      },
-      newEvent() {
-        window.location = `${BASEURL}admin/eventos/agregar/`;
-        return;
-      }
+    },
+    newEvent() {
+      window.location = `${BASEURL}admin/eventos/agregar/`;
+      return;
+    },
   },
   mounted: function () {
     this.$nextTick(function () {});

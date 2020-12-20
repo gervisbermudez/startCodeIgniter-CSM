@@ -72,12 +72,12 @@ class Events extends REST_Controller
      */
     public function index_get($event_id = null)
     {
-        $siteform = new Event();
+        $event = new Event();
         if ($event_id) {
-            $result = $siteform->find_with(array('event_id' => $event_id));
-            $result = $result ? $siteform->as_data() : [];
+            $result = $event->find_with(array('event_id' => $event_id));
+            $result = $result ? $event->as_data() : [];
         } else {
-            $result = $siteform->all();
+            $result = $event->all();
         }
 
         if ($result) {
@@ -100,7 +100,8 @@ class Events extends REST_Controller
         $form = new FormValidator();
         $config = array(
             array('field' => 'name', 'label' => 'name', 'rules' => 'required|min_length[1]'),
-            array('field' => 'template', 'label' => 'description', 'rules' => 'required|min_length[1]'),
+            array('field' => 'subtitle', 'label' => 'subtitle', 'rules' => 'min_length[1]'),
+            array('field' => 'content', 'label' => 'content', 'rules' => 'required|min_length[1]'),
             array('field' => 'status', 'label' => 'status', 'rules' => 'required|integer'),
         );
         $form->set_rules($config);
@@ -108,17 +109,22 @@ class Events extends REST_Controller
             $this->response_error(lang('validations_error'), ['errors' => $form->_error_array], REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
-        $siteform = new Event();
-        $this->input->post('event_id') ? $siteform->find($this->input->post('event_id')) : false;
-        $siteform->name = $this->input->post('name');
-        $siteform->template = $this->input->post('template');
-        $siteform->properties = $this->input->post('properties');
-        $siteform->user_id = userdata('user_id');
-        $siteform->status = $this->input->post('status');
-        $siteform->date_create = date("Y-m-d H:i:s");
-        $siteform->date_publish = date("Y-m-d H:i:s");
-        if ($siteform->save()) {
-            $this->response_ok($siteform);
+
+        $event = new Event();
+        $this->input->post('event_id') ? $event->find($this->input->post('event_id')) : false;
+        $event->name = $this->input->post('name');
+        $event->subtitle = $this->input->post('subtitle');
+        $event->content = $this->input->post('content');
+        $event->address = $this->input->post('address');
+        $event->visibility = $this->input->post('visibility');
+        $event->mainImage = $this->input->post('mainImage');
+        $event->categorie_id = $this->input->post('categorie_id');
+        $event->user_id = userdata('user_id');
+        $event->status = $this->input->post('status');
+        $event->date_create = date("Y-m-d H:i:s");
+        $event->date_publish = date("Y-m-d H:i:s");
+        if ($event->save()) {
+            $this->response_ok($event);
             return;
         }
         $this->response_error(lang('unexpected_error'), [], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
@@ -144,10 +150,10 @@ class Events extends REST_Controller
     public function index_delete($event_id = null)
     {
         if ($event_id) {
-            $siteform = new Event();
-            $result = $siteform->find($event_id);
+            $event = new Event();
+            $result = $event->find($event_id);
             if ($result) {
-                $this->response_ok(["result" => $siteform->delete()]);
+                $this->response_ok(["result" => $event->delete()]);
                 return;
             } else {
                 $this->response_error(lang('not_found_error'));

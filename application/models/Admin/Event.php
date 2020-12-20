@@ -8,11 +8,27 @@ class Event extends MY_model
     public $primaryKey = 'event_id';
     public $table = "events";
     public $softDelete = true;
+    public $computed = ["mainImage" => "mainImage"];
+    public $hasOne = [
+        'user' => ['user_id', 'Admin/User', 'user'],
+    ];
 
     public function __construct()
     {
         parent::__construct();
     }
+
+    public function mainImage()
+    {
+        $this->load->model('Admin/File');
+        $file = new File();
+        $file->find($this->mainImage);
+        $imagen_file = $file->as_data();
+        $imagen_file->{'file_front_path'} = new stdClass();
+        $imagen_file->{'file_front_path'} = $file->getFileFrontPath();
+        return $imagen_file;
+    }
+
 
     public function filter_results($collection = [])
     {

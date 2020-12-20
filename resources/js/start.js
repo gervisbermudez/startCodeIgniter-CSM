@@ -576,7 +576,7 @@ Vue.component("userInfo", {
       <a :href="user.get_profileurl()">
         <img :src="user.get_avatarurl()" alt="" class="circle profile-img">
         <span class="title">{{user.get_fullname()}}</span>
-        <div>{{user.role}}</div>
+        <div>{{user.role ? user.role : user.usergroup.name}}</div>
       </a>
     </div>
   </div>

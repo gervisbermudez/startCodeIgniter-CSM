@@ -9,8 +9,10 @@
     :module="'admin/eventos'"
     :colums="colums"
     :index_data="index_data"
-	:pagination="true"
-	v-on:new="newEvent"
+    :pagination="true"
+    v-on:new="newEvent"
+    v-on:edit="editEvent"
+    v-on:delete="deleteItem"
   ></data-table>
 </div>
 @endsection
