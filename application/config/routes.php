@@ -64,8 +64,6 @@ $route['form/success'] = 'PageController/formsuccess';
 $route['form/error'] = 'PageController/formerror';
 
 //Blog pages
-$route['feed'] = 'BlogController/blogFeed';
-$route['blog'] = 'BlogController/list';
-$route['blog/(:any)'] = 'BlogController/get_blog/$1';
-$route['blog/(:any)/(:any)'] = 'BlogController/get_blog_categorie/$1/$2';
-$route['blog/(:any)/(:any)/(:any)'] = 'BlogController/get_blog_subcategorie/$1/$2/$3';
+$route['feed'] = 'PageController/blogFeed';
+$route['blog'] = 'PageController/blog_list';
+$route['blog/(:any)'] = 'PageController/get_blog/$1';

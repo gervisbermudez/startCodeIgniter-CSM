@@ -27,7 +27,17 @@ class ThemeController_Base
      */
     public function home($data)
     {
-        return $this->render($data, '');
+        return $this->render($data);
+    }
+
+    public function blog_list($data)
+    {
+        return $this->render($data);
+    }
+
+    public function blog_post($data)
+    {
+        return $this->render($data);
     }
 
 }

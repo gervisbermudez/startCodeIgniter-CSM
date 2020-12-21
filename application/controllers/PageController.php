@@ -44,6 +44,27 @@ class PageController extends Base_Controller
         }
     }
 
+    public function blog_list()
+    {
+        $data['title'] = config("SITE_TITLE") . " - Blog";
+        $data['blogs'] = $this->Page->where(['page_type_id' => 2, "status" => 1]);
+        $data['layout'] = 'site';
+        $data['template'] = 'blogList';
+        echo $this->themeController->blog_list($data);
+    }
+
+    public function get_blog()
+    {
+        $data = $this->get_page_info(array('path' => $this->uri->uri_string(), 'status' => 1));
+        if ($data == null) {
+            $this->error404();
+            return;
+        }
+
+        //Load local theme Controller
+        echo $this->themeController->blog_post($data);
+    }
+
     public function formsubmit()
     {
         $siteform_id = $this->input->post('form_reference');
@@ -114,6 +135,22 @@ class PageController extends Base_Controller
         $data['pages'] = $this->Page->where(["status" => 1]);
         header("Content-Type: text/xml;charset=iso-8859-1");
         echo $this->blade->view("admin.xml.sitemap", $data);
+    }
+
+    public function blogFeed()
+    {
+        $this->load->helper('xml');
+        $this->load->helper('text');
+        $data['feed_name'] = config("SITE_TITLE");
+        $data['encoding'] = 'UTF-8';
+        $data['feed_url'] = base_url('feed');
+        $data['page_description'] = config("SITE_DESCRIPTION");
+        $data['page_language'] = 'en-en';
+        $data['creator_email'] = config("SITE_ADMIN_EMAIL");
+        $data['site_language'] = config("SITE_LANGUAGE");
+        $data['posts'] = $this->Page->where(['page_type_id' => 2, "status" => 1]);
+        header("Content-Type: application/rss+xml");
+        echo $this->blade->view("admin.xml.rss", $data);
     }
 
 }
