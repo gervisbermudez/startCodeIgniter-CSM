@@ -57,7 +57,7 @@
     <div class="row">
       <div class="col-lg-8 mb-4">
         <h3>Send us a Message</h3>
-          {!! render_form('hire_me') !!}
+          {!! render_form('contact_form') !!}
           <div id="success"></div>
           <!-- For success/fail messages -->
       </div>
