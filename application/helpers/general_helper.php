@@ -9,6 +9,13 @@ if (!function_exists('fnGetTitle')) {
     }
 }
 
+if (!function_exists('url')) {
+    function url($strUrlSegment)
+    {
+        return base_url($strUrlSegment);
+    }
+}
+
 function getTemplates()
 {
     $ci = &get_instance();

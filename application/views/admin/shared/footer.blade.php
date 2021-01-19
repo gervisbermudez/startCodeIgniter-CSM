@@ -1,7 +1,7 @@
 <script>
 const BASEURL = <?php echo json_encode(base_url()) ?>;
 const ADMIN_VERSION = <?php echo json_encode(ADMIN_VERSION) ?>;
-const SITE_TITLE = <?php echo json_encode(SITE_TITLE) ?>;
+const SITE_TITLE = <?php echo json_encode(config("SITE_TITLE")) ?>;
 const ENVIRONMENT = <?php echo json_encode(ENVIRONMENT) ?>;
 const DEBUGMODE = <?php echo json_encode($ci->config->item('debug_mode')) ?>;
 </script>

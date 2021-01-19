@@ -97,7 +97,7 @@ var PageNewForm = new Vue({
       },
       {
         property: "twitter:card",
-        content: "summary",
+        content: "summary_large_image",
       },
       {
         property: "twitter:title",

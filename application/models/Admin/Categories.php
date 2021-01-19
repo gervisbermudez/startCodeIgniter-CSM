@@ -2,6 +2,8 @@
     exit('No direct script access allowed');
 }
 
+use Tightenco\Collect\Support\Collection;
+
 class Categories extends MY_model
 {
 
@@ -15,6 +17,17 @@ class Categories extends MY_model
     public function __construct()
     {
         parent::__construct();
+    }
+
+    public function get_counted()
+    {
+        $sql = 'SELECT COUNT(parent_id) `pages`, cat.name FROM page INNER JOIN categories cat ON page.categorie_id = cat.categorie_id GROUP by cat.categorie_id';
+        $query = $this->db->query($sql);
+        if ($query->num_rows() > 0) {
+
+            return new Collection($this->filter_results($query->result()));
+        }
+        return false;
     }
 
     public function filter_results($collection = [])

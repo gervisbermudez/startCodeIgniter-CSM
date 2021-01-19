@@ -40,6 +40,8 @@ class PageController extends Base_Controller
             $data['title'] = config("SITE_TITLE") . " - Home";
             $data['layout'] = 'site';
             $data['template'] = 'home';
+            $data['meta'] = $this->getPageMetas([]);
+
             echo $this->themeController->home($data, '');
         }
     }
@@ -47,9 +49,78 @@ class PageController extends Base_Controller
     public function blog_list()
     {
         $data['title'] = config("SITE_TITLE") . " - Blog";
-        $data['blogs'] = $this->Page->where(['page_type_id' => 2, "status" => 1]);
         $data['layout'] = 'site';
         $data['template'] = 'blogList';
+        $data['meta'] = $this->getPageMetas([]);
+        $data['blogs'] = $this->Page->where(['page_type_id' => 2, "status" => 1]);
+        $data['list_variant'] = '';
+
+        echo $this->themeController->blog_list($data);
+    }
+
+    public function blog_list_tag($tag)
+    {
+        $data['title'] = config("SITE_TITLE") . " - Blog";
+        $data['blogs'] = $this->Page->where(['page_type_id' => 2, "status" => 1]);
+
+        if ($data['blogs']) {
+            $data['blogs'] = $data['blogs']->filter(function ($value, $key) use ($tag) {
+                return (isset($value->page_data['tags']) && in_array($tag, $value->page_data['tags']));
+            });
+        }
+
+        $data['layout'] = 'site';
+        $data['template'] = 'blogList';
+        $data['list_variant'] = 'tag';
+        $data['tag'] = $tag;
+
+        $data['meta'] = $this->getPageMetas([]);
+        echo $this->themeController->blog_list($data);
+    }
+
+    public function blog_list_author($author)
+    {
+        $this->load->model('Admin/User');
+        $user = new User();
+        $result = $user->find_with(['username' => $author]);
+
+        if (!$result) {
+            $this->error404();
+            return;
+        }
+
+        $data['title'] = config("SITE_TITLE") . " - Blog";
+        $data['layout'] = 'site';
+        $data['template'] = 'blogList';
+        $data['list_variant'] = 'author';
+        $data['author_info'] = $user;
+
+        //Filter Blogs by user_id
+        $data['blogs'] = $this->Page->where(['page_type_id' => 2, "status" => 1, 'user_id' => $user->user_id]);
+        $data['meta'] = $this->getPageMetas([]);
+        echo $this->themeController->blog_list($data);
+    }
+
+    public function blog_list_categorie($categorie)
+    {
+        $this->load->model('Admin/Categories');
+        $categorie_name = (ucwords(str_replace('-', ' ', $categorie)));
+        $categorie = new Categories();
+        $result = $categorie->find_with(["name" => $categorie_name]);
+
+        if (!$result) {
+            $this->error404();
+            return;
+        }
+
+        $data['title'] = config("SITE_TITLE") . " - Blog";
+        $data['blogs'] = $this->Page->where(['page_type_id' => 2, "status" => 1, 'categorie_id' => $categorie->categorie_id]);
+        $data['layout'] = 'site';
+        $data['categorie'] = $categorie;
+        $data['template'] = 'blogList';
+        $data['list_variant'] = 'categorie';
+
+        $data['meta'] = $this->getPageMetas([]);
         echo $this->themeController->blog_list($data);
     }
 
@@ -94,7 +165,7 @@ class PageController extends Base_Controller
                 $data['page'] = (Object) ["title" => lang('form_submited_title'), "subtitle" => "", "content" => lang("form_submited_message")];
                 echo $this->themeController->render($data, '');
             }
-        }else{
+        } else {
             redirect("/");
         }
     }

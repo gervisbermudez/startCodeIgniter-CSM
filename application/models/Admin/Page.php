@@ -77,6 +77,26 @@ class Page extends MY_model
                 $value->imagen_file->{'file_front_path'} = $file->getFileFrontPath();
             }
         }
+
+        foreach ($collection as $key => &$value) {
+            $value->{'page_data'} = $this->search_for_data($value->page_id, 'page_id');
+        }
+
+
         return $collection;
+    }
+
+    public function get_cloud_tags()
+    {
+        $sql = 'SELECT * FROM `page_data` pd WHERE pd._key = "tags"';
+        $query = $this->db->query($sql);
+        if ($query->num_rows() > 0) {
+            $tags = [];
+            foreach ($query->result() as $value) {
+                $tags = array_merge(json_decode(strtolower ( $value->_value) ), $tags);
+            }
+            return array_unique($tags);
+        }
+        return false;
     }
 }

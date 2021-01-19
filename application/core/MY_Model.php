@@ -158,10 +158,26 @@ class MY_model extends CI_Model implements JsonSerializable
         $this->after_map();
     }
 
-    public function where($where)
+    public function where($where, $limit = '', $order = array())
     {
+
+        if ($limit) {
+            if (is_array($limit)) {
+                isset($limit[1]) ? $this->db->limit($limit[0], $limit[1]) : $this->db->limit($limit[0]);
+            } else {
+                $this->db->limit($limit);
+            }
+        }
+
+        if ($order) {
+            $this->db->order_by($order[0], $order[1]);
+        } else {
+            $this->db->order_by($this->primaryKey, 'ASC');
+        }
+
         $this->db->where($where);
         $query = $this->db->get($this->table);
+
         if ($query->num_rows() > 0) {
             $result = new Collection($this->filter_results($query->result()));
             return $result;
