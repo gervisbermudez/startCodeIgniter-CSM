@@ -74,9 +74,9 @@ function render_form($siteform_name)
     if (getThemePath()) {
         $ci->blade->changePath(getThemePath());
     }
-    
+
     $siteforms = $ci->session->userdata('siteforms');
-    if(!$siteforms && !isset($siteforms[$siteform_name])){
+    if (!$siteforms && !isset($siteforms[$siteform_name])) {
         $ci->session->set_userdata('siteforms', [$siteform_name => ['submited' => 0]]);
     }
 
@@ -103,7 +103,7 @@ if (!function_exists('getThemePublicPath')) {
         $config = new stdClass();
         $theme_path = $ci->config->item("THEME_PATH");
         if ($theme_path) {
-            return 'themes' . '/' . $theme_path . '/' . 'public' . '/';
+            return 'themes' . DIRECTORY_SEPARATOR . $theme_path . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR;
         }
         return '';
     }
@@ -322,7 +322,7 @@ function render_menu($name)
         $blade = new Blade();
 
         if (getThemePath()) {
-            if (file_exists(getThemePath() . '\\views\\site\\templates\\menu\\menu.blade.php')) {
+            if (file_exists(getThemePath() . ''.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'site'.DIRECTORY_SEPARATOR.'templates'.DIRECTORY_SEPARATOR.'menu'.DIRECTORY_SEPARATOR.'menu.blade.php')) {
                 $blade->changePath(getThemePath());
             } else {
                 $blade->changePath(APPPATH);
