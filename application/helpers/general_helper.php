@@ -103,7 +103,7 @@ if (!function_exists('getThemePublicPath')) {
         $config = new stdClass();
         $theme_path = $ci->config->item("THEME_PATH");
         if ($theme_path) {
-            return 'themes' . DIRECTORY_SEPARATOR . $theme_path . DIRECTORY_SEPARATOR . 'public' . DIRECTORY_SEPARATOR;
+            return 'themes/' . $theme_path . '/public/' ;
         }
         return '';
     }
