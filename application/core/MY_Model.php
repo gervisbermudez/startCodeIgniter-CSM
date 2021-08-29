@@ -640,7 +640,7 @@ class MY_model extends CI_Model implements JsonSerializable
                 }
             }
             foreach ($this->computed as $key => $value) {
-                $this->{$key} = $this->{$value}();
+                $this->{$key} = call_user_func(array($this, $value));
             }
         }
         return null;

@@ -103,7 +103,7 @@ class Config extends REST_Controller
         $configuration->config_name = $this->input->post('config_name');
         $configuration->config_value = $this->input->post('config_value');
         $configuration->config_description = $this->input->post('config_description');
-        $configuration->config_data = $this->input->post('config_data');
+        $configuration->config_data = json_encode($this->input->post('config_data'));
         $configuration->readonly = $this->input->post('readonly');
         $configuration->config_type = $this->input->post('config_type');
         $configuration->user_id = userdata('user_id');

@@ -212,3 +212,4 @@ themes/myGreatTheme/cache/*
 application/config/production/*
 themes/*
 uploads/*
+workspace.code-workspace

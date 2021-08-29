@@ -82,7 +82,7 @@ class PageController extends Base_Controller
     {
         $this->load->model('Admin/User');
         $user = new User();
-        $result = $user->find_with(['username' => $author]);
+        $result = $user->find_with(['username' => urldecode($author)]);
 
         if (!$result) {
             $this->error404();
@@ -101,10 +101,39 @@ class PageController extends Base_Controller
         echo $this->themeController->blog_list($data);
     }
 
+    public function blog_list_search()
+    {
+        $this->load->model('Admin/User');
+        $user = new User();
+
+        $term = $this->input->get("q");
+        $result = $this->Page->search(urldecode($term));
+        
+        if (!$result) {
+            $this->error404();
+            return;
+        }
+
+        $result = $result->filter(function ($value, $key) {
+            return $value->page_type_id == 2;
+        });
+
+        $data['title'] = config("SITE_TITLE") . " - Blog";
+        $data['layout'] = 'site';
+        $data['template'] = 'blogList';
+        $data['list_variant'] = 'author';
+        $data['author_info'] = $user;
+
+        //Filter Blogs by user_id
+        $data['blogs'] = $result;
+        $data['meta'] = $this->getPageMetas([]);
+        echo $this->themeController->blog_list($data);
+    }
+
     public function blog_list_categorie($categorie)
     {
         $this->load->model('Admin/Categories');
-        $categorie_name = (ucwords(str_replace('-', ' ', $categorie)));
+        $categorie_name = (ucwords(str_replace('-', ' ', urldecode($categorie))));
         $categorie = new Categories();
         $result = $categorie->find_with(["name" => $categorie_name]);
 
@@ -115,12 +144,14 @@ class PageController extends Base_Controller
 
         $data['title'] = config("SITE_TITLE") . " - Blog";
         $data['blogs'] = $this->Page->where(['page_type_id' => 2, "status" => 1, 'categorie_id' => $categorie->categorie_id]);
+        $data['blogs'] = $data['blogs'] ? $data['blogs'] : [];
         $data['layout'] = 'site';
         $data['categorie'] = $categorie;
         $data['template'] = 'blogList';
         $data['list_variant'] = 'categorie';
 
         $data['meta'] = $this->getPageMetas([]);
+
         echo $this->themeController->blog_list($data);
     }
 

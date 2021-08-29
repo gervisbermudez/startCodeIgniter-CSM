@@ -41,7 +41,9 @@ class Pages extends REST_Controller
         } else {
             $result = $page->where(['status' => '1']);
             $archived = $page->where(['status' => '2']);
-            $result = ($result && $archived) ? ($archived->concat($result)) : [];
+            $result = $result ? $result->toArray() : [];
+            $archived = $archived ? $archived->toArray() : [];
+            $result = array_merge($result, $archived);
         }
 
         if ($result) {
