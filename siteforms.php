@@ -2,7 +2,7 @@
     exit('No direct script access allowed');
 }
 
-class Siteforms extends MY_Controller
+class SiteForms extends MY_Controller
 {
 
     public function __construct()

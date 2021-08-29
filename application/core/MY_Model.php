@@ -455,16 +455,16 @@ class MY_model extends CI_Model implements JsonSerializable
 
         $this->db->where(array($primaryKeyFieldName => $primaryKey));
         $query = $this->db->get($table_data_name);
+        $temp_array = [];
         if ($query->num_rows() > 0) {
             $table_data = new Collection($query->result());
-        }
-        $temp_array = [];
-        foreach ($table_data as $value) {
-            $decode_value = json_decode($value->{"_value"});
-            if (gettype($decode_value) == "object" || gettype($decode_value) == "array") {
-                $temp_array[$value->{"_key"}] = $decode_value;
-            } else {
-                $temp_array[$value->{"_key"}] = $value->{"_value"};
+            foreach ($table_data as $value) {
+                $decode_value = json_decode($value->{"_value"});
+                if (gettype($decode_value) == "object" || gettype($decode_value) == "array") {
+                    $temp_array[$value->{"_key"}] = $decode_value;
+                } else {
+                    $temp_array[$value->{"_key"}] = $value->{"_value"};
+                }
             }
         }
         return $temp_array ? $temp_array : [];
@@ -640,7 +640,7 @@ class MY_model extends CI_Model implements JsonSerializable
                 }
             }
             foreach ($this->computed as $key => $value) {
-                $this->{$key} = $this->{$value}();
+                $this->{$key} = call_user_func(array($this, $value));
             }
         }
         return null;

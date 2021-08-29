@@ -16,7 +16,9 @@
 | path to your installation.
 |
  */
-$config['base_url'] = 'http://localhost:8000/';
+$config['base_url'] = getenv('APP_BASE_URL');
+$config['enable_profiler'] = false;
+$config['debug_mode'] = false;
 
 /*
 |--------------------------------------------------------------------------
@@ -179,7 +181,7 @@ $config['directory_trigger'] = 'd'; // experimental not currently in use
 | your log files will fill up very fast.
 |
  */
-$config['log_threshold'] = 0;
+$config['log_threshold'] = 4;
 
 /*
 |--------------------------------------------------------------------------
@@ -353,8 +355,6 @@ $config['rewrite_short_tags'] = false;
 |
  */
 $config['proxy_ips'] = '';
-
 $config['composer_autoload'] = 'vendor/autoload.php';
-
 /* End of file config.php */
 /* Location: ./application/config/config.php */

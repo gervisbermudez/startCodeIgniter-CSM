@@ -17,6 +17,8 @@ class SiteForm extends MY_model
 
     public $computed = array("properties" => "properties_to_json");
 
+    public $properties = [];
+
     public function __construct()
     {
         parent::__construct();

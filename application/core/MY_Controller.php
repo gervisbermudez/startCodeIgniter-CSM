@@ -205,7 +205,7 @@ class Base_Controller extends CI_Controller
 
         $data['page'] = $pageInfo;
         $data['meta'] = $this->getPageMetas($pageInfo);
-        $data['title'] = $pageInfo->page_data["title"] ? config("SITE_TITLE") . " - " . $pageInfo->page_data["title"] : config("SITE_TITLE") . " - " . $pageInfo->title;
+        $data['title'] = isset($pageInfo->page_data["title"]) ? config("SITE_TITLE") . " - " . $pageInfo->page_data["title"] : config("SITE_TITLE") . " - " . $pageInfo->title;
         $data['layout'] = $pageInfo->layout == 'default' ? 'site' : $pageInfo->layout;
         $data['headers_includes'] = isset($pageInfo->page_data["headers_includes"]) ? $pageInfo->page_data["headers_includes"] : "";
         $data['footer_includes'] = isset($pageInfo->page_data["footer_includes"]) ? $pageInfo->page_data["footer_includes"] : "";

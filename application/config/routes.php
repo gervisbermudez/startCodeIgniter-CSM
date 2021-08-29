@@ -55,6 +55,8 @@ $route['translate_uri_dashes'] = false;
 $route['admin'] = 'admin/admin';
 $route['admin/offline'] = 'admin/admin/offline';
 $route['admin/search'] = 'admin/admin/search';
+$route['admin/siteforms'] = 'admin/SiteForms';
+$route['admin/siteforms/nuevo/'] = 'admin/SiteForms/nuevo';
 //Pages system
 $route['admin/paginas/preview'] = 'PageController/preview';
 $route['sitemap\.xml'] = 'PageController/siteMap';
@@ -66,6 +68,7 @@ $route['form/error'] = 'PageController/formerror';
 //Blog pages
 $route['feed'] = 'PageController/blogFeed';
 $route['blog'] = 'PageController/blog_list';
+$route['blog/search'] = 'PageController/blog_list_search/';
 $route['blog/author/(:any)'] = 'PageController/blog_list_author/$1';
 $route['blog/tag/(:any)'] = 'PageController/blog_list_tag/$1';
 $route['blog/categorie/(:any)'] = 'PageController/blog_list_categorie/$1';
