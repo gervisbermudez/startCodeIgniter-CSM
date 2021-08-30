@@ -644,8 +644,9 @@ Vue.component("preview", {
   template: `
   <div class="preview-container" v-bind:class="{fixed: fullScreen}">
     <div class="preview-options">
-    <input type="text" name="url" id="url" v-model="previewUrl">
+    <input type="text" name="url" id="url" readonly :value="previewUrl">
     <a href="#!" class="option"><i class="material-icons" v-on:click="expand();">aspect_ratio</i></a>
+    <a :href="previewUrl" class="option" target="_blank"><i class="material-icons">open_in_new</i></a>
     </div>
     <iframe class="responsive-iframe" :src="previewUrl"></iframe>
   </div>

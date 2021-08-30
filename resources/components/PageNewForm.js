@@ -40,6 +40,7 @@ var PageNewForm = new Vue({
     page_type_id: "1",
     layouts: [],
     mainImage: [],
+    thumbnailImage: [],
     templates: [],
     pageTypes: [],
     categories: [],

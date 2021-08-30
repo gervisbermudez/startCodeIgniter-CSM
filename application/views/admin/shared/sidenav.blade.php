@@ -95,10 +95,10 @@
                 </ul>
             </div>
         </li>
-        <!-- <li class="{{isSectionActive('mensajes')}}">
-            <a class="waves-effect" href="{{ base_url('admin/mensajes/') }}"><i class="material-icons">email</i>
-                Mensajes</a>
-        </li> -->
+        <li class="{{isSectionActive('sitefragments')}}">
+            <a class="waves-effect" href="{{ base_url('admin/sitefragments/') }}"><i class="material-icons">bookmark_border</i>
+                Fragmentos</a>
+        </li>
         <li class="{{isSectionActive('suscriptores')}}">
             <a class="waves-effect" href="{{ base_url('admin/suscriptores/') }}"><i class="material-icons">supervisor_account</i> Suscriptores</a>
         </li>
