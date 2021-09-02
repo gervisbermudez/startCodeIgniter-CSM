@@ -39,8 +39,7 @@ var PageNewForm = new Vue({
     subcategorie_id: "0",
     page_type_id: "1",
     layouts: [],
-    mainImage: [],
-    thumbnailImage: [],
+    mainImage: [], // index = 0 mainImage , index = 1 thumbnailImage
     templates: [],
     pageTypes: [],
     categories: [],
@@ -140,6 +139,12 @@ var PageNewForm = new Vue({
     getMainImagenPath() {
       if (this.mainImage.length > 0) {
         return this.mainImage[0].file_id;
+      }
+      return null;
+    },
+    getThumbnailImagePath() {
+      if (this.mainImage.length > 1) {
+        return this.mainImage[1].file_id;
       }
       return null;
     },
@@ -398,6 +403,7 @@ var PageNewForm = new Vue({
         categorie_id: this.categorie_id || 0,
         subcategorie_id: this.subcategorie_id || 0,
         mainImage: this.getMainImagenPath,
+        thumbnailImage: this.getThumbnailImagePath,
         page_data: {
           tags: this.getPageTags(),
           title: this.page_data.title,
@@ -594,6 +600,9 @@ var PageNewForm = new Vue({
               if (response.data.page.main_image) {
                 self.mainImage.push(response.data.page.main_image);
               }
+              if (response.data.page.thumbnail_image) {
+                self.mainImage.push(response.data.page.thumbnail_image);
+              }
               self.templates = response.data.templates.map(function (value) {
                 let template = value.split(".blade")[0];
                 return template == "template" ? "default" : template;
@@ -620,20 +629,24 @@ var PageNewForm = new Vue({
       }
     },
     copyCallcack(files) {
+      files = files.map(file => new ExplorerFile(file));
       let file = files[0];
-      this.mainImage.push(file);
-      file = new ExplorerFile(file);
+      this.mainImage = [...this.mainImage, ...files];
+      if (this.mainImage.length > 2) {
+        this.mainImage = this.mainImage.slice(0, 2);
+      }
       this.setMetaContent(file.get_relative_file_path(), 'og:image');
       this.setMetaContent(file.get_relative_file_path(), 'twitter:image');
       let instance = M.Modal.getInstance($("#fileUploader"));
       instance.close();
+      this.initMaterialboxed();
     },
     initPlugins() {
       setTimeout(() => {
         M.Chips.init(document.getElementById("pageTags"), {});
         M.Tabs.init(document.getElementById("formTabs"), {});
         var elems = document.getElementById("pageMetas");
-        var instances = M.Collapsible.init(elems, {
+        M.Collapsible.init(elems, {
           accordion: false,
         });
         var elems = document.querySelectorAll(".datepicker");
@@ -658,10 +671,17 @@ var PageNewForm = new Vue({
         this.initSelects();
       }, 1000);
     },
+    initMaterialboxed() {
+       setTimeout(() => {
+        var elems = document.querySelectorAll('.materialboxed');
+        M.Materialbox.init(elems, {});
+       }, 500);
+    },
     initSelects() {
       setTimeout(() => {
         var elems = document.querySelectorAll("select");
-        var instances = M.FormSelect.init(elems, {});
+        M.FormSelect.init(elems, {});
+        this.initMaterialboxed();
       }, 1000);
     },
     setEditorContent: function (page) {

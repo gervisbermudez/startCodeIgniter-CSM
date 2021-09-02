@@ -66,15 +66,15 @@
                         <a href="{{ base_url('admin/formularios/nuevo') }}">Nuevo</a>
                     </li>
                 @endif
+                @if(has_permisions('SELECT_CONTENT_DATA'))
+                <li class="{{isSectionActive('admin/formularios', 'match')}}">
+                    <a class="waves-effect" href="{{ base_url('admin/formularios/content') }}">
+                        Contenidos</a>
+                </li>
+                @endif
                 </ul>
             </div>
         </li>
-        @if(has_permisions('SELECT_CONTENT_DATA'))
-        <li class="{{isSectionActive('admin/formularios/content', 'match')}}">
-            <a class="waves-effect" href="{{ base_url('admin/formularios/content') }}"><i class="material-icons">insert_chart</i>
-                Forms Content</a>
-        </li>
-        @endif
         <li class="{{isSectionActive('calendario')}}">
         <a class="waves-effect" href="{{ base_url('admin/calendario') }}"><i class="material-icons">event_note</i>
                 Calendario</a>

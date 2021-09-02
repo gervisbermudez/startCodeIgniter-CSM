@@ -117,6 +117,7 @@ class Pages extends REST_Controller
         $page->categorie_id = $this->input->post('categorie_id');
         $page->subcategorie_id = $this->input->post('subcategorie_id');
         $page->mainImage = $this->input->post('mainImage') ? $this->input->post('mainImage') : null;
+        $page->thumbnailImage = $this->input->post('thumbnailImage') ? $this->input->post('thumbnailImage') : null;
         $page->{"page_data"} = $this->input->post('page_data');
 
         if ($page->save()) {

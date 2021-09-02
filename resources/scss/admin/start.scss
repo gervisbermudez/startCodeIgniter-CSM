@@ -2,6 +2,10 @@
 @import "components/palette";
 @import "fonts";
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   overflow-x: hidden;
   font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -2115,6 +2119,7 @@ iframe.components-sandbox {
     line-height: 24px;
     display: initial;
     margin: 10px 10px;
+
     &:after {
       content: " results";
     }
@@ -2135,4 +2140,36 @@ iframe.components-sandbox {
     height: 70px;
   }
 
+}
+
+.card.mainPageImage {
+  max-height: 240px;
+  overflow: hidden;
+
+  .overlay {
+    background-color: transparent;
+    background-image: linear-gradient(178deg, #8f8f8f00 0%, #000000 100%);
+    opacity: 0.9;
+    transition: background 0.3s, border-radius 0.3s, opacity 0.3s;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    position: absolute;
+  }
+
+  .card-title {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    color: #fff;
+    display: block;
+    width: 100%;
+    background: #0000006b;
+    font-size: 18px;
+
+    span {
+      margin: 5px 10px;
+    }
+  }
 }

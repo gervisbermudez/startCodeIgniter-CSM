@@ -56,13 +56,13 @@
                 </p>
                 <a href="#fileUploader" class="waves-effect waves-light btn modal-trigger"><i class="material-icons left">add_a_photo</i>Agregar Imagen</a>
                 <div class="row" v-if="mainImage">
-                    <div class="col s12">
-                        <div class="card mainPageImage" v-for="(image, index) in mainImage" :key="index">
+                    <div class="col s6" v-for="(image, index) in mainImage" :key="index">
+                        <div class="card mainPageImage">
                             <div class="card-image">
                                 <i class="material-icons right close tooltipped" data-position="left" data-delay="50" data-tooltip="Quitar" v-on:click="removeImage(index);">close</i>
-                                <img :src="getFileImagenPath(image)" />
-                                <span class="card-title">@{{ getFileImagenName(image) }}</span>
+                                <img class="materialboxed" :src="getFileImagenPath(image)" />
                             </div>
+                            <span class="card-title truncate"><span>@{{ getFileImagenName(image) }}</span></span>
                         </div>
                     </div>
                 </div>
@@ -266,7 +266,7 @@
     :modal="'fileUploader'" 
     :mode="'files'" 
     :filter="'images'" 
-    :multiple="false"
+    :multiple="true"
     v-on:notify="copyCallcack"
     ></file-explorer-selector>    
 </div>

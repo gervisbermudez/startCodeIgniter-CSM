@@ -13,6 +13,7 @@ class Page extends MY_model
         'user' => ['user_id', 'Admin/User', 'user'],
         'pages_type' => ['page_type_id', 'Admin/Page_type', 'page_type'],
         'main_image' => ['mainImage', 'Admin/File', 'File'],
+        'thumbnail_image' => ['thumbnailImage', 'Admin/File', 'File'],
     ];
 
     public $page_data = [];
@@ -75,6 +76,16 @@ class Page extends MY_model
                 $value->imagen_file = $file->as_data();
                 $value->imagen_file->{'file_front_path'} = new stdClass();
                 $value->imagen_file->{'file_front_path'} = $file->getFileFrontPath();
+            }
+        }
+
+        foreach ($collection as $key => &$value) {
+            if (isset($value->thumbnailImage) && $value->thumbnailImage) {
+                $file = new File();
+                $file->find($value->thumbnailImage);
+                $value->thumbnail_image = $file->as_data();
+                $value->thumbnail_image->{'file_front_path'} = new stdClass();
+                $value->thumbnail_image->{'file_front_path'} = $file->getFileFrontPath();
             }
         }
 
