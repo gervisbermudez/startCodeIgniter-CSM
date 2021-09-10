@@ -18,6 +18,8 @@ class Page extends MY_model
 
     public $page_data = [];
 
+    public $computed = ["json_content" => "get_json_content"];
+
     /**
      * Page status:
      * 0 => deleted
@@ -29,6 +31,11 @@ class Page extends MY_model
     public function __construct()
     {
         parent::__construct();
+    }
+
+    public function get_json_content()
+    {
+        return json_decode($this->json_content);
     }
 
     /**
@@ -68,6 +75,13 @@ class Page extends MY_model
                 $value->{'model_type'} = "page";
             }
         }
+
+        foreach ($collection as $key => &$value) {
+            if (isset($value->json_content)) {
+                $value->{'json_content'} = json_decode($value->json_content);
+            }
+        }
+        
         $this->load->model('Admin/File');
         foreach ($collection as $key => &$value) {
             if (isset($value->mainImage) && $value->mainImage) {

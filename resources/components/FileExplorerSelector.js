@@ -164,10 +164,15 @@ Vue.component("FileExplorerSelector", {
       };
     },
     onClickButton(event) {
+      let files = this.getSelected();
       this.$emit(
         "notify",
-        this.selectedRoot ? [this.getSelectedRoot()] : this.getSelected()
+        this.selectedRoot ? [this.getSelectedRoot()] : files
       );
+      this.files = this.files.map((file) => {
+        file.selected = false;
+        return file;
+      });
     },
     getFullFileName(file) {
       return file.file_name + "." + file.file_type;
