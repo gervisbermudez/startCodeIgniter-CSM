@@ -2,7 +2,7 @@
 @import "mixins.scss";
 @import "skeleton-loader.scss";
 
-$gray: #5D5D5D;
+$grayDark: #5D5D5D;
 $grayLight: #E5E5E5;
 $main: #F6F6F6;
 
@@ -18,7 +18,7 @@ body {
   font-family: 'Roboto';
   font-weight: 600;
   font-size: 18px;
-  color: $gray;
+  color: $grayDark;
   margin: 20px;
 }
 
@@ -28,15 +28,23 @@ body {
   width: auto;
   padding: 0px;
   display: grid;
-  grid-template-columns: 80% 20%;
-  column-gap: 20px;
+  grid-template-columns: 75% 24%;
+  column-gap: 15px;
 
   @include respond-down($md) {
     grid-template-columns: 100%;
   }
 
   .col-right {
-    height: 100vh;
+    height: 100%;
+
+    .row {
+      margin-bottom: 15px;
+    }
+
+    .title {
+      font-size: 18px;
+    }
   }
 
   .welcome {
@@ -59,6 +67,12 @@ body {
 
     .welcome_message {
       margin-right: 10px;
+      width: 16%;
+    }
+
+    .columns {
+      display: flex;
+      width: 80%;
     }
 
     .colum {
@@ -103,15 +117,25 @@ body {
 
 
   h5 {
-    color: $gray;
+    color: $grayDark;
+
+    a {
+      color: $grayDark;
+    }
   }
 
-  /* Users */
+
   .collection {
-    border: 0;
-    -webkit-box-shadow: 0px 1px 15px 1px rgba(69, 65, 78, 0.08);
-    box-shadow: 0px 1px 15px 1px rgba(69, 65, 78, 0.08);
-    margin: 0px;
+    box-shadow: none;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    margin: 10px;
+    overflow: hidden;
+
+    .sub-header {
+      font-size: 13px;
+      margin: 10px 0px !important;
+    }
 
     .collection-item.avatar {
       min-height: auto;
@@ -126,43 +150,45 @@ body {
       }
 
       a.secondary-content {
-        color: #ccc;
+        color: $grayDark;
       }
 
       &.collection-header {
         padding-left: 15px;
-        background: #26a69a;
 
         h5,
         p {
           margin: 0px;
-          color: #fff;
         }
       }
     }
   }
 
   .panel {
-    padding: 0px;
-    background-color: white;
-    position: relative;
-    -webkit-box-shadow: 0px 1px 15px 1px rgba(69, 65, 78, 0.08);
-    box-shadow: 0px 1px 15px 1px rgba(69, 65, 78, 0.08);
-    background-color: #fff;
-    min-height: 260px;
+    box-shadow: none;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    margin: 10px 0px;
+    background: #fff;
+    height: 457px;
 
     .title {
-      background: #42a5f5;
-      color: #fff;
+      position: relative;
+
+      img {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+      }
 
       h5 {
         margin: 0;
-        color: #fff;
         padding: 10px 10px 0px 10px;
       }
 
       .subtitle {
         padding: 0px 10px 10px;
+        font-size: 13px;
       }
 
       a.dropdown-trigger.btn.right.btn-floating.halfway-fab.waves-effect.waves-light {
@@ -238,8 +264,9 @@ body {
 
 .fileExplorerCollection-root {
   .collection {
-    max-height: 433px;
+    max-height: 360px;
     overflow: scroll;
+    border: 0;
   }
 }
 
@@ -704,5 +731,122 @@ body {
         min-height: 140px;
       }
     }
+  }
+}
+
+.creator {
+  .creator-container {
+    background: $main;
+    border-radius: 6px;
+    border: solid 1px $grayLight;
+    padding: 10px;
+    margin: 20px 10px 10px;
+  }
+
+  .user-avatar {
+    display: flex;
+
+    span {
+      color: $grayDark;
+      line-height: 30px;
+    }
+
+    img {
+      height: 30px;
+      margin-right: 10px;
+    }
+  }
+
+  .creator-input-field {
+    margin: 10px 0px;
+  }
+
+  .creator-options {
+    display: flex;
+    justify-content: space-between;
+
+    .options-icons i {
+      line-height: 36px;
+      width: 25px;
+      cursor: pointer;
+
+      &.active {
+        color: #26a69a;
+      }
+    }
+  }
+
+  .title {
+    margin: 20px 0px;
+    font-size: 20px;
+  }
+
+}
+
+.drafts {
+  .collection {
+    box-shadow: none;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    margin: 10px;
+    overflow: hidden;
+  }
+}
+
+.timeline {
+  .card.horizontal {
+    display: flex;
+    flex-direction: row;
+    margin: 20px 10px;
+
+    .card-options {
+      position: absolute;
+      right: 0px;
+      top: 5px;
+    }
+  }
+
+  .card-image {
+    width: 30%;
+    height: 170px;
+    max-height: none;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .card-header {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .card-header img {
+    height: 40px;
+    margin: 10px 10px 0px 15px;
+  }
+
+  .card-info {
+    margin: 10px 0px;
+    line-height: 20px;
+  }
+
+  .card-content,
+  .card-action {
+    padding: 0px 15px;
+  }
+
+  .truncate.title {
+    font-size: 15px;
+  }
+
+  .truncate.datetime {
+    font-size: 12px;
+  }
+
+  .card-content {
+    font-size: 13px;
+  }
+
+  .card-action {
+    padding: 8px 10px;
   }
 }
