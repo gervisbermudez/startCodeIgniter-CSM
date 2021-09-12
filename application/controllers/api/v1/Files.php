@@ -18,6 +18,7 @@ class Files extends REST_Controller
         }
         $this->load->database();
         $this->load->model('Admin/File');
+        $this->load->model('Admin/File_activity');
 
     }
 
@@ -111,6 +112,16 @@ class Files extends REST_Controller
         if ($result) {
             $file->featured = $post_file["featured"];
             $result = $file->save();
+
+            $file_activity = new File_activity();
+            $file_activity->file_id = $file->file_id;
+            $file_activity->user_id = userdata('user_id');
+            $file_activity->action = "featured";
+            $file_activity->description = $post_file["featured"] ? "The file has been marked as featured" : "The file has been removed as featured";
+            $file_activity->date_create = date("Y-m-d H:i:s");
+            $file_activity->status = 1;
+            $file_activity->save();
+
             $this->response_ok($result);
             return;
         } 
@@ -137,6 +148,16 @@ class Files extends REST_Controller
             $file_model->save();
             $file_name = $file['file_name'] . '.' . $file['file_type'];
             $rename = rename($file['file_path'] . $file_name, $newPath . $file_name);
+
+            $file_activity = new File_activity();
+            $file_activity->file_id = $file_model->file_id;
+            $file_activity->user_id = userdata('user_id');
+            $file_activity->action = "move";
+            $file_activity->description = "The file was moved to " . $newPath;
+            $file_activity->date_create = date("Y-m-d H:i:s");
+            $file_activity->status = 1;
+            $file_activity->save();
+
             $this->response_ok($rename);
             return;
         } 
@@ -212,6 +233,16 @@ class Files extends REST_Controller
                 $file['file_path'] . $file['file_name'] . '.' . $file['file_type'],
                 $file['file_path'] . $file['new_name'] . '.' . $file['file_type']
             );
+
+            $file_activity = new File_activity();
+            $file_activity->file_id = $file_model->file_id;
+            $file_activity->user_id = userdata('user_id');
+            $file_activity->action = "rename";
+            $file_activity->description = "The file " .  $file['file_name'] . '.' . $file['file_type'] . " was renamed to " . $file['new_name'] . '.' . $file['file_type'];
+            $file_activity->date_create = date("Y-m-d H:i:s");
+            $file_activity->status = 1;
+            $file_activity->save();
+
             $this->response_ok($result);
         } 
         $this->response_error(lang('not_found_error'));

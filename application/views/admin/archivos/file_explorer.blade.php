@@ -280,20 +280,20 @@
                                     </ul>
                                 </div>
                                 <div class="tabsbody">
-                                    <div class="preview">
-                                        <div class="card-image"
-                                            v-if="!isImage(sideRightBarSelectedFile)">
-                                            <div class="file icon ">
-                                                <i :class="getIcon(sideRightBarSelectedFile)"></i>
+                                    <div id="fileinfo" class="col s12">
+                                        <div class="preview">
+                                            <div class="card-image"
+                                                v-if="!isImage(sideRightBarSelectedFile)">
+                                                <div class="file icon ">
+                                                    <i :class="getIcon(sideRightBarSelectedFile)"></i>
+                                                </div>
+                                            </div>
+                                            <div class="card-image" v-if="isImage(sideRightBarSelectedFile)">
+                                                <a :href="getImagePath(sideRightBarSelectedFile)" data-lightbox="roadtrip"><img
+                                                        :src="getImagePath(sideRightBarSelectedFile)"></a>
                                             </div>
                                         </div>
-                                        <div class="card-image" v-if="isImage(sideRightBarSelectedFile)">
-                                            <a :href="getImagePath(sideRightBarSelectedFile)" data-lightbox="roadtrip"><img
-                                                    :src="getImagePath(sideRightBarSelectedFile)"></a>
-                                        </div>
-                                    </div>
-                                    <div class="divider"></div>
-                                    <div id="fileinfo" class="col s12">
+                                        <div class="divider"></div>
                                     <ul class="file_options">
                                             <li>
                                                 <a :href="getFullFilePath(sideRightBarSelectedFile)" target="_blank"><i class="fas fa-cloud-download-alt"></i> Download File</a>
@@ -332,7 +332,20 @@
                                         </ul>
 
                                     </div>
-                                    <div id="filehistory" class="col s12" style="display: none;"> History</div>
+                                    <div id="filehistory" class="col s12" style="display: none;"> 
+                                        <ul class="collection filehistory">
+                                            <li class="collection-item avatar" v-for="(history, index) in sideRightBarSelectedFile.history" :key="index">
+                                                <i class="material-icons circle teal">@{{getFileHistoryIcon(history.action)}}</i>
+                                                <span class="title">@{{history.description}}</span>
+                                                <p>
+                                                    <a :href="history.user.get_profileurl()">@{{history.user.get_fullname()}} </a>
+                                                <br>
+                                                    @{{timeAgo(history.date_create)}}
+                                                </p>    
+                                            </li>
+                                        </ul>
+                                
+                                    </div>
                                 </div>
                             </div>
                         </div>

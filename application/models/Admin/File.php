@@ -32,6 +32,10 @@ class File extends MY_Model
         "aspx.cs",
     );
 
+    public $hasMany = [
+        'history' => ['file_id', 'Admin/File_activity', 'File_activity'],
+    ];
+
     public function __construct()
     {
         parent::__construct();

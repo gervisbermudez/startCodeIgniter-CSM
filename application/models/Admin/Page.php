@@ -13,9 +13,12 @@ class Page extends MY_model
         'user' => ['user_id', 'Admin/User', 'user'],
         'pages_type' => ['page_type_id', 'Admin/Page_type', 'page_type'],
         'main_image' => ['mainImage', 'Admin/File', 'File'],
+        'thumbnail_image' => ['thumbnailImage', 'Admin/File', 'File'],
     ];
 
     public $page_data = [];
+
+    public $computed = ["json_content" => "get_json_content"];
 
     /**
      * Page status:
@@ -28,6 +31,11 @@ class Page extends MY_model
     public function __construct()
     {
         parent::__construct();
+    }
+
+    public function get_json_content()
+    {
+        return json_decode($this->json_content);
     }
 
     /**
@@ -67,6 +75,13 @@ class Page extends MY_model
                 $value->{'model_type'} = "page";
             }
         }
+
+        foreach ($collection as $key => &$value) {
+            if (isset($value->json_content)) {
+                $value->{'json_content'} = json_decode($value->json_content);
+            }
+        }
+        
         $this->load->model('Admin/File');
         foreach ($collection as $key => &$value) {
             if (isset($value->mainImage) && $value->mainImage) {
@@ -75,6 +90,16 @@ class Page extends MY_model
                 $value->imagen_file = $file->as_data();
                 $value->imagen_file->{'file_front_path'} = new stdClass();
                 $value->imagen_file->{'file_front_path'} = $file->getFileFrontPath();
+            }
+        }
+
+        foreach ($collection as $key => &$value) {
+            if (isset($value->thumbnailImage) && $value->thumbnailImage) {
+                $file = new File();
+                $file->find($value->thumbnailImage);
+                $value->thumbnail_image = $file->as_data();
+                $value->thumbnail_image->{'file_front_path'} = new stdClass();
+                $value->thumbnail_image->{'file_front_path'} = $file->getFileFrontPath();
             }
         }
 

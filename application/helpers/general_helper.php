@@ -83,6 +83,20 @@ function render_form($siteform_name)
     return $ci->blade->view("site.templates.forms." . $siteform->template, ['siteform' => $siteform]);
 }
 
+function fragment($fragment_name)
+{
+    $ci = &get_instance();
+    $ci->load->model('Admin/Fragmentos');
+    $fragment = new Fragmentos();
+    $result = $fragment->find_with(['name' => $fragment_name]);
+    if (!$result) {
+        return '';
+    }
+
+    return $fragment->description;
+}
+
+
 if (!function_exists("config")) {
     function config($config_name)
     {

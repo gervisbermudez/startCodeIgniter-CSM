@@ -106,6 +106,7 @@ class Pages extends REST_Controller
         $page->subtitle = $this->input->post('subtitle');
         $page->path = $this->input->post('path');
         $page->content = $this->input->post('content');
+        $page->json_content = $this->input->post('json_content');
         $page->user_id = userdata('user_id');
         $page->page_type_id = $this->input->post('page_type_id');
         $page->status = $this->input->post('status');
@@ -117,6 +118,7 @@ class Pages extends REST_Controller
         $page->categorie_id = $this->input->post('categorie_id');
         $page->subcategorie_id = $this->input->post('subcategorie_id');
         $page->mainImage = $this->input->post('mainImage') ? $this->input->post('mainImage') : null;
+        $page->thumbnailImage = $this->input->post('thumbnailImage') ? $this->input->post('thumbnailImage') : null;
         $page->{"page_data"} = $this->input->post('page_data');
 
         if ($page->save()) {
@@ -177,7 +179,7 @@ class Pages extends REST_Controller
     {
         $response = array(
             'code' => REST_Controller::HTTP_OK,
-            'data' => getTemplates()
+            'data' => getTemplates(),
         );
 
         $this->response($response, REST_Controller::HTTP_OK);
@@ -224,6 +226,42 @@ class Pages extends REST_Controller
 
         $this->response($response, REST_Controller::HTTP_OK);
         return;
+    }
+
+    /**
+     * Get All Data from this method.
+     *
+     * @return Response
+     */
+    public function autocomplete_get()
+    {
+        $search = $this->input->get("search");
+        $page = new Page();
+        $result = $page->search($search);
+
+        if ($result) {
+
+            $response = [
+                "items" => array_map(function($value){
+                    return [
+                        "href" => base_url($value->path),
+                        "name" => $value->title,
+                        "description" => character_limiter(strip_tags($value->content), 120)
+                    ];          
+                }, $result->toArray()),
+                "success" => true
+            ];
+
+            $this->response($response, REST_Controller::HTTP_OK);
+            return;
+        }
+
+        $response = array(
+            'code' => REST_Controller::HTTP_OK,
+            'data' => [],
+        );
+
+        $this->response($response, REST_Controller::HTTP_OK);
     }
 
 }
