@@ -53,6 +53,10 @@ Vue.component("formFieldTime", {
         time: this.time,
       };
     },
+    setTime() {
+      let time = document.getElementById(this.fieldID).value;
+      this.time = time;
+    },
     init() {
       setTimeout(() => {
         var elems = document.querySelectorAll(".timepicker");
@@ -73,7 +77,7 @@ Vue.component("formFieldTime", {
       if (this.fieldData) {
         this.form_field_id = this.fieldData.form_field_id;
         this.form_custom_data_id = this.fieldData.form_custom_data_id;
-        this.title = this.fieldData.form_value.title;
+        this.time = this.fieldData.form_value.time;
       }
       this.init();
     });
