@@ -90,7 +90,29 @@
             <div class="col m8 s12">
                 <div class="row">
                     <div class="col s12">
-                       
+                       <div class="panel">
+                            <div class="title">
+                                <h5>Stadistics</h5>
+                            </div>
+                            <div class="charts">
+                                <div class="chart chart-1">
+                                    <div class="chart-header">
+                                        Chart Header
+                                    </div>
+                                    <div class="col1">
+                                        <div id="myChart"></div>
+                                    </div>
+                                    <div class="col2">
+                                    <span class="chart-title">VISITORS</span>
+                                    <div class="chart-big-number">20.345</div>
+                                    <div class="chart-description">Views 53%</div>
+                                    </div>
+                                </div>
+                                <div class="chart chart-2"></div>
+                                <div class="chart chart-3"></div>
+                                <div class="chart chart-4"></div>
+                            </div>
+                       </div>
                     </div>
                 </div>
             </div>
