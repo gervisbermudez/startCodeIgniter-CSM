@@ -2135,11 +2135,11 @@ iframe.components-sandbox {
     align-items: center;
     height: 70px;
   }
-
 }
 
 .card.mainPageImage {
   max-height: 240px;
+  min-height: 100px;
   overflow: hidden;
 
   .overlay {
