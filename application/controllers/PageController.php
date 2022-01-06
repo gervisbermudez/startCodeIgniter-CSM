@@ -10,7 +10,6 @@ class PageController extends Base_Controller
         parent::__construct();
         $this->load->model('Admin/Page');
         $config['enable_profiler'] = false;
-
     }
 
     public function index()
@@ -108,7 +107,7 @@ class PageController extends Base_Controller
 
         $term = $this->input->get("q");
         $result = $this->Page->search(urldecode($term));
-        
+
         if (!$result) {
             $this->error404();
             return;
@@ -183,7 +182,6 @@ class PageController extends Base_Controller
                     $interval = $date->diff($datetime2);
                     if ($interval->format('%I') >= 3) {
                         $this->process_form_submit();
-
                     }
                 } else {
                     $this->process_form_submit();
@@ -193,7 +191,7 @@ class PageController extends Base_Controller
                 $data['title'] = config("SITE_TITLE") . " - Submited Form";
                 $data['layout'] = 'site';
                 $data['template'] = 'templates.default';
-                $data['page'] = (Object) ["title" => lang('form_submited_title'), "subtitle" => "", "content" => lang("form_submited_message")];
+                $data['page'] = (object) ["title" => lang('form_submited_title'), "subtitle" => "", "content" => lang("form_submited_message")];
                 echo $this->themeController->render($data, '');
             }
         } else {
@@ -229,7 +227,6 @@ class PageController extends Base_Controller
 
         //Load local theme Controller
         echo $this->themeController->render($data);
-
     }
 
     public function siteMap()
@@ -254,5 +251,4 @@ class PageController extends Base_Controller
         header("Content-Type: application/rss+xml");
         echo $this->blade->view("admin.xml.rss", $data);
     }
-
 }
