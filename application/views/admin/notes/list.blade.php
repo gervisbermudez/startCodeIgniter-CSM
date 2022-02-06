@@ -146,7 +146,7 @@
     </confirm-modal>
 </div>
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Crear categoria" href="<?php echo base_url('admin/sitenotes/nueva/') ?>">
+    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Crear nota" href="<?php echo base_url('admin/sitenotes/nueva/') ?>">
         <i class="large material-icons">add</i>
     </a>
 </div>
