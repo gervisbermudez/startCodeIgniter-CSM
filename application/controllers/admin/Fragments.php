@@ -2,7 +2,7 @@
     exit('No direct script access allowed');
 }
 
-class SiteFragments extends MY_Controller
+class Fragments extends MY_Controller
 {
 
     public function __construct()
@@ -33,7 +33,7 @@ class SiteFragments extends MY_Controller
 
     public function editar($fragment_id)
     {
-        $data['title'] = ADMIN_TITLE . " | SiteFragments";
+        $data['title'] = ADMIN_TITLE . " | Fragments";
         $data['h1'] = "Editar Fragmento";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['fragment_id'] = $fragment_id;

@@ -64,7 +64,7 @@ $route['sitemap'] = 'PageController/siteMap';
 $route['form/submit'] = 'PageController/formsubmit';
 $route['form/success'] = 'PageController/formsuccess';
 $route['form/error'] = 'PageController/formerror';
-$route['admin/sitefragments/'] = 'admin/SiteFragments';
+$route['admin/Fragments/'] = 'admin/Fragments';
 
 //Blog pages
 $route['feed'] = 'PageController/blogFeed';

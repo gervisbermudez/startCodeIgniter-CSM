@@ -59,9 +59,9 @@
                             <td>
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + fragment.fragment_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + fragment.fragment_id' class='dropdown-content'>
-                                    <li><a :href="base_url('admin/sitefragments/editar/' + fragment.fragment_id)">Editar</a></li>
+                                    <li><a :href="base_url('admin/Fragments/editar/' + fragment.fragment_id)">Editar</a></li>
                                     <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(fragment, index);">Borrar</a></li>
-                                    <li v-if="fragment.status == 2"><a :href="base_url('admin/sitefragments/preview?fragment_id=' + fragment.fragment_id)" target="_blank">Preview</a></li>
+                                    <li v-if="fragment.status == 2"><a :href="base_url('admin/Fragments/preview?fragment_id=' + fragment.fragment_id)" target="_blank">Preview</a></li>
                                     <li><a :href="base_url(fragment.path)" target="_blank">Archivar</a></li>
                                 </ul>
                             </td>
@@ -81,9 +81,9 @@
                         <a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href='#!' :data-target='"dropdown" + fragment.fragment_id'>
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown" + fragment.fragment_id' class='dropdown-content'>
-                            <li><a :href="base_url('admin/sitefragments/editar/' + fragment.fragment_id)">Editar</a></li>
+                            <li><a :href="base_url('admin/Fragments/editar/' + fragment.fragment_id)">Editar</a></li>
                             <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(fragment, index);">Borrar</a></li>
-                            <li v-if="fragment.status == 2"><a :href="base_url('admin/sitefragments/preview?fragment_id=' + fragment.fragment_id)" target="_blank">Preview</a></li>
+                            <li v-if="fragment.status == 2"><a :href="base_url('admin/Fragments/preview?fragment_id=' + fragment.fragment_id)" target="_blank">Preview</a></li>
                             <li><a :href="base_url(fragment.path)" target="_blank">Archivar</a></li>
                         </ul>
                     </div>
@@ -146,7 +146,7 @@
     </confirm-modal>
 </div>
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Crear categoria" href="<?php echo base_url('admin/sitefragments/nueva/') ?>">
+    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Crear categoria" href="<?php echo base_url('admin/Fragments/nueva/') ?>">
         <i class="large material-icons">add</i>
     </a>
 </div>
