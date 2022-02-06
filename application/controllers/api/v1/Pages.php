@@ -38,6 +38,9 @@ class Pages extends REST_Controller
         if ($page_id) {
             $result = $page->find($page_id);
             $result = $result ? $page : [];
+        } else if($this->input->get('filters')){
+            $result = $page->where($this->input->get('filters'));
+            $result = $result ? $result->toArray() : [];
         } else {
             $result = $page->where(['status' => '1']);
             $archived = $page->where(['status' => '2']);
