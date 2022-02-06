@@ -95,8 +95,8 @@
                 </ul>
             </div>
         </li>
-        <li class="{{isSectionActive('sitefragments')}}">
-            <a class="waves-effect" href="{{ base_url('admin/sitefragments/') }}"><i class="material-icons">bookmark_border</i>
+        <li class="{{isSectionActive('Fragments')}}">
+            <a class="waves-effect" href="{{ base_url('admin/Fragments/') }}"><i class="material-icons">bookmark_border</i>
                 Fragmentos</a>
         </li>
         <li class="{{isSectionActive('suscriptores')}}">

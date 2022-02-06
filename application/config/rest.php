@@ -210,7 +210,7 @@ $config['auth_library_function'] = '';
 | Array of usernames and passwords for login, if ldap is configured this is ignored
 |
 */
-$config['rest_valid_logins'] = ['admin' => '1234'];
+$config['rest_valid_logins'] = [];
 
 /*
 |--------------------------------------------------------------------------
@@ -388,19 +388,19 @@ $config['rest_key_name'] = 'X-API-KEY';
 | $this->method array for each controller
 |
 | Default table schema:
-|   CREATE TABLE `logs` (
-|       `id` INT(11) NOT NULL AUTO_INCREMENT,
-|       `uri` VARCHAR(255) NOT NULL,
-|       `method` VARCHAR(6) NOT NULL,
-|       `params` TEXT DEFAULT NULL,
-|       `api_key` VARCHAR(40) NOT NULL,
-|       `ip_address` VARCHAR(45) NOT NULL,
-|       `time` INT(11) NOT NULL,
-|       `rtime` FLOAT DEFAULT NULL,
-|       `authorized` VARCHAR(1) NOT NULL,
-|       `response_code` smallint(3) DEFAULT '0',
-|       PRIMARY KEY (`id`)
-|   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+   CREATE TABLE `logs` (
+       `id` INT(11) NOT NULL AUTO_INCREMENT,
+       `uri` VARCHAR(255) NOT NULL,
+       `method` VARCHAR(6) NOT NULL,
+       `params` TEXT DEFAULT NULL,
+       `api_key` VARCHAR(40) NOT NULL,
+       `ip_address` VARCHAR(45) NOT NULL,
+       `time` INT(11) NOT NULL,
+       `rtime` FLOAT DEFAULT NULL,
+       `authorized` VARCHAR(1) NOT NULL,
+       `response_code` smallint(3) DEFAULT '0',
+       PRIMARY KEY (`id`)
+   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 |
 */
 $config['rest_enable_logging'] = TRUE;
@@ -545,7 +545,7 @@ $config['rest_language'] = 'english';
 | will access it through a browser
 |
 */
-$config['check_cors'] = FALSE;
+$config['check_cors'] = TRUE;
 
 /*
 |--------------------------------------------------------------------------
@@ -589,7 +589,7 @@ $config['allowed_cors_methods'] = [
 | source domain
 |
 */
-$config['allow_any_cors_domain'] = FALSE;
+$config['allow_any_cors_domain'] = TRUE;
 
 /*
 |--------------------------------------------------------------------------
