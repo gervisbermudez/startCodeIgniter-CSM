@@ -70,8 +70,9 @@ var usersModule = new Vue({
           self.initPlugins();
         },
         error: function (error) {
-          M.toast({ html: response.responseJSON.error_message });
           self.loader = false;
+          M.toast({ html: "Ocurrió un error inesperado" });
+          console.error(error);
         },
       });
     },
@@ -105,8 +106,9 @@ var usersModule = new Vue({
           }, 1000);
         },
         error: function (error) {
-          M.toast({ html: response.responseJSON.error_message });
           self.loader = false;
+          M.toast({ html: "Ocurrió un error inesperado" });
+          console.error(error);
         },
       });
     },

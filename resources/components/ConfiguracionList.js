@@ -380,7 +380,7 @@ var ConfiguracionList = new Vue({
           },
           error: function (e) {
             M.toast({
-              html: response.responseJSON.error_message,
+              html: response.error_message,
             }),
               (a.loader = !1);
           },

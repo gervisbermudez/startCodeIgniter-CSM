@@ -83,12 +83,12 @@ var UserNewForm = new Vue({
               window.location =
                 BASEURL + "admin/usuarios/ver/" + response.data.user_id;
             } else {
-              M.toast({ html: response.responseJSON.error_message });
+              M.toast({ html: response.error_message });
               self.loader = false;
             }
           },
           error: function (response) {
-            M.toast({ html: response.responseJSON.error_message });
+            M.toast({ html: response.error_message });
             self.loader = false;
           },
         });
@@ -193,7 +193,7 @@ var UserNewForm = new Vue({
             }, 1000);
           },
           error: function (error) {
-            M.toast({ html: response.responseJSON.error_message });
+            M.toast({ html: response.error_message });
             self.loader = false;
           },
         });

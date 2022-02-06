@@ -6,6 +6,7 @@ var PagesLists = new Vue({
     tableView: true,
     loader: true,
     filter: "",
+    tempPage: {}
   },
   mixins: [mixins],
   computed: {
@@ -63,8 +64,9 @@ var PagesLists = new Vue({
           self.initPlugins();
         },
         error: function (error) {
-          M.toast({ html: response.responseJSON.error_message });
           self.loader = false;
+          M.toast({ html: "Ocurrió un error inesperado" });
+          console.error(error);
         },
       });
     },
@@ -84,19 +86,49 @@ var PagesLists = new Vue({
           self.initPlugins();
         },
         error: function (error) {
-          M.toast({ html: response.responseJSON.error_message });
           self.loader = false;
+          M.toast({ html: "Ocurrió un error inesperado" });
+          console.error(error);
         },
       });
     },
-    tempDelete: function (page, index) {
-      this.toDeleteItem.page = page;
-      this.toDeleteItem.index = index;
+    setTempPage: function (page, index) {
+      this.tempPage.page = page;
+      this.tempPage.index = index;
     },
-    confirmCallback(data) {
+    confirmDelete(data) {
       if (data) {
-        this.deletePage(this.toDeleteItem.page, this.toDeleteItem.index);
+        this.deletePage(this.tempPage.page, this.tempPage.index);
       }
+    },
+    confirmArchive(data) {
+      if (data) {
+        this.toggleArchive(this.tempPage.page, this.tempPage.index);
+      }
+    },
+    toggleArchive(page, index){
+      var self = this;
+      self.loader = true;
+      $.ajax({
+        type: "POST",
+        url: BASEURL + "api/v1/pages/archive/" + page.page_id,
+        data: {},
+        dataType: "json",
+        success: function (response) {
+          if (response.code == 200) {
+            self.pages.splice(index, 1);
+          }else{
+            M.toast({ html: response.error_message });
+          }
+          self.loader = false;
+          self.initPlugins();
+        },
+        error: function (error) {
+          self.loader = false;
+          M.toast({ html: "Ocurrió un error inesperado" });
+          console.error(error);
+        },
+      });
     },
     initPlugins: function () {
       setTimeout(() => {

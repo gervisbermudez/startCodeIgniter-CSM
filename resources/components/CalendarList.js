@@ -76,8 +76,9 @@ var CalendarList = new Vue({
           self.init();
         },
         error: function (error) {
-          M.toast({ html: response.responseJSON.error_message });
           self.loader = false;
+          M.toast({ html: "Ocurrió un error inesperado" });
+          console.error(error);
         },
       });
     },

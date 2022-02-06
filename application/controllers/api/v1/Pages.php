@@ -159,6 +159,26 @@ class Pages extends REST_Controller
         }
     }
 
+    /**
+     * Get All Data from this method.
+     *
+     * @return Response
+     */
+    public function archive_post($id = null)
+    {
+        $page = new Page();
+        $page->find($id);
+        if ($page) {
+            $page->status = 3;
+            $page->save();
+            system_logger('pages', $page->page_id, ("archive"), ("A page has been archive"));
+            $this->response_ok($page);
+        } else {
+            $this->response_error(lang('not_found_error'));
+        }
+    }
+
+
     public function types_get()
     {
         $this->load->model('Admin/Page_type');

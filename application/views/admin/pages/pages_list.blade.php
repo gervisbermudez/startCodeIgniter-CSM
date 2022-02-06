@@ -72,9 +72,9 @@
                                     <li><a :href="base_url('admin/paginas/editar/' + page.page_id)">Editar</a></li>
                                 @endif
                                 @if(has_permisions('DELETE_PAGE'))
-                                    <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(page, index);">Borrar</a></li>
+                                    <li><a class="modal-trigger" href="#deleteModal" v-on:click="setTempPage(page, index);">Borrar</a></li>
                                 @endif
-                                    <li><a :href="base_url(page.path)" target="_blank">Archivar</a></li>
+                                    <li><a  class="modal-trigger" href="#archiveModal" v-on:click="setTempPage(page, index);" target="_blank">Archivar</a></li>
                                 </ul>
                             </td>
                         </tr>
@@ -152,10 +152,19 @@
     <confirm-modal
         id="deleteModal"
         title="Confirmar Borrar"
-        v-on:notify="confirmCallback"
+        v-on:notify="confirmDelete"
     >
         <p>
             ¿Desea borrar la Pagina?
+        </p>
+    </confirm-modal>
+    <confirm-modal
+        id="archiveModal"
+        title="Confirmar Archivar"
+        v-on:notify="confirmArchive"
+    >
+        <p>
+            ¿Desea archivar la Pagina?
         </p>
     </confirm-modal>
 </div>
