@@ -110,7 +110,7 @@ var UserPermissionsForm = new Vue({
           self.loader = false;
           this.initPlugins();
         })
-        .catch((response) => {
+        .catch((error) => {
           self.loader = false;
           M.toast({ html: "Ocurrió un error inesperado" });
           console.error(error);

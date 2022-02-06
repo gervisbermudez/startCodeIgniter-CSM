@@ -15,7 +15,7 @@
                 </div>
                 <div class="row">
                     <div class="col s12">
-                        <a v-on:click="save" class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>button</a>
+                        <a v-on:click="save" class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>Save</a>
                     </div>
                 </div>
             </div>

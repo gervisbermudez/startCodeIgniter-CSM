@@ -11,14 +11,24 @@ var PagesLists = new Vue({
   mixins: [mixins],
   computed: {
     filterPages: function () {
+      return this.pages.filter((value, index) => {
+        return !value.path.includes("blog/")
+      });
+    },
+    blogs: function () {
+        return this.pages.filter((value, index) => {
+          return value.path.includes("blog/")
+        });
+    },
+    filterAll: function () {
       if (!!this.filter) {
         let filterTerm = this.filter.toLowerCase();
         return this.pages.filter((value, index) => {
           return this.searchInObject(value, filterTerm);
         });
-      } else {
-        return this.pages;
       }
+
+      return [];
     },
   },
   methods: {
