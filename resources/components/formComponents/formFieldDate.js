@@ -55,12 +55,17 @@ Vue.component("formFieldDate", {
         date: this.date,
       };
     },
+    setDate() {
+      let date = document.getElementById(this.fieldID).value;
+      this.date = date;
+    },
     init() {
       setTimeout(() => {
         var elems = document.querySelectorAll(".datepicker");
-        M.Datepicker.init(elems, {
-          format: this.fielFormat,
+        var instance = M.Datepicker.init(elems, {
+          format: this.fielFormat || "yyyy-mm-dd",
         });
+        instance[0].setDate(new Date(this.date));
       }, 2000);
     },
   },
@@ -75,8 +80,7 @@ Vue.component("formFieldDate", {
       if (this.fieldData) {
         this.form_field_id = this.fieldData.form_field_id;
         this.form_custom_data_id = this.fieldData.form_custom_data_id;
-        this.title = this.fieldData.form_value.title;
-        this.fielFormat = this.fieldData.fielFormat;
+        this.date = this.fieldData.form_value.date;
       }
       this.init();
     });

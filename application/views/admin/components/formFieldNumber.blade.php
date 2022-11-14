@@ -1,8 +1,8 @@
 <script type="text/x-template" id="formFieldNumber-template">
     <div class="row formFieldNumber">
-        <div class="col s12">
-            <b>Field Preview:</b>
-        </div>
+        <div class="col s12" v-if="configurable">
+          <b>Field Preview:</b>
+      </div>
         <div class="input-field col s12">
             <input :placeholder="fieldPlaceholder" v-if="configurable" v-model="fieldName" :id="fieldID" type="number" class="validate">
             <input :placeholder="fieldPlaceholder" v-else v-model="number" :id="fieldID" type="number" class="validate">

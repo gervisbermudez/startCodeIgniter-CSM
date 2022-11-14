@@ -685,10 +685,6 @@ blockquote {
 .container {
   padding: 10px 0 0;
   width: 90%;
-
-  &.large {
-    width: 96%;
-  }
 }
 
 .dropdown-content li> {
@@ -2139,11 +2135,11 @@ iframe.components-sandbox {
     align-items: center;
     height: 70px;
   }
-
 }
 
 .card.mainPageImage {
   max-height: 240px;
+  min-height: 100px;
   overflow: hidden;
 
   .overlay {

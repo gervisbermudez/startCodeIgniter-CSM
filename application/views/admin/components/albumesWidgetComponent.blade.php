@@ -1,14 +1,15 @@
 <script type="text/x-template" id="albumes-widget-template">
     <div class="panel albumes">
-		<div class="title green">
-			<h5>Albumes</h5>
-			<div class="subtitle">
+		<div class="title">
+			<h5>Your Albumes</h5>
+			<div class="subtitle sub-header">
 				@{{albumes.length}} Albumes
 			</div>
+			<img src="{{base_url()}}public/img/admin/dashboard/undraw_Photo_re_5blb.png" />
 		</div>
 		<div class="panel-boddy">
 			<div class="row">
-				<div class="col m4 s12" v-for="(album, index) in albumes" :key="index">
+				<div class="col s12" v-for="(album, index) in albumes" :key="index">
                     <div class="card album">
                         <a :href="base_url('admin/galeria/items/' + album.album_id)" class="card-image">
                             <div class="card-image-container">

@@ -1,11 +1,14 @@
 <script type="text/x-template" id="formFieldTime-template">
     <div class="row formFieldTime">
-        <div class="col s12">
-            <b>Field Preview:</b>
+    <div class="col s12" v-if="configurable">
+          <b>Field Preview:</b>
+      </div>
+        <div class="col s12" v-else>
+        <b>@{{fieldName}}</b>
         </div>
         <div class="input-field col s12">
             <input :placeholder="fieldPlaceholder" v-if="configurable" v-model="time" :id="fieldID" type="text" class="timepicker validate">
-            <input :placeholder="fieldPlaceholder" v-else v-model="time" :id="fieldID" type="text" class="timepicker validate">
+            <input :placeholder="fieldPlaceholder" v-else @change="setTime()" :id="fieldID" type="text" class="timepicker validate">
             <label :for="fieldID" class="active">@{{fieldName}}</label>
         </div>
         <div class="col s12" v-if="configurable">
