@@ -2025,6 +2025,7 @@ abstract class REST_Controller extends \CI_Controller
      */
     protected function _log_access_time()
     {
+        return;
         $payload['rtime'] = $this->_end_rtime - $this->_start_rtime;
 
         return $this->rest->db->update(

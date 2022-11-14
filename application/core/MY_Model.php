@@ -386,6 +386,12 @@ class MY_model extends CI_Model implements JsonSerializable
      */
     public function update_data($where, $data)
     {
+        foreach ($data as $key => $value) {
+            if (gettype($value) == "object" || gettype($value) == "array") {
+                $data[$key] = json_encode($value);
+            }
+
+        }
         $this->db->where($where);
         return $this->db->update($this->table, $data);
     }

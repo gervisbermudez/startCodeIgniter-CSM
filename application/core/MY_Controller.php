@@ -157,8 +157,9 @@ class Base_Controller extends CI_Controller
     {
         $this->output->set_status_header(404);
         $data['base_url'] = $this->config->base_url();
-        $data['title'] = "404";
+        $data['title'] = "Page not found | 404";
         $url = uri_string();
+        //is a public url ?
         if (stristr($url, 'admin') === false) {
             $page_id = config("SITE_ERROR_404_PAGE");
             if ($page_id) {
@@ -172,6 +173,11 @@ class Base_Controller extends CI_Controller
                 if (getThemePath()) {
                     $this->blade->changePath(getThemePath());
                 }
+                $this->load->database();
+                $this->load->model('Admin/Page');
+                $page = new Page();
+                $result = $page->where(['status' => '1']);
+                $data["pages"] = $result;
                 echo $this->blade->view("site.error404", $data);
             }
         } else {

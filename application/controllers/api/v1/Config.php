@@ -267,6 +267,41 @@ class Config extends REST_Controller
         $this->response($response, REST_Controller::HTTP_OK);
     }
 
+    public function download_install_theme_post()
+    {
+        $response = array(
+            'data' => ["message" => "Unnable to download the package"],
+            "code" => REST_Controller::HTTP_BAD_REQUEST,
+        );
+
+        $filenamePath = "./temp/startCodeIgniter-CSM-theme-" . date("Ymd");
+        $filename = $filenamePath . ".zip";
+        $url = $this->input->post('theme_url');
+        $result = file_put_contents($filename, fopen($url, 'r'));
+        if ($result && file_exists($filename)) {
+            $zip = new ZipArchive;
+            $extractResult = false;
+            if ($zip->open($filename) === true) {
+                $zip->extractTo('./themes');
+                $zip->close();
+                $extractResult = true;
+                if ($extractResult) {
+                    unlink($filename);
+                    $response = array(
+                        'data' => [
+                            "result" => $result,
+                            "downloaded_file" => $filename,
+                            "message" => "Package downloaded successfully!",
+                        ],
+                        "code" => REST_Controller::HTTP_OK,
+                    );
+                }
+            }
+        }
+
+        $this->response($response, REST_Controller::HTTP_OK);
+    }
+
     public function install_downloaded_update_get()
     {
         $filename = $this->input->get('packagename');

@@ -126,13 +126,14 @@ var EventNewForm = new Vue({
               callBack(response);
             }
           } else {
-            M.toast({ html: response.responseJSON.error_message });
+            M.toast({ html: response.error_message });
             self.loader = false;
           }
         },
         error: function (response) {
-          M.toast({ html: response.responseJSON.error_message });
           self.loader = false;
+          M.toast({ html: "Ocurrió un error inesperado" });
+          console.error(error);
         },
       });
     },
@@ -239,7 +240,7 @@ var EventNewForm = new Vue({
             }
           })
           .catch((response) => {
-            M.toast({ html: response.responseJSON.error_message });
+            M.toast({ html: response.error_message });
             self.loader = false;
           });
       } else {

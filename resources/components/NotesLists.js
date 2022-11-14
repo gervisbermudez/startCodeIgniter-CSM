@@ -1,27 +1,27 @@
-var MenuLists = new Vue({
+var NotesLists = new Vue({
   el: "#root",
   data: {
-    menus: [],
+    notes: [],
     tableView: true,
     loader: true,
     filter: "",
-    toDeleteItem: {},
   },
+  mixins: [mixins],
   computed: {
-    filterMenus: function () {
+    filterNotes: function () {
       if (!!this.filter) {
         let filterTerm = this.filter.toLowerCase();
-        return this.menus.filter((value, index) => {
+        return this.notes.filter((value, index) => {
           return this.searchInObject(value, filterTerm);
         });
       } else {
-        return this.menus;
+        return this.notes;
       }
     },
   },
   methods: {
-    getcontentText: function (menu) {
-      return menu.description.substring(0, 50) + "...";
+    getcontentText: function (fragment) {
+      return fragment.description.substring(0, 50) + "...";
     },
     toggleView: function () {
       this.tableView = !this.tableView;
@@ -30,26 +30,37 @@ var MenuLists = new Vue({
     resetFilter: function () {
       this.filter = "";
     },
-    getPageImagePath(menu) {
+    getPageImagePath(fragment) {
+      if (fragment.imagen_file) {
+        return (
+          BASEURL +
+          fragment.imagen_file.file_path.substr(2) +
+          fragment.imagen_file.file_name +
+          "." +
+          fragment.imagen_file.file_type
+        );
+      }
       return BASEURL + "public/img/default.jpg";
     },
-    getMenus: function () {
+    getNotes: function () {
       var self = this;
       $.ajax({
         type: "GET",
-        url: BASEURL + "api/v1/menus/",
+        url: BASEURL + "api/v1/notes/",
         data: {},
         dataType: "json",
         success: function (response) {
-          let menus = response.data;
-          for (const key in menus) {
-            if (menus.hasOwnProperty(key)) {
-              menus[key].user = new User(menus[key].user);
+          let notes = response.data;
+          for (const key in notes) {
+            if (notes.hasOwnProperty(key)) {
+              notes[key].user = new User(notes[key].user);
             }
           }
-          self.menus = menus;
-          self.loader = false;
-          self.initPlugins();
+          self.notes = notes;
+          setTimeout(() => {
+            self.loader = false;
+            self.initPlugins();
+          }, 1000);
         },
         error: function (error) {
           self.loader = false;
@@ -58,17 +69,17 @@ var MenuLists = new Vue({
         },
       });
     },
-    deleteItem: function (menu, index) {
+    delete: function (fragment, index) {
       var self = this;
       self.loader = true;
       $.ajax({
         type: "DELETE",
-        url: BASEURL + "api/v1/menus/" + menu.menu_id,
+        url: BASEURL + "api/v1/notes/" + fragment.fragment_id,
         data: {},
         dataType: "json",
         success: function (response) {
           if (response.code == 200) {
-            self.menus.splice(index, 1);
+            self.notes.splice(index, 1);
           }
           setTimeout(() => {
             self.loader = false;
@@ -82,13 +93,13 @@ var MenuLists = new Vue({
         },
       });
     },
-    tempDelete: function (menu, index) {
-      this.toDeleteItem.menu = menu;
+    tempDelete: function (item, index) {
+      this.toDeleteItem.item = item;
       this.toDeleteItem.index = index;
     },
     confirmCallback(data) {
       if (data) {
-        this.deleteItem(this.toDeleteItem.menu, this.toDeleteItem.index);
+        this.delete(this.toDeleteItem.item, this.toDeleteItem.index);
       }
     },
     base_url: function (path) {
@@ -97,15 +108,16 @@ var MenuLists = new Vue({
     initPlugins: function () {
       setTimeout(() => {
         var elems = document.querySelectorAll(".tooltipped");
-        var instances = M.Tooltip.init(elems, {});
+        M.Tooltip.init(elems, {});
         var elems = document.querySelectorAll(".dropdown-trigger");
-        var instances = M.Dropdown.init(elems, {});
+        M.Dropdown.init(elems, {});
       }, 3000);
     },
   },
   mounted: function () {
     this.$nextTick(function () {
-      this.getMenus();
+      this.getNotes();
+      this.initPlugins();
     });
   },
 });

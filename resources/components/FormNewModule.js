@@ -166,7 +166,7 @@ var FormNewModule = new Vue({
         },
         error: function (response) {
           self.loader = false;
-          M.toast({ html: response.responseJSON.error_message });
+          M.toast({ html: response.error_message });
         },
       });
     },

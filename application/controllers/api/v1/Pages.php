@@ -38,6 +38,9 @@ class Pages extends REST_Controller
         if ($page_id) {
             $result = $page->find($page_id);
             $result = $result ? $page : [];
+        } else if($this->input->get('filters')){
+            $result = $page->where($this->input->get('filters'));
+            $result = $result ? $result->toArray() : [];
         } else {
             $result = $page->where(['status' => '1']);
             $archived = $page->where(['status' => '2']);
@@ -158,6 +161,26 @@ class Pages extends REST_Controller
             $this->response_error(lang('not_found_error'));
         }
     }
+
+    /**
+     * Get All Data from this method.
+     *
+     * @return Response
+     */
+    public function archive_post($id = null)
+    {
+        $page = new Page();
+        $page->find($id);
+        if ($page) {
+            $page->status = 3;
+            $page->save();
+            system_logger('pages', $page->page_id, ("archive"), ("A page has been archive"));
+            $this->response_ok($page);
+        } else {
+            $this->response_error(lang('not_found_error'));
+        }
+    }
+
 
     public function types_get()
     {
