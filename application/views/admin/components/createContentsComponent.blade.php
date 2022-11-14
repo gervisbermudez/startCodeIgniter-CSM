@@ -6,7 +6,15 @@
 		<div class="subtitle">
 			@{{content.length}} Contenidos creados
 		</div>
-		<img src="{{base_url()}}public/img/admin/dashboard/undraw_browsing_online_sr8c.png" />
+        <a data-position="left" data-delay="50" data-tooltip="Crear contenido"
+            class='tooltipped dropdown-trigger btn right btn-floating halfway-fab waves-effect waves-light'
+			href="{{base_url('admin/formularios/nuevo')}}" data-target='{{$dropdownid}}'>
+			<i class="large material-icons">add</i>
+		</a>
+		<ul id='{{$dropdownid}}' class='dropdown-content'>
+			<li v-for="(item, index) in forms_types" :key="index">
+			<a :href="getFormsTypeUrl(item)" :title="item.form_description">@{{item.form_name}}</a></li>
+		</ul>
 	</div>
 	<div class="contents row">
 		<div class="col s12" v-for="(item, index) in content" :key="index" v-if="index < 3">

@@ -1,8 +1,8 @@
 <script type="text/x-template" id="formFieldBoolean-template">
     <div class="row formFieldBoolean">
-        <div class="col s12" v-if="configurable">
-          <b>Field Preview:</b>
-      </div>
+        <div class="col s12">
+            <b>Field Preview:</b>
+        </div>
         <div class="input-field col s12">
             <p v-for="(checkbox, index) in checkboxes" :key="index">
                 <label>

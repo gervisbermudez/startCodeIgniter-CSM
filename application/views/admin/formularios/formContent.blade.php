@@ -73,9 +73,6 @@
 @endsection
 
 @section('footer_includes')
-<script src="{{base_url('public/js/fileinput-master/js/fileinput.min.js')}}"></script>
-<script src="{{base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js')}}"></script>
-<script src="{{base_url('public/js/fileinput-master/js/locales/es.js')}}"></script>
 <script src="{{base_url('public/js/tinymce/js/tinymce/tinymce.min.js')}}"></script>
 <script src="{{base_url('public/js/components/FileExplorerSelector.min.js')}}"></script>
 <script src="{{base_url('public/js/components/FormContentNewModuleBundle.min.js?v=' . ADMIN_VERSION)}}"></script>

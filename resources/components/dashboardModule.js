@@ -23,39 +23,33 @@ var dashboardModule = new Vue({
         M.Collapsible.init(elems, {});
       }, 3000);
     },
-    getDashboardData() {
-      fetch(this.api_data.dashboard)
-        .then((response) => response.json())
-        .then((response) => {
-          let data = response.data;
-          this.users = data.users ? data.users.map((user) => new User(user)) : [];
-          this.pages = data.pages ? data.pages.map((page) => {
-            page.user = new User(page.user);
-            return page;
-          }) : [];
-          this.forms_types = data.forms_types ? data.forms_types : [];
-          this.content = data.content ? data.content.map((element) => {
-            element.user = new User(element.user);
-            element.status = element.status == "1";
-            return element;
-          }) : [];
-          this.files = data.files ? data.files.map((file) => {
-            return new ExplorerFile(file);
-          }) : [];
-          this.albumes = data.albumes ? data.albumes.map((album) => {
-            album.user = new User(album.user);
-            return album;
-          }) : [];
-          this.loader = false;
-          this.init();
-        }).catch(error => {
-          console.error(error);
-        })
-    }
   },
   mounted: function () {
-    this.$nextTick(() => {
-      this.getDashboardData();
+    this.$nextTick(function () {
+      Promise.all([
+        fetch(this.api_data.dashboard).then((response) => response.json()),
+      ]).then(([dashboard_response]) => {
+        this.users = dashboard_response.data.users ? dashboard_response.data.users.map((user) => new User(user)) : [];
+        this.pages = dashboard_response.data.pages ? dashboard_response.data.pages.map((page) => {
+          page.user = new User(page.user);
+          return page;
+        }) : [];
+        this.forms_types = dashboard_response.data.forms_types ? dashboard_response.data.forms_types : [];
+        this.content = dashboard_response.data.content ? dashboard_response.data.content.map((element) => {
+          element.user = new User(element.user);
+          element.status = element.status == "1";
+          return element;
+        }) : [];
+        this.files = dashboard_response.data.files ? dashboard_response.data.files.map((file) => {
+          return new ExplorerFile(file);
+        }) : [];
+        this.albumes = dashboard_response.data.albumes ? dashboard_response.data.albumes.map((album) => {
+          album.user = new User(album.user);
+          return album;
+        }) : [];
+        this.loader = false;
+        this.init();
+      });
     });
   },
 });

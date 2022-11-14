@@ -136,7 +136,6 @@ class Forms extends REST_Controller
 
         if ($result) {
             $this->response_ok(['form_custom_id' => $result]);
-            return;
         }
 
         $this->response_error(lang('unexpected_error'), [], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
@@ -215,8 +214,6 @@ class Forms extends REST_Controller
         }
         if ($result) {
             $this->response_ok($result);
-            return;
-
         }
         $this->response_error(lang('unexpected_error'), [], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
     }
@@ -244,7 +241,6 @@ class Forms extends REST_Controller
         $result = $Form_conten->delete();
         if ($result) {
             $this->response_ok($result);
-            return;
         }
         $this->response_error(lang('not_found_error'));
     }

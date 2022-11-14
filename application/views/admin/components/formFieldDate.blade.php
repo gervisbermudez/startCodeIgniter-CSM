@@ -1,11 +1,11 @@
 <script type="text/x-template" id="formFieldDate-template">
     <div class="row formFieldDate">
-        <div class="col s12" v-if="configurable">
-          <b>Field Preview:</b>
-      </div>
+        <div class="col s12">
+            <b>Field Preview:</b>
+        </div>
         <div class="input-field col s12">
             <input :placeholder="fieldPlaceholder" v-if="configurable" v-model="date" :id="fieldID" type="text" class="datepicker validate">
-            <input :placeholder="fieldPlaceholder" v-else @change="setDate()" :id="fieldID" type="text" class="datepicker validate">
+            <input :placeholder="fieldPlaceholder" v-else v-model="date" :id="fieldID" type="text" class="datepicker validate">
             <label :for="fieldID" class="active">@{{fieldName}}</label>
         </div>
         <div class="col s12" v-if="configurable">
