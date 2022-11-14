@@ -1,4 +1,8 @@
-/* Coolors Exported Palette - coolors.co/68d8df-98e4e4-fb9678-646b7f-edf0f5 */
+$color1: #68d8df;
+$color2: #98e4e4;
+$color3: #fb9678;
+$color4: #646b7f;
+$color5: #edf0f5;
 
 /* RGB */
 $color1: #68d8df;
@@ -9,26 +13,25 @@ $color5: #edf0f5;
 
 $white: #fff;
 $black: #000;
-$gray: #5F6366;
-
 $gray-text: #5D5D5D;
 
-.bg-color1 {
-    background: $color1 !important;
-}
+$gray: #5D5D5D;
+$grayLight: #E5E5E5;
 
-.bg-color2 {
-    background: $color2 !important;
-}
+$colors: ("teal": $teal,
+    "pink" : $pink,
+    "white" : $white,
+    "black": $black,
+    "gray" : $gray, "gray-light" : $grayLight);
 
-.bg-color3 {
-    background: $color3 !important;
-}
 
-.bg-color4 {
-    background: $color4 !important;
-}
+@each $colorname,
+$color in $colors {
+    .st-#{$colorname} {
+        background-color: $color;
+    }
 
-.bg-color5 {
-    background: $color5 !important;
+    .text-st-#{$colorname} {
+        color: $color;
+    }
 }
