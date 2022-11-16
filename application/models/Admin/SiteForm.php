@@ -12,7 +12,7 @@ class SiteForm extends MY_model
     ];
 
     public $hasMany = [
-        "siteform_items" => ["siteform_id", "Admin/Siteform_items", 'siteform_items']
+        "siteform_items" => ["siteform_id", "Admin/Siteform_items", 'siteform_items'],
     ];
 
     public $computed = array("properties" => "properties_to_json");
@@ -40,7 +40,7 @@ class SiteForm extends MY_model
 
     public function properties_to_json()
     {
-        return json_decode($this->properties);
+        return is_string($this->properties) ? json_decode($this->properties) : [];
     }
 
 }

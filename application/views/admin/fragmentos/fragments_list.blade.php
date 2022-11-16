@@ -133,7 +133,7 @@
         </div>
     </div>
     <div class="container" v-if="!loader && fragments.length == 0" v-cloak>
-        <h4>No hay Categorias</h4>
+        <h4>No hay Fragmentos</h4>
     </div>
     <confirm-modal
         id="deleteModal"
@@ -141,7 +141,7 @@
         v-on:notify="confirmCallback"
     >
         <p>
-            ¿Desea borrar Categoria?
+            ¿Desea borrar Fragmento?
         </p>
     </confirm-modal>
 </div>
