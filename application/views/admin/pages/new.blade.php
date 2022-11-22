@@ -3,11 +3,8 @@
 <link rel="stylesheet" href="<?=base_url('public/js/fileinput-master/css/fileinput.min.css')?>" />
 <link rel="stylesheet" href="<?=base_url('public/font-awesome/css/all.min.css')?>" />
 <link rel="stylesheet" href="<?=base_url('public/css/admin/form.min.css')?>" />
-    <script src="https://unpkg.com/react@16.6.3/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@16.6.3/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/moment@2.22.1/min/moment.min.js"></script>
-    <script src="https://code.jquery.com/jquery-1.12.4.min.js" crossorigin="anonymous"></script>
-    <link href="{{base_url('public/js/GutenbergEditor')}}/static/css/2.71437e52.chunk.css" rel="stylesheet">
+<link rel="stylesheet" href="<?=base_url('public/js/trumbowyg/dist/ui/trumbowyg.min.css')?>" />
+<script src="https://unpkg.com/moment@2.22.1/min/moment.min.js"></script>
 @endsection @section('content')
 <div class="container form" id="PageNewForm-root">
     <input type="hidden" name="editMode" id="editMode" value="{{ $editMode }}" />
@@ -19,7 +16,7 @@
     </div>
     <div class="row" id="form">
         <div class="col s12 center" v-bind:class="{ hide: !loader }">
-        <preloader />
+            <preloader />
         </div>
         <div class="col s12">
             <ul class="tabs" id="formTabs">
@@ -40,11 +37,13 @@
             <div v-cloak v-show="!loader" class="col s12 m8 l9">
                 <div class="input-field">
                     <label for="title">Title:</label>
-                    <input type="text" id="title" name="title" required="required" value="" v-model="form.fields.title.value" v-on:blur="onChangeTitle(form.fields.title.value);" />
+                    <input type="text" id="title" name="title" required="required" value=""
+                        v-model="form.fields.title.value" v-on:blur="onChangeTitle(form.fields.title.value);" />
                 </div>
                 <div class="input-field">
                     <label for="subtitle">SubTitle:</label>
-                    <input type="text" id="subtitle" name="subtitle" required="required" value="" v-model="form.fields.subtitle.value" />
+                    <input type="text" id="subtitle" name="subtitle" required="required" value=""
+                        v-model="form.fields.subtitle.value" />
                 </div>
                 <div class="input-field">
                     <label for="path">Path:</label>
@@ -54,12 +53,15 @@
                 <p>
                     <span><b>Full path:</b> @{{ getPagePath }}</span>
                 </p>
-                <a href="#fileUploader" class="waves-effect waves-light btn modal-trigger" @click="setModalMode('copyCallcack')"><i class="material-icons left">add_a_photo</i>Agregar Imagen</a>
+                <a href="#fileUploader" class="waves-effect waves-light btn modal-trigger"
+                    @click="setModalMode('copyCallcack')"><i class="material-icons left">add_a_photo</i>Agregar
+                    Imagen</a>
                 <div class="row" v-if="mainImage">
                     <div class="col s6" v-for="(image, index) in mainImage" :key="index">
                         <div class="card mainPageImage">
                             <div class="card-image">
-                                <i class="material-icons right close tooltipped" data-position="left" data-delay="50" data-tooltip="Quitar" v-on:click="removeImage(index);">close</i>
+                                <i class="material-icons right close tooltipped" data-position="left" data-delay="50"
+                                    data-tooltip="Quitar" v-on:click="removeImage(index);">close</i>
                                 <img class="materialboxed" :src="getFileImagenPath(image)" />
                             </div>
                             <span class="card-title truncate"><span>@{{ getFileImagenName(image) }}</span></span>
@@ -67,9 +69,10 @@
                     </div>
                 </div>
                 <div id="introduction" class="section scrollspy">
-                    <span class="header grey-text text-darken-2">Contenido <i class="material-icons left">description</i></span>
+                    <span class="header grey-text text-darken-2">Contenido <i
+                            class="material-icons left">description</i></span>
                     <br />
-                    <div id="editorjs"></div>
+                    <textarea v-model="content" id="editor"></textarea>
                     <br />
                 </div>
                 <br />
@@ -114,11 +117,13 @@
                         <br />
                         <div class="input-field">
                             <label for="datepublish">Fecha:</label>
-                            <input type="text" class="datepicker" id="datepublish" name="datepublish" required="required" value="" v-model="datepublish" />
+                            <input type="text" class="datepicker" id="datepublish" name="datepublish"
+                                required="required" value="" v-model="datepublish" />
                         </div>
                         <div class="input-field">
                             <label for="timepublish">Hora:</label>
-                            <input type="text" class="timepicker" id="timepublish" name="timepublish" required="required" value="" v-model="timepublish" />
+                            <input type="text" class="timepicker" id="timepublish" name="timepublish"
+                                required="required" value="" v-model="timepublish" />
                         </div>
                     </div>
                 </div>
@@ -202,24 +207,29 @@
                     <label for="title">Page title</label>
                 </div>
                 <div class="input-field col s12">
-                    <textarea id="headers_includes" v-model="page_data.headers_includes" class="materialize-textarea"></textarea>
+                    <textarea id="headers_includes" v-model="page_data.headers_includes"
+                        class="materialize-textarea"></textarea>
                     <label for="headers_includes">headers includes</label>
                 </div>
                 <div class="input-field col s12">
-                    <textarea id="footer_includes" v-model="page_data.footer_includes" class="materialize-textarea"></textarea>
+                    <textarea id="footer_includes" v-model="page_data.footer_includes"
+                        class="materialize-textarea"></textarea>
                     <label for="footer_includes">Footer includes</label>
                 </div>
             </div>
             <div class="row" v-cloak v-show="!loader">
                 <div class="col s12">
-                    <span class="header grey-text text-darken-2"><i class="material-icons left">layers</i> Page Metas <a class="waves-effect waves-light btn right" href="#!" @click="addCustomMeta();">Agregar meta +</a></span>
+                    <span class="header grey-text text-darken-2"><i class="material-icons left">layers</i> Page Metas <a
+                            class="waves-effect waves-light btn right" href="#!" @click="addCustomMeta();">Agregar meta
+                            +</a></span>
                     <br />
                     <ul class="collapsible" id="pageMetas">
                         <li v-for="(meta, index) in customMetas">
                             <div class="collapsible-header">
                                 <i class="material-icons">filter_drama</i>
                                 <input placeholder="name" v-model="meta.name" type="text" class="validate">
-                                <i class="material-icons right remove" @click="removeMeta(index, true);">do_not_disturb_on</i>
+                                <i class="material-icons right remove"
+                                    @click="removeMeta(index, true);">do_not_disturb_on</i>
                             </div>
                             <div class="collapsible-body">
                                 <span v-if="meta.content">@{{meta.content}}</span>
@@ -233,7 +243,8 @@
                                 <i class="material-icons">filter_drama</i>
                                 <span v-if="meta.name">@{{meta.name}}</span>
                                 <span v-if="meta.property">@{{meta.property}}</span>
-                                <i class="material-icons right remove" @click="removeMeta(index, false);">do_not_disturb_on</i>
+                                <i class="material-icons right remove"
+                                    @click="removeMeta(index, false);">do_not_disturb_on</i>
                             </div>
                             <div class="collapsible-body">
                                 <span v-if="meta.content">@{{meta.content}}</span>
@@ -254,27 +265,21 @@
                     <span v-if="status && btnEnable"><i class="material-icons right">publish</i> Publicar</span>
                     <span v-if="status && !btnEnable"><i class="material-icons right">publish</i> Publicar</span>
                 </button>
-                <a class="btn bg-color3" target="_blank" :href="preview_link" v-if="!status && editMode" :class="{disabled: !btnEnable}">
+                <a class="btn bg-color3" target="_blank" :href="preview_link" v-if="!status && editMode"
+                    :class="{disabled: !btnEnable}">
                     <span><i class="material-icons right">launch</i> Preview</span>
                 </a>
             </div>
         </div>
     </div>
-    <file-explorer-selector 
-    :uploader="'single'"
-    :preselected="[]" 
-    :modal="'fileUploader'" 
-    :mode="'files'" 
-    :filter="'images'" 
-    :multiple="true"
-    v-on:notify="copyCallcack"
-    ></file-explorer-selector>    
+    <file-explorer-selector :uploader="'single'" :preselected="[]" :modal="'fileUploader'" :mode="'files'"
+        :filter="'images'" :multiple="true" v-on:notify="copyCallcack"></file-explorer-selector>
 </div>
 @include('admin.components.FileExplorerSelector')
 @endsection
 
 @section('footer_includes')
-<script src="{{base_url('public/js/editor.js/plugins/header.js')}}"></script>
+<!-- <script src="{{base_url('public/js/editor.js/plugins/header.js')}}"></script>
 <script src="{{base_url('public/js/editor.js/plugins/quote.js')}}"></script>
 <script src="{{base_url('public/js/editor.js/plugins/delimiter.js')}}"></script>
 <script src="{{base_url('public/js/editor.js/plugins/editorjs-alert.js')}}"></script>
@@ -285,8 +290,9 @@
 <script src="{{base_url('public/js/editor.js/plugins/raw.js')}}"></script>
 <script src="{{base_url('public/js/editor.js/plugins/uploader-images.js')}}"></script>
 <script src="{{base_url('public/js/editor.js/edjsHTML.js')}}"></script>
-<script src="{{base_url('public/js/editor.js/editor.js')}}"></script>
+<script src="{{base_url('public/js/editor.js/editor.js')}}"></script> -->
 <script src="{{base_url('public/js/validateForm.min.js')}}"></script>
+<script src="{{base_url('public/js/trumbowyg/dist/trumbowyg.min.js')}}"></script>
 <script src="{{base_url('public/js/components/FileExplorerSelector.min.js')}}"></script>
 <script src="{{base_url('public/js/components/PageNewForm.min.js')}}"></script>
 <script src="{{base_url('public/js/fileinput-master/js/fileinput.min.js')}}"></script>

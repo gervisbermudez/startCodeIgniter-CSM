@@ -1,6 +1,5 @@
 var runningAutoSave = false;
-var editor;
-
+//var editor;
 var PageNewForm = new Vue({
   el: "#PageNewForm-root",
   data: {
@@ -118,7 +117,7 @@ var PageNewForm = new Vue({
         content: "",
       },
     ],
-    modalCallbackMode : "copyCallcack" //Or insertImage 
+    modalCallbackMode: "copyCallcack", //Or insertImage
   },
   mixins: [mixins],
   computed: {
@@ -267,8 +266,8 @@ var PageNewForm = new Vue({
       }
       if (this.mainImage.length == 0) {
         this.mainImage = [];
-        this.setMetaContent("", 'og:image');
-        this.setMetaContent("", 'twitter:image');
+        this.setMetaContent("", "og:image");
+        this.setMetaContent("", "twitter:image");
       }
     },
     getFileImagenPath(file) {
@@ -379,20 +378,20 @@ var PageNewForm = new Vue({
     getData: function () {
       let content = this.content;
 
-      var span = document.createElement('span');
+      var span = document.createElement("span");
       span.innerHTML = content;
-      let text =  span.textContent || span.innerText;
-      
+      let text = span.textContent || span.innerText;
+
       let meta = this.getMeta("description");
-      if (meta && meta.content == "" || meta.content == "...") {
+      if ((meta && meta.content == "") || meta.content == "...") {
         this.setMetaContent(text, "description");
       }
       meta = this.getMeta("og:description");
-      if (meta && meta.content == "" || meta.content == "...") {
+      if ((meta && meta.content == "") || meta.content == "...") {
         this.setMetaContent(text, "og:description");
       }
       meta = this.getMeta("twitter:description");
-      if (meta && meta.content == "" || meta.content == "...") {
+      if ((meta && meta.content == "") || meta.content == "...") {
         this.setMetaContent(text, "twitter:description");
       }
       return {
@@ -424,8 +423,9 @@ var PageNewForm = new Vue({
     },
     getPageTags() {
       let tags = [];
-      const instance = M.Chips.getInstance(document.getElementById("pageTags"))
-        .chipsData;
+      const instance = M.Chips.getInstance(
+        document.getElementById("pageTags")
+      ).chipsData;
       instance.forEach((element) => {
         tags.push(element.tag);
       });
@@ -597,10 +597,10 @@ var PageNewForm = new Vue({
               );
               self.page_data.tags
                 ? self.page_data.tags.forEach((element) => {
-                  instance.addChip({
-                    tag: element,
-                  });
-                })
+                    instance.addChip({
+                      tag: element,
+                    });
+                  })
                 : null;
               response.data.page.page_data.meta
                 ? (self.metas = response.data.page.page_data.meta)
@@ -622,7 +622,9 @@ var PageNewForm = new Vue({
               });
               self.json_content = response.data.page.json_content;
               self.content = response.data.page.content;
-              self.json_content ? editor.render(self.json_content) : { blocks: [] };
+              self.content
+                ? $("#editor").trumbowyg("html", response.data.page.content)
+                : null;
             }
             setTimeout(() => {
               M.updateTextFields();
@@ -640,21 +642,21 @@ var PageNewForm = new Vue({
       }
     },
     copyCallcack(files) {
-      files = files.map(file => new ExplorerFile(file));
-      if (this.modalCallbackMode == "copyCallcack") {   
+      files = files.map((file) => new ExplorerFile(file));
+      if (this.modalCallbackMode == "copyCallcack") {
         let file = files[0];
         this.mainImage = [...this.mainImage, ...files];
         if (this.mainImage.length > 2) {
           this.mainImage = this.mainImage.slice(0, 2);
         }
-        this.setMetaContent(file.get_relative_file_path(), 'og:image');
-        this.setMetaContent(file.get_relative_file_path(), 'twitter:image');
+        this.setMetaContent(file.get_relative_file_path(), "og:image");
+        this.setMetaContent(file.get_relative_file_path(), "twitter:image");
         let instance = M.Modal.getInstance($("#fileUploader"));
         instance.close();
         this.initMaterialboxed();
       } else {
         let container = document.getElementById(this.modalCallbackTargetID);
-        let img = container.querySelector('img');
+        let img = container.querySelector("img");
 
         let file = files[0];
         let url = file.get_full_file_path();
@@ -677,9 +679,8 @@ var PageNewForm = new Vue({
         M.Datepicker.init(elems, {
           format: "yyyy-mm-dd",
           onClose: function () {
-            PageNewForm.datepublish = document.getElementById(
-              "datepublish"
-            ).value;
+            PageNewForm.datepublish =
+              document.getElementById("datepublish").value;
           },
         });
         var elems = document.querySelectorAll(".timepicker");
@@ -687,9 +688,8 @@ var PageNewForm = new Vue({
           twelveHour: false,
           defaultTime: "now",
           onCloseEnd: function () {
-            PageNewForm.timepublish = document.getElementById(
-              "timepublish"
-            ).value;
+            PageNewForm.timepublish =
+              document.getElementById("timepublish").value;
           },
         });
         this.initSelects();
@@ -697,7 +697,7 @@ var PageNewForm = new Vue({
     },
     initMaterialboxed() {
       setTimeout(() => {
-        var elems = document.querySelectorAll('.materialboxed');
+        var elems = document.querySelectorAll(".materialboxed");
         M.Materialbox.init(elems, {});
       }, 500);
     },
@@ -710,62 +710,25 @@ var PageNewForm = new Vue({
     },
     setEditorContent: function (page) {
       return;
-
     },
   },
   mounted: function () {
     this.$nextTick(function () {
       this.debug ? console.log("mounted PageNewForm") : null;
-      editor = new EditorJS({
-        /**
-         * Id of Element that should contain Editor instance
-         */
-        placeholder: 'Let`s write an awesome story!',
-        holder: 'editorjs',
-        tools: {
-          header: Header,
-          list: {
-            class: List,
-            inlineToolbar: true,
-          },
-          underline: Underline,
-          image: SimpleImage,
-          quote: Quote,
-          delimiter: Delimiter,
-          alert: Alert,
-          raw: RawTool,
-          link: {
-            class: LinkAutocomplete,
-            config: {
-              endpoint: BASEURL + "api/v1/pages/autocomplete/",
-              queryParam: 'search'
-            }
-          },
-          uploaderimage: UploaderImages
-        },
-        /**
-         * onReady callback
-         */
-        onReady: () => {
-          this.checkEditMode();
-          this.getCategories();
-        },
-        /**
-         * onChange callback
-         */
-        onChange: () => {
-          editor.save().then((outputData) => {
-            this.json_content = outputData;
-            console.log('Article data: ', outputData)
-            const edjsParser = edjsHTML();
-            let html = edjsParser.parse(outputData);
-            console.log({ html });
-            this.content = html.join("<br />");
-          }).catch((error) => {
-            console.log('Saving failed: ', error)
-          });
-        }
-      });
+      $("#editor")
+        .trumbowyg()
+        .on("tbwfocus", () => {
+          console.log("Focus!");
+        }) // Listen for `tbwfocus` event
+        .on("tbwchange", () => {
+          console.log("Change in editor!");
+          this.content = $("#editor").trumbowyg("html");
+        }) // Listen for `tbwfocus` event
+        .on("tbwblur", () => {
+          console.log("Blur!");
+        });
+      this.checkEditMode();
+      this.getCategories();
     });
   },
 });
