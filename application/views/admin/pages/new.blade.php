@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="<?=base_url('public/js/fileinput-master/css/fileinput.min.css')?>" />
 <link rel="stylesheet" href="<?=base_url('public/font-awesome/css/all.min.css')?>" />
 <link rel="stylesheet" href="<?=base_url('public/css/admin/form.min.css')?>" />
-<link rel="stylesheet" href="<?=base_url('public/js/trumbowyg/dist/ui/trumbowyg.min.css')?>" />
+<link rel="stylesheet" href="<?=base_url('public/js/trumbowyg/ui/trumbowyg.min.css')?>" />
 <script src="https://unpkg.com/moment@2.22.1/min/moment.min.js"></script>
 @endsection @section('content')
 <div class="container form" id="PageNewForm-root">
@@ -274,25 +274,16 @@
     </div>
     <file-explorer-selector :uploader="'single'" :preselected="[]" :modal="'fileUploader'" :mode="'files'"
         :filter="'images'" :multiple="true" v-on:notify="copyCallcack"></file-explorer-selector>
+    <file-explorer-selector :uploader="'single'" :preselected="[]" :modal="'editorModal'" :mode="'files'"
+        :filter="'images'" :multiple="true" v-on:notify="onSelectImageCallcack"></file-explorer-selector>
 </div>
 @include('admin.components.FileExplorerSelector')
 @endsection
 
 @section('footer_includes')
-<!-- <script src="{{base_url('public/js/editor.js/plugins/header.js')}}"></script>
-<script src="{{base_url('public/js/editor.js/plugins/quote.js')}}"></script>
-<script src="{{base_url('public/js/editor.js/plugins/delimiter.js')}}"></script>
-<script src="{{base_url('public/js/editor.js/plugins/editorjs-alert.js')}}"></script>
-<script src="{{base_url('public/js/editor.js/plugins/link-autocomplete.js')}}"></script>
-<script src="{{base_url('public/js/editor.js/plugins/simple-image.js')}}"></script>
-<script src="{{base_url('public/js/editor.js/plugins/list.js')}}"></script>
-<script src="{{base_url('public/js/editor.js/plugins/underline.js')}}"></script>
-<script src="{{base_url('public/js/editor.js/plugins/raw.js')}}"></script>
-<script src="{{base_url('public/js/editor.js/plugins/uploader-images.js')}}"></script>
-<script src="{{base_url('public/js/editor.js/edjsHTML.js')}}"></script>
-<script src="{{base_url('public/js/editor.js/editor.js')}}"></script> -->
 <script src="{{base_url('public/js/validateForm.min.js')}}"></script>
-<script src="{{base_url('public/js/trumbowyg/dist/trumbowyg.min.js')}}"></script>
+<script src="{{base_url('public/js/trumbowyg/trumbowyg.min.js')}}"></script>
+<script src="{{base_url('public/js/trumbowyg/plugins/uploadimage/trumbowyg.uploadimage.js')}}"></script>
 <script src="{{base_url('public/js/components/FileExplorerSelector.min.js')}}"></script>
 <script src="{{base_url('public/js/components/PageNewForm.min.js')}}"></script>
 <script src="{{base_url('public/js/fileinput-master/js/fileinput.min.js')}}"></script>

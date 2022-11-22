@@ -1,5 +1,6 @@
 var runningAutoSave = false;
-//var editor;
+var trumbowygInstance = null;
+
 var PageNewForm = new Vue({
   el: "#PageNewForm-root",
   data: {
@@ -667,6 +668,16 @@ var PageNewForm = new Vue({
         this.initMaterialboxed();
       }
     },
+    onSelectImageCallcack(files) {
+      files = files.map((file) => new ExplorerFile(file));
+      console.log(files);
+      let instance = M.Modal.getInstance($("#editorModal"));
+      instance.close();
+      files.forEach((file) => {
+        var node = $(`<img src="${file.get_full_file_path()}">`)[0];
+        trumbowygInstance.range.insertNode(node);
+      });
+    },
     initPlugins() {
       setTimeout(() => {
         M.Chips.init(document.getElementById("pageTags"), {});
@@ -716,16 +727,28 @@ var PageNewForm = new Vue({
     this.$nextTick(function () {
       this.debug ? console.log("mounted PageNewForm") : null;
       $("#editor")
-        .trumbowyg()
-        .on("tbwfocus", () => {
-          console.log("Focus!");
-        }) // Listen for `tbwfocus` event
+        .trumbowyg({
+          btns: [
+            ["viewHTML"],
+            ["formatting"],
+            ["strong", "em", "del"],
+            ["superscript", "subscript"],
+            ["link"],
+            ["insertImage"],
+            ["uploadimage"],
+            ["justifyLeft", "justifyCenter", "justifyRight", "justifyFull"],
+            ["unorderedList", "orderedList"],
+            ["horizontalRule"],
+            ["removeformat"],
+            ["fullscreen"],
+          ],
+        })
+        .on("tbwfocus", () => {}) // Listen for `tbwfocus` event
         .on("tbwchange", () => {
-          console.log("Change in editor!");
           this.content = $("#editor").trumbowyg("html");
         }) // Listen for `tbwfocus` event
         .on("tbwblur", () => {
-          console.log("Blur!");
+          //this.runSaveData(()=> {});
         });
       this.checkEditMode();
       this.getCategories();
