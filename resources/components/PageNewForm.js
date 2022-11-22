@@ -206,13 +206,17 @@ var PageNewForm = new Vue({
       return result_meta;
     },
     setMetaContent(strValue, strProperty, index) {
+      var div = document.createElement("div");
+      div.innerHTML = strValue;
+      var text = div.textContent || div.innerText || "";
+      if (text.length > 170) text = text.substring(0, 170) + "...";
       if (index !== undefined) {
-        this.metas[index].content = strValue;
+        this.metas[index].content = text;
         return;
       }
       this.metas = this.metas.map((meta) => {
         if (meta.property == strProperty || meta.name == strProperty) {
-          meta.content = strValue;
+          meta.content = text;
         }
         return meta;
       });

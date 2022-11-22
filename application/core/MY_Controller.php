@@ -120,12 +120,12 @@ class Base_Controller extends CI_Controller
         $url = base_url(uri_string());
         $title = config('SITE_TITLE');
 
-        if(isset($page->content)){
-            $description = character_limiter(strip_tags($page->content), 120);
+        if (isset($page->content)) {
+            $description = strip_tags($page->content);
             $title = $page->title;
             $url = base_url($page->path);
         }
-        
+
         if (isset($page->main_image)) {
             $imagen_url = base_url($page->main_image->file_front_path);
         } else {
@@ -134,11 +134,11 @@ class Base_Controller extends CI_Controller
 
         $default_metas = array(
             array('name' => 'keywords', 'content' => $title),
-            array('name' => 'description', 'content' => $description),
+            array('name' => 'description', 'content' => character_limiter($description, 120)),
             array('name' => 'ROBOTS', 'content' => 'NOODP'),
             array('name' => 'GOOGLEBOT', 'content' => 'INDEX, FOLLOW'),
             array('property' => 'og:title', 'content' => $title),
-            array('property' => 'og:description', 'content' => $description),
+            array('property' => 'og:description', 'content' => character_limiter($description, 120)),
             array('property' => 'og:site_name', 'content' => config('SITE_TITLE')),
             array('property' => 'og:url', 'content' => $url),
             array('property' => 'og:image', 'content' => $imagen_url),
@@ -147,7 +147,7 @@ class Base_Controller extends CI_Controller
             array('name' => 'twitter:site', 'content' => '@gervisbermudez'),
             array('name' => 'twitter:creator', 'content' => '@gervisbermudez'),
             array('name' => 'twitter:title', 'content' => $title),
-            array('name' => 'twitter:description', 'content' => $description),
+            array('name' => 'twitter:description', 'content' => character_limiter($description, 120)),
             array('name' => 'twitter:image', 'content' => $imagen_url),
         );
         return $default_metas;
