@@ -162,6 +162,15 @@ var PageNewForm = new Vue({
     },
   },
   watch: {
+    content: function (value) {
+      var span = document.createElement("span");
+      span.innerHTML = value;
+      let text = span.textContent || span.innerText;
+      console.log("content has changed");
+      this.setMetaContent(text, "description");
+      this.setMetaContent(text, "og:description");
+      this.setMetaContent(text, "twitter:description");
+    },
     "form.fields.title.value": function (value) {
       this.setPath(value);
     },
@@ -209,7 +218,7 @@ var PageNewForm = new Vue({
       var div = document.createElement("div");
       div.innerHTML = strValue;
       var text = div.textContent || div.innerText || "";
-      if (text.length > 170) text = text.substring(0, 170) + "...";
+      if (text.length > 370) text = text.substring(0, 370) + "...";
       if (index !== undefined) {
         this.metas[index].content = text;
         return;
