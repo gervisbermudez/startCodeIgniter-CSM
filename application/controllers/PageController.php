@@ -26,7 +26,7 @@ class PageController extends Base_Controller
     public function home()
     {
         //Check if there are a page configured as home page
-        $page_id = config("SITE_HOME_PAGE");
+        $page_id = config("SITE_HOME_PAGE_ID");
         if ($page_id) {
             $data = $this->get_page_info(array('page_id' => $page_id, 'status' => 1));
             if ($data == null) {
@@ -47,6 +47,9 @@ class PageController extends Base_Controller
 
     public function blog_list()
     {
+
+        $this->check_blog_config();
+
         $data['title'] = config("SITE_TITLE") . " - Blog";
         $data['layout'] = 'site';
         $data['template'] = 'blogList';
@@ -59,7 +62,8 @@ class PageController extends Base_Controller
 
     public function blog_list_tag($tag)
     {
-        $data['title'] = config("SITE_TITLE") . " - Blog";
+        $this->check_blog_config();
+
         $data['blogs'] = $this->Page->where(['page_type_id' => 2, "status" => 1]);
 
         if ($data['blogs']) {
@@ -79,6 +83,8 @@ class PageController extends Base_Controller
 
     public function blog_list_author($author)
     {
+        $this->check_blog_config();
+
         $this->load->model('Admin/User');
         $user = new User();
         $result = $user->find_with(['username' => urldecode($author)]);
@@ -102,6 +108,8 @@ class PageController extends Base_Controller
 
     public function blog_list_search()
     {
+        $this->check_blog_config();
+
         $this->load->model('Admin/User');
         $user = new User();
 
@@ -131,6 +139,8 @@ class PageController extends Base_Controller
 
     public function blog_list_categorie($categorie)
     {
+        $this->check_blog_config();
+
         $this->load->model('Admin/Categories');
         $categorie_name = (ucwords(str_replace('-', ' ', urldecode($categorie))));
         $categorie = new Categories();
@@ -152,6 +162,17 @@ class PageController extends Base_Controller
         $data['meta'] = $this->getPageMetas([]);
 
         echo $this->themeController->blog_list($data);
+    }
+
+    private function check_blog_config()
+    {
+
+        if (config("SITE_ACTIVE_BLOGS") === "Off") {
+            $this->error404();
+            return false;
+        }
+
+        return true;
     }
 
     public function get_blog()
@@ -231,13 +252,20 @@ class PageController extends Base_Controller
 
     public function siteMap()
     {
-        $data['pages'] = $this->Page->where(["status" => 1]);
+        if (config("SITE_ACTIVE_BLOGS") === "Off") {
+            $data['pages'] = $this->Page->where(["status" => 1, "page_type_id" => 1]);
+        } else {
+            $data['pages'] = $this->Page->where(["status" => 1]);
+        }
+
         header("Content-Type: text/xml;charset=iso-8859-1");
         echo $this->blade->view("admin.xml.sitemap", $data);
     }
 
     public function blogFeed()
     {
+        $this->check_blog_config();
+
         $this->load->helper('xml');
         $this->load->helper('text');
         $data['feed_name'] = config("SITE_TITLE");

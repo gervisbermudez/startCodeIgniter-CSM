@@ -161,7 +161,7 @@ class Base_Controller extends CI_Controller
         $url = uri_string();
         //is a public url ?
         if (stristr($url, 'admin') === false) {
-            $page_id = config("SITE_ERROR_404_PAGE");
+            $page_id = config("SITE_ERROR_404_PAGE_ID");
             if ($page_id) {
                 $data = $this->get_page_info(array('page_id' => $page_id, 'status' => 1));
                 if ($data == null) {
