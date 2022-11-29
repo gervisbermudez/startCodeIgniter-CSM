@@ -8,9 +8,24 @@
 class Configuracion extends MY_Controller
 {
 
+    public $routes_permisions = [
+        "index" => [
+            "patern" => '/admin\/configuracion/',
+            "required_permissions" => ["SELECT_CONFIG"],
+            "conditions" => [],
+        ],
+        "new" => [
+            "patern" => '/admin\/configuracion\/new/',
+            "required_permissions" => ["CREATE_CONFIG"],
+            "conditions" => [],
+        ],
+    ];
+
     public function __construct()
     {
         parent::__construct();
+        $this->check_permisions();
+
     }
 
     public function index()
@@ -20,6 +35,15 @@ class Configuracion extends MY_Controller
         $data['header'] = $this->load->view('admin/header', $data, true);
 
         echo $this->blade->view("admin.configuracion.all_config", $data);
+    }
+
+    function new () {
+        $data['title'] = ADMIN_TITLE . " | Configuracion";
+        $data['h1'] = "Configuracion";
+        $data['site_config_id'] = '';
+        $data['editMode'] = 'new';
+        $data['header'] = $this->load->view('admin/header', $data, true);
+        echo $this->blade->view("admin.configuracion.new_form", $data);
     }
 
     public function logger()
