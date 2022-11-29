@@ -1,4 +1,6 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); 
+<?php if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 require APPPATH . 'libraries/REST_Controller.php';
 
@@ -69,6 +71,8 @@ class Users extends REST_Controller
         $user = new User();
         if (!$user_id) {
             $result = $this->User->get_full_info($user_id);
+            $result = $this->User->get_full_info($user_id);
+
             $this->response_ok($result);
             return;
         }
@@ -210,6 +214,8 @@ class Users extends REST_Controller
         $usergroup = new Usergroup();
         if ($usergroup_id) {
             $result = $usergroup->find_with(array("usergroup_id" => $usergroup_id));
+            $usergroup->usergroup_id = $usergroup_id;
+            $usergroup->{'usergroup_permisions'} = $usergroup->usergroup_permisions();
             $result = $result ? $usergroup : false;
         } else {
             if (userdata('username') == 'root' || userdata('level') == 1) {

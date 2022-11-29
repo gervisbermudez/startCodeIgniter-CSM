@@ -1,4 +1,6 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); 
+<?php if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 require APPPATH . 'libraries/REST_Controller.php';
 
@@ -71,8 +73,9 @@ class Login extends REST_Controller
                 $user->save();
                 $this->load->model('Admin/Usergroup');
                 $usergroup = new Usergroup();
+                $usergroup->usergroup_id = $user->usergroup_id;
                 $result = $usergroup->find_with(array("usergroup_id" => $user->usergroup_id));
-                $this->session->set_userdata("usergroup_permisions", $usergroup->usergroup_permisions);
+                $this->session->set_userdata("usergroup_permisions", $usergroup->usergroup_permisions());
 
                 $rand_key = random_string('alnum', 16);
                 // Check if valid user

@@ -17,8 +17,8 @@
 |
  */
 $config['base_url'] = getenv('APP_BASE_URL');
-$config['enable_profiler'] = false;
-$config['debug_mode'] = false;
+$config['enable_profiler'] = true;
+$config['debug_mode'] = true;
 
 /*
 |--------------------------------------------------------------------------
