@@ -216,10 +216,18 @@ class Base_Controller extends CI_Controller
         $data['headers_includes'] = isset($pageInfo->page_data["headers_includes"]) ? $pageInfo->page_data["headers_includes"] : "";
         $data['footer_includes'] = isset($pageInfo->page_data["footer_includes"]) ? $pageInfo->page_data["footer_includes"] : "";
         $data['template'] = $pageInfo->template == 'default' ? 'templates.default' : $pageInfo->template;
-        $this->load->model('Admin/Menu');
-        $menu = new Menu();
-        $menu->find_with(['menu_id' => 1]);
-        $data["menu"] = $menu;
+
+        $excute_string = get_string_between($data['page']->content, "{{", "}}");
+        $excute_fn_name = explode("(", $excute_string)[0];
+
+        $list_params = get_string_between($excute_string, "(", ")");
+        $list_params = $list_params ? explode(",", $list_params) : [];
+
+        if (is_callable($excute_fn_name)) {
+            $excute_fn_name_result = call_user_func_array($excute_fn_name, $list_params);
+            $data['page']->content = str_replace("{{" . $excute_string . "}}", $excute_fn_name_result, $data['page']->content);
+        }
+
         return $data;
     }
 
