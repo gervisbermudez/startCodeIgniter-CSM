@@ -38,7 +38,7 @@ class Pages extends REST_Controller
         if ($page_id) {
             $result = $page->find($page_id);
             $result = $result ? $page : [];
-        } else if($this->input->get('filters')){
+        } else if ($this->input->get('filters')) {
             $result = $page->where($this->input->get('filters'));
             $result = $result ? $result->toArray() : [];
         } else {
@@ -181,7 +181,6 @@ class Pages extends REST_Controller
         }
     }
 
-
     public function types_get()
     {
         $this->load->model('Admin/Page_type');
@@ -265,14 +264,14 @@ class Pages extends REST_Controller
         if ($result) {
 
             $response = [
-                "items" => array_map(function($value){
+                "items" => array_map(function ($value) {
                     return [
                         "href" => base_url($value->path),
                         "name" => $value->title,
-                        "description" => character_limiter(strip_tags($value->content), 120)
-                    ];          
+                        "description" => character_limiter(strip_tags($value->content), 120),
+                    ];
                 }, $result->toArray()),
-                "success" => true
+                "success" => true,
             ];
 
             $this->response($response, REST_Controller::HTTP_OK);

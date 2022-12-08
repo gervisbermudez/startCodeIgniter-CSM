@@ -241,18 +241,20 @@ class File extends MY_Model
 
     public function getFileFrontPath()
     {
-        if ($this->map) {
+        try {
             return substr($this->file_path . $this->getFileFullName(), 2);
+        } catch (\Throwable $th) {
+            return "";
         }
-        return '';
     }
 
     public function getFileFullName()
     {
-        if ($this->map) {
+        try {
             return $this->file_name . '.' . $this->file_type;
+        } catch (\Throwable $th) {
+            return '';
         }
-        return '';
     }
 
 }

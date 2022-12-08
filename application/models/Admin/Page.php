@@ -81,7 +81,7 @@ class Page extends MY_model
                 $value->{'json_content'} = json_decode($value->json_content);
             }
         }
-        
+
         $this->load->model('Admin/File');
         foreach ($collection as $key => &$value) {
             if (isset($value->mainImage) && $value->mainImage) {
@@ -107,7 +107,6 @@ class Page extends MY_model
             $value->{'page_data'} = $this->search_for_data($value->page_id, 'page_id');
         }
 
-
         return $collection;
     }
 
@@ -118,10 +117,21 @@ class Page extends MY_model
         if ($query->num_rows() > 0) {
             $tags = [];
             foreach ($query->result() as $value) {
-                $tags = array_merge(json_decode(strtolower ( $value->_value) ), $tags);
+                $tags = array_merge(json_decode(strtolower($value->_value)), $tags);
             }
             return array_unique($tags);
         }
         return false;
+    }
+
+    public function get_relate_pages_by_tags()
+    {
+        $pages = $this->where(["page_id !=" => $this->page_id])->toArray();
+        $result = array_filter($pages, function ($page) {
+            $targetTags = isset($this->page_data['tags']) ? $this->page_data['tags'] : [];
+            $currentTags = isset($page->page_data['tags']) ? $page->page_data['tags'] : [];
+            return !empty(array_intersect($currentTags, $targetTags));
+        });
+        return $result;
     }
 }

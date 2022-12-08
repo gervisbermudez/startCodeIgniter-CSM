@@ -1,4 +1,6 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); 
+<?php if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 require APPPATH . 'libraries/REST_Controller.php';
 
@@ -186,6 +188,30 @@ class Forms extends REST_Controller
         if ($form_id) {
             $result = $Form_conten->where(['form_content_id' => $form_id]);
             $result = $result ? $result : [];
+        } else {
+            $result = $Form_conten->all();
+        }
+
+        if ($result) {
+            $this->response_ok($result);
+            return;
+        }
+
+        $this->response_error(lang('not_found_error'));
+    }
+
+    /**
+     * Get All Data from this method.
+     *
+     * @return Response
+     */
+    public function form_data_get($form_id = null)
+    {
+        $this->load->model('Admin/Form_content');
+        $Form_conten = new Form_content();
+        if ($form_id) {
+            $result = $Form_conten->where(['form_custom_id' => $form_id, 'status' => 1]);
+            $result = $result ? $Form_conten->as_single_object($result) : [];
         } else {
             $result = $Form_conten->all();
         }

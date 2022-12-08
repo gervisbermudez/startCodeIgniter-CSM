@@ -57,6 +57,22 @@ class Form_content extends MY_Model
         return $collection;
     }
 
+    public function as_single_object($collection)
+    {
+        $result = [];
+
+        foreach ($collection as $item) {
+            $data = [];
+            foreach ($item->form_custom->tabs as $tab) {
+                foreach ($tab->form_fields as $form_field) {
+                    $data[$form_field->data->fielApiID] = $form_field->field_data->form_value;
+                }
+            }
+            $result[] = $data;
+        }
+        return $result;
+    }
+
     /**
      * @param object $form_name Form data to be saved
      * @return int id form id or null

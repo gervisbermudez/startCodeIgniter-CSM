@@ -134,6 +134,9 @@ var PageNewForm = new Vue({
         ? this.datepublish + " " + this.timepublish + ":00"
         : null;
     },
+    full_path: function () {
+      return this.status ? BASEURL + this.path : "";
+    },
     preview_link: function () {
       return this.page_id
         ? BASEURL + "admin/paginas/preview?page_id=" + this.page_id
@@ -166,13 +169,15 @@ var PageNewForm = new Vue({
       var span = document.createElement("span");
       span.innerHTML = value;
       let text = span.textContent || span.innerText;
-      console.log("content has changed");
+      text = text.replace(/\s+/g, " ").trim();
       this.setMetaContent(text, "description");
       this.setMetaContent(text, "og:description");
       this.setMetaContent(text, "twitter:description");
     },
     "form.fields.title.value": function (value) {
-      this.setPath(value);
+      if (!this.path) {
+        this.setPath(value);
+      }
     },
     publishondate: function (value) {
       if (value) {
@@ -299,17 +304,18 @@ var PageNewForm = new Vue({
       if (str.length == 0) return "";
 
       str = str.replace(/^\s+|\s+$/g, ""); // trim
+
       str = str.toLowerCase();
 
       // remove accents, swap ñ for n, etc
       var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
-      var to = "aaaaeeeeiiiioooouuuunc------";
+      var to = "aaaaeeeeiiiioooouuuunc-/----";
       for (var i = 0, l = from.length; i < l; i++) {
         str = str.replace(new RegExp(from.charAt(i), "g"), to.charAt(i));
       }
 
       str = str
-        .replace(/[^a-z0-9 -]/g, "") // remove invalid chars
+        .replace(/[^a-z0-9 -/]/g, "") // remove invalid chars
         .replace(/\s+/g, "-") // collapse whitespace and replace by -
         .replace(/-+/g, "-"); // collapse dashes
 
@@ -609,8 +615,9 @@ var PageNewForm = new Vue({
               const instance = M.Chips.getInstance(
                 document.getElementById("pageTags")
               );
-              self.page_data.tags
-                ? self.page_data.tags.forEach((element) => {
+              response.data.page.page_data.tags
+                ? response.data.page.page_data.tags.forEach((element) => {
+                    console.log({ element });
                     instance.addChip({
                       tag: element,
                     });
@@ -693,7 +700,6 @@ var PageNewForm = new Vue({
     },
     initPlugins() {
       setTimeout(() => {
-        M.Chips.init(document.getElementById("pageTags"), {});
         M.Tabs.init(document.getElementById("formTabs"), {});
         var elems = document.getElementById("pageMetas");
         M.Collapsible.init(elems, {
@@ -739,8 +745,26 @@ var PageNewForm = new Vue({
   mounted: function () {
     this.$nextTick(function () {
       this.debug ? console.log("mounted PageNewForm") : null;
+
+      M.Chips.init(document.getElementById("pageTags"), {
+        placeholder: "Enter a value",
+      });
+
+      setTimeout(() => {
+        const instance = M.Chips.getInstance(
+          document.getElementById("pageTags")
+        );
+        instance.options.onChipAdd = (value) => {
+          this.page_data.tags = this.getPageTags();
+        };
+        instance.options.onChipDelete = (value) => {
+          this.page_data.tags = this.getPageTags();
+        };
+      }, 2000);
+
       $("#editor")
         .trumbowyg({
+          semantic: false,
           btns: [
             ["viewHTML"],
             ["formatting"],

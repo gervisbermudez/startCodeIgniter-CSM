@@ -3,6 +3,7 @@
 <link rel="stylesheet" href="<?=base_url('public/js/fileinput-master/css/fileinput.min.css')?>" />
 <link rel="stylesheet" href="<?=base_url('public/font-awesome/css/all.min.css')?>" />
 <link rel="stylesheet" href="<?=base_url('public/css/admin/form.min.css')?>" />
+<link rel="stylesheet" href="<?=base_url('public/css/admin/page-new.min.css')?>" />
 <link rel="stylesheet" href="<?=base_url('public/js/trumbowyg/ui/trumbowyg.min.css')?>" />
 <script src="https://unpkg.com/moment@2.22.1/min/moment.min.js"></script>
 @endsection @section('content')
@@ -192,6 +193,15 @@
                         </li>
                     </ul>
                 </div>
+                <div class="row">
+                    <a v-if="!status" class="btn bg-color3" target="_blank" :href="preview_link"
+                        :class="{disabled: !btnEnable}">
+                        <span><i class="material-icons right">launch</i> Preview</span>
+                    </a>
+                    <a v-else class="btn bg-color3" target="_blank" :href="full_path" :class="{disabled: !btnEnable}">
+                        <span><i class="material-icons right">launch</i> View en site</span>
+                    </a>
+                </div>
             </div>
         </div>
         <div id="test2" class="col s12">
@@ -265,10 +275,6 @@
                     <span v-if="status && btnEnable"><i class="material-icons right">publish</i> Publicar</span>
                     <span v-if="status && !btnEnable"><i class="material-icons right">publish</i> Publicar</span>
                 </button>
-                <a class="btn bg-color3" target="_blank" :href="preview_link" v-if="!status && editMode"
-                    :class="{disabled: !btnEnable}">
-                    <span><i class="material-icons right">launch</i> Preview</span>
-                </a>
             </div>
         </div>
     </div>
