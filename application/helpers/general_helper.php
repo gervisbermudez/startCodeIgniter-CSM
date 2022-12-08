@@ -387,3 +387,5 @@ function system_logger($type, $type_id, $token, $comment = '')
     }
     return false;
 }
+
+ */
