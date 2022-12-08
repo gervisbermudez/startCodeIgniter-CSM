@@ -96,7 +96,6 @@ function fragment($fragment_name)
     return $fragment->description;
 }
 
-
 if (!function_exists("config")) {
     function config($config_name)
     {
@@ -117,7 +116,7 @@ if (!function_exists('getThemePublicPath')) {
         $config = new stdClass();
         $theme_path = $ci->config->item("THEME_PATH");
         if ($theme_path) {
-            return 'themes/' . $theme_path . '/public/' ;
+            return 'themes/' . $theme_path . '/public/';
         }
         return '';
     }
@@ -336,7 +335,7 @@ function render_menu($name)
         $blade = new Blade();
 
         if (getThemePath()) {
-            if (file_exists(getThemePath() . ''.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'site'.DIRECTORY_SEPARATOR.'templates'.DIRECTORY_SEPARATOR.'menu'.DIRECTORY_SEPARATOR.'menu.blade.php')) {
+            if (file_exists(getThemePath() . '' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . 'site' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'menu' . DIRECTORY_SEPARATOR . 'menu.blade.php')) {
                 $blade->changePath(getThemePath());
             } else {
                 $blade->changePath(APPPATH);
@@ -388,4 +387,36 @@ function system_logger($type, $type_id, $token, $comment = '')
     return false;
 }
 
+/**
+ * Class casting
+ * @see https: //stackoverflow.com/questions/3243900/convert-cast-an-stdclass-object-to-another-class
+ * @param string|object $destination
+ * @param object $sourceObject
+ * @return object
  */
+function cast($destination, $sourceObject)
+{
+    if (is_string($destination)) {
+        if (!class_exists($destination)) {
+            $ci = &get_instance();
+            $ci->load->model('Admin/' . $destination);
+        }
+        $destination = new $destination();
+    }
+    $sourceReflection = new ReflectionObject($sourceObject);
+    $destinationReflection = new ReflectionObject($destination);
+    $sourceProperties = $sourceReflection->getProperties();
+    foreach ($sourceProperties as $sourceProperty) {
+        $sourceProperty->setAccessible(true);
+        $name = $sourceProperty->getName();
+        $value = $sourceProperty->getValue($sourceObject);
+        if ($destinationReflection->hasProperty($name)) {
+            $propDest = $destinationReflection->getProperty($name);
+            $propDest->setAccessible(true);
+            $propDest->setValue($destination, $value);
+        } else {
+            $destination->$name = $value;
+        }
+    }
+    return $destination;
+}
