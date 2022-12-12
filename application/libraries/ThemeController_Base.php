@@ -23,6 +23,18 @@ class ThemeController_Base
     }
 
     /**
+     * Custom error 404
+     * @return String
+     */
+    public function error404($data)
+    {
+        if (getThemePath()) {
+            $this->blade->changePath(getThemePath());
+        }
+        return $this->blade->view("site." . $data["template"], $data);
+    }
+
+    /**
      * @return String
      */
     public function home($data)

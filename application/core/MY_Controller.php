@@ -161,23 +161,24 @@ class Base_Controller extends CI_Controller
         $url = uri_string();
         //is a public url ?
         if (stristr($url, 'admin') === false) {
+            if (getThemePath()) {
+                $this->blade->changePath(getThemePath());
+            }
+
             $page_id = config("SITE_ERROR_404_PAGE_ID");
+
             if ($page_id) {
-                $data = $this->get_page_info(array('page_id' => $page_id, 'status' => 1));
-                if ($data == null) {
-                    $this->error404();
-                    return;
-                }
-                echo $this->themeController->render($data);
+                $data = $this->get_page_info(array('page_id' => $page_id));
+            }
+
+            if ($page_id && $data !== null) {
+                $data['base_url'] = $this->config->base_url();
+                $data['title'] = "Page not found | 404";
+                echo $this->themeController->error404($data);
             } else {
-                if (getThemePath()) {
-                    $this->blade->changePath(getThemePath());
-                }
-                $this->load->database();
-                $this->load->model('Admin/Page');
-                $page = new Page();
-                $result = $page->where(['status' => '1']);
-                $data["pages"] = $result;
+                $data['base_url'] = $this->config->base_url();
+                $data['title'] = "Page not found | 404";
+
                 echo $this->blade->view("site.error404", $data);
             }
         } else {

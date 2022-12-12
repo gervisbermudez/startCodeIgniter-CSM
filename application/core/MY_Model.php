@@ -185,6 +185,10 @@ class MY_model extends CI_Model implements JsonSerializable
         return false;
     }
 
+    /**
+     * @param str_term string
+     * @return Collection
+     */
     public function search($str_term)
     {
         $this->db->select('*');
@@ -199,7 +203,7 @@ class MY_model extends CI_Model implements JsonSerializable
             $result = new Collection($this->filter_results($query->result()));
             return $result;
         }
-        return [];
+        return new Collection([]);
     }
 
     /**
