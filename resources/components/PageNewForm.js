@@ -99,7 +99,15 @@ var PageNewForm = new Vue({
       },
       {
         name: "twitter:card",
-        content: "summary",
+        content: "summary_large_image",
+      },
+      {
+        name: "twitter:site",
+        content: "",
+      },
+      {
+        name: "twitter:creator",
+        content: "",
       },
       {
         name: "twitter:site",

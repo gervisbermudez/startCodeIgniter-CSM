@@ -103,7 +103,7 @@ class Base_Controller extends CI_Controller
                         $value['content'] = base_url('public/img/default.jpg');
                     }
                 }
-                if (isset($value['name']) && $value['name'] == 'twitter:image') {
+                if (isset($value['property']) && $value['property'] == 'twitter:image') {
                     if ($value['content'] != '') {
                         $value['content'] = base_url($value['content']);
                     } else {
