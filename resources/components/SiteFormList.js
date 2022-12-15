@@ -1,4 +1,4 @@
-var PermissionsData = new Vue({
+var SiteFormList = new Vue({
   el: "#root",
   router: new VueRouter({
     routes: [
@@ -7,14 +7,6 @@ var PermissionsData = new Vue({
         path: "/",
         component: dataTable,
         props: true,
-      },
-      {
-        name: "edit",
-        path: "/edit",
-        component: dataEdit,
-        props: {
-          data: [],
-        },
       },
     ],
   }),
@@ -52,12 +44,29 @@ var PermissionsData = new Vue({
   mixins: [mixins],
   computed: {},
   methods: {
+    newItem() {
+      window.location = `${BASEURL}admin/siteforms/nuevo/`;
+      return;
+    },
     editItem(data) {
       window.location = `${BASEURL}admin/siteforms/editar/${data.item.siteform_id}`;
       return;
     },
-    deleteItem(data) {
-      console.log({ data });
+    deleteItem({ item }) {
+      var self = this;
+      $.ajax({
+        type: "DELETE",
+        url: BASEURL + "api/v1/siteforms/" + item.siteform_id,
+        data: {},
+        dataType: "json",
+        success: function (response) {
+          window.location.reload();
+        },
+        error: function (error) {
+          M.toast({ html: "Ocurrió un error inesperado" });
+          console.error(error);
+        },
+      });
       return;
     },
     archiveItem(data) {

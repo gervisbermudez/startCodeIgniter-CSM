@@ -621,8 +621,8 @@ Vue.component("confirmModal", {
           </div>
       </div>
       <div class="modal-footer">
-          <a href="#!" class="modal-action modal-close waves-effect waves-red btn red" @click="onClickButton(false);">Cancelar</a>
-          <a href="#!" class="modal-close waves-effect waves-green btn" @click="onClickButton(true);">Aceptar</a>
+          <button type="button" class="modal-action modal-close waves-effect waves-red btn red" @click="onClickButton(false);">Cancelar</button>
+          <button type="button" class="modal-close waves-effect waves-green btn" @click="onClickButton(true);">Aceptar</button>
       </div>
   </div>
   `,

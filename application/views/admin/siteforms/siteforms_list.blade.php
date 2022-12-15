@@ -4,14 +4,8 @@
 @endsection
 @section('content')
 <div id="root">
-  <router-view
-    :endpoint="endpoint"
-    :module="'usuarios/permissions/'"
-    :colums="colums"
-    :index_data="index_data"
-    :pagination="true"
-    v-on:edit="editItem"
-  ></router-view>
+    <router-view :endpoint="endpoint" :module="'usuarios/permissions/'" :colums="colums" :index_data="index_data"
+        :pagination="true" v-on:edit="editItem" v-on:delete="deleteItem" v-on:new="newItem"></router-view>
 </div>
 @endsection
 

@@ -72,6 +72,10 @@ var dataTable = Vue.component("dataTable", {
         strPropertyName: null,
         sort_as: "asc",
       },
+      toDeleteItem: {
+        item: null,
+        index: null,
+      },
     };
   },
   mixins: [mixins],
@@ -208,7 +212,7 @@ var dataTable = Vue.component("dataTable", {
       let result = "";
       switch (label) {
         case "user":
-          result = `<a href="${BASEURL + item[label].get_profileurl()}">${item[
+          result = `<a href="${item[label].get_profileurl()}">${item[
             label
           ].get_fullname()}</a>`;
           break;
@@ -249,7 +253,7 @@ var dataTable = Vue.component("dataTable", {
     createItem() {
       if (this.$listeners && this.$listeners.new) {
         this.$emit("new");
-      } else {        
+      } else {
         this.$router.push({
           name: "edit",
           params: {
@@ -271,29 +275,32 @@ var dataTable = Vue.component("dataTable", {
       }
       return;
     },
+    setToDeleteItem(item, index) {
+      this.toDeleteItem = {
+        item,
+        index,
+      };
+      return;
+    },
+    confirmCallback(data) {
+      console.log("confirmCallback", data);
+      if (data) {
+        this.deleteItem(this.toDeleteItem.item, this.toDeleteItem.index);
+      }
+    },
     archiveItem(item, index) {
       if (this.$listeners && this.$listeners.archive) {
         this.$emit("archive", {
           item: item,
           index: index,
         });
-        return;
       } else {
         return;
       }
     },
-    delete(item, index) {
-      console.log({ item, index });
-      return;
-    },
     tempDelete: function (item, index) {
       this.toDeleteItem.item = item;
       this.toDeleteItem.index = index;
-    },
-    confirmCallback(data) {
-      if (data) {
-        this.delete(this.toDeleteItem.item, this.toDeleteItem.index);
-      }
     },
     initPlugins: function () {
       setTimeout(() => {
