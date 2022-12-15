@@ -62,6 +62,8 @@ $route['admin/paginas/preview'] = 'PageController/preview';
 $route['sitemap\.xml'] = 'PageController/siteMap';
 $route['sitemap'] = 'PageController/siteMap';
 $route['form/submit'] = 'PageController/formsubmit';
+$route['form/ajaxsubmit'] = 'PageController/formajaxsubmit';
+
 $route['form/success'] = 'PageController/formsuccess';
 $route['form/error'] = 'PageController/formerror';
 $route['admin/Fragments/'] = 'admin/Fragments';
