@@ -61,6 +61,15 @@ if (!function_exists('getThemePath')) {
     }
 }
 
+function init_form($siteform_name)
+{
+    $ci = &get_instance();
+    $siteforms = $ci->session->userdata('siteforms');
+    if (!$siteforms && !isset($siteforms[$siteform_name])) {
+        $ci->session->set_userdata('siteforms', [$siteform_name => ['submited' => 0]]);
+    }
+}
+
 function render_form($siteform_name)
 {
     $ci = &get_instance();
@@ -75,10 +84,7 @@ function render_form($siteform_name)
         $ci->blade->changePath(getThemePath());
     }
 
-    $siteforms = $ci->session->userdata('siteforms');
-    if (!$siteforms && !isset($siteforms[$siteform_name])) {
-        $ci->session->set_userdata('siteforms', [$siteform_name => ['submited' => 0]]);
-    }
+    init_form($siteform_name);
 
     return $ci->blade->view("site.templates.forms." . $siteform->template, ['siteform' => $siteform]);
 }
