@@ -1,4 +1,6 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); 
+<?php if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 require APPPATH . 'libraries/REST_Controller.php';
 
@@ -55,7 +57,7 @@ class Files extends REST_Controller
 
     public function index_post()
     {
-        $this->response(array('Metodo no permitido'), REST_Controller::HTTP_METHOD_NOT_ALLOWED);  
+        $this->response(array('Metodo no permitido'), REST_Controller::HTTP_METHOD_NOT_ALLOWED);
     }
 
     /**
@@ -100,8 +102,8 @@ class Files extends REST_Controller
             $file->delete();
             $this->response_ok($result);
             return;
-        } 
-        $this->response_error(lang('not_found_error')); 
+        }
+        $this->response_error(lang('not_found_error'));
     }
 
     public function featured_file_post()
@@ -124,7 +126,7 @@ class Files extends REST_Controller
 
             $this->response_ok($result);
             return;
-        } 
+        }
         $this->response_error(lang('not_found_error'));
     }
 
@@ -160,8 +162,8 @@ class Files extends REST_Controller
 
             $this->response_ok($rename);
             return;
-        } 
-        
+        }
+
         $this->response_error(lang('not_found_error'));
     }
 
@@ -216,9 +218,9 @@ class Files extends REST_Controller
                 'data' => $folder,
             );
             $this->response_ok($folder);
-        } 
-        
-        $this->response_error(lang('not_found_error')); 
+        }
+
+        $this->response_error(lang('not_found_error'));
     }
 
     public function rename_file_post()
@@ -238,20 +240,20 @@ class Files extends REST_Controller
             $file_activity->file_id = $file_model->file_id;
             $file_activity->user_id = userdata('user_id');
             $file_activity->action = "rename";
-            $file_activity->description = "The file " .  $file['file_name'] . '.' . $file['file_type'] . " was renamed to " . $file['new_name'] . '.' . $file['file_type'];
+            $file_activity->description = "The file " . $file['file_name'] . '.' . $file['file_type'] . " was renamed to " . $file['new_name'] . '.' . $file['file_type'];
             $file_activity->date_create = date("Y-m-d H:i:s");
             $file_activity->status = 1;
             $file_activity->save();
 
             $this->response_ok($result);
-        } 
+        }
         $this->response_error(lang('not_found_error'));
     }
 
-    public function filter_files_post()
+    public function filter_files_get()
     {
-        $filter_name = $this->input->post('filter_name');
-        $filter_value = $this->input->post('filter_value');
+        $filter_name = $this->input->get('filter_name');
+        $filter_value = $this->input->get('filter_value');
         $result = $this->File->get_filter_files($filter_name, $filter_value, null, array('date_update', "DESC"));
         $this->response_ok($result);
     }

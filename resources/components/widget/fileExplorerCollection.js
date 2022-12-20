@@ -46,7 +46,7 @@ Vue.component("fileExplorerCollection", {
     getFilterFiles(filter_name, filter_value) {
       var self = this;
       $.ajax({
-        type: "POST",
+        type: "GET",
         url: BASEURL + "api/v1/files/filter_files",
         data: {
           filter_name: filter_name,

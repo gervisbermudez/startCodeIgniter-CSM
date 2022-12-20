@@ -1,15 +1,14 @@
 <script type="text/x-template" id="file-explorar-selector">
-<div :id="modal" class="modal modal-fixed-footer file-explorar-selector">
+    <div :id="modal" class="modal modal-fixed-footer file-explorar-selector">
     <div class="modal-content">
     <div class="row">
     <div class="col s12">
-      <ul class="tabs" id="selectorTabs">
-        <li class="tab col s3"><a  class="active" href="#selector" @click="destroyFileinputInstance();"><i class="material-icons">folder_open</i> My Files</a></li>
-        <li class="tab col s3"><a href="#uploader" @click="initUploader();"  v-if="uploader"><i class="material-icons">cloud_upload</i> Upload</a></li>
+      <ul class="tabs" :id="'selectorTabs_' + modal">
+        <li class="tab col s3"><a  class="active" :href="'#selector' + input_id" @click="destroyFileinputInstance();"><i class="material-icons">folder_open</i> My Files</a></li>
+        <li class="tab col s3"><a :href="'#uploader_' + input_id" @click="initUploader();"  v-if="uploader"><i class="material-icons">cloud_upload</i> Upload</a></li>
       </ul>
     </div>
-    <div id="selector" class="col s12">
-        <h4><i class="material-icons left">content_copy</i> @{{title}}</h4>
+    <div :id="'selector' + input_id" class="col s12">
         <div class="files files-selector">
             <div class="row search">
                 <div class="col s12">
@@ -92,7 +91,7 @@
                             </div>
                             <div class="card-content">
                                 <div class="input-field">
-                                    <input type="text" id="folder_name" class="validate" value="New Folder" v-on:blur="makeFolderServer();" />
+                                    <input type="text" :id="'folder_name' + modal" class="validate" value="New Folder" v-on:blur="makeFolderServer();" />
                                 </div>
                             </div>
                         </div>
@@ -136,12 +135,11 @@
             </div>
         </div>
     </div>
-    <div id="uploader" class="col s12"  v-if="uploader">
-        <h4><i class="material-icons">file_upload</i> Upload Files</h4>
+    <div :id="'uploader_' + input_id" class="col s12"  v-if="uploader">
         <p>
             Current dir: @{{curDir}}
         </p>
-        <input type="file" id="input-100" name="input-100[]" accept="*" multiple>
+        <input type="file"  :id="input_id" name="input-100[]" accept="*" multiple>
     </div>
   </div>
     </div>

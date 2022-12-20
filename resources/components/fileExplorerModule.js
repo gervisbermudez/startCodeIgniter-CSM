@@ -90,14 +90,15 @@ var fileExplorerModule = new Vue({
         .then((response) => {
           if (response.code == 200) {
             this.sideRightBarSelectedFile.history = response.data.history || [];
-            this.sideRightBarSelectedFile.history = this.sideRightBarSelectedFile.history.reverse();
-            this.sideRightBarSelectedFile.history = this.sideRightBarSelectedFile.history.map(e => {
-              return {
-                ...e,
-                user: new User(e.user)
-              }
-            })
-
+            this.sideRightBarSelectedFile.history =
+              this.sideRightBarSelectedFile.history.reverse();
+            this.sideRightBarSelectedFile.history =
+              this.sideRightBarSelectedFile.history.map((e) => {
+                return {
+                  ...e,
+                  user: new User(e.user),
+                };
+              });
           }
         })
         .catch((error) => {
@@ -128,11 +129,15 @@ var fileExplorerModule = new Vue({
     },
     getFileHistoryIcon(action) {
       switch (action) {
-        case "upload": return "cloud_upload"
-        case "rename": return "edit"
-        case "move": return "content_cut"
-      
-        default: return "folder";
+        case "upload":
+          return "cloud_upload";
+        case "rename":
+          return "edit";
+        case "move":
+          return "content_cut";
+
+        default:
+          return "folder";
       }
     },
     setCloseSideRightBar() {
@@ -258,7 +263,7 @@ var fileExplorerModule = new Vue({
       this.moveFileTo(
         this.fileToMove,
         selected[0].file_path +
-        (selected[0].file_name ? selected[0].file_name + "/" : "")
+          (selected[0].file_name ? selected[0].file_name + "/" : "")
       );
       this.navigateFiles(this.curDir);
     },
@@ -270,7 +275,7 @@ var fileExplorerModule = new Vue({
       this.copyFileTo(
         this.fileToMove,
         selected[0].file_path +
-        (selected[0].file_name ? selected[0].file_name + "/" : "")
+          (selected[0].file_name ? selected[0].file_name + "/" : "")
       );
       this.navigateFiles(this.curDir);
     },
@@ -376,7 +381,7 @@ var fileExplorerModule = new Vue({
         },
       });
     },
-    toggleView() { },
+    toggleView() {},
     navigateFiles(path) {
       var self = this;
       self.backto = self.getBackPath;
@@ -388,8 +393,14 @@ var fileExplorerModule = new Vue({
       var params = {
         path: path,
       };
-      var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?path=' + encodeURIComponent(path);
-      window.history.pushState({ path: newurl }, '', newurl);
+      var newurl =
+        window.location.protocol +
+        "//" +
+        window.location.host +
+        window.location.pathname +
+        "?path=" +
+        encodeURIComponent(path);
+      window.history.pushState({ path: newurl }, "", newurl);
       $.ajax({
         type: "GET",
         url: BASEURL + "api/v1/files/",
@@ -453,7 +464,7 @@ var fileExplorerModule = new Vue({
     getFilterFiles(filter_name, filter_value) {
       var self = this;
       $.ajax({
-        type: "POST",
+        type: "GET",
         url: BASEURL + "api/v1/files/filter_files",
         data: {
           filter_name: filter_name,
@@ -496,7 +507,6 @@ var fileExplorerModule = new Vue({
 
       if (params["path"]) this.navigateFiles(params["path"]);
       else this.navigateFiles(self.root);
-
     });
   },
 });

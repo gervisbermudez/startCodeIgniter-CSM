@@ -184,10 +184,7 @@ Vue.component("DataSelector", {
       };
     },
     onClickButton(event) {
-      this.$emit(
-        "notify",
-        this.getSelected()
-      );
+      this.$emit("notify", this.getSelected());
     },
     getFullFileName(file) {
       return file.file_name + "." + file.file_type;
@@ -342,7 +339,7 @@ Vue.component("DataSelector", {
     getFilterFiles(filter_name, filter_value) {
       var self = this;
       $.ajax({
-        type: "POST",
+        type: "GET",
         url: BASEURL + "api/v1/files/filter_files",
         data: {
           filter_name: filter_name,

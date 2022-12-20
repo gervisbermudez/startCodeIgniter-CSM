@@ -1670,6 +1670,16 @@ div.card-image>div>i.material-icons.tooltipped {
 .file-explorar-selector,
 .data-selector {
   width: 90%;
+  max-height: 90%;
+  height: 90% !important;
+  top: 5% !important;
+}
+
+div#update-app-zone {
+  position: fixed;
+  right: 10px;
+  bottom: 0px;
+  z-index: 999;
 }
 
 .pages .page-card label.checkbox {

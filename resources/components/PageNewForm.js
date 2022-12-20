@@ -169,7 +169,11 @@ var PageNewForm = new Vue({
       segments = segments.map((value, index) => {
         return this.string_to_slug(value);
       });
-      return segments.join("/");
+
+      let fullPath = segments.join("/");
+      this.setMetaContent(BASEURL + fullPath, "og:url");
+
+      return fullPath;
     },
   },
   watch: {
@@ -267,6 +271,12 @@ var PageNewForm = new Vue({
       subcategorie = subcategorie[0] ? subcategorie[0]["name"] : "";
       subcategorie = type == "" ? "" : subcategorie;
       let pagePath = this.path;
+      if (pagePath.indexOf("blog/") !== -1) {
+        pagePath = pagePath.split("blog/")[1];
+      }
+      if (pagePath.indexOf("news/") !== -1) {
+        pagePath = pagePath.split("news/")[1];
+      }
       return [type, categorie, subcategorie, pagePath];
     },
     onChangeTitle(title) {
@@ -702,8 +712,24 @@ var PageNewForm = new Vue({
       let instance = M.Modal.getInstance($("#editorModal"));
       instance.close();
       files.forEach((file) => {
-        var node = $(`<img src="${file.get_full_file_path()}">`)[0];
-        trumbowygInstance.range.insertNode(node);
+        try {
+          var node = $(
+            `<img alt="${file.file_name}" src="${file.get_full_file_path()}" />`
+          )[0];
+          console.log({ trumbowygInstance });
+          if (trumbowygInstance.range == null) {
+            let startNode = $(".trumbowyg-editor")[0];
+            let endNode = $(".trumbowyg-editor")[0];
+            let range = document.createRange();
+            range.setStart(startNode, 1);
+            range.setEnd(endNode, 1);
+            trumbowygInstance.range = range;
+          }
+          console.log({ trumbowygInstance });
+          trumbowygInstance.range.insertNode(node);
+        } catch (error) {
+          console.error(error);
+        }
       });
     },
     initPlugins() {
