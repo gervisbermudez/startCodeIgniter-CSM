@@ -1,5 +1,6 @@
 {
   "name": "Start CSM",
+  "id": "/admin/",
   "short_name": "Start CSM",
   "lang": "es-US",
   "start_url": "/admin/",

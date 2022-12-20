@@ -561,11 +561,97 @@ class Config_data {
   }
 }
 
-if ("serviceWorker" in navigator && window.location.protocol == "https:") {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/service-worker.min.js", {
-      scope: "/admin",
+function showRefreshUI(registration) {
+  // TODO: Display a toast or refresh UI.
+  document.getElementsByTagName("body")[0].insertAdjacentHTML(
+    "beforeend",
+    `<div id = "update-app-zone" >
+       <div class="card blue-grey darken-1">
+        <div class="card-content white-text">
+          <p><span>Hay una nueva version de la aplicacion, haz click aquí para actualizar</span></p>
+        </div>
+        <div class="card-action">
+          <a href="#"><i class="fas fa-redo"></i> Actualizar</a>
+        </div>
+      </div>
+      </div>`
+  );
+  const element = document.querySelector("#update-app-zone a");
+  element.addEventListener("click", function () {
+    if (!registration.waiting) {
+      // Just to ensure registration.waiting is available before
+      // calling postMessage()
+      return;
+    }
+    if (window.location.href.includes("admin/login")) {
+      localStorage.clear();
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i];
+        const eqPos = cookie.indexOf("=");
+        const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      }
+    }
+    registration.waiting.postMessage("skipWaiting");
+  });
+}
+
+function onNewServiceWorker(registration, callback) {
+  if (registration.waiting) {
+    // SW is waiting to activate. Can occur if multiple clients open and
+    // one of the clients is refreshed.
+    return callback();
+  }
+
+  function listenInstalledStateChange() {
+    registration.installing.addEventListener("statechange", function (event) {
+      if (event.target.state === "installed") {
+        // A new service worker is available, inform the user
+        callback();
+      }
     });
+  }
+
+  if (registration.installing) {
+    return listenInstalledStateChange();
+  }
+
+  // We are currently controlled so a new SW may be found...
+  // Add a listener in case a new SW is found,
+  registration.addEventListener("updatefound", listenInstalledStateChange);
+}
+
+if (navigator.serviceWorker) {
+  window.addEventListener("load", async function () {
+    let refreshing;
+    // When the user asks to refresh the UI, we'll need to reload the window
+    navigator.serviceWorker.addEventListener(
+      "controllerchange",
+      function (event) {
+        if (refreshing) return; // prevent infinite refresh loop when you use "Update on Reload"
+        refreshing = true;
+        window.location.reload();
+      }
+    );
+
+    navigator.serviceWorker
+      .register("/sw.js", {
+        scope: BASEURL + "admin/",
+      })
+      .then(function (registration) {
+        // Track updates to the Service Worker.
+        if (!navigator.serviceWorker.controller) {
+          // The window client isn't currently controlled so it's a new service
+          // worker that will activate immediately
+          return;
+        }
+        registration.update();
+
+        onNewServiceWorker(registration, function () {
+          showRefreshUI(registration);
+        });
+      });
   });
 }
 
