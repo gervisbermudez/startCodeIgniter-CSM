@@ -22,7 +22,6 @@ class Config extends REST_Controller
 
         $this->load->database();
         $this->load->model('Admin/Site_config');
-
     }
 
     /**
@@ -117,7 +116,6 @@ class Config extends REST_Controller
         }
 
         $this->response_error(lang('unexpected_error'), REST_Controller::HTTP_BAD_REQUEST);
-
     }
 
     /**
@@ -198,7 +196,6 @@ class Config extends REST_Controller
         );
 
         $this->response($response, REST_Controller::HTTP_OK);
-
     }
 
     public function check_update_get()
@@ -400,7 +397,6 @@ class Config extends REST_Controller
         $data['config'] = $config->all();
 
         $this->response_ok($data);
-
     }
 
     private function getWhereStringFrom($arrayData, $id)
@@ -446,7 +442,6 @@ class Config extends REST_Controller
             $config = new Site_config();
             $data['config'] = $config->where($this->getWhereStringFrom($exportData["config"], "site_config_id"));
             $data['config'] = array_map("removeUser", $data['config']->toArray());
-
         }
 
         $json = json_encode($data);
@@ -463,7 +458,80 @@ class Config extends REST_Controller
                 "message" => "Oops! Error creating json file",
             ]);
         }
-
     }
 
+    public function import_file_post()
+    {
+        /* echo '<pre>';
+        print_r($_FILES);
+        echo '</pre>';
+        exit; */
+
+        $exportData = json_decode($this->input->post('exportData'));
+
+        if (!move_uploaded_file($_FILES["import_file"]["tmp_name"], "./uploads/" . $_FILES["import_file"]["name"])) {
+            $this->response_error([
+                "message" => "Oops! Error reading json file",
+            ]);
+            return;
+        }
+
+        $string = file_get_contents("./uploads/" . $_FILES["import_file"]["name"]);
+
+        if ($string === false) {
+            $this->response_error([
+                "message" => "Oops! Error reading json file",
+            ]);
+            return;
+        }
+
+        try {
+            $file_content = json_decode($string);
+            if (isset($file_content->pages) && is_array($file_content->pages)) {
+                $this->load->model('Admin/Page');
+                $file_content->pages = array_filter($file_content->pages, function ($page) use ($exportData) {
+                    return in_array($page->page_id, $exportData->pages);
+                });
+                foreach ($file_content->pages as $key => $value) {
+                    $page = new Page();
+                    //field already exist in database, so let's update it
+                    $page->find($value->page_id);
+                    foreach ($value as $index => $val) {
+                        $page->{$index} = $val;
+                    }
+                    $page->save();
+                }
+            }
+
+            if (isset($file_content->config) && is_array($file_content->config)) {
+
+                $file_content->config = array_filter($file_content->config, function ($Site_config) use ($exportData) {
+                    return in_array($Site_config->site_config_id, $exportData->config);
+                });
+                foreach ($file_content->config as $key => $value) {
+                    $Site_config = new Site_config();
+                    //field already exist in database, so let's update it
+                    $Site_config->find($value->site_config_id);
+                    foreach ($value as $index => $val) {
+                        $Site_config->{$index} = $val;
+                    }
+                    $Site_config->save();
+                }
+            }
+
+            $this->response_ok(
+                [
+                    "message" => "JSON file created successfully",
+                ],
+                ["file_content" => $file_content]
+            );
+        } catch (\Throwable $th) {
+            $this->response_error([
+                "message" => "Oops! Error reading json file",
+                "error" => $th->getMessage(),
+                "trace" => $th->getTrace(),
+            ]);
+            return;
+        }
+    }
 }

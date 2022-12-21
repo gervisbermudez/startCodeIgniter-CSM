@@ -80,4 +80,12 @@ class Configuracion extends MY_Controller
         $data['header'] = $this->load->view('admin/header', $data, true);
         echo $this->blade->view("admin.configuracion.export", $data);
     }
+
+    public function import()
+    {
+        $data['title'] = ADMIN_TITLE . " | Import";
+        $data['h1'] = "Import Data";
+        $data['header'] = $this->load->view('admin/header', $data, true);
+        echo $this->blade->view("admin.configuracion.import", $data);
+    }
 }

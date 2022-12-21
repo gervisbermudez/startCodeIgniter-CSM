@@ -19,8 +19,21 @@
         <div id="form" class="col s12" v-cloak v-show="!loader">
             <div class="row">
                 <div class="col s12">
-                    <ul class="collapsible">
-                        <li>
+                    <div class="file-field input-field">
+                        <div class="btn">
+                            <span>Seleccionar archivo...</span>
+                            <input type="file" id="files" name="files[]" multiple v-on:change="handleFileSelect" />
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <ul class="collapsible" v-show="selectedFile">
+                        <li v-if="exportData.pages.length">
                             <div class="toggle-all-data">
                                 <label>
                                     <input type="checkbox" v-on:change="toggleData(exportData.pages, 'pages')" />
@@ -41,7 +54,6 @@
                                         </div>
                                         <span class="title"><b>@{{page.title}}</b></span>
                                         <p>@{{page.path}}<br>
-                                            @{{page.user.get_fullname()}}
                                         </p>
                                         <a :href="base_url('admin/paginas/view/' + page.page_id)"
                                             class="secondary-content"><i class="material-icons">play_arrow</i></a>
@@ -49,7 +61,7 @@
                                 </ul>
                             </div>
                         </li>
-                        <li>
+                        <li v-if="exportData.config.length">
                             <div class="toggle-all-data">
                                 <label>
                                     <input type="checkbox" v-on:change="toggleData(exportData.config, 'config')" />
@@ -81,11 +93,10 @@
                     </ul>
                 </div>
             </div>
-
-            <div class="input-field" id="buttons">
+            <div class="input-field" id="buttons" v-show="selectedFile">
                 <a href="<?php echo base_url('admin/configuracion/'); ?>" class="btn-flat">Cancelar</a>
-                <button type="submit" class="btn btn-primary" @click="generateFile()" :class="{disabled: !btnEnable}">
-                    <span><i class="material-icons right">file_download</i> Export</span>
+                <button type="submit" class="btn btn-primary" @click="saveData()" :class="{disabled: !btnEnable}">
+                    <span><i class="material-icons right">save</i> Import</span>
                 </button>
             </div>
         </div>
@@ -94,5 +105,5 @@
 @endsection
 
 @section('footer_includes')
-<script src="{{base_url('public/js/components/export.component.min.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('public/js/components/import.component.min.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection
