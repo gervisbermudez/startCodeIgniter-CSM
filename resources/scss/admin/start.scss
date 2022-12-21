@@ -2216,3 +2216,23 @@ iframe.components-sandbox {
     width: 100%;
   }
 }
+
+.export {
+  .material-icons.circle.checkbox {
+    display: flex !important;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .toggle-all-data {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+  }
+
+  ul.collapsible li {
+    position: relative;
+  }
+
+}

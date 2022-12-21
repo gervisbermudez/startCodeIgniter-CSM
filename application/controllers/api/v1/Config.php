@@ -305,26 +305,26 @@ class Config extends REST_Controller
 
     public function install_downloaded_update_get()
     {
-        $filename = $this->input->get('packagename');
-        if (file_exists($filename)) {
-            $ignorefiles = ['.', '..', 'config.php', 'database.php'];
-            recurse_copy($source, $destination, $ignorefiles);
-            $response = array(
-                'data' => [
-                    "result" => $result,
-                    "downloaded_file" => $filename,
-                    "message" => "Package installed successfully!",
-                ],
-                "code" => REST_Controller::HTTP_OK,
-            );
-        } else {
-            $response = array(
-                'data' => ["message" => "Unnable to install the package"],
-                "code" => REST_Controller::HTTP_BAD_REQUEST,
-            );
-        }
+        /* $filename = $this->input->get('packagename');
+    if (file_exists($filename)) {
+    $ignorefiles = ['.', '..', 'config.php', 'database.php'];
+    recurse_copy($source, $destination, $ignorefiles);
+    $response = array(
+    'data' => [
+    "result" => $result,
+    "downloaded_file" => $filename,
+    "message" => "Package installed successfully!",
+    ],
+    "code" => REST_Controller::HTTP_OK,
+    );
+    } else {
+    $response = array(
+    'data' => ["message" => "Unnable to install the package"],
+    "code" => REST_Controller::HTTP_BAD_REQUEST,
+    );
+    }
 
-        $this->response($response, REST_Controller::HTTP_OK);
+    $this->response($response, REST_Controller::HTTP_OK); */
     }
 
     public function systemlogger_get($logger_id = null)
@@ -385,6 +385,85 @@ class Config extends REST_Controller
         }
 
         $this->response_error(lang('not_found_error'), $User_tracking->get_pagination_info());
+    }
+
+    public function export_data_get()
+    {
+        $data = [];
+
+        //Pages
+        $this->load->model('Admin/Page');
+        $pages = new Page();
+        $data['pages'] = $pages->all();
+
+        $config = new Site_config();
+        $data['config'] = $config->all();
+
+        $this->response_ok($data);
+
+    }
+
+    private function getWhereStringFrom($arrayData, $id)
+    {
+        $whereString = "";
+        foreach ($arrayData as $key => $value) {
+            if (count($arrayData) === ($key + 1)) {
+                $whereString .= $id . " = " . $value . "";
+            } else {
+                $whereString .= $id . " = " . $value . " OR ";
+            }
+        }
+        return $whereString;
+    }
+
+    public function generate_export_file_post()
+    {
+        $exportData = $this->input->post("exportData");
+
+        function removeUser($item)
+        {
+            unset($item->user);
+            unset($item->imagen_file);
+
+            return $item;
+        }
+
+        $data = [
+            "pages" => [],
+            "config" => [],
+        ];
+
+        if (isset($exportData["pages"])) {
+            //Pages
+            $this->load->model('Admin/Page');
+            $pages = new Page();
+            $data['pages'] = $pages->where($this->getWhereStringFrom($exportData["pages"], "page_id"));
+
+            $data['pages'] = array_map("removeUser", $data['pages']->toArray());
+        }
+
+        if (isset($exportData["config"])) {
+            $config = new Site_config();
+            $data['config'] = $config->where($this->getWhereStringFrom($exportData["config"], "site_config_id"));
+            $data['config'] = array_map("removeUser", $data['config']->toArray());
+
+        }
+
+        $json = json_encode($data);
+
+        $exportFilename = "export_data_" . date("Y-m-d_H-i-s") . ".json";
+
+        if (file_put_contents("./temp/" . $exportFilename, $json)) {
+            $this->response_ok([
+                "message" => "JSON file created successfully",
+                "exportFilename" => $exportFilename,
+            ]);
+        } else {
+            $this->response_error([
+                "message" => "Oops! Error creating json file",
+            ]);
+        }
+
     }
 
 }

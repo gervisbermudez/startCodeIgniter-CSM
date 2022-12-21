@@ -73,4 +73,11 @@ class Configuracion extends MY_Controller
         echo $this->blade->view("admin.configuracion.all_usertrackinglogger", $data);
     }
 
+    public function export()
+    {
+        $data['title'] = ADMIN_TITLE . " | Export";
+        $data['h1'] = "Export Data";
+        $data['header'] = $this->load->view('admin/header', $data, true);
+        echo $this->blade->view("admin.configuracion.export", $data);
+    }
 }
