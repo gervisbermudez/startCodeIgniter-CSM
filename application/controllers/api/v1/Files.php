@@ -132,11 +132,20 @@ class Files extends REST_Controller
 
     public function reload_file_explorer_post($folder = null)
     {
-        $file = new File();
+        $File = new File();
         if ($folder != null) {
-            $file->current_folder = $folder . '/';
+            $File->current_folder = $folder . '/';
         }
-        $this->response_ok(['result' => $file->map_files()]);
+        $allFiles = $File->all();
+
+        foreach ($allFiles as $key => $file) {
+            if (!file_exists($file->file_path . $file->file_name . '.' . $file->file_type)) {
+                $File->find($file->file_id);
+                $File->delete();
+            }
+        }
+
+        $this->response_ok(['result' => $File->map_files()]);
     }
 
     public function move_file_post()

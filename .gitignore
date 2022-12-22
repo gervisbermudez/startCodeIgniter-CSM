@@ -213,3 +213,4 @@ application/config/production/*
 themes/*
 uploads/*
 workspace.code-workspace
+trash/*
