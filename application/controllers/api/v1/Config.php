@@ -448,6 +448,10 @@ class Config extends REST_Controller
 
         $exportFilename = "export_data_" . date("Y-m-d_H-i-s") . ".json";
 
+        if (!file_exists("./temp/")) {
+            @mkdir("./temp/");
+        }
+
         if (file_put_contents("./temp/" . $exportFilename, $json)) {
             $this->response_ok([
                 "message" => "JSON file created successfully",
@@ -462,11 +466,6 @@ class Config extends REST_Controller
 
     public function import_file_post()
     {
-        /* echo '<pre>';
-        print_r($_FILES);
-        echo '</pre>';
-        exit; */
-
         $exportData = json_decode($this->input->post('exportData'));
 
         if (!move_uploaded_file($_FILES["import_file"]["tmp_name"], "./uploads/" . $_FILES["import_file"]["name"])) {
