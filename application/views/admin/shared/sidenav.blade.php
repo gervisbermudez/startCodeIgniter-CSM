@@ -35,16 +35,16 @@
             </div>
             <div class="collapsible-body">
                 <ul>
-                @if(has_permisions('SELECT_PAGES'))
+                    @if(has_permisions('SELECT_PAGES'))
                     <li>
                         <a class="waves-effect" href="{{ base_url('admin/paginas/') }}">Todas</a>
                     </li>
-                @endif
-                @if(has_permisions('CREATE_PAGE'))
+                    @endif
+                    @if(has_permisions('CREATE_PAGE'))
                     <li>
                         <a href="{{ base_url('admin/paginas/nueva/') }}">Nueva</a>
                     </li>
-                @endif
+                    @endif
 
                 </ul>
             </div>
@@ -56,27 +56,27 @@
             </div>
             <div class="collapsible-body">
                 <ul>
-                @if(has_permisions('SELECT_FORM_CUSTOMS'))
+                    @if(has_permisions('SELECT_FORM_CUSTOMS'))
                     <li>
                         <a class="waves-effect" href="{{ base_url('admin/formularios/') }}">Todos</a>
                     </li>
-                @endif
-                @if(has_permisions('CREATE_FORM_CUSTOM'))
+                    @endif
+                    @if(has_permisions('CREATE_FORM_CUSTOM'))
                     <li>
                         <a href="{{ base_url('admin/formularios/nuevo') }}">Nuevo</a>
                     </li>
-                @endif
-                @if(has_permisions('SELECT_CONTENT_DATA'))
-                <li class="{{isSectionActive('admin/formularios', 'match')}}">
-                    <a class="waves-effect" href="{{ base_url('admin/formularios/content') }}">
-                        Contenidos</a>
-                </li>
-                @endif
+                    @endif
+                    @if(has_permisions('SELECT_CONTENT_DATA'))
+                    <li class="{{isSectionActive('admin/formularios', 'match')}}">
+                        <a class="waves-effect" href="{{ base_url('admin/formularios/content') }}">
+                            Contenidos</a>
+                    </li>
+                    @endif
                 </ul>
             </div>
         </li>
         <li class="{{isSectionActive('calendario')}}">
-        <a class="waves-effect" href="{{ base_url('admin/calendario') }}"><i class="material-icons">event_note</i>
+            <a class="waves-effect" href="{{ base_url('admin/calendario') }}"><i class="material-icons">event_note</i>
                 Calendario</a>
         </li>
         <li class="{{isSectionActive('siteforms')}}">
@@ -96,15 +96,18 @@
             </div>
         </li>
         <li class="{{isSectionActive('Fragments')}}">
-            <a class="waves-effect" href="{{ base_url('admin/Fragments/') }}"><i class="material-icons">bookmark_border</i>
+            <a class="waves-effect" href="{{ base_url('admin/Fragments/') }}"><i
+                    class="material-icons">bookmark_border</i>
                 Fragmentos</a>
         </li>
         <li class="{{isSectionActive('suscriptores')}}">
-            <a class="waves-effect" href="{{ base_url('admin/suscriptores/') }}"><i class="material-icons">supervisor_account</i> Suscriptores</a>
+            <a class="waves-effect" href="{{ base_url('admin/suscriptores/') }}"><i
+                    class="material-icons">supervisor_account</i> Suscriptores</a>
         </li>
         @if(has_permisions('SELECT_FILES'))
         <li class="{{isSectionActive('archivos')}}">
-            <a class="waves-effect" href="{{ base_url('admin/archivos') }}"><i class="material-icons">markunread_mailbox</i>
+            <a class="waves-effect" href="{{ base_url('admin/archivos') }}"><i
+                    class="material-icons">markunread_mailbox</i>
                 Archivos</a>
         </li>
         @endif
@@ -135,12 +138,12 @@
                 <span>Categorias</span>
             </div>
             <div class="collapsible-body">
-                    <ul>
+                <ul>
                     @if(has_permisions('SELECT_CATEGORIES'))
                     <li>
                         <a href="{{ base_url('admin/categorias/') }}">Todas</a>
                     </li>
-                    @endif 
+                    @endif
                     @if(has_permisions('CREATE_CATEGORIE'))
                     <li>
                         <a href="{{ base_url('admin/categorias/nueva/') }}">Nueva</a>
@@ -198,9 +201,29 @@
                 </ul>
             </div>
         </li>
-        <li class="show-on-medium-and-down">
-            <a class="waves-effect" href="{{ base_url('admin/configuracion') }}"><i class="material-icons">settings</i>
-                Configuración</a>
+        <li class="{{isSectionActive('configuracion')}}">
+            <div class="collapsible-header">
+                <i class="material-icons">settings</i>
+                <span>Configuración</span>
+            </div>
+            <div class="collapsible-body">
+                <ul>
+                    <li>
+                        <a class="waves-effect" href="{{ base_url('admin/configuracion') }}"> Configuración</a>
+                    </li>
+                    <li>
+                        <a class="waves-effect" href="{{ base_url('admin/configuracion/apilogger') }}"> API Log</a>
+                    </li>
+                    <li>
+                        <a class="waves-effect" href="{{ base_url('admin/configuracion/logger') }}"> System Log</a>
+                    </li>
+                    <li>
+                        <a class="waves-effect" href="{{ base_url('admin/configuracion/usertrackinglogger') }}"> User
+                            Tracking</a>
+                    </li>
+                </ul>
+            </div>
         </li>
+
     </ul>
 </div>
