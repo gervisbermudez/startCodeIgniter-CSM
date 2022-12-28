@@ -2,6 +2,9 @@
 @import "components/palette";
 @import "fonts";
 
+$sidemenuWidthExpanded: 210px;
+$sidemenuWidthCollapsed: 70px;
+
 html {
   scroll-behavior: smooth;
 }
@@ -11,6 +14,29 @@ body {
   font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
   background: #f9f9f9;
   color: #444;
+}
+
+/* ===== Scrollbar CSS ===== */
+/* Firefox */
+* {
+  scrollbar-width: auto;
+  scrollbar-color: #b0b0b0 #ffffff;
+}
+
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+  width: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #ffffff;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #b0b0b0;
+  border-radius: 10px;
+  border: 3px solid #ffffff;
+  max-height: 10%;
 }
 
 .material-icons {
@@ -120,7 +146,7 @@ span.current-folder {
 }
 
 a.sidenav-trigger-lg {
-  width: 50px;
+  width: $sidemenuWidthCollapsed;
   display: inline-block;
   height: 50px;
   float: right;
@@ -149,11 +175,12 @@ a.brand-logo {
   }
 }
 
-$sidemenuWidth: 210px;
+
+
 
 .sidemenu {
   position: fixed;
-  width: $sidemenuWidth;
+  width: $sidemenuWidthExpanded;
   top: 0px;
   left: 0px;
   -webkit-transition: 0.3s ease all;
@@ -168,15 +195,14 @@ $sidemenuWidth: 210px;
 
   .sidenav {
     transform: none;
-    width: $sidemenuWidth;
+    width: $sidemenuWidthExpanded;
     margin: 50px 0px 0px;
     -webkit-transition: 0.3s ease all;
     transition: 0.3s ease all;
     height: 100vh;
-    overflow: hidden;
 
     &.animate-open {
-      width: $sidemenuWidth !important;
+      width: $sidemenuWidthExpanded !important;
       -webkit-transition: 0.3s ease all;
       transition: 0.3s ease all;
 
@@ -202,7 +228,7 @@ $sidemenuWidth: 210px;
       position: relative;
 
       &>a {
-        padding: 0 15px;
+        padding: 0 16px;
 
         i.material-icons {
           margin: 0 15px 0 0;
@@ -227,6 +253,7 @@ $sidemenuWidth: 210px;
       ul {
         background-color: rgba(0, 0, 0, 0.05);
         display: block;
+        padding-left: 2rem;
       }
     }
 
@@ -273,7 +300,7 @@ $sidemenuWidth: 210px;
     line-height: 40px;
   }
 
-  margin-left: $sidemenuWidth;
+  margin-left: $sidemenuWidthExpanded;
 
   .darkmode-switch i.material-icons {
     height: auto;
@@ -330,20 +357,22 @@ $sidemenuWidth: 210px;
 }
 
 body.sidenav-open {
+
+
   .brand-logo {
     display: none;
   }
 
   .main-navbar .nav-wrapper {
-    margin-left: 50px;
+    margin-left: $sidemenuWidthCollapsed;
   }
 
   .sidemenu {
-    width: 50px;
+    width: $sidemenuWidthCollapsed;
   }
 
   .sidenav {
-    width: 50px;
+    width: $sidemenuWidthCollapsed;
 
     .collapsible-header span {
       display: none;
@@ -355,11 +384,11 @@ body.sidenav-open {
   }
 
   .sidenav li>a {
-    padding: 0 10px;
+    padding: 0 16px;
   }
 
   .main {
-    padding: 50px 0 0 50px;
+    padding: 50px 0 0 $sidemenuWidthCollapsed;
   }
 }
 
@@ -953,7 +982,7 @@ ul.tabs li a i {
   }
 
   .main {
-    padding: 50px 0 0 $sidemenuWidth;
+    padding: 50px 0 0 $sidemenuWidthExpanded;
   }
 
   .menu-spand {
@@ -1213,14 +1242,11 @@ div#dropnotify {
   max-width: 96%;
   margin: 50px auto 0px;
 
-  .col {
-    padding-bottom: 40px !important;
-  }
-
   .page-card {
     border-radius: 5px;
     margin: 0px;
     min-height: 410px;
+    margin-bottom: 60px;
 
     .card-image {
       max-width: 90%;

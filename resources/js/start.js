@@ -15,21 +15,14 @@ jQuery(document).ready(function ($) {
     function () {
       // over
       $this = $(this);
-      $this.getNiceScroll().remove();
-      $this.toggleClass("animate-open");
-      setTimeout(() => {
-        $(".sidenav").niceScroll();
-      }, 400);
+      $this.addClass("animate-open");
     },
     function () {
       // out
       $this = $(this);
-      $this.getNiceScroll().remove();
-      $this.toggleClass("animate-open");
+      $this.removeClass("animate-open");
     }
   );
-
-  $(".sidenav").niceScroll();
 
   $("#darkmode-switch").change(function (e) {
     e.preventDefault();
