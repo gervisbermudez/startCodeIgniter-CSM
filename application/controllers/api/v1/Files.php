@@ -267,4 +267,36 @@ class Files extends REST_Controller
         $this->response_ok($result);
     }
 
+    public function get_file_content_get()
+    {
+        $file = $this->input->get('file');
+        $file_model = new File();
+        $result = $file_model->find($file["file_id"]);
+
+        if (!$result) {
+            $this->response_error([
+                "message" => "File seems doesn't exist!",
+            ]);
+            return;
+        }
+
+        try {
+            $string = file_get_contents($file_model->getFileFullPath());
+            $this->response_ok(
+                [
+                    "message" => "File content",
+                ],
+                ["file_content" => $string]
+            );
+        } catch (\Throwable $th) {
+            if ($string === false) {
+                $this->response_error([
+                    "message" => "Oops! Error reading file",
+                ]);
+                return;
+            }
+        }
+
+    }
+
 }

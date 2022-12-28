@@ -86,10 +86,12 @@ class Page extends MY_model
         foreach ($collection as $key => &$value) {
             if (isset($value->mainImage) && $value->mainImage) {
                 $file = new File();
-                $file->find($value->mainImage);
-                $value->imagen_file = $file->as_data();
-                $value->imagen_file->{'file_front_path'} = new stdClass();
-                $value->imagen_file->{'file_front_path'} = $file->getFileFrontPath();
+                $result = $file->find($value->mainImage);
+                if ($result) {
+                    $value->imagen_file = $file->as_data();
+                    $value->imagen_file->{'file_front_path'} = new stdClass();
+                    $value->imagen_file->{'file_front_path'} = $file->getFileFrontPath();
+                }
             }
         }
 

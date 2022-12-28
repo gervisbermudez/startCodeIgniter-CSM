@@ -15,6 +15,11 @@ var fileExplorerModule = new Vue({
     showSideRightBar: false,
     sideRightBarSelectedFile: {},
     fileToMove: {},
+    showFile: {
+      file_name: "",
+      file_type: "",
+      file_content: "",
+    },
   },
   mixins: [mixins],
   computed: {
@@ -85,6 +90,13 @@ var fileExplorerModule = new Vue({
       this.showSideRightBar = true;
       this.sideRightBarSelectedFile.user = null;
       this.sideRightBarSelectedFile.user_group = null;
+      if (this.isImage(file)) {
+        this.showFile = file;
+        this.showFile.file_content = true;
+        this.showFile.isImagen = true;
+      } else {
+        this.getFileContent(file);
+      }
       fetch(BASEURL + "api/v1/files/" + file.file_id)
         .then((response) => response.json())
         .then((response) => {
@@ -142,9 +154,28 @@ var fileExplorerModule = new Vue({
     },
     setCloseSideRightBar() {
       this.showSideRightBar = false;
+      this.showFile = {
+        file_name: "",
+        file_type: "",
+        file_content: "",
+      };
     },
     getFullFilePath(file) {
       return BASEURL + file.file_path + this.getFullFileName(file);
+    },
+    async shareFile(file) {
+      let path = this.getFullFilePath(file);
+      const shareData = {
+        title: file.file_name,
+        text: "",
+        url: path,
+      };
+
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.error(err);
+      }
     },
     getIcon(file) {
       let icon = "far fa-file";
@@ -207,7 +238,6 @@ var fileExplorerModule = new Vue({
       return false;
     },
     renameFile(file) {
-      console.log(file);
       this.editFile = file;
       this.editFile.new_name = this.editFile.file_name;
     },
@@ -474,6 +504,25 @@ var fileExplorerModule = new Vue({
         success: function (response) {
           if (response.code == 200) {
             self.files = response.data;
+          }
+        },
+      });
+    },
+    getFileContent(file) {
+      $.ajax({
+        type: "GET",
+        url: BASEURL + "api/v1/files/get_file_content",
+        data: {
+          file,
+        },
+        dataType: "json",
+        success: (response) => {
+          if (response.code == 200) {
+            this.showFile = file;
+            this.showFile.file_content = response.file_content;
+            setTimeout(() => {
+              Prism.highlightAll();
+            }, 1000);
           }
         },
       });

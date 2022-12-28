@@ -33,7 +33,7 @@ class Archivos extends MY_Controller
             $file = new File();
             $filenameParts = explode(".", $_POST['fileName']);
 
-            $insert_array = $file->get_array_save_file(slugify($filenameParts[0])  .  '-' . date("Y-m-d-His") . '.' . $filenameParts[1], $_POST['curDir']);
+            $insert_array = $file->get_array_save_file(slugify($filenameParts[0]) . '-' . date("Y-m-d-His") . '.' . $filenameParts[1], $_POST['curDir']);
             $find_result = $file->find_with(
                 [
                     "file_path" => $insert_array['file_path'],

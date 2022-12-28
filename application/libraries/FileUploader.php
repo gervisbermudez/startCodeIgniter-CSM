@@ -15,7 +15,7 @@ class FileUploader
     public function upload()
     {
         $preview = $config = $errors = [];
-        $targetDir = $_POST['curDir'];
+        $targetDir = $_POST['curDir'] . date("Y-m-d/");
         if (!file_exists($targetDir)) {
             @mkdir($targetDir);
         }
