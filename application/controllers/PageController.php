@@ -303,6 +303,8 @@ class PageController extends Base_Controller
             return;
         }
 
+        $data["related_pages"] = [];
+
         //Load local theme Controller
         echo $this->themeController->render($data);
     }
