@@ -104,12 +104,56 @@ var dataTable = Vue.component("dataTable", {
           label: '<i class="material-icons">chevron_left</i>',
           class: this.paginator.prev_page == 0 ? "disabled" : "waves-effect",
         });
-        for (let index = 1; index <= this.paginator.total_pages; index++) {
+        let pages = this.rangodepaginas(
+          this.paginator.current_page - 0,
+          2,
+          this.paginator.total_pages
+        );
+
+        pages = this.paginaEllipsis(pages);
+
+        if (!pages.includes(1)) {
           links.push({
-            page: index,
-            label: index,
+            page: 1,
+            label: 1,
+            class: this.paginator.current_page == 1 ? "active" : "waves-effect",
+          });
+        }
+        console.log({ pages });
+        for (let index = 1; index <= pages.length; index++) {
+          if (pages[index - 1] == "...") {
+            if (index === 2) {
+              links.push({
+                page: parseInt(pages[index]) - 1,
+                label: pages[index - 1],
+                class: `waves-effect `,
+              });
+            } else {
+              links.push({
+                page: parseInt(pages[index - 2]) + 1,
+                label: pages[index - 1],
+                class: `waves-effect `,
+              });
+            }
+          } else {
+            links.push({
+              page: pages[index - 1],
+              label: pages[index - 1],
+              class:
+                this.paginator.current_page == pages[index - 1]
+                  ? "active"
+                  : "waves-effect",
+            });
+          }
+        }
+        if (!pages.includes(this.paginator.total_pages)) {
+          links.push({
+            page: this.paginator.total_pages,
+            label: this.paginator.total_pages,
             class:
-              this.paginator.current_page == index ? "active" : "waves-effect",
+              this.paginator.current_page == this.paginator.total_pages
+                ? "active"
+                : "waves-effect",
           });
         }
         links.push({
@@ -120,9 +164,39 @@ var dataTable = Vue.component("dataTable", {
               ? "disabled"
               : "waves-effect",
         });
+
         return (this.paginatorLinks = links);
       }
       return null;
+    },
+    rangodepaginas: function (actual, rango, final) {
+      var desde = actual - rango,
+        hasta = actual + rango,
+        paginas = [];
+      for (var i = 1; i <= final; i++) {
+        if (i === 1 || i === final || (i >= desde && i <= hasta)) {
+          paginas.push(i);
+        }
+      }
+      return paginas;
+    },
+    paginaEllipsis: function (paginas) {
+      var final = paginas.pop();
+      paginas.push(final);
+      rango_con_ellipsis = [];
+      for (var i = 1; i < paginas.length - 1; i++) {
+        if (paginas[i - 1] === 1 && paginas[i] !== 2) {
+          rango_con_ellipsis.push(1);
+          rango_con_ellipsis.push("...");
+        }
+        rango_con_ellipsis.push(paginas[i]);
+
+        if (paginas[i + 1] === final && paginas[i] !== final - 1) {
+          rango_con_ellipsis.push("...");
+          rango_con_ellipsis.push(final);
+        }
+      }
+      return rango_con_ellipsis;
     },
     toggleEddit(configuration) {
       configuration.editable = !configuration.editable;
@@ -132,6 +206,7 @@ var dataTable = Vue.component("dataTable", {
       this.filter = "";
     },
     pagerTo(page) {
+      console.log(page);
       this.getData(page);
     },
     initPlugins: function () {
