@@ -1,4 +1,5 @@
-const CACHE_VERSION = "20221129.964";
+const CACHE_VERSION = "20222912";
+
 // eslint-disable-next-line no-undef
 importScripts("https://unpkg.com/dexie@3.0.3/dist/dexie.js");
 

@@ -129,7 +129,7 @@ class Base_Controller extends CI_Controller
         if (isset($page->main_image)) {
             $imagen_url = base_url($page->main_image->file_front_path);
         } else {
-            $imagen_url = base_url(getThemePublicPath() . 'images/default-brand.png');
+            $imagen_url = base_url(getThemePublicPath() . 'images/default-brand.jpg');
         }
 
         $default_metas = array(

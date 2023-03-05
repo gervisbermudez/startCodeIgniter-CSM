@@ -71,6 +71,9 @@ RewriteRule ^(.*)$ index.php/$1 [L]
         SetOutputFilter DEFLATE
     </filesMatch>
 </IfModule>
+<FilesMatch "\.(jpg|jpeg|png|gif|swf)$">
+    Header set Cache-Control "max-age=604800, public"
+</FilesMatch>
 # gzip Compression if availiable
 <IfModule mod_gzip.c>
 mod_gzip_on Yes
