@@ -24,9 +24,11 @@ class siteform_items extends MY_model
             }
         }
 
-        function cmp($a, $b)
-        {
-            return $a->order <=> $b->order;
+        if (!function_exists('cmp')) {
+            function cmp($a, $b)
+            {
+                return $a->order <=> $b->order;
+            }
         }
 
         usort($collection, "cmp");

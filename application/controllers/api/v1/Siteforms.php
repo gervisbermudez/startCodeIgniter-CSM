@@ -21,6 +21,8 @@ class Siteforms extends REST_Controller
 
         $this->load->database();
         $this->load->model('Admin/SiteForm');
+        $this->load->model('Admin/Siteform_submit');
+
     }
 
     /**
@@ -306,4 +308,69 @@ class Siteforms extends REST_Controller
         $this->response_ok($map);
     }
 
+    /**
+     * @api {get} /api/v1/categorie/:siteform_id Request Categorie information
+     * @apiName GetCategorie
+     * @apiGroup Categorie
+     *
+     * @apiParam {Number} siteform_id Categorie unique ID.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *   {
+     *       "code": 200,
+     *       "data": [
+     *           {
+     *               "siteform_id": "4",
+     *               "name": "Manu 1",
+     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
+     *               "type": "page",
+     *               "menu_item_parent_id": "0",
+     *               "date_publish": "2020-04-19 10:36:10",
+     *               "date_create": "2020-04-19 10:36:14",
+     *               "date_update": "2020-04-19 10:40:20",
+     *               "status": "1"
+     *           },
+     *           {
+     *               "siteform_id": "5",
+     *               "name": "Manu 2",
+     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
+     *               "type": "page",
+     *               "menu_item_parent_id": "0",
+     *               "date_publish": "2020-04-19 10:36:10",
+     *               "date_create": "2020-04-19 10:36:14",
+     *               "date_update": "2020-04-19 10:40:28",
+     *               "status": "1"
+     *           },
+     *       ]
+     *   }
+     *
+     * @apiError ManuNotFound The id of the User was not found.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 404 Not Found
+     * {
+     *     "code": 404,
+     *     "error_message": "Resource not found",
+     *     "data": []
+     * }
+     */
+    public function submit_get($siteform_submit_id = null)
+    {
+        $Siteform_submit = new Siteform_submit();
+        if ($siteform_submit_id) {
+            $result = $Siteform_submit->find_with(array('siteform_submit_id' => $siteform_submit_id));
+            $result = $result ? $Siteform_submit->as_data() : [];
+        } else {
+            $result = $Siteform_submit->all();
+        }
+
+        if ($result) {
+            $this->response_ok($result);
+            return;
+        }
+
+        $this->response_error(lang('not_found_error'));
+
+    }
 }

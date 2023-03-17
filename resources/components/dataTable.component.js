@@ -42,6 +42,11 @@ var dataTable = Vue.component("dataTable", {
       required: false,
       default: null,
     },
+    options: {
+      type: Array,
+      required: false,
+      default: null,
+    },
   },
   data: function () {
     return {
@@ -280,26 +285,27 @@ var dataTable = Vue.component("dataTable", {
       return data;
     },
     getContent(item, colum) {
-      let label = colum.colum;
+      console.log(item, colum);
+      let columName = colum.colum;
       if (colum.format && typeof colum.format == "function") {
         return colum.format(item, colum);
       }
       let result = "";
-      switch (label) {
+      switch (columName) {
         case "user":
-          result = `<a href="${item[label].get_profileurl()}">${item[
-            label
+          result = `<a href="${item[columName].get_profileurl()}">${item[
+            columName
           ].get_fullname()}</a>`;
           break;
         case "status":
           result = `<span>
                 <i class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="${
-                  this.statusIcons[item[label]].tooltip
-                }">${this.statusIcons[item[label]].icon}</i>
+                  this.statusIcons[item[columName]].tooltip
+                }">${this.statusIcons[item[columName]].icon}</i>
               </span>`;
           break;
         default:
-          result = item[label];
+          result = resolve(item, columName);
           break;
       }
 

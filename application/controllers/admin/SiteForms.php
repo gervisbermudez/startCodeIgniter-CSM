@@ -38,4 +38,12 @@ class Siteforms extends MY_Controller
         echo $this->blade->view("admin.siteforms.new_form", $data);
     }
 
+    public function submit()
+    {
+        $data['h1'] = "Todas los Formularios del Sitio";
+        $data['title'] = ADMIN_TITLE . " | Formularios recibidos del Sitio";
+        $data['header'] = $this->load->view('admin/header', $data, true);
+        echo $this->blade->view("admin.siteforms.siteform_submit_list", $data);
+    }
+
 }

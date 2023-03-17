@@ -41,7 +41,7 @@
                                     <span v-if="colum.colum !== 'options'" v-html="getContent(item, colum)"></span>
                                     <span v-else>
                                         <a class='dropdown-trigger' :data-target='"dropdown" + index'><i class="material-icons">more_vert</i></a>
-                                        <ul :id='"dropdown" + index' class='dropdown-content'>
+                                        <ul v-if="!options" :id='"dropdown" + index' class='dropdown-content'>
                                             <li><a v-on:click="editItem(item, index);">Edit</a></li>
                                             <li><a class="modal-trigger" href="#deleteModal" v-on:click="setToDeleteItem(item, index);">Delete</a></li>
                                             <li><a v-on:click="archiveItem(item, index);">Archive</a></li>

@@ -76,6 +76,7 @@ class PageController extends Base_Controller
         $data['template'] = 'blogList';
         $data['list_variant'] = 'tag';
         $data['tag'] = $tag;
+        $data['title'] = config("SITE_TITLE") . " - Blog Tags";
 
         $data['meta'] = $this->getPageMetas([]);
         echo $this->themeController->blog_list($data);
