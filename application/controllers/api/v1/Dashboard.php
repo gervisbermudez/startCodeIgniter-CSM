@@ -1,4 +1,6 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); 
+<?php if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 require APPPATH . 'libraries/REST_Controller.php';
 
@@ -22,39 +24,17 @@ class Dashboard extends REST_Controller
     }
 
     /**
-     * @api {get} /api/v1/categorie/:categorie_id Request Categorie information
+     * @api {get} /api/v1/dashboard/:dashboard_id Request Categorie information
      * @apiName GetCategorie
      * @apiGroup Categorie
      *
-     * @apiParam {Number} categorie_id Categorie unique ID.
+     * @apiParam {Number} dashboard_id Categorie unique ID.
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
      *   {
      *       "code": 200,
      *       "data": [
-     *           {
-     *               "categorie_id": "4",
-     *               "name": "Categoria 1",
-     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
-     *               "type": "page",
-     *               "parent_id": "0",
-     *               "date_publish": "2020-04-19 10:36:10",
-     *               "date_create": "2020-04-19 10:36:14",
-     *               "date_update": "2020-04-19 10:40:20",
-     *               "status": "1"
-     *           },
-     *           {
-     *               "categorie_id": "5",
-     *               "name": "Categoria 2",
-     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
-     *               "type": "page",
-     *               "parent_id": "0",
-     *               "date_publish": "2020-04-19 10:36:10",
-     *               "date_create": "2020-04-19 10:36:14",
-     *               "date_update": "2020-04-19 10:40:28",
-     *               "status": "1"
-     *           },
      *       ]
      *   }
      *
@@ -86,20 +66,30 @@ class Dashboard extends REST_Controller
         $form = new Form_custom();
         $result['forms_types'] = $form->all();
 
-        $categorie = new Categories();
-        $result['categories'] = $categorie->where(array('parent_id' => '0'));
+        $dashboard = new Categories();
+        $result['dashboards'] = $dashboard->where(array('parent_id' => '0'));
 
         $user = new User();
         $result['users'] = $user->get_full_info();
+        $result['timeline'] = $user->get_timeline(userdata('user_id'));
 
         $page = new Page();
-        $result['pages'] = $page->all();
+        $result['pages'] = $page->where(["status !=" => "0"]);
 
         $file = new File();
         $result['files'] = $file->all();
 
         $album = new Album();
         $result['albumes'] = $album->all();
+
+        $this->load->model('Admin/User_tracking');
+        $User_tracking = new User_tracking();
+        $tempData = $User_tracking->all()->toArray();
+
+        $result['chart1'] = $this->generateTrafficChart($tempData);
+        $result['chart2'] = $this->getRequestByMont($tempData);
+        $result['chart3'] = $this->getTraficByDevice($tempData);
+        $result['chart4'] = $this->getTopVisitedUrls($tempData, 7);
 
         $response = array(
             'code' => 200,
@@ -109,6 +99,178 @@ class Dashboard extends REST_Controller
         $this->response($response, REST_Controller::HTTP_OK);
     }
 
+    private function getRequestByMont($tempData)
+    {
+
+        // Recopilar los datos del objeto de entrada en un array
+
+        // Inicializar arrays para las etiquetas (meses) y los datos (número de visitas)
+        $labels = array();
+        $visits = array();
+
+        // Iterar a través de los datos y contar las visitas por mes
+        foreach ($tempData as $entry) {
+            // Obtener el mes de la fecha del objeto de entrada
+            $month = date('F', strtotime($entry->date_create));
+
+            // Si ya se contaron visitas para este mes, agregar una al recuento existente
+            if (isset($visits[$month])) {
+                $visits[$month]++;
+            }
+            // De lo contrario, crear una nueva entrada en el array de recuento de visitas
+            else {
+                $visits[$month] = 1;
+            }
+        }
+
+        // Eliminar los meses sin visitas del array de datos
+        $visits = array_filter($visits);
+
+        // Ordenar los datos por mes (orden alfabético)
+        ksort($visits);
+
+        // Crear arrays separados para las etiquetas (meses) y los datos (número de visitas)
+        foreach ($visits as $month => $count) {
+            $labels[] = $month;
+            $data[] = $count;
+        }
+
+        // Crear el array de salida en el formato deseado
+        $output = array(
+            'labels' => $labels,
+            'datasets' => array(
+                array(
+                    "tension" => 0.5,
+                    'data' => $data,
+                ),
+            ),
+        );
+
+        return $output;
+    }
+
+    private function getTopVisitedUrls($data, $topCount = 5)
+    {
+        $ignoredUrls = ['/favicon.ico', '/robots.txt', '/'];
+        $filteredData = array_filter($data, function ($item) use ($ignoredUrls) {
+            return !in_array($item->requested_url, $ignoredUrls);
+        });
+
+        // Obtener un array con la cuenta de visitas de cada requested_url
+        $visitsCount = array_count_values(array_column($filteredData, 'requested_url'));
+
+        // Ordenar el array de mayor a menor visitas
+        arsort($visitsCount);
+
+        // Tomar los primeros $topCount elementos del array
+        $topUrls = array_slice($visitsCount, 0, $topCount);
+
+        // Crear los arrays para la salida del gráfico
+        $labels = array_keys($topUrls);
+        $data = array_values($topUrls);
+
+        return [
+            'labels' => $labels,
+            'datasets' => [
+                [
+                    'data' => $data,
+                ],
+            ],
+        ];
+    }
+
+    private function generateTrafficChart($data)
+    {
+        $visits = array();
+        foreach ($data as $item) {
+            $date = new DateTime($item->date_create);
+            $day = $date->format('M j');
+            $month = $date->format('M');
+
+            if (!isset($visits[$month])) {
+                $visits[$month] = array();
+            }
+
+            if (!isset($visits[$month][$day])) {
+                $visits[$month][$day] = 0;
+            }
+            $visits[$month][$day]++;
+        }
+
+        $topDays = array();
+        foreach ($visits as $month => $monthVisits) {
+            arsort($monthVisits);
+            $topDays[$month] = array_slice($monthVisits, 0, 5, true);
+        }
+
+        $labels = array();
+        $chartData = array();
+
+        foreach ($topDays as $month => $monthTopDays) {
+            foreach ($monthTopDays as $day => $visitsCount) {
+                $labels[] = "$day";
+                $chartData[] = $visitsCount;
+            }
+        }
+
+        $chart = array(
+            'labels' => $labels,
+            'datasets' => array(
+                array(
+                    "tension" => 0.5,
+                    'data' => $chartData,
+                ),
+            ),
+        );
+
+        return $chart;
+    }
+
+    private function getTraficByDevice($data)
+    {
+        $this->load->library('user_agent');
+
+        // array para almacenar la cantidad de visitas por dispositivo
+        $visitas_por_dispositivo = array(
+            'smartphone' => 0,
+            'tablet' => 0,
+            'desktop' => 0,
+            'otros' => 0,
+            'robot' => 0,
+        );
+
+        $Parser = new CI_User_agent();
+
+        // recorrer las visitas
+        foreach ($data as $visita) {
+            // obtener el user_agent de la visita
+
+            $user_agent = $visita->user_agent;
+            //$this->agent->parse($user_agent);
+            $Parser->parse($user_agent);
+            // detectar el tipo de dispositivo
+            if ($Parser->is_mobile()) {
+                $visitas_por_dispositivo['smartphone']++;
+            } else if ($Parser->is_robot()) {
+                $visitas_por_dispositivo['robot']++;
+            } else {
+                $visitas_por_dispositivo['desktop']++;
+            }
+        }
+
+        // generar el gráfico
+        $data = array(
+            'labels' => array_keys($visitas_por_dispositivo),
+            'datasets' => array(
+                array(
+                    'data' => array_values($visitas_por_dispositivo),
+                ),
+            ),
+        );
+
+        return $data;
+    }
+
     /**
      * Get All Data from this method.
      *
@@ -116,61 +278,8 @@ class Dashboard extends REST_Controller
      */
     public function index_post()
     {
-        $this->load->library('FormValidator');
-        $form = new FormValidator();
-
-        $config = array(
-            array('field' => 'name', 'label' => 'name', 'rules' => 'required|min_length[1]'),
-            array('field' => 'description', 'label' => 'description', 'rules' => 'required|min_length[1]'),
-            array('field' => 'type', 'label' => 'type', 'rules' => 'required|min_length[1]'),
-            array('field' => 'parent_id', 'label' => 'parent_id', 'rules' => 'integer|is_natural'),
-            array('field' => 'status', 'label' => 'status', 'rules' => 'required|integer|is_natural_no_zero'),
-        );
-
-        $form->set_rules($config);
-
-        if (!$form->run()) {
-            $response = array(
-                'code' => REST_Controller::HTTP_BAD_REQUEST,
-                'error_message' => lang('validations_error'),
-                'errors' => $form->_error_array,
-                'request_data' => $_POST,
-            );
-            $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
-            return;
-        }
-
-        $categorie = new Categories();
-
-        $this->input->post('categorie_id') ? $categorie->find($this->input->post('categorie_id')) : false;
-        $categorie->name = $this->input->post('name');
-        $categorie->description = $this->input->post('description');
-        $categorie->type = $this->input->post('type');
-        $categorie->user_id = userdata('user_id');
-        $categorie->type = $this->input->post('type');
-        $categorie->status = $this->input->post('status');
-        $categorie->date_create = date("Y-m-d H:i:s");
-        $categorie->date_publish = date("Y-m-d H:i:s");
-        $categorie->parent_id = $this->input->post('parent_id');
-        if ($categorie->save()) {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => $categorie,
-            );
-
-            $this->response($response, REST_Controller::HTTP_OK);
-
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_BAD_REQUEST,
-                "error_message" => lang('unexpected_error'),
-                'data' => $_POST,
-                'request_data' => $_POST,
-            );
-
-            $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
-        }
-
+        $data = array();
+        $this->response($data, REST_Controller::HTTP_NOT_FOUND);
     }
 
     /**
@@ -197,123 +306,7 @@ class Dashboard extends REST_Controller
     }
 
     /**
-     * @api {get} /api/v1/categorie/subcategorie/:categorie_id/:subcategorie_id Request SubCategorie information
-     * @apiName GetSubCategorie
-     * @apiGroup Categorie
-     *
-     * @apiParam {Number} categorie_id Categorie unique ID.
-     * @apiParam {Number} subcategorie_id SubCategorie unique ID.
-     *
-     * @apiSuccessExample Success-Response:
-     *     HTTP/1.1 200 OK
-     *   {
-     *       "code": 200,
-     *       "data": [
-     *           {
-     *               "categorie_id": "4",
-     *               "name": "SubCategoria 1",
-     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
-     *               "type": "page",
-     *               "parent_id": "0",
-     *               "date_publish": "2020-04-19 10:36:10",
-     *               "date_create": "2020-04-19 10:36:14",
-     *               "date_update": "2020-04-19 10:40:20",
-     *               "status": "1"
-     *           },
-     *           {
-     *               "categorie_id": "5",
-     *               "name": "SubCategoria 2",
-     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
-     *               "type": "page",
-     *               "parent_id": "0",
-     *               "date_publish": "2020-04-19 10:36:10",
-     *               "date_create": "2020-04-19 10:36:14",
-     *               "date_update": "2020-04-19 10:40:28",
-     *               "status": "1"
-     *           },
-     *       ]
-     *   }
-     *
-     * @apiError CategorieNotFound The id of the User was not found.
-     *
-     * @apiErrorExample Error-Response:
-     *     HTTP/1.1 404 Not Found
-     * {
-     *     "code": 404,
-     *     "error_message": "Resource not found",
-     *     "data": []
-     * }
-     */
-    public function subcategorie_get($categorie_id, $subcategorie_id = null)
-    {
-        $categorie = new Categories();
-        if ($subcategorie_id) {
-            $result = $categorie->where(array('parent_id' => $categorie_id, 'categorie_id' => $subcategorie_id));
-            $result = $result ? $result->first() : [];
-        } else {
-            $result = $categorie->where(array('parent_id' => $categorie_id));
-        }
-
-        if ($result) {
-            $response = array(
-                'code' => 200,
-                'data' => $result,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
-            return;
-        }
-
-        if ($categorie_id) {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => [],
-            );
-        }
-        $this->response($response, REST_Controller::HTTP_OK);
-    }
-
-    /**
-     * Get All Data from this method.
-     *
-     * @return Response
-     */
-    public function subcategorie_post()
-    {
-        $data = array();
-        $this->response($data, REST_Controller::HTTP_NOT_FOUND);
-    }
-
-    /**
-     * Get All Data from this method.
-     *
-     * @return Response
-     */
-    public function subcategorie_put($id)
-    {
-        $data = array();
-        $this->response($data, REST_Controller::HTTP_NOT_FOUND);
-
-    }
-
-    /**
-     * Get All Data from this method.
-     *
-     * @return Response
-     */
-    public function subcategorie_delete($id = null)
-    {
-        $data = array();
-        $this->response($data, REST_Controller::HTTP_NOT_FOUND);
-    }
-
-    /**
-     * @api {get} /api/v1/categorie/type/:type/ Request Categorie information
+     * @api {get} /api/v1/dashboard/type/:type/ Request Categorie information
      * @apiName GetCategorieType
      * @apiGroup Categorie
      *
@@ -325,7 +318,7 @@ class Dashboard extends REST_Controller
      *       "code": 200,
      *       "data": [
      *           {
-     *               "categorie_id": "4",
+     *               "dashboard_id": "4",
      *               "name": "Categoria 1",
      *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
      *               "type": "page",
@@ -336,76 +329,7 @@ class Dashboard extends REST_Controller
      *               "status": "1"
      *           },
      *           {
-     *               "categorie_id": "5",
-     *               "name": "Categoria 2",
-     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
-     *               "type": "page",
-     *               "parent_id": "0",
-     *               "date_publish": "2020-04-19 10:36:10",
-     *               "date_create": "2020-04-19 10:36:14",
-     *               "date_update": "2020-04-19 10:40:28",
-     *               "status": "1"
-     *           },
-     *       ]
-     *   }
-     *
-     * @apiError CategorieNotFound The id of the User was not found.
-     *
-     * @apiErrorExample Error-Response:
-     *     HTTP/1.1 404 Not Found
-     * {
-     *     "code": 404,
-     *     "error_message": "Resource not found",
-     *     "data": []
-     * }
-     */
-    public function type_get($type = 0)
-    {
-        $categorie = new Categories();
-        $result = $categorie->where(array('parent_id' => '0', 'type' => $type));
-
-        if ($result) {
-            $response = array(
-                'code' => 200,
-                'data' => $result,
-            );
-            $this->response($response, REST_Controller::HTTP_OK);
-            return;
-        }
-
-        $response = array(
-            'code' => REST_Controller::HTTP_OK,
-            'data' => [],
-        );
-
-        $this->response($response, REST_Controller::HTTP_OK);
-    }
-
-    /**
-     * @api {get} /api/v1/categorie/type/:type/ Request Categorie information
-     * @apiName GetCategorieType
-     * @apiGroup Categorie
-     *
-     * @apiParam {String} type Categorie Categorie type name.
-     *
-     * @apiSuccessExample Success-Response:
-     *     HTTP/1.1 200 OK
-     *   {
-     *       "code": 200,
-     *       "data": [
-     *           {
-     *               "categorie_id": "4",
-     *               "name": "Categoria 1",
-     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
-     *               "type": "page",
-     *               "parent_id": "0",
-     *               "date_publish": "2020-04-19 10:36:10",
-     *               "date_create": "2020-04-19 10:36:14",
-     *               "date_update": "2020-04-19 10:40:20",
-     *               "status": "1"
-     *           },
-     *           {
-     *               "categorie_id": "5",
+     *               "dashboard_id": "5",
      *               "name": "Categoria 2",
      *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
      *               "type": "page",
@@ -431,8 +355,8 @@ class Dashboard extends REST_Controller
     public function filter_get()
     {
 
-        $categorie = new Categories();
-        $result = $categorie->where(
+        $dashboard = new Categories();
+        $result = $dashboard->where(
             $_GET
         );
 

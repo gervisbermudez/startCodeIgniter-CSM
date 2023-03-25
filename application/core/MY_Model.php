@@ -2,38 +2,61 @@
 
 use Tightenco\Collect\Support\Collection;
 
+/**Clase MY_model que extiende de CI_Model e implementa JsonSerializable
+ */
 class MY_model extends CI_Model implements JsonSerializable
 {
+    /** Nombre de la tabla en la base de datos
+     */
     public $table;
+    /**Nombre de la clave primaria de la tabla
+     */
     public $primaryKey = 'id';
+    /**Indica si la tabla tiene timestamps (created_at y updated_at)
+     */
     public $timestamps = true;
+    /**Indica si la tabla tiene soft deletes (deleted_at)
+     */
     public $softDelete = false;
+    /**Indica si se va a mapear la salida de los campos
+     */
     public $map = false;
+    /**Campos de la tabla
+     */
     public $fields = array();
+    /**Indica si hay datos cargados en el modelo
+     */
     public $hasData = false;
+    /**Relación hasOne con otras tablas
+     */
     public $hasOne = [];
+    /**Relación hasMany con otras tablas
+     */
     public $hasMany = [];
+    /**Campos protegidos que no se pueden modificar
+     */
     public $protectedFields = array();
+    /**Campos calculados que no se guardan en la base de datos
+     */
     public $computed = array();
+    /**Permisos que tiene el modelo
+     */
     public $permisions = array(
         "CREATE",
         "UPDATE",
         "DELETE",
         "SELECT",
     );
-
-    /**
-     * The model's default values for attributes.
-     *
-     * @var array
+    /**Los valores predeterminados de los atributos del modelo.
+    @var array
      */
     protected $attributes = array();
-
+    /**Constructor de la clase */
     public function __construct()
     {
         parent::__construct();
-        /**
-         * Set the table name if is null
+        /*
+        Si no se ha definido el nombre de la tabla, se utiliza el nombre de la clase en minúsculas
          */
         if (!$this->table) {
             $this->table = strtolower(get_class($this));
@@ -41,11 +64,16 @@ class MY_model extends CI_Model implements JsonSerializable
     }
 
     /**
+     * Obtiene todos los registros de la tabla actual de la base de datos.
      * Return all records found on a table or false if nothing is found
-     * @return Collection
+     *
+     * @param array $limit Un array que contiene límites de registros y desplazamientos.
+     * @param array $order Un array que contiene el campo y la dirección de ordenamiento.
+     * @return Collection|bool Retorna una colección de objetos de la clase que hereda de esta, o false si no hay resultados.
      */
     public function all($limit = array(), $order = array())
     {
+        // Aplica limit si se especifica
         if ($limit && is_array($limit)) {
             if (isset($limit[1])) {
                 $this->db->limit($limit[0], $limit[1]);
@@ -53,42 +81,67 @@ class MY_model extends CI_Model implements JsonSerializable
                 $this->db->limit($limit[0]);
             }
         }
+
+        // Aplica ordenamiento si se especifica
         if ($order) {
             $this->db->order_by($order[0], $order[1]);
         } else {
             $this->db->order_by($this->primaryKey, 'ASC');
         }
 
+        // Selecciona los campos a obtener
         $this->db->select($this->getFieldsSelectCompile());
+
+        // Filtra los registros que tienen un campo de estado igual a 1
         $this->db->where(array('status' => 1));
+
+        // Obtiene los resultados
         $query = $this->db->get($this->table);
         if ($query->num_rows() > 0) {
 
+            // Devuelve una colección de objetos de la clase que hereda de esta
             return new Collection($this->filter_results($query->result()));
         }
 
+        // Devuelve false si no hay resultados
         return false;
     }
 
+    /**
+     * Método que devuelve una lista de elementos paginados utilizando el método all()
+     * @return Collection|bool Lista de elementos paginados
+     * */
     public function pager()
     {
+        // Obtiene la información de paginación
         $pagination_info = $this->get_pagination_info();
+
+        // Establece los límites de la consulta
         $limit = [$pagination_info["per_page"], $pagination_info["offset"]];
+
+        // Retorna la lista de elementos obtenidos mediante el método all()
         return $this->all($limit);
     }
 
+    /**
+     * Obtiene información de paginación para una lista de resultados.
+     *
+     * @return array Información de paginación.
+     */
     public function get_pagination_info()
     {
+        // Verifica si el parámetro 'page' está presente en la URL.
         if (isset($_GET['page'])) {
             $current_page = $_GET['page'];
         } else {
             $current_page = 1;
         }
-        $per_page = 25;
-        $total_rows = $this->get_count_all();
-        $offset = (($current_page - 1) * $per_page) + 1;
-        $total_pages = ceil($total_rows / $per_page);
+        $per_page = 25; // Número de resultados por página.
+        $total_rows = $this->get_count_all(); // Número total de resultados.
+        $offset = (($current_page - 1) * $per_page) + 1; // Registro de inicio en la página actual.
+        $total_pages = ceil($total_rows / $per_page); // Número total de páginas.
 
+        // Devuelve un arreglo con la información de paginación.
         return [
             "current_page" => $current_page,
             "per_page" => $per_page,
@@ -145,22 +198,35 @@ class MY_model extends CI_Model implements JsonSerializable
         return false;
     }
 
+    /**
+     * Mapea los campos de la tabla con los campos del modelo.
+     * @param array $fields Arreglo con los campos a ser mapeados.
+     * @return void
+     * */
     public function mapfields($fields)
     {
-        $this->before_map();
-        $this->map = true;
+        $this->before_map(); //Método que se ejecuta antes del mapeo de campos
+        $this->map = true; //Indica que se está haciendo el mapeo de campos
         foreach ($fields as $key => $value) {
             if (!in_array($key, $this->protectedFields)) {
-                $this->fields[] = $key;
-                $this->{$key} = $value;
+                $this->fields[] = $key; //Agrega el campo a la lista de campos del modelo
+                $this->{$key} = $value; //Asigna el valor del campo al atributo correspondiente del modelo
             }
         }
-        $this->after_map();
+        $this->after_map(); //Método que se ejecuta después del mapeo de campos
     }
 
+    /**
+     * Método "where" para agregar cláusulas "WHERE" a una consulta de base de datos en CodeIgniter.
+     * @param string|array $where - Cláusula "WHERE" en forma de cadena o matriz asociativa.
+     * @param string|array $limit - Límite de resultados. Puede ser un número o una matriz con el número y la posición de inicio.
+     * @param array $order - Orden de los resultados por columna.
+     * @return Collection|false - Una colección de objetos si hay resultados, de lo contrario devuelve "false".
+     * */
     public function where($where, $limit = '', $order = array())
     {
 
+        // Agregar límite a la consulta si se proporciona.
         if ($limit) {
             if (is_array($limit)) {
                 isset($limit[1]) ? $this->db->limit($limit[0], $limit[1]) : $this->db->limit($limit[0]);
@@ -169,19 +235,25 @@ class MY_model extends CI_Model implements JsonSerializable
             }
         }
 
+        // Agregar orden a la consulta si se proporciona, de lo contrario, ordenar por la clave primaria en orden ascendente.
         if ($order) {
             $this->db->order_by($order[0], $order[1]);
         } else {
             $this->db->order_by($this->primaryKey, 'ASC');
         }
 
+        // Agregar cláusula "WHERE" a la consulta.
         $this->db->where($where);
+
+        // Ejecutar la consulta.
         $query = $this->db->get($this->table);
 
+        // Si hay resultados, crear una colección de objetos y devolverla.
         if ($query->num_rows() > 0) {
             $result = new Collection($this->filter_results($query->result()));
             return $result;
         }
+        // De lo contrario, devolver "false".
         return false;
     }
 
@@ -189,20 +261,34 @@ class MY_model extends CI_Model implements JsonSerializable
      * @param str_term string
      * @return Collection
      */
+    /**
+     * Busca un término dado en todos los campos de una tabla en la base de datos y devuelve una colección de resultados.
+     * @param str_term string - Término a buscar
+     * @return Collection - Una colección de resultados de búsqueda
+     **/
     public function search($str_term)
     {
-        $this->db->select('*');
+        // Seleccionar todos los campos de la tabla
+        $this->db->select('');
+        // Especificar la tabla
         $this->db->from($this->table);
+
+        // Obtener los nombres de todos los campos de la tabla
         $table_fields = $this->db->list_fields($this->table);
+
+        // Bucle a través de los campos de la tabla y agregar una cláusula LIKE a cada uno de ellos
         foreach ($table_fields as $key => $value) {
             $this->db->or_like($value, $str_term);
         }
 
+        // Ejecutar la consulta y devolver los resultados como una colección
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
             $result = new Collection($this->filter_results($query->result()));
             return $result;
         }
+
+        // Si no se encuentran resultados, devolver una colección vacía
         return new Collection([]);
     }
 
@@ -459,13 +545,22 @@ class MY_model extends CI_Model implements JsonSerializable
         $this->{$table_data_name} = $this->search_for_data($this->{$this->primaryKey}, $this->primaryKey);
     }
 
+    /**
+     * Busca los datos de la tabla "table_data" relacionados con un campo de clave primaria específico y lo devuelve como un array
+     * @param string $primaryKey El valor de la clave primaria para buscar
+     * @param string $primaryKeyFieldName El nombre del campo de la clave primaria
+     * @return array Un array con los datos de la tabla "table_data" correspondientes a la clave primaria especificada
+     * */
     public function search_for_data($primaryKey, $primaryKeyFieldName)
     {
         $table_data_name = $this->table . '_data';
 
+        // Realiza una consulta para obtener los datos de la tabla "table_data" que se relacionan con la clave primaria especificada
         $this->db->where(array($primaryKeyFieldName => $primaryKey));
         $query = $this->db->get($table_data_name);
         $temp_array = [];
+
+        // Si la consulta devuelve resultados, procesa cada resultado y los agrega a un array temporal
         if ($query->num_rows() > 0) {
             $table_data = new Collection($query->result());
             foreach ($table_data as $value) {
@@ -477,20 +572,34 @@ class MY_model extends CI_Model implements JsonSerializable
                 }
             }
         }
+
+        // Si el array temporal contiene datos, devuelve el array, de lo contrario devuelve un array vacío
         return $temp_array ? $temp_array : [];
     }
 
+    /**
+     * created_data() - Crea datos adicionales asociados a un registro en la tabla de datos asociada. @return void
+     */
     public function created_data()
     {
+        // Se obtiene el nombre de la tabla de datos.
         $table_data_name = $this->table . '_data';
+
+        // Se obtiene el valor de la llave foránea correspondiente al registro.
         $foreing_id = $this->{$this->primaryKey};
+
+        // Se obtiene los datos adicionales del registro, si existen.
         $data = isset($this->{$table_data_name}) ? $this->{$table_data_name} : [];
+
+        // Se itera sobre los datos adicionales para insertarlos en la tabla de datos.
         foreach ($data as $key => $value) {
 
+            // Si el valor es un objeto o un arreglo, se convierte a formato JSON.
             if (gettype($value) == "object" || gettype($value) == "array") {
                 $value = json_encode($value);
             }
 
+            // Se crea el arreglo con los datos a insertar.
             $insert = array(
                 $this->primaryKey => $foreing_id,
                 '_key' => $key,
@@ -498,6 +607,7 @@ class MY_model extends CI_Model implements JsonSerializable
                 'status' => 1,
             );
 
+            // Se insertan los datos adicionales en la tabla de datos.
             $this->db->insert($table_data_name, $insert);
         }
     }

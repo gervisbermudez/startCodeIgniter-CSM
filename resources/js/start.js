@@ -46,13 +46,20 @@ jQuery(document).ready(function ($) {
   }
 });
 
+// Función que resuelve un camino en un objeto
 function resolve(obj, path) {
+  // Separamos el camino en un array
   path = path.split(".");
+  // Establecemos el objeto actual como el objeto inicial
   var current = obj;
+  // Mientras que el camino tenga elementos
   while (path.length) {
+    // Si el objeto actual no es de tipo "object" (por ejemplo, es una cadena), retornamos indefinido
     if (typeof current !== "object") return undefined;
+    // Establecemos el objeto actual como el siguiente objeto del camino
     current = current[path.shift()];
   }
+  // Retornamos el objeto actual al final del camino
   return current;
 }
 
@@ -63,16 +70,18 @@ function getFuncName() {
 var mixins = {
   data() {
     return {
-      debug: DEBUGMODE,
+      debug: DEBUGMODE, // Variable que indica si el modo debug está activado o no
       orderDataConf: {
-        strPropertyName: null,
-        sort_as: "asc",
+        // Configuración para ordenamiento de datos
+        strPropertyName: null, // Propiedad por la cual se ordena (por defecto es null)
+        sort_as: "asc", // Ordenamiento ascendente por defecto
       },
-      toDeleteItem: {},
+      toDeleteItem: {}, // Variable para guardar el ítem a eliminar
     };
   },
   filters: {
     capitalize: function (value) {
+      // Filtro para capitalizar una cadena de texto
       if (!value) return "";
       value = value.toString();
       return value.charAt(0).toUpperCase() + value.slice(1);
@@ -80,6 +89,7 @@ var mixins = {
   },
   methods: {
     searchInObject(object, strSearchTerm) {
+      // Función para buscar un término dentro de un objeto
       var keys = Object.keys(object);
       var result = false;
       for (var i = 0; i < keys.length; i++) {
@@ -94,12 +104,15 @@ var mixins = {
       return result;
     },
     getFullFileName(file) {
+      // Función para obtener el nombre completo de un archivo
       return file.file_name + "." + file.file_type;
     },
     getFullFilePath(file) {
+      // Función para obtener la ruta completa de un archivo
       return BASEURL + file.file_path + this.getFullFileName(file);
     },
     getSortData(strPropertyName) {
+      // Función para obtener los datos de ordenamiento
       if (this.orderDataConf.strPropertyName == strPropertyName) {
         return "sort_desc";
       }
@@ -109,6 +122,7 @@ var mixins = {
       return "both";
     },
     sortData(strPropertyName, array) {
+      // Función para ordenar los datos
       strPropertyName =
         this.orderDataConf.strPropertyName == null
           ? strPropertyName
@@ -120,6 +134,7 @@ var mixins = {
       array = sorted;
     },
     dynamicSort(property) {
+      // Función para ordenamiento dinámico
       var sortOrder = 1;
       if (property[0] === "-") {
         sortOrder = -1;
@@ -135,16 +150,18 @@ var mixins = {
       };
     },
     base_url: function (path) {
+      // Función para obtener la URL base
       return BASEURL + path;
     },
     getcontentText: function (html, length = 120) {
+      // Función para obtener el texto de un contenido
       var span = document.createElement("span");
       span.innerHTML = html;
       let text = span.textContent || span.innerText;
       return text.substring(0, length) + "...";
     },
     makeid: function (length) {
-      var result = "";
+      // Función para generar un ID aleatorio
       var characters =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
       var charactersLength = characters.length;
@@ -331,7 +348,9 @@ formsElements = [
   },
 ];
 
+// Definición de la clase "User"
 class User {
+  // Propiedades de la clase
   user_id = null;
   username = "";
   email = "";
@@ -348,14 +367,16 @@ class User {
     "create by": "",
   };
 
+  // Constructor de la clase
   constructor(params) {
     for (const param in params) {
       if (params.hasOwnProperty(param)) {
-        this[param] = params[param] || "";
+        this[param] = params[param] || ""; // Asigna los valores recibidos a las propiedades de la clase
       }
     }
   }
 
+  // Método de la clase que retorna el nombre completo del usuario
   get_fullname = () => {
     if (this.user_data.nombre && this.user_data.apellido) {
       return this.user_data.nombre + " " + this.user_data.apellido;
@@ -364,10 +385,12 @@ class User {
     }
   };
 
+  // Método de la clase que retorna la URL del perfil del usuario
   get_profileurl = () => {
     return BASEURL + "admin/usuarios/ver/" + this.user_id;
   };
 
+  // Método de la clase que retorna la URL del avatar del usuario
   get_avatarurl = () => {
     if (this.user_data.avatar) {
       return BASEURL + this.user_data.avatar;
@@ -376,12 +399,14 @@ class User {
     }
   };
 
+  // Método de la clase que retorna la URL de edición del usuario
   get_edit_url = () => {
     return BASEURL + "admin/usuarios/edit/" + this.user_id;
   };
 }
 
 class Page {
+  // Propiedades de la clase
   page_id = null;
   categorie_id = "";
   content = "";
@@ -402,7 +427,9 @@ class Page {
   user_id = "";
   visibility = "";
 
+  // Constructor de la clase
   constructor(params) {
+    // Recorre los parametros del objeto params y le asigna el valor al atributo correspondiente
     for (const param in params) {
       if (params.hasOwnProperty(param)) {
         this[param] = params[param] || "";
@@ -410,6 +437,7 @@ class Page {
     }
   }
 
+  // Método para obtener una versión resumida del contenido de la página
   getcontentText = function () {
     var span = document.createElement("span");
     span.innerHTML = this.content;
@@ -417,6 +445,7 @@ class Page {
     return text.substring(0, 220) + "...";
   };
 
+  // Método para obtener la ruta de la imagen principal de la página
   getPageImagePath() {
     if (this.imagen_file) {
       return (
@@ -430,6 +459,7 @@ class Page {
     return BASEURL + "public/img/default.jpg";
   }
 
+  // Método para obtener la ruta completa de la página
   getPageFullPath = function () {
     if (this.status == 1) {
       return BASEURL + this.path;
@@ -439,20 +469,20 @@ class Page {
 }
 
 class ExplorerFile {
-  date_create = "";
-  date_update = "";
-  featured = "";
-  file_id = "";
-  file_name = "";
-  file_path = "";
-  file_type = "";
-  parent_name = "";
-  rand_key = "";
-  share_link = "";
-  shared_user_group_id = "";
-  status = "";
-  user_id = "";
-  user = new User();
+  date_create = ""; // fecha de creación del archivo
+  date_update = ""; // fecha de actualización del archivo
+  featured = ""; // marca de destacado del archivo
+  file_id = ""; // identificador del archivo
+  file_name = ""; // nombre del archivo
+  file_path = ""; // ruta del archivo
+  file_type = ""; // tipo de archivo
+  parent_name = ""; // nombre del directorio padre
+  rand_key = ""; // clave aleatoria
+  share_link = ""; // enlace para compartir el archivo
+  shared_user_group_id = ""; // identificador del grupo de usuarios compartidos
+  status = ""; // estado del archivo
+  user_id = ""; // identificador del usuario propietario
+  user = new User(); // objeto usuario asociado al archivo
 
   constructor(params) {
     for (const param in params) {
@@ -462,22 +492,27 @@ class ExplorerFile {
     }
   }
 
+  // devuelve el nombre completo del archivo (nombre + extensión)
   get_filename = () => {
     return this.file_name + "." + this.file_type;
   };
 
+  // devuelve la ruta relativa del archivo
   get_relative_file_path = () => {
     return this.file_path + this.get_filename();
   };
 
+  // devuelve la ruta completa del archivo (con el nombre completo y la URL base)
   get_full_file_path = () => {
     return BASEURL + this.file_path + this.get_filename();
   };
 
+  // devuelve la ruta completa para compartir el archivo (con la URL base)
   get_full_share_path = () => {
     return BASEURL + this.share_link;
   };
 
+  // devuelve la clase de icono correspondiente al tipo de archivo
   get_icon() {
     let icon = "far fa-file";
     switch (this.file_type) {
@@ -520,6 +555,7 @@ class ExplorerFile {
     return icon;
   }
 
+  // devuelve verdadero si el archivo es una imagen
   is_image() {
     if (
       this.file_type == "jpg" ||
@@ -532,7 +568,9 @@ class ExplorerFile {
   }
 }
 
+// Definición de la clase Config_data
 class Config_data {
+  // Propiedades de la clase
   type_value = "string";
   validate_as = "text";
   max_lenght = "120";
@@ -541,13 +579,16 @@ class Config_data {
   input_type = "text";
   perm_values = null;
 
+  // Constructor de la clase
   constructor(params) {
+    // Ciclo for para asignar las propiedades pasadas como argumento
     for (const param in params) {
       if (params.hasOwnProperty(param)) {
         this[param] = params[param];
       }
     }
 
+    // Switch statement para definir el valor de la propiedad "handle_as" basado en el valor de "type_value"
     switch (this.type_value) {
       case "boolean":
         this.handle_as = "switch";

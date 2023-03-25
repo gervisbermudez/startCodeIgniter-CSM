@@ -28,8 +28,23 @@ body {
   width: auto;
   padding: 0px;
   display: grid;
-  grid-template-columns: 75% 24%;
+  grid-template-columns: 70% 30%;
   column-gap: 15px;
+
+  &.showLoader {
+    grid-template-columns: 100%;
+    padding: 1rem;
+  }
+
+  @include respond-down($xl) {
+    & {
+      grid-template-columns: 65% 35%;
+    }
+  }
+
+  @include respond-down($lg) {
+    grid-template-columns: 100%;
+  }
 
   @include respond-down($md) {
     grid-template-columns: 100%;
@@ -72,16 +87,31 @@ body {
 
     .columns {
       display: flex;
-      width: 80%;
+      width: 90%;
+
+      @include respond-down($xl) {
+        & {
+          width: 60%;
+          flex-wrap: wrap;
+        }
+      }
     }
 
     .colum {
-      width: 17%;
+      width: 20%;
       height: 60px;
-      margin: 0px 10px;
+      margin: 0px 5px;
       border-radius: 4px;
       display: flex;
       justify-content: space-between;
+
+      @include respond-down($xl) {
+        & {
+          width: 46%;
+          margin: 5px;
+        }
+      }
+
 
 
       &__description {
@@ -97,9 +127,10 @@ body {
         display: flex;
         align-items: center;
         padding: 0 10px;
-         i {
+
+        i {
           font-size: 27px;
-      }
+        }
       }
     }
 
@@ -173,7 +204,7 @@ body {
     border-radius: 6px;
     margin: 10px 0px;
     background: #fff;
-    height: 457px;
+    min-height: 457px;
 
     .title {
       position: relative;
@@ -278,8 +309,12 @@ body {
   border-radius: 10px;
   width: 46%;
   box-shadow: 4px 3px 16px #0000001f;
-  height: 150px;
   margin: 18px 0px;
+  padding: 15px;
+
+  @include respond-down($md) {
+    width: 100%;
+  }
 }
 
 .charts {
@@ -287,7 +322,57 @@ body {
   flex-wrap: wrap;
   justify-content: space-evenly;
   align-content: center;
+
+  .chart-header {
+    margin: 0 0 10px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .chart-body {
+    display: flex;
+
+    .col1 {
+      width: 70%;
+      max-height: 130px;
+      display: flex;
+      align-content: center;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .col1:only-child {
+      width: 100%;
+    }
+
+    .chart-4 {
+      max-height: 160px;
+    }
+
+    .chart-big-number {
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    span.chart-title {
+      font-size: 13px;
+    }
+
+    .col2 {
+      width: 30%;
+      display: flex;
+      flex-direction: column;
+      align-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      padding: 20px 0px;
+      justify-content: space-evenly;
+    }
+  }
 }
+
 
 .page-widget {
   -webkit-box-shadow: 0px 1px 15px 1px rgba(69, 65, 78, 0.08);
@@ -784,6 +869,7 @@ body {
       line-height: 36px;
       width: 25px;
       cursor: pointer;
+      margin: 0 5px;
 
       &.active {
         color: #26a69a;
@@ -827,6 +913,7 @@ body {
     max-height: none;
     background-size: cover;
     background-position: center;
+    min-width: 80px;
   }
 
   .card-header {
@@ -849,8 +936,19 @@ body {
     padding: 0px 15px;
   }
 
+  .timeline-container {
+    max-height: 1200px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+
+  .card-stacked {
+    width: 70%;
+  }
+
   .truncate.title {
     font-size: 15px;
+    width: 130px;
   }
 
   .truncate.datetime {

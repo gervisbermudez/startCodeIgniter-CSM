@@ -7,32 +7,56 @@
 @endsection
 
 @section('content')
-<div class="container large dashboard" id="root" v-cloak>
+<div class="container large dashboard" :class="{showLoader: loader}" id="root" v-cloak>
     <div v-show="loader">
-            <div class="row">
-                <div class="col m8 s12">
-                    <div class="row">
-                        <div class="col s12">
-                            <div class="skeleton-list heightForSkeleton-list">&nbsp;</div>
-                        </div>
+        <div class="row">
+            <div class="col s8">
+                <div class="row">
+                    <div class="col s12">
+                        <div class="skeleton-list heightForSkeleton-list">&nbsp;</div>
                     </div>
                 </div>
-                <div class="col m4 s12">
-                    <div class="skeleton-blog heightForSkeleton-blog"></div>
+                <div class="row">
+                    <div class="col s6 ">
+                        <div class="skeleton-card heightForSkeleton-card"></div>
+                    </div>
+                    <div class="col s6 ">
+                        <div class="skeleton-card heightForSkeleton-card"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s6 ">
+                        <div class="skeleton-card heightForSkeleton-card"></div>
+                    </div>
+                    <div class="col s6">
+                        <div class="skeleton-card heightForSkeleton-card"></div>
+                    </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col s12 m4">
-                    <div class="skeleton-card heightForSkeleton-card"></div>
+            <div class="col s4">
+                <div class="row">
+                    <div class="col s12">
+                        <div class="skeleton-blog heightForSkeleton-blog"></div>
+                    </div>
                 </div>
-                <div class="col s12 m4">
-                    <div class="skeleton-card heightForSkeleton-card"></div>
+                <div class="row">
+                    <div class="col s12">
+                        <div class="skeleton-blog heightForSkeleton-blog"></div>
+                    </div>
                 </div>
-                <div class="col s12 m4">
-                    <div class="skeleton-card heightForSkeleton-card"></div>
+                <div class="row">
+                    <div class="col s12">
+                        <div class="skeleton-blog heightForSkeleton-blog"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                        <div class="skeleton-blog heightForSkeleton-blog"></div>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
     <div class="col-left" v-show="!loader">
         <div class="overview">
             <span>Overview</span>
@@ -41,7 +65,7 @@
             <div class="welcome_container">
                 <div class="welcome_message">
                     <span class="welcome_big">Welcome back,</span> <br />
-                    <span>{{userdata('username') }}</span>
+                    <span>{{userdata('nombre') }} {{userdata('apellido') }}</span>
                 </div>
                 <div class="columns">
                     <div class="colum st-teal">
@@ -86,48 +110,91 @@
                 </div>
             </div>
         </div>
-        <div  class="row">
-            <div class="col m8 s12">
+        <div class="row">
+            <div class="col s12">
                 <div class="row">
                     <div class="col s12">
-                       <div class="panel">
+                        <div class="panel">
                             <div class="title">
                                 <h5>Stadistics</h5>
                             </div>
                             <div class="charts">
                                 <div class="chart chart-1">
                                     <div class="chart-header">
-                                        Chart Header
+                                        Visitas por dia
                                     </div>
-                                    <div class="col1">
-                                        <div id="myChart"></div>
-                                    </div>
-                                    <div class="col2">
-                                    <span class="chart-title">VISITORS</span>
-                                    <div class="chart-big-number">20.345</div>
-                                    <div class="chart-description">Views 53%</div>
+                                    <div class="chart-body">
+                                        <div class="col1 ">
+                                            <canvas id="myChart1"></canvas>
+                                        </div>
+                                        <div class="col2">
+                                            <span class="chart-title">VISITORS</span>
+                                            <div class="chart-big-number">20.345</div>
+                                            <div class="chart-description">Views 53%</div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="chart chart-2"></div>
-                                <div class="chart chart-3"></div>
-                                <div class="chart chart-4"></div>
+                                <div class="chart chart-2">
+                                    <div class="chart-header">
+                                        Cantidad de Requets
+                                    </div>
+                                    <div class="chart-body">
+                                        <div class="col2">
+                                            <span class="chart-title">VISITORS</span>
+                                            <div class="chart-big-number">20.345</div>
+                                            <div class="chart-description">Views 53%</div>
+                                        </div>
+                                        <div class="col1 ">
+                                            <canvas id="myChart2"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="chart chart-3">
+                                    <div class="chart-header">
+                                        Dispositivos
+                                        <div class="chart-description">@{{graphs.devices.labelMayor}}
+                                            @{{graphs.devices.porcentajeMayor}}%</div>
+                                    </div>
+                                    <div class="chart-body">
+                                        <div class="col1 ">
+                                            <canvas id="myChart3"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="chart chart-4">
+                                    <div class="chart-header">
+                                        URL Frecuentes
+                                    </div>
+                                    <div class="chart-body">
+                                        <div class="col1 ">
+                                            <canvas id="myChart4"></canvas>
+                                        </div>
+                                        <div class="col2">
+                                            <span
+                                                class="chart-title truncate">@{{graphs.urlFrecuentes.labelMayor}}</span>
+                                            <div class="chart-big-number truncate">
+                                                @{{graphs.urlFrecuentes.valorMasAlto}}</div>
+                                            <div class="chart-description truncate">
+                                                @{{graphs.urlFrecuentes.porcentajeMayor}}%
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                       </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col m4 s12">
+            <div class="col m6 l6 xl4 s12">
                 <users-collection :users="users"></users-collection>
             </div>
-        </div>
-        <div  class="row">
-            <div class="col m4 s12">
+            <div class="col m6 l6 xl4 s12">
                 <file-explorer-collection :files="files"></file-explorer-collection>
             </div>
-            <div class="col m4 s12">
+            <div class="col m6 l6 xl4 s12">
                 <albumes-widget :albumes="albumes"></albumes-widget>
             </div>
-            <div class="col m4 s12">
+            <div class="col s12">
                 <create-contents :forms_types="forms_types" :content="content"></create-contents>
             </div>
         </div>
@@ -135,25 +202,26 @@
     <div class="col-right st-white" v-show="!loader">
         <div class="row creator">
             <div class="col s12 ">
-               <div class="creator-container">
+                <div class="creator-container">
                     <div class="user-avatar">
-                        <img class="circle responsive-img" src="{{base_url()}}public/img/profile/default_profile_2.jpg" />
-                        <span class="truncate">Let’s create something, Gervis</span>
+                        <img class="circle responsive-img" src="{{userdata('avatar')}}" />
+                        <span class="truncate">Let’s create something, {{userdata('nombre')}}</span>
                     </div>
                     <div class="creator-input-field">
-                        <textarea id="creator-input" placeholder="Type here..." class="materialize-textarea"></textarea>
+                        <textarea id="creator-input" placeholder="Type here..." class="materialize-textarea"
+                            v-model="creator.content"></textarea>
                     </div>
                     <div class="creator-options">
                         <div class="options-icons">
-                            <i class="material-icons active">web</i>
-                            <i class="material-icons">perm_media</i>
-                            <i class="material-icons">receipt</i>
-                            <i class="material-icons">camera_alt</i>
-                            <i class="material-icons">attach_file</i>
+                            <i class="material-icons tooltipped" v-for="mode in creator.modes" key="mode"
+                                :class="{'active': creator.mode == mode}" data-position="top" data-delay="500"
+                                :data-tooltip="mode" @click="setCreatorMode(mode)">@{{creator.icons[mode]}}</i>
                         </div>
-                        <a class="waves-effect waves-light btn">Create<i class="material-icons right">send</i></a>
+                        <button class="waves-effect waves-light btn" @click="saveDraft"
+                            :class="{disabled: creator.content.length < 6}">Create<i
+                                class="material-icons right">send</i></a>
                     </div>
-               </div>
+                </div>
             </div>
         </div>
         <div class="row drafts">
@@ -162,72 +230,36 @@
                     <span>Lastes Drafts</span>
                 </div>
                 <div class="collection">
-                    <a href="#!" class="collection-item"><span class="badge">1</span>Alan</a>
-                    <a href="#!" class="collection-item"><span class="new badge">4</span>Alan</a>
-                    <a href="#!" class="collection-item">Alan</a>
-                    <a href="#!" class="collection-item"><span class="badge">14</span>Alan</a>
+                    <a v-for="(draf, index) in pages_draf" :key="index" :href="draf.link" class="collection-item"><span
+                            class="badge">1</span><span class="truncate">@{{draf.title}}</span></a>
                 </div>
             </div>
         </div>
         <div class="row timeline">
             <div class="col s12">
-            <div class="title">
+                <div class="title">
                     <span>Timeline</span>
                 </div>
-                <div class="card horizontal">
-                    <div class="card-image" style="background-image: url(https://materializecss.com/images/sample-1.jpg);"></div>
-                    <div class="card-stacked">
-                    <i class="material-icons card-options">more_vert</i>
-                        <div class="card-header">
-                            <img class="circle responsive-img" src="{{base_url()}}public/img/profile/default_profile_2.jpg" />
-                            <div class="card-info">
-                                <span class="truncate title">CARD TITLE</span>
-                                <span class="truncate datetime">Yestarday at 5:06 PM</span>
+                <div class="timeline-container">
+                    <div class="card horizontal" v-for="(card, index) in timeline" :key="index">
+                        <div v-if="card.imagen_file" class="card-image"
+                            :style="'background-image: url(' + card.imagen_file.file_front_path + ');'"></div>
+                        <div class="card-stacked">
+                            <i class="material-icons card-options">more_vert</i>
+                            <div class="card-header">
+                                <img class="circle responsive-img"
+                                    src="{{base_url()}}public/img/profile/default_profile_2.jpg" />
+                                <div class="card-info">
+                                    <span class="truncate title">@{{card.title}}</span>
+                                    <span class="truncate datetime">@{{card.date}}</span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="card-content">
-                        <p>I am a very simple card. I am good at containing small bits of information.</p>
-                        </div>
-                        <div class="card-action">
-                        <a href="#">This is a link</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="card horizontal">
-                    <div class="card-image" style="background-image: url(https://materializecss.com/images/sample-1.jpg);"></div>
-                    <div class="card-stacked">
-                    <i class="material-icons card-options">more_vert</i>
-                        <div class="card-header">
-                            <img class="circle responsive-img" src="{{base_url()}}public/img/profile/default_profile_2.jpg" />
-                            <div class="card-info">
-                                <span class="truncate title">CARD TITLE</span>
-                                <span class="truncate datetime">Yestarday at 5:06 PM</span>
+                            <div class="card-content">
+                                <p>@{{card.content}}</p>
                             </div>
-                        </div>
-                        <div class="card-content">
-                        <p>I am a very simple card. I am good at containing small bits of information.</p>
-                        </div>
-                        <div class="card-action">
-                        <a href="#">This is a link</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="card horizontal">
-                    <div class="card-image" style="background-image: url(https://materializecss.com/images/sample-1.jpg);"></div>
-                    <div class="card-stacked">
-                        <i class="material-icons card-options">more_vert</i>
-                        <div class="card-header">
-                            <img class="circle responsive-img" src="{{base_url()}}public/img/profile/default_profile_2.jpg" />
-                            <div class="card-info">
-                                <span class="truncate title">CARD TITLE</span>
-                                <span class="truncate datetime">Yestarday at 5:06 PM</span>
+                            <div class="card-action">
+                                <a :href="card.link">View</a>
                             </div>
-                        </div>
-                        <div class="card-content">
-                        <p>I am a very simple card. I am good at containing small bits of information.</p>
-                        </div>
-                        <div class="card-action">
-                        <a href="#">This is a link</a>
                         </div>
                     </div>
                 </div>
@@ -236,16 +268,22 @@
     </div>
 </div>
 <div class="fixed-action-btn">
-    <a data-position="left" data-delay="50" data-tooltip="Formulario nuevo" class="btn-floating btn-large tooltipped red" href="{{base_url('admin/formularios/nuevo')}}">
+    <a data-position="left" data-delay="50" data-tooltip="Formulario nuevo"
+        class="btn-floating btn-large tooltipped red" href="{{base_url('admin/formularios/nuevo')}}">
         <i class="large material-icons">add</i>
     </a>
     <ul>
         @if(has_permisions('CREATE_USER'))
-        <li><a data-position="left" data-delay="50" data-tooltip="Usuario nuevo" class="btn-floating tooltipped red" href="{{base_url('admin/usuarios/agregar')}}"><i class="material-icons">perm_identity</i></a></li>
+        <li><a data-position="left" data-delay="50" data-tooltip="Usuario nuevo" class="btn-floating tooltipped red"
+                href="{{base_url('admin/usuarios/agregar')}}"><i class="material-icons">perm_identity</i></a></li>
         @endif
-        <li><a data-position="left" data-delay="50" data-tooltip="Pagina nueva" class="btn-floating tooltipped yellow darken-1" href="{{base_url('admin/paginas/nueva/')}}"><i class="material-icons">web</i></a></li>
-        <li><a data-position="left" data-delay="50" data-tooltip="Album nuevo" class="btn-floating tooltipped green" href="{{base_url('admin/galeria/nuevo/')}}"><i class="material-icons">publish</i></a></li>
-        <li><a data-position="left" data-delay="50" data-tooltip="Evento nuevo" class="btn-floating tooltipped blue" href="{{ base_url('admin/eventos/agregar/') }}"><i class="material-icons">assistant</i></a></li>
+        <li><a data-position="left" data-delay="50" data-tooltip="Pagina nueva"
+                class="btn-floating tooltipped yellow darken-1" href="{{base_url('admin/paginas/nueva/')}}"><i
+                    class="material-icons">web</i></a></li>
+        <li><a data-position="left" data-delay="50" data-tooltip="Album nuevo" class="btn-floating tooltipped green"
+                href="{{base_url('admin/galeria/nuevo/')}}"><i class="material-icons">publish</i></a></li>
+        <li><a data-position="left" data-delay="50" data-tooltip="Evento nuevo" class="btn-floating tooltipped blue"
+                href="{{ base_url('admin/eventos/agregar/') }}"><i class="material-icons">assistant</i></a></li>
     </ul>
 </div>
 @include('admin.components.pageCardComponent')
@@ -257,5 +295,9 @@
 @endsection
 
 @section('footer_includes')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.2.1/helpers.min.js"
+    integrity="sha512-JG3S/EICkp8Lx9YhtIpzAVJ55WGnxT3T6bfiXYbjPRUoN9yu+ZM+wVLDsI/L2BWRiKjw/67d+/APw/CDn+Lm0Q=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="<?=base_url('public/js/components/dashboardBundle.min.js?v=' . ADMIN_VERSION)?>"></script>
 @endsection
