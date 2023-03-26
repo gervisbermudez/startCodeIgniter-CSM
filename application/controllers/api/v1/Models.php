@@ -4,7 +4,7 @@
 
 require APPPATH . 'libraries/REST_Controller.php';
 
-class Forms extends REST_Controller
+class Models extends REST_Controller
 {
 
     public function __construct()
@@ -26,7 +26,7 @@ class Forms extends REST_Controller
 
     /**
      *
-     * @api {get} /forms/:form_id Get a lists of users
+     * @api {get} /models/:form_id Get a lists of users
      * @apiName GetForms
      * @apiGroup Forms
      *

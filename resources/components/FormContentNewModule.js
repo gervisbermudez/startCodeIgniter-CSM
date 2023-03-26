@@ -127,7 +127,7 @@ var FormNewModule = new Vue({
       $("html, body").animate({ scrollTop: 0 }, 600);
       this.debug ? console.log("saveData trigger") : null;
       var data = this.getFormData();
-      var url = BASEURL + "api/v1/forms/data";
+      var url = BASEURL + "api/v1/models/data";
       console.log(data);
       this.loader = true;
       var self = this;
@@ -163,9 +163,9 @@ var FormNewModule = new Vue({
         console.log("editMode", this.editMode);
         var self = this;
         if (form_content_id) {
-          var url = BASEURL + "api/v1/forms/data/" + form_content_id;
+          var url = BASEURL + "api/v1/models/data/" + form_content_id;
         } else {
-          var url = BASEURL + "api/v1/forms/" + form_custom_id;
+          var url = BASEURL + "api/v1/models/" + form_custom_id;
         }
         $.ajax({
           type: "GET",

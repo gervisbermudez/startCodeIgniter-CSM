@@ -253,7 +253,7 @@ var dataFormModule = new Vue({
           fields: element.fields,
         };
       });
-      var url = BASEURL + "api/v1/forms/data/";
+      var url = BASEURL + "api/v1/models/data/";
       $.ajax({
         type: "POST",
         url: url,
@@ -282,7 +282,7 @@ var dataFormModule = new Vue({
         //cargar campos del formulario
         this.form_custom_id = form_custom_id;
         var self = this;
-        var url = BASEURL + "api/v1/forms/" + form_custom_id;
+        var url = BASEURL + "api/v1/models/" + form_custom_id;
         $.ajax({
           type: "GET",
           url: url,
@@ -312,7 +312,7 @@ var dataFormModule = new Vue({
         this.debug ? console.log("editMode") : null;
 
         var self = this;
-        var url = BASEURL + "api/v1/forms/data/" + form_content_id;
+        var url = BASEURL + "api/v1/models/data/" + form_content_id;
         $.ajax({
           type: "GET",
           url: url,

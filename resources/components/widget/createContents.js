@@ -15,7 +15,7 @@ Vue.component("createContents", {
       var self = this;
       $.ajax({
         type: "POST",
-        url: BASEURL + "api/v1/forms/data_set_status/" + item.form_content_id,
+        url: BASEURL + "api/v1/models/data_set_status/" + item.form_content_id,
         data: {
           status: item.status ? "1" : "0",
         },

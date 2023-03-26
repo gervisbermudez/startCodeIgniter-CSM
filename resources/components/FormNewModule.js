@@ -177,7 +177,7 @@ var FormNewModule = new Vue({
         this.form_custom_id = form_custom_id;
         console.log("editMode", this.editMode);
         var self = this;
-        var url = BASEURL + "api/v1/forms/" + form_custom_id;
+        var url = BASEURL + "api/v1/models/" + form_custom_id;
         $.ajax({
           type: "GET",
           url: url,
