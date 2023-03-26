@@ -159,7 +159,7 @@ var FormNewModule = new Vue({
             self.loader = false;
             M.toast({
               html: `<span>Formulario Guardado</span> <a class="btn-flat toast-action" href="${
-                BASEURL + "admin/formularios/addData/" + self.form_custom_id
+                BASEURL + "admin/custommodels/addData/" + self.form_custom_id
               }"> Agregar Data</a>`,
             });
           }

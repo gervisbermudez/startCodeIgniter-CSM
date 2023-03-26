@@ -22,22 +22,27 @@
         <div class="row">
             <div class="col s12">
                 <div class="input-field col s12">
-                    <input placeholder="Form Name" v-model="form_name" id="form_name" type="text" class="validate">
-                    <label for="form_name" class="active">Form Name</label>
+                    <input placeholder="Model Name" v-model="form_name" id="form_name" type="text" class="validate">
+                    <label for="form_name" class="active">Model Name</label>
                 </div>
                 <div class="input-field col s12">
-                    <input placeholder="Form Name" v-model="form_description" id="form_description" type="text" class="validate">
-                    <label for="form_description" class="active">Form Desription</label>
+                    <input placeholder="Model Name" v-model="form_description" id="form_description" type="text"
+                        class="validate">
+                    <label for="form_description" class="active">Model Desription</label>
                 </div>
             </div>
             <div class="col s9">
                 <div class="row">
                     <div class="col s12">
                         <ul class="vtabs">
-                            <li class="vtab col s3" v-for="(tab, index) in tabs" :id="index" :class="{active : tab.active}">
-                                <a :href="'#' + tab.tabID" @click="setActive(index)" v-if="!tab.edited">@{{tab.tab_name}}</a>
-                                <i class="material-icons right" v-if="!tab.edited && index != 0" @click="deleteTab(index)">delete</i>
-                                <input type="text" :id="'input' + index" v-model="tab.tab_name" v-on:keyup.enter="saveTab(index)" v-on:blur="saveTab(index)" v-if="tab.edited">
+                            <li class="vtab col s3" v-for="(tab, index) in tabs" :id="index"
+                                :class="{active : tab.active}">
+                                <a :href="'#' + tab.tabID" @click="setActive(index)"
+                                    v-if="!tab.edited">@{{tab.tab_name}}</a>
+                                <i class="material-icons right" v-if="!tab.edited && index != 0"
+                                    @click="deleteTab(index)">delete</i>
+                                <input type="text" :id="'input' + index" v-model="tab.tab_name"
+                                    v-on:keyup.enter="saveTab(index)" v-on:blur="saveTab(index)" v-if="tab.edited">
                             </li>
                             <li class="vtab col s3"><a href="#tab1" @click="addTab()">New Tab +</a></li>
                         </ul>
@@ -47,9 +52,12 @@
                     <div id="simple-list">
                         <div class="row" v-for="(field, index) in tab.form_fields">
                             <div class="col s12 component">
-                                <a class="waves-effect waves-light btn right red darken-2" @click="removeField(i, index)"><i class="material-icons">delete</i></a>
+                                <a class="waves-effect waves-light btn right red darken-2"
+                                    @click="removeField(i, index)"><i class="material-icons">delete</i></a>
                                 <br>
-                                <component :serve-data="field.data" :is="field.component" :tab-parent="tab" :field-ref-index="index" :field-ref=" field" :configurable="true" ref="field.component">
+                                <component :serve-data="field.data" :is="field.component" :tab-parent="tab"
+                                    :field-ref-index="index" :field-ref=" field" :configurable="true"
+                                    ref="field.component">
                                 </component>
                             </div>
                         </div>
@@ -65,7 +73,8 @@
                             </li>
                             <li class="collection-item" v-for="(formsElement, index) in formsElements">
                                 <div>@{{formsElement.displayName}}
-                                    <a href="#!" class="secondary-content" @click="addField(formsElement)"><i class="material-icons">@{{formsElement.icon}}</i></a>
+                                    <a href="#!" class="secondary-content" @click="addField(formsElement)"><i
+                                            class="material-icons">@{{formsElement.icon}}</i></a>
                                 </div>
                             </li>
                         </ul>
@@ -75,28 +84,30 @@
         </div>
         <div class="row">
             <div class="form-group">
-                Activar Formulario
+                Enable Model
                 <div class="switch">
                     <label>
-                        No activo
+                        Disabled
                         <input type="checkbox" checked v-model="status" name="status" value="on">
                         <span class="lever"></span>
-                        Activo
+                        Enabled
                     </label>
                 </div>
             </div>
             <br>
             <div class="col s12 text-center form-group" class="" id="buttons">
-                <a href="<?php echo base_url('admin/formularios/'); ?>" class="btn waves-effect waves-teal btn-flat">Cancelar</a>
-                <a class="waves-effect waves-light btn waves-effect waves-teal" @click="saveData()"><i class="material-icons left">cloud</i> Guardar</a>
+                <a href="<?php echo base_url('admin/custommodels/'); ?>"
+                    class="btn waves-effect waves-teal btn-flat">Cancelar</a>
+                <a class="waves-effect waves-light btn waves-effect waves-teal" @click="saveData()"><i
+                        class="material-icons left">cloud</i> Save</a>
             </div>
         </div>
     </div>
 </div>
-@include('admin.formularios.formsFields')
+@include('admin.custommodels.formsFields')
 @isset($form_custom_id)
 <script>
-    const form_custom_id = <?php echo json_encode($form_custom_id); ?> ;
+const form_custom_id = <?php echo json_encode($form_custom_id); ?>;
 </script>
 @endisset
 @endsection

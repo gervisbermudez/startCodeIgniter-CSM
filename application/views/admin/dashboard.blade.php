@@ -269,7 +269,7 @@
 </div>
 <div class="fixed-action-btn">
     <a data-position="left" data-delay="50" data-tooltip="Formulario nuevo"
-        class="btn-floating btn-large tooltipped red" href="{{base_url('admin/formularios/nuevo')}}">
+        class="btn-floating btn-large tooltipped red" href="{{base_url('admin/custommodels/nuevo')}}">
         <i class="large material-icons">add</i>
     </a>
     <ul>

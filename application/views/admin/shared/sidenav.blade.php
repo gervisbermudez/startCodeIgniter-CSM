@@ -49,40 +49,10 @@
                 </ul>
             </div>
         </li>
-        <li class="{{isSectionActive('admin/formularios', 'match')}}">
-            <div class="collapsible-header">
-                <i class="material-icons">assignment</i>
-                <span>Formularios</span>
-            </div>
-            <div class="collapsible-body">
-                <ul>
-                    @if(has_permisions('SELECT_FORM_CUSTOMS'))
-                    <li>
-                        <a class="waves-effect" href="{{ base_url('admin/formularios/') }}">Todos</a>
-                    </li>
-                    @endif
-                    @if(has_permisions('CREATE_FORM_CUSTOM'))
-                    <li>
-                        <a href="{{ base_url('admin/formularios/nuevo') }}">Nuevo</a>
-                    </li>
-                    @endif
-                    @if(has_permisions('SELECT_CONTENT_DATA'))
-                    <li class="{{isSectionActive('admin/formularios', 'match')}}">
-                        <a class="waves-effect" href="{{ base_url('admin/formularios/content') }}">
-                            Contenidos</a>
-                    </li>
-                    @endif
-                </ul>
-            </div>
-        </li>
-        <li class="{{isSectionActive('calendario')}}">
-            <a class="waves-effect" href="{{ base_url('admin/calendario') }}"><i class="material-icons">event_note</i>
-                Calendario</a>
-        </li>
         <li class="{{isSectionActive('siteforms')}}">
             <div class="collapsible-header">
                 <i class="material-icons">assistant</i>
-                <span>Site Forms</span>
+                <span>Formularios</span>
             </div>
             <div class="collapsible-body">
                 <ul>
@@ -94,6 +64,10 @@
                     </li>
                 </ul>
             </div>
+        </li>
+        <li class="{{isSectionActive('calendario')}}">
+            <a class="waves-effect" href="{{ base_url('admin/calendario') }}"><i class="material-icons">event_note</i>
+                Calendario</a>
         </li>
         <li class="{{isSectionActive('Fragments')}}">
             <a class="waves-effect" href="{{ base_url('admin/Fragments/') }}"><i
@@ -198,6 +172,33 @@
                     <li>
                         <a href="{{ base_url('admin/videos/nuevo/') }}">Crear Video</a>
                     </li>
+                </ul>
+            </div>
+        </li>
+
+        <li class="{{isSectionActive('admin/custommodels', 'match')}}">
+            <div class="collapsible-header">
+                <i class="material-icons">assessment</i>
+                <span>Modelos</span>
+            </div>
+            <div class="collapsible-body">
+                <ul>
+                    @if(has_permisions('SELECT_FORM_CUSTOMS'))
+                    <li>
+                        <a class="waves-effect" href="{{ base_url('admin/custommodels/') }}">Todos</a>
+                    </li>
+                    @endif
+                    @if(has_permisions('CREATE_FORM_CUSTOM'))
+                    <li>
+                        <a href="{{ base_url('admin/custommodels/nuevo') }}">Nuevo</a>
+                    </li>
+                    @endif
+                    @if(has_permisions('SELECT_CONTENT_DATA'))
+                    <li class="{{isSectionActive('admin/custommodels', 'match')}}">
+                        <a class="waves-effect" href="{{ base_url('admin/custommodels/content') }}">
+                            Contenidos</a>
+                    </li>
+                    @endif
                 </ul>
             </div>
         </li>

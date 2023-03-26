@@ -91,7 +91,7 @@
                                                     <li><a :href="base_url('admin/paginas/editar/' + element.page_id)">Editar</a></li>
                                                     <li ><a :href="base_url('admin/paginas/view/' + element.page_id)">Preview</a></li>
                                                 </ul>
-                                                
+
                                             </div>
                                             <div class="card-content">
                                                 <span class="card-title">@{{element.title}}</span>
@@ -116,8 +116,8 @@
                                                 <user-info :user="element.user"></user-info>
                                                 <a class="dropdown-trigger right" href='#!' :data-target='"form_custom_id" + element.form_custom_id'> <i class="material-icons">more_vert</i></a>
                                                 <ul :id='"form_custom_id" + element.form_custom_id' class='dropdown-content'>
-                                                    <li><a :href="base_url('admin/formularios/addData/' + element.form_custom_id)"> Add data</a></li>
-                                                    <li><a :href="base_url('admin/formularios/editForm/' + element.form_custom_id)"> Edit</a></li>
+                                                    <li><a :href="base_url('admin/custommodels/addData/' + element.form_custom_id)"> Add data</a></li>
+                                                    <li><a :href="base_url('admin/custommodels/editForm/' + element.form_custom_id)"> Edit</a></li>
                                                 </ul>
                                             </div>
                                             <div class="card-content">
@@ -126,7 +126,7 @@
                                                     @{{element.form_description}}
                                                 </p>                                            </div>
                                             <div class="card-action">
-                                                <a :href="base_url('admin/formularios/addData/' + element.form_custom_id)">Add content</a>
+                                                <a :href="base_url('admin/custommodels/addData/' + element.form_custom_id)">Add content</a>
                                             </div>
                                         </div>
                                     </div>
