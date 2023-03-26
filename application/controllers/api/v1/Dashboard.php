@@ -53,17 +53,17 @@ class Dashboard extends REST_Controller
         $this->load->model('Admin/Categories');
         $this->load->model('Admin/User');
         $this->load->model('Admin/Page');
-        $this->load->model('Admin/Form_custom');
-        $this->load->model('Admin/Form_content');
+        $this->load->model('Admin/Custom_model');
+        $this->load->model('Admin/Custom_model_content');
         $this->load->model('Admin/File');
         $this->load->model('Admin/Album');
 
         $result = array();
 
-        $Form_conten = new Form_content();
+        $Form_conten = new Custom_model_content();
         $result['content'] = $Form_conten->all();
 
-        $form = new Form_custom();
+        $form = new Custom_model();
         $result['forms_types'] = $form->all();
 
         $dashboard = new Categories();

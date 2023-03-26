@@ -2,14 +2,15 @@
     exit('No direct script access allowed');
 }
 
-class Form_content extends MY_Model
+class Custom_model_content extends MY_Model
 {
     public $primaryKey = 'form_content_id';
     public $softDelete = true;
+    public $table = 'form_content';
 
     public $hasOne = [
         'user' => ['user_id', 'Admin/User', 'User'],
-        'form_custom' => ['form_custom_id', 'Admin/Form_custom', 'form_custom'],
+        'form_custom' => ['form_custom_id', 'Admin/Custom_model', 'form_custom'],
     ];
 
     public function __construct()
@@ -20,8 +21,8 @@ class Form_content extends MY_Model
     public function filter_results($collection = [])
     {
         $this->load->model('Admin/User');
-        $this->load->model('Admin/Form_custom');
-        $this->load->model('Admin/Form_content_data');
+        $this->load->model('Admin/Custom_model');
+        $this->load->model('Admin/Custom_model_content_data');
 
         foreach ($collection as $key => &$value) {
             if (isset($value->user_id) && $value->user_id) {
@@ -34,9 +35,9 @@ class Form_content extends MY_Model
 
         foreach ($collection as $key => &$value) {
             if (isset($value->user_id) && $value->user_id) {
-                $Form_custom = new Form_custom();
-                $Form_custom->find($value->form_custom_id);
-                $value->{'form_custom'} = $Form_custom->as_data();
+                $Custom_model = new Custom_model();
+                $Custom_model->find($value->form_custom_id);
+                $value->{'form_custom'} = $Custom_model->as_data();
             }
         }
 
@@ -45,8 +46,8 @@ class Form_content extends MY_Model
             if (isset($value->form_custom->tabs)) {
                 foreach ($value->form_custom->tabs as $index => $tab) {
                     foreach ($tab->form_fields as $form_field) {
-                        $Form_content_data = new Form_content_data();
-                        $form_field->{'field_data'} = $Form_content_data->where(["form_content_id" => $value->form_content_id, "form_field_id" => $form_field->form_field_id])->first();
+                        $Custom_model_content_data = new Custom_model_content_data();
+                        $form_field->{'field_data'} = $Custom_model_content_data->where(["form_content_id" => $value->form_content_id, "form_field_id" => $form_field->form_field_id])->first();
                         $form_value = (Array) $form_field->field_data->form_value;
                         $value->data[$form_field->data->fielApiID] = $form_value[$form_field->field_name];
                     }

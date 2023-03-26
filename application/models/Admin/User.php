@@ -81,22 +81,22 @@ class User extends MY_model
         }
 
         $this->load->model('Admin/Page');
-        $this->load->model('Admin/Form_content');
-        $this->load->model('Admin/Form_custom');
+        $this->load->model('Admin/Custom_model_content');
+        $this->load->model('Admin/Custom_model');
 
         $pages = new Page();
         $pages = $pages->where(["user_id" => $user_id]);
         $pages = $pages ? $pages->all() : [];
 
-        $Form_content = new Form_content();
-        $Form_content = $Form_content->where(["user_id" => $user_id]);
-        $Form_content = $Form_content ? $Form_content->all() : [];
+        $Custom_model_content = new Custom_model_content();
+        $Custom_model_content = $Custom_model_content->where(["user_id" => $user_id]);
+        $Custom_model_content = $Custom_model_content ? $Custom_model_content->all() : [];
 
-        $Form_custom = new Form_custom();
-        $Form_custom = $Form_custom->where(["user_id" => $user_id]);
-        $Form_custom = $Form_custom ? $Form_custom->all() : [];
+        $Custom_model = new Custom_model();
+        $Custom_model = $Custom_model->where(["user_id" => $user_id]);
+        $Custom_model = $Custom_model ? $Custom_model->all() : [];
 
-        $time_line_collection = array_merge($pages, $Form_custom, $Form_content);
+        $time_line_collection = array_merge($pages, $Custom_model, $Custom_model_content);
 
         function sortFunction($a, $b)
         {

@@ -2,18 +2,18 @@
     exit('No direct script access allowed');
 }
 
-class Form_custom extends MY_Model
+class Custom_model extends MY_Model
 {
     public $primaryKey = 'form_custom_id';
     public $softDelete = true;
-
+    public $table = 'form_custom';
 
     public $hasOne = [
         'user' => ['user_id', 'Admin/User', 'User'],
     ];
 
     public $hasMany = [
-        'tabs' => ['form_custom_id', 'Admin/Form_tabs', 'Form_tabs'],
+        'tabs' => ['form_custom_id', 'Admin/Custom_model_tabs', 'Custom_model_tabs'],
     ];
 
     public function __construct()

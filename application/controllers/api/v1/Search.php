@@ -84,12 +84,12 @@ class Search extends REST_Controller
             $file = new File();
             $data['files'] = $file->search($str_term);
 
-            $this->load->model('Admin/Form_custom');
-            $form_custom = new Form_custom();
+            $this->load->model('Admin/Custom_model');
+            $form_custom = new Custom_model();
             $data['form_customs'] = $form_custom->search($str_term);
 
-            $this->load->model('Admin/Form_content');
-            $form_content = new Form_content();
+            $this->load->model('Admin/Custom_model_content');
+            $form_content = new Custom_model_content();
             $data['form_contents'] = $form_content->search($str_term);
 
             $this->load->model('Admin/SiteForm');
@@ -112,7 +112,7 @@ class Search extends REST_Controller
             $album = new Album();
             $data['albumes'] = $album->search($str_term);
 
-        }else{
+        } else {
             $data = [];
         }
         $this->response_ok($data);

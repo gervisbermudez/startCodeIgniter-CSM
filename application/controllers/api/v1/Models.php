@@ -21,7 +21,7 @@ class Models extends REST_Controller
         }
 
         $this->load->database();
-        $this->load->model('Admin/Form_custom');
+        $this->load->model('Admin/Custom_model');
     }
 
     /**
@@ -67,7 +67,7 @@ class Models extends REST_Controller
      */
     public function index_get($form_id = null)
     {
-        $form = new Form_custom();
+        $form = new Custom_model();
         if ($form_id) {
             $result = $form->find($form_id);
             $result = $result ? $form : [];
@@ -130,10 +130,10 @@ class Models extends REST_Controller
         $data = (json_decode($_POST['data']));
         if (isset($data->form_custom_id) && $data->form_custom_id) {
             //Update Form
-            $result = $this->Form_custom->update_form($data);
+            $result = $this->Custom_model->update_form($data);
         } else {
             //Insert Form
-            $result = $this->Form_custom->save_form($data);
+            $result = $this->Custom_model->save_form($data);
         }
 
         if ($result) {
@@ -162,7 +162,7 @@ class Models extends REST_Controller
      */
     public function index_delete($form_id = null)
     {
-        $form = new Form_custom();
+        $form = new Custom_model();
         $result = $form->find($form_id);
         if ($result) {
             $result = $form->delete($form_id);
@@ -183,8 +183,8 @@ class Models extends REST_Controller
      */
     public function data_get($form_id = null)
     {
-        $this->load->model('Admin/Form_content');
-        $Form_conten = new Form_content();
+        $this->load->model('Admin/Custom_model_content');
+        $Form_conten = new Custom_model_content();
         if ($form_id) {
             $result = $Form_conten->where(['form_content_id' => $form_id]);
             $result = $result ? $result : [];
@@ -207,8 +207,8 @@ class Models extends REST_Controller
      */
     public function form_data_get($form_id = null)
     {
-        $this->load->model('Admin/Form_content');
-        $Form_conten = new Form_content();
+        $this->load->model('Admin/Custom_model_content');
+        $Form_conten = new Custom_model_content();
         if ($form_id) {
             $result = $Form_conten->where(['form_custom_id' => $form_id, 'status' => 1]);
             $result = $result ? $Form_conten->as_single_object($result) : [];
@@ -231,13 +231,13 @@ class Models extends REST_Controller
      */
     public function data_post()
     {
-        $this->load->model('Admin/Form_content');
-        $Form_conten = new Form_content();
+        $this->load->model('Admin/Custom_model_content');
+        $Form_conten = new Custom_model_content();
         $data = $_POST['data'];
         if (isset($data['form_content_id']) && $data['form_content_id']) {
             $result = $Form_conten->update_data_form($data);
         } else {
-            $result = $this->Form_content->save_data_form((object) $data);
+            $result = $this->Custom_model_content->save_data_form((object) $data);
         }
         if ($result) {
             $this->response_ok($result);
@@ -264,8 +264,8 @@ class Models extends REST_Controller
      */
     public function data_delete($form_content_id = null)
     {
-        $this->load->model('Admin/Form_content');
-        $Form_conten = new Form_content();
+        $this->load->model('Admin/Custom_model_content');
+        $Form_conten = new Custom_model_content();
         $Form_conten->find($form_content_id);
         $result = $Form_conten->delete();
         if ($result) {
@@ -277,8 +277,8 @@ class Models extends REST_Controller
 
     public function data_set_status_post($form_content_id = null)
     {
-        $this->load->model('Admin/Form_content');
-        $Form_conten = new Form_content();
+        $this->load->model('Admin/Custom_model_content');
+        $Form_conten = new Custom_model_content();
         $Form_conten->find($form_content_id);
         $Form_conten->status = $this->input->post('status');
         $result = $Form_conten->save();

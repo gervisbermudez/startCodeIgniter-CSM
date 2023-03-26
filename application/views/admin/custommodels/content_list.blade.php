@@ -24,7 +24,8 @@
                 <li><a href="#!" v-on:click="toggleView();"><i class="material-icons">view_module</i></a></li>
                 <li><a href="#!" v-on:click="getForms();"><i class="material-icons">refresh</i></a></li>
                 <li>
-                    <a href="#!" class='dropdown-trigger' data-target='dropdown-options'><i class="material-icons">more_vert</i></a>
+                    <a href="#!" class='dropdown-trigger' data-target='dropdown-options'><i
+                            class="material-icons">more_vert</i></a>
                     <!-- Dropdown Structure -->
                     <ul id='dropdown-options' class='dropdown-content'>
                         <li><a href="#!">Archivados</a></li>
@@ -51,19 +52,28 @@
                         <tr v-for="(content, index) in filterContents" :key="index">
                             <td>@{{content.form_custom.form_name}}</td>
                             <td>@{{getcontentText(content)}}</td>
-                            <td><a :href="base_url('admin/usuarios/ver/' + content.user_id)">@{{content.user.username}}</a></td>
+                            <td><a
+                                    :href="base_url('admin/usuarios/ver/' + content.user_id)">@{{content.user.username}}</a>
+                            </td>
                             <td>
-                                <i v-if="content.status == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Activo">publish</i>
-                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Inactivo">edit</i>
+                                <i v-if="content.status == 1" class="material-icons tooltipped" data-position="left"
+                                    data-delay="50" data-tooltip="Activo">publish</i>
+                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
+                                    data-tooltip="Inactivo">edit</i>
                             </td>
                             <td>
                                 @{{content.date_publish ? content.date_publish : content.date_create}}
                             </td>
                             <td>
-                                <a class='dropdown-trigger' href='#!' :data-target='"dropdown_" + content.form_content_id'><i class="material-icons">more_vert</i></a>
+                                <a class='dropdown-trigger' href='#!'
+                                    :data-target='"dropdown_" + content.form_content_id'><i
+                                        class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown_" + content.form_content_id' class='dropdown-content'>
-                                    <li><a :href="base_url('admin/custommodels/editData/' + content.form_custom_id + '/' + content.form_content_id)"> Editar</a></li>
-                                    <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(content, index);">Borrar</a></li>
+                                    <li><a
+                                            :href="base_url('admin/custommodels/editData/' + content.form_custom_id + '/' + content.form_content_id)">
+                                            Editar</a></li>
+                                    <li><a class="modal-trigger" href="#deleteModal"
+                                            v-on:click="tempDelete(content, index);">Borrar</a></li>
                                 </ul>
                             </td>
                         </tr>
@@ -79,17 +89,24 @@
                             <img :src="getContentImagePath(content)" />
                         </div>
 
-                        <a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href='#!' :data-target='"dropdown" + content.form_custom_id'>
+                        <a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href='#!'
+                            :data-target='"dropdown" + content.form_custom_id'>
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown" + content.form_custom_id' class='dropdown-content'>
-                            <li><a :href="base_url('admin/custommodels/editData/' + content.form_custom_id + '/' + content.form_content_id)"> Editar</a></li>
-                            <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(content, index);">Borrar</a></li>
+                            <li><a
+                                    :href="base_url('admin/custommodels/editData/' + content.form_custom_id + '/' + content.form_content_id)">
+                                    Editar</a></li>
+                            <li><a class="modal-trigger" href="#deleteModal"
+                                    v-on:click="tempDelete(content, index);">Borrar</a></li>
                         </ul>
                     </div>
                     <div class="card-content">
                         <div>
-                            <span class="card-title">@{{content.form_custom.form_name}} <i v-if="content.visibility == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Publico">public</i>
-                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Privado">lock</i>
+                            <span class="card-title">@{{content.form_custom.form_name}} <i
+                                    v-if="content.visibility == 1" class="material-icons tooltipped"
+                                    data-position="left" data-delay="50" data-tooltip="Publico">public</i>
+                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
+                                    data-tooltip="Privado">lock</i>
                             </span>
                             <div class="card-info">
                                 <p>
@@ -98,7 +115,8 @@
                                 <span class="activator right"><i class="material-icons">more_vert</i></span>
                                 <ul>
                                     <li class="truncate">
-                                        Author: <a :href="base_url('admin/usuarios/ver/' + content.user_id)">@{{content.user.username}}</a>
+                                        Author: <a
+                                            :href="base_url('admin/usuarios/ver/' + content.user_id)">@{{content.user.username}}</a>
                                     </li>
                                 </ul>
                             </div>
@@ -113,7 +131,8 @@
                             @{{getcontentText(content)}}
                         </span>
                         <ul>
-                            <li><b>Fecha de publicacion:</b> <br> @{{content.date_publish ? content.date_publish : content.date_create}}</li>
+                            <li><b>Fecha de publicacion:</b> <br>
+                                @{{content.date_publish ? content.date_publish : content.date_create}}</li>
                             <li><b>Type:</b>@{{content.form_custom.form_name}}</li>
                             <li><b>Estado:</b>
                                 <span v-if="content.status == 1">
@@ -132,20 +151,11 @@
     <div class="container" v-if="!loader && contents.length == 0" v-cloak>
         <h4>No hay contenidos creados</h4>
     </div>
-    <confirm-modal
-        id="deleteModal"
-        title="Confirmar Borrar"
-        v-on:notify="confirmCallback"
-    >
+    <confirm-modal id="deleteModal" title="Confirmar Borrar" v-on:notify="confirmCallback">
         <p>
             ¿Desea borrar esta content?
         </p>
     </confirm-modal>
-</div>
-<div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Nuevo Formulario" href="{{base_url('admin/custommodels/nuevo')}}">
-        <i class="large material-icons">add</i>
-    </a>
 </div>
 @endsection
 

@@ -2,10 +2,10 @@
     exit('No direct script access allowed');
 }
 
-class Form_fields extends MY_Model
+class Custom_model_content_data extends MY_model
 {
-    public $primaryKey = 'form_field_id';
-    public $hasData = true;
+    public $table = 'form_content_data';
+    public $primaryKey = 'form_content_data_id';
 
     public function __construct()
     {
@@ -15,9 +15,10 @@ class Form_fields extends MY_Model
     public function filter_results($collection = [])
     {
         foreach ($collection as $key => &$value) {
-            $value->{'data'} = $this->search_for_data($value->form_field_id, 'form_field_id');
+            if (isset($value->form_value) && $value->form_value) {
+                $value->form_value = json_decode($value->form_value);
+            }
         }
         return $collection;
     }
-
 }
