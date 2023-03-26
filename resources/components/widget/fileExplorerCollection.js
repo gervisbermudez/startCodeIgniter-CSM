@@ -112,7 +112,6 @@ Vue.component("fileExplorerCollection", {
       });
     },
     init() {
-      $(".fileExplorerCollection-root .collection").niceScroll();
       setTimeout(() => {
         var elems = document.querySelectorAll(".dropdown-trigger");
         M.Dropdown.init(elems, {});
