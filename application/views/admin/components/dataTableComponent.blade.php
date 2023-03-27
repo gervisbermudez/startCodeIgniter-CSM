@@ -46,6 +46,13 @@
                                             <li><a class="modal-trigger" href="#deleteModal" v-on:click="setToDeleteItem(item, index);">Delete</a></li>
                                             <li><a v-on:click="archiveItem(item, index);">Archive</a></li>
                                         </ul>
+                                        <ul v-else :id='"dropdown" + index' class='dropdown-content'>
+                                            <li
+                                                v-for="(option, option_index) in options"
+                                                :key="option_index">
+                                                <a @click="routerPush({option, index, item} )">@{{option.label}}</a>
+                                            </li>
+                                        </ul>
                                     </span>
                                 </td>
                             </tr>

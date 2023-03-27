@@ -1,47 +1,61 @@
+// Definición del componente Vue llamado "dataTable"
 var dataTable = Vue.component("dataTable", {
+  // Plantilla HTML utilizada para mostrar los datos de la tabla
   template: "#dataTableComponent-template",
+
+  // Propiedades que se utilizan para personalizar el comportamiento del componente
   props: {
+    // Ruta de acceso a los datos de la tabla
     endpoint: {
       type: String,
       required: false,
     },
+    // Nombre de la clave que contiene los datos en la respuesta
     index_data: {
       type: String,
       required: false,
     },
+    // Indica si se deben ocultar los IDs de las filas en la tabla
     hideids: {
       type: Boolean,
       default: false,
     },
+    // Personalización de las columnas de la tabla
     colums: {
       type: Array,
       required: false,
       default: null,
     },
+    // Indica si se debe mostrar la paginación en la tabla
     pagination: {
       type: Boolean,
       required: false,
       default: false,
     },
+    // Indica si se debe mostrar un campo de búsqueda en la tabla
     search_input: {
       type: Boolean,
       required: false,
       default: true,
     },
+    // Indica si se debe mostrar un campo de búsqueda vacío al cargar la tabla
     show_empty_input: {
       type: Boolean,
       required: false,
       default: true,
     },
+    // Nombre del módulo que se está utilizando
     module: {
       type: String,
       required: false,
     },
+    // Datos predefinidos que se mostrarán en la tabla
     preset_data: {
       type: Array,
       required: false,
       default: null,
     },
+    // Definición de las opciones de la tabla, como los botones de acción
     options: {
       type: Array,
       required: false,
@@ -211,7 +225,6 @@ var dataTable = Vue.component("dataTable", {
       this.filter = "";
     },
     pagerTo(page) {
-      console.log(page);
       this.getData(page);
     },
     initPlugins: function () {
@@ -285,7 +298,6 @@ var dataTable = Vue.component("dataTable", {
       return data;
     },
     getContent(item, colum) {
-      console.log(item, colum);
       let columName = colum.colum;
       if (colum.format && typeof colum.format == "function") {
         return colum.format(item, colum);
@@ -330,6 +342,27 @@ var dataTable = Vue.component("dataTable", {
         //window.location = BASEURL + "admin/" + this.module + "edit/" + (this.index_data ? item[this.index_data] : index);
       }
       return;
+    },
+    routerPush({ option, index, item }) {
+      console.log("routerPush", { option, item, index });
+      let params = {};
+
+      if (option.params) {
+        option.params.forEach((param) => {
+          params[param] = item[param];
+        });
+      }
+
+      this.$router.push({
+        name: option.href,
+        params: {
+          ...params,
+          data: {
+            index,
+            item,
+          },
+        },
+      });
     },
     createItem() {
       if (this.$listeners && this.$listeners.new) {

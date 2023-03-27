@@ -7,7 +7,8 @@ class Siteform_submit extends MY_model
     public $primaryKey = 'siteform_submit_id';
     public $table = 'siteform_submit';
     public $hasOne = [
-        'siteform_id' => ['siteform_id', 'Admin/SiteForm', 'SiteForm'],
+        'siteform' => ['siteform_id', 'Admin/SiteForm', 'SiteForm'],
+        'user_tracking' => ['user_tracking_id', 'Admin/User_tracking', 'User_tracking'],
     ];
     public $hasData = true;
 

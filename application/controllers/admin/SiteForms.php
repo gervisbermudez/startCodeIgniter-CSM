@@ -20,7 +20,7 @@ class Siteforms extends MY_Controller
 
     public function nuevo()
     {
-        $data['title'] = ADMIN_TITLE . " | SiteForm";
+        $data['title'] = ADMIN_TITLE . " | Formularios del Sitio";
         $data['h1'] = "Nuevo Formulario";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['siteform_id'] = '';
@@ -30,7 +30,7 @@ class Siteforms extends MY_Controller
 
     public function editar($siteform_id)
     {
-        $data['title'] = ADMIN_TITLE . " | SiteForm";
+        $data['title'] = ADMIN_TITLE . " | Formularios del Sitio";
         $data['h1'] = "Editar SiteForm";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['siteform_id'] = $siteform_id;

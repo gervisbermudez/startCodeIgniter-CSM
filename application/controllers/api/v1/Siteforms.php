@@ -373,4 +373,22 @@ class Siteforms extends REST_Controller
         $this->response_error(lang('not_found_error'));
 
     }
+
+    /**
+     *
+     * @return Response
+     */
+    public function submit_archive_post($id = null)
+    {
+        $Siteform_submit = new Siteform_submit();
+        $Siteform_submit->find($id);
+        if ($Siteform_submit) {
+            $Siteform_submit->status = 2; //archive
+            $Siteform_submit->save();
+            system_logger('pages', $Siteform_submit->siteform_submit_id, ("archive"), ("A Siteform_submit has been archive"));
+            $this->response_ok($Siteform_submit);
+        } else {
+            $this->response_error(lang('not_found_error'));
+        }
+    }
 }

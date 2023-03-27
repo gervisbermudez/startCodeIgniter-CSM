@@ -62,6 +62,9 @@
                     <li>
                         <a href="{{ base_url('admin/siteforms/nuevo/') }}">Nuevo</a>
                     </li>
+                    <li>
+                        <a href="{{ base_url('admin/siteforms/submit/') }}">Recibidos</a>
+                    </li>
                 </ul>
             </div>
         </li>
