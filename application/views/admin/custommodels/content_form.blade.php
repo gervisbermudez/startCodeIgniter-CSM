@@ -33,7 +33,7 @@
                 </div>
                 <div class="col s12 tab-pane" v-for="(tab, i) in tabs" :id="tab.tabID" :class="{active : tab.active}">
                     <div id="simple-list">
-                        <div class="row" v-for="(field, index) in tab.form_fields">
+                        <div class="row" v-for="(field, index) in tab.custom_model_fields">
                             <div class="col s12 component">
                                 <component :serve-data="field.data" :field-data="field.field_data" :is="field.component" :tab-parent="tab" :field-ref-index="index" :field-ref="field" :configurable="false" ref="field.component">
                                 </component>
@@ -64,10 +64,10 @@
     </div>
 </div>
 @include('admin.custommodels.formsFields')
-@isset($form_content_id)
+@isset($custom_model_content_id)
 <script>
-    const form_content_id = <?=json_encode($form_content_id);?>;
-    const form_custom_id = <?=json_encode($form_custom_id);?>;
+    const custom_model_content_id = <?=json_encode($custom_model_content_id);?>;
+    const custom_model_id = <?=json_encode($custom_model_id);?>;
 </script>
 @endisset
 @endsection

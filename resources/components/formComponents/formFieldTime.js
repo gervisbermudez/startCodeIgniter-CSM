@@ -11,12 +11,12 @@ Vue.component("formFieldTime", {
   data: function () {
     return {
       fieldPlaceholder: "",
-      form_field_id: null,
+      custom_model_fields_id: null,
       fieldID: this.makeid(10),
       fieldName: "Field Time",
       fielApiID: "field_time",
       time: null,
-      form_custom_data_id: null,
+      custom_model_data_id: null,
     };
   },
   methods: {
@@ -45,7 +45,7 @@ Vue.component("formFieldTime", {
         fieldID: this.fieldID,
         fieldName: this.fieldName,
         fielApiID: this.fielApiID,
-        form_custom_data_id: this.form_custom_data_id,
+        custom_model_data_id: this.custom_model_data_id,
       };
     },
     getContentData() {
@@ -61,7 +61,7 @@ Vue.component("formFieldTime", {
       setTimeout(() => {
         var elems = document.querySelectorAll(".timepicker");
         M.Timepicker.init(elems, {
-          twelveHour: false
+          twelveHour: false,
         });
       }, 2000);
     },
@@ -75,9 +75,9 @@ Vue.component("formFieldTime", {
         }
       }
       if (this.fieldData) {
-        this.form_field_id = this.fieldData.form_field_id;
-        this.form_custom_data_id = this.fieldData.form_custom_data_id;
-        this.time = this.fieldData.form_value.time;
+        this.custom_model_fields_id = this.fieldData.custom_model_fields_id;
+        this.custom_model_data_id = this.fieldData.custom_model_data_id;
+        this.time = this.fieldData.custom_model_content_data_value.time;
       }
       this.init();
     });

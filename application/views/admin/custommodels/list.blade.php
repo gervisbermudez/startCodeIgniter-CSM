@@ -66,12 +66,12 @@
                             </td>
                             <td>
                                 <a class='dropdown-trigger' href='#!'
-                                    :data-target='"dropdown_" + form.form_custom_id'><i
+                                    :data-target='"dropdown_" + form.custom_model_id'><i
                                         class="material-icons">more_vert</i></a>
-                                <ul :id='"dropdown_" + form.form_custom_id' class='dropdown-content'>
-                                    <li><a :href="base_url('admin/custommodels/addData/' + form.form_custom_id)">
+                                <ul :id='"dropdown_" + form.custom_model_id' class='dropdown-content'>
+                                    <li><a :href="base_url('admin/custommodels/addData/' + form.custom_model_id)">
                                             Agregar data</a></li>
-                                    <li><a :href="base_url('admin/custommodels/editForm/' + form.form_custom_id)">
+                                    <li><a :href="base_url('admin/custommodels/editForm/' + form.custom_model_id)">
                                             Editar</a></li>
                                     <li><a class="modal-trigger" href="#deleteModal"
                                             v-on:click="tempDelete(form, index);">Borrar</a></li>
@@ -91,12 +91,12 @@
                         </div>
 
                         <a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href='#!'
-                            :data-target='"dropdown" + form.form_custom_id'>
+                            :data-target='"dropdown" + form.custom_model_id'>
                             <i class="material-icons">more_vert</i></a>
-                        <ul :id='"dropdown" + form.form_custom_id' class='dropdown-content'>
-                            <li><a :href="base_url('admin/custommodels/addData/' + form.form_custom_id)"> Agregar
+                        <ul :id='"dropdown" + form.custom_model_id' class='dropdown-content'>
+                            <li><a :href="base_url('admin/custommodels/addData/' + form.custom_model_id)"> Agregar
                                     data</a></li>
-                            <li><a :href="base_url('admin/custommodels/editForm/' + form.form_custom_id)"> Editar</a>
+                            <li><a :href="base_url('admin/custommodels/editForm/' + form.custom_model_id)"> Editar</a>
                             </li>
                             <li><a class="modal-trigger" href="#deleteModal"
                                     v-on:click="tempDelete(form, index);">Borrar</a></li>

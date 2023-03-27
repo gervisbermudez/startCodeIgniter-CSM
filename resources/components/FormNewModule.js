@@ -11,7 +11,7 @@ var FormNewModule = new Vue({
     user: {},
     status: true,
     tabs: [],
-    form_custom_id: null,
+    custom_model_id: null,
     formsElements: formsElements,
     configurable: true,
   },
@@ -20,8 +20,8 @@ var FormNewModule = new Vue({
       return {
         tab_name: "Tab " + (this.tabs.length + 1),
         tabID: this.makeid(10),
-        form_tab_id: null,
-        form_fields: [],
+        custom_model_tab_id: null,
+        custom_model_fields: [],
         edited: true,
         active: true,
         status: true,
@@ -74,7 +74,7 @@ var FormNewModule = new Vue({
     addField(formField) {
       this.debug ? console.log("addField trigger") : null;
 
-      this.tabs[this.getActiveTab()].form_fields.push(
+      this.tabs[this.getActiveTab()].custom_model_fields.push(
         JSON.parse(JSON.stringify(formField))
       );
 
@@ -88,15 +88,15 @@ var FormNewModule = new Vue({
     },
     removeField(tabindex, fieldindex) {
       if (
-        this.tabs[tabindex].form_fields[fieldindex].component ==
+        this.tabs[tabindex].custom_model_fields[fieldindex].component ==
         "formTextFormat"
       ) {
         this.getfieldsData();
-        editor = this.tabs[tabindex].form_fields[fieldindex].data;
+        editor = this.tabs[tabindex].custom_model_fields[fieldindex].data;
         tinymce.editors[editor.fieldID].destroy();
-        this.tabs[tabindex].form_fields.splice(fieldindex, 1);
+        this.tabs[tabindex].custom_model_fields.splice(fieldindex, 1);
       } else {
-        this.tabs[tabindex].form_fields.splice(fieldindex, 1);
+        this.tabs[tabindex].custom_model_fields.splice(fieldindex, 1);
       }
     },
     getfieldsData() {
@@ -120,14 +120,14 @@ var FormNewModule = new Vue({
       this.debug ? console.log("setFieldData trigger") : null;
       this.tabs.map((element) => {
         if (element.tabID == tabID) {
-          element.form_fields[fieldIndex].data = data;
+          element.custom_model_fields[fieldIndex].data = data;
         }
       });
     },
     getFormData() {
       this.getfieldsData();
       return {
-        form_custom_id: this.form_custom_id,
+        custom_model_id: this.custom_model_id,
         form_name: this.form_name,
         form_description: this.form_description,
         date_create: this.date_create,
@@ -154,12 +154,12 @@ var FormNewModule = new Vue({
         success: function (response) {
           self.debug ? console.log(url, response) : null;
           if (response.data) {
-            self.form_custom_id = response.data.form_custom_id;
+            self.custom_model_id = response.data.custom_model_id;
             self.editMode = true;
             self.loader = false;
             M.toast({
               html: `<span>Formulario Guardado</span> <a class="btn-flat toast-action" href="${
-                BASEURL + "admin/custommodels/addData/" + self.form_custom_id
+                BASEURL + "admin/custommodels/addData/" + self.custom_model_id
               }"> Agregar Data</a>`,
             });
           }
@@ -171,13 +171,13 @@ var FormNewModule = new Vue({
       });
     },
     checkEditMode() {
-      if (typeof form_custom_id != "undefined") {
+      if (typeof custom_model_id != "undefined") {
         //cargar datos del formulario
         this.editMode = true;
-        this.form_custom_id = form_custom_id;
+        this.custom_model_id = custom_model_id;
         console.log("editMode", this.editMode);
         var self = this;
-        var url = BASEURL + "api/v1/models/" + form_custom_id;
+        var url = BASEURL + "api/v1/models/" + custom_model_id;
         $.ajax({
           type: "GET",
           url: url,
@@ -212,8 +212,10 @@ var FormNewModule = new Vue({
           active: false,
           tab_name: element.tab_name,
           status: element.status == "1",
-          form_tab_id: element.form_tab_id,
-          form_fields: element.form_fields ? element.form_fields : [],
+          custom_model_tab_id: element.custom_model_tab_id,
+          custom_model_fields: element.custom_model_fields
+            ? element.custom_model_fields
+            : [],
           tabID: this.makeid(10),
         };
       });

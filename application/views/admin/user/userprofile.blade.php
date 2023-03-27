@@ -108,16 +108,16 @@
                                         </div>
                                     </div>
                                 </template>
-                                <template v-if="element.model_type == 'form_custom'">
+                                <template v-if="element.model_type == 'custom_model'">
                                     <i class="material-icons bg-yellow mark">insert_chart</i>
                                     <div class="timeline-item">
                                     <div class="card">
                                             <div class="card-header">
                                                 <user-info :user="element.user"></user-info>
-                                                <a class="dropdown-trigger right" href='#!' :data-target='"form_custom_id" + element.form_custom_id'> <i class="material-icons">more_vert</i></a>
-                                                <ul :id='"form_custom_id" + element.form_custom_id' class='dropdown-content'>
-                                                    <li><a :href="base_url('admin/custommodels/addData/' + element.form_custom_id)"> Add data</a></li>
-                                                    <li><a :href="base_url('admin/custommodels/editForm/' + element.form_custom_id)"> Edit</a></li>
+                                                <a class="dropdown-trigger right" href='#!' :data-target='"custom_model_id" + element.custom_model_id'> <i class="material-icons">more_vert</i></a>
+                                                <ul :id='"custom_model_id" + element.custom_model_id' class='dropdown-content'>
+                                                    <li><a :href="base_url('admin/custommodels/addData/' + element.custom_model_id)"> Add data</a></li>
+                                                    <li><a :href="base_url('admin/custommodels/editForm/' + element.custom_model_id)"> Edit</a></li>
                                                 </ul>
                                             </div>
                                             <div class="card-content">
@@ -126,7 +126,7 @@
                                                     @{{element.form_description}}
                                                 </p>                                            </div>
                                             <div class="card-action">
-                                                <a :href="base_url('admin/custommodels/addData/' + element.form_custom_id)">Add content</a>
+                                                <a :href="base_url('admin/custommodels/addData/' + element.custom_model_id)">Add content</a>
                                             </div>
                                         </div>
                                     </div>

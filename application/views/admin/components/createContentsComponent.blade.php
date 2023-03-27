@@ -18,7 +18,7 @@
 						<li class="collection-item" v-for="(value, key) in Object.values(item.data)" :key="key" v-if="key < 2">@{{ value }}</li>
 					</ul>
 				</td>
-				<td><span class="new badge" data-badge-caption="">@{{item.form_custom.form_name}}</span></td>
+				<td><span class="new badge" data-badge-caption="">@{{item.custom_model.form_name}}</span></td>
 				<td>@{{item.user.get_fullname()}}</td>
 				<td>@{{timeAgo(item.date_create)}}</td>
 				<td>

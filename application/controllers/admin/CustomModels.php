@@ -59,14 +59,14 @@ class CustomModels extends MY_Controller
         echo $this->blade->view("admin.custommodels.form", $data);
     }
 
-    public function editForm($form_custom_id)
+    public function editForm($custom_model_id)
     {
         $data['base_url'] = $this->config->base_url();
         $data['title'] = ADMIN_TITLE . " | Modelo";
         $data['h1'] = "Edit Model";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['username'] = userdata('username');
-        $data['form_custom_id'] = $form_custom_id;
+        $data['custom_model_id'] = $custom_model_id;
         echo $this->blade->view("admin.custommodels.form", $data);
     }
 
@@ -79,28 +79,28 @@ class CustomModels extends MY_Controller
         echo $this->blade->view("admin.custommodels.content_list", $data);
     }
 
-    public function addData($form_custom_id)
+    public function addData($custom_model_id)
     {
         $data['base_url'] = $this->config->base_url();
         $data['title'] = ADMIN_TITLE . " | Modelo";
         $data['h1'] = "Modelos";
         $data['header'] = $this->load->view('admin/header', $data, true);
 
-        $data['form_custom_id'] = $form_custom_id;
-        $data['form_content_id'] = false;
+        $data['custom_model_id'] = $custom_model_id;
+        $data['custom_model_content_id'] = false;
         $data['editMode'] = false;
 
         echo $this->blade->view("admin.custommodels.content_form", $data);
     }
 
-    public function editData($form_custom_id, $form_content_id)
+    public function editData($custom_model_id, $custom_model_content_id)
     {
         $data['base_url'] = $this->config->base_url();
         $data['title'] = ADMIN_TITLE . " | Modelo";
         $data['h1'] = "Modelos";
         $data['header'] = $this->load->view('admin/header', $data, true);
-        $data['form_custom_id'] = $form_custom_id;
-        $data['form_content_id'] = $form_content_id;
+        $data['custom_model_id'] = $custom_model_id;
+        $data['custom_model_content_id'] = $custom_model_content_id;
         $data['editMode'] = true;
         echo $this->blade->view("admin.custommodels.content_form", $data);
     }

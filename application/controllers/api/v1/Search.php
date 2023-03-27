@@ -85,8 +85,8 @@ class Search extends REST_Controller
             $data['files'] = $file->search($str_term);
 
             $this->load->model('Admin/Custom_model');
-            $form_custom = new Custom_model();
-            $data['form_customs'] = $form_custom->search($str_term);
+            $custom_model = new Custom_model();
+            $data['form_customs'] = $custom_model->search($str_term);
 
             $this->load->model('Admin/Custom_model_content');
             $form_content = new Custom_model_content();

@@ -54,7 +54,7 @@ var dataFormModule = new Vue({
     editMode: false,
     loader: true,
     tabs: [],
-    form_custom_id: null,
+    custom_model_id: null,
     formsElements: [
       {
         name: "title",
@@ -239,10 +239,10 @@ var dataFormModule = new Vue({
         form_name: this.form_name,
         form_status: this.form_status ? 1 : 0,
         tabs: {},
-        form_custom_id: this.form_custom_id,
+        custom_model_id: this.custom_model_id,
       };
-      if (this.editMode && this.form_content_id) {
-        data.form_content_id = form_content_id;
+      if (this.editMode && this.custom_model_content_id) {
+        data.custom_model_content_id = custom_model_content_id;
       }
       this.tabs.forEach((element) => {
         if (element.fields.length < 0) {
@@ -263,7 +263,7 @@ var dataFormModule = new Vue({
         dataType: "json",
         success: function (response) {
           if (response.code == 200) {
-            this.form_content_id = response.data;
+            this.custom_model_content_id = response.data;
             M.toast({ html: "Datos guardados!" });
             setTimeout(() => {
               window.location = BASEURL + "admin/custommodels/content";
@@ -278,11 +278,11 @@ var dataFormModule = new Vue({
       });
     },
     loadFormFields() {
-      if (typeof form_custom_id != "undefined") {
+      if (typeof custom_model_id != "undefined") {
         //cargar campos del formulario
-        this.form_custom_id = form_custom_id;
+        this.custom_model_id = custom_model_id;
         var self = this;
-        var url = BASEURL + "api/v1/models/" + form_custom_id;
+        var url = BASEURL + "api/v1/models/" + custom_model_id;
         $.ajax({
           type: "GET",
           url: url,
@@ -306,13 +306,13 @@ var dataFormModule = new Vue({
       }
     },
     checkEditMode() {
-      if (form_content_id && typeof editMode != "undefined") {
-        this.form_content_id = form_content_id;
+      if (custom_model_content_id && typeof editMode != "undefined") {
+        this.custom_model_content_id = custom_model_content_id;
         this.editMode = editMode;
         this.debug ? console.log("editMode") : null;
 
         var self = this;
-        var url = BASEURL + "api/v1/models/data/" + form_content_id;
+        var url = BASEURL + "api/v1/models/data/" + custom_model_content_id;
         $.ajax({
           type: "GET",
           url: url,

@@ -15,7 +15,10 @@ Vue.component("createContents", {
       var self = this;
       $.ajax({
         type: "POST",
-        url: BASEURL + "api/v1/models/data_set_status/" + item.form_content_id,
+        url:
+          BASEURL +
+          "api/v1/models/data_set_status/" +
+          item.custom_model_content_id,
         data: {
           status: item.status ? "1" : "0",
         },
@@ -28,7 +31,7 @@ Vue.component("createContents", {
     },
     getFormsTypeUrl(formObject) {
       return (
-        BASEURL + "admin/custommodels/addData/" + formObject.form_custom_id
+        BASEURL + "admin/custommodels/addData/" + formObject.custom_model_id
       );
     },
     base_url(path) {

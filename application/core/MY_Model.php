@@ -390,32 +390,44 @@ class MY_model extends CI_Model implements JsonSerializable
      */
     public function get_data($where = 'all', $limit = '', $order = array())
     {
+        // Aplicar límite si es que se proporcionó
         if ($limit && is_array($limit)) {
             if (isset($limit[1])) {
+                // Aplicar límite con desplazamiento
                 $this->db->limit($limit[0], $limit[1]);
             } else {
+                // Aplicar límite sin desplazamiento
                 $this->db->limit($limit[0]);
             }
         }
 
+        // Aplicar ordenamiento si es que se proporcionó
         if ($order) {
+            // Aplicar ordenamiento personalizado
             $this->db->order_by($order[0], $order[1]);
         } else {
+            // Aplicar ordenamiento por defecto
             $this->db->order_by($this->primaryKey, 'ASC');
         }
 
+        // Obtener todos los registros si no se especificó una condición
         if ($where === 'all') {
+            // Obtener todos los registros de la tabla
             $query = $this->db->get($this->table);
             if ($query->num_rows() > 0) {
+                // Devolver una colección de objetos de los registros obtenidos
                 return new Collection($query->result());
             }
         } else {
+            // Obtener registros que cumplan con la condición proporcionada
             $query = $this->db->get_where($this->table, $where);
             if ($query->num_rows() > 0) {
+                // Devolver una colección de objetos de los registros obtenidos
                 return new Collection($query->result());
             }
         }
 
+        // Devolver falso si no se encontró ningún registro
         return false;
     }
 
@@ -433,19 +445,36 @@ class MY_model extends CI_Model implements JsonSerializable
         return false;
     }
 
+    /**
+     * Función para eliminar suavemente un registro de la tabla
+     * @param array $where - Condición para la eliminación del registro
+     * @return bool - Resultado de la eliminación suave
+     */
     public function soft_delete($where)
     {
+        // Verifica si la eliminación suave está habilitada
         if (!$this->softDelete) {
             return false;
         }
+
+        // Ejecuta el evento antes de la eliminación suave
         $this->deleting();
+
         $result = false;
+
+        // Realiza la eliminación suave si el mapeo está habilitado
         if ($this->map) {
             $this->status = 0;
+
+            // Establece la fecha de eliminación si existe una propiedad para ello
             if (property_exists($this, 'date_delete')) {
                 $this->date_delete = date("Y-m-d H:i:s");
             }
+
+            // Guarda los cambios en la base de datos
             $result = $this->save();
+
+            // Ejecuta el evento después de la eliminación suave
             if ($result) {
                 $this->deleted();
             }
@@ -578,7 +607,8 @@ class MY_model extends CI_Model implements JsonSerializable
     }
 
     /**
-     * created_data() - Crea datos adicionales asociados a un registro en la tabla de datos asociada. @return void
+     * created_data() - Crea datos adicionales asociados a un registro en la tabla de datos asociada.
+     * @return void
      */
     public function created_data()
     {
@@ -612,51 +642,88 @@ class MY_model extends CI_Model implements JsonSerializable
         }
     }
 
+    /**
+     * Updates the data of the current model in the database.
+     * The updated data is stored in a separate table associated with the model's primary table.
+     * @return void
+     * */
     public function updated_data()
     {
+        // Get the name of the data table associated with the current model
         $table_data_name = $this->table . '_data';
+
+        // Get the data to be updated
         $data = $this->{$table_data_name};
+
+        // Get the foreign key of the current model
         $foreing_id = $this->{$this->primaryKey};
+
+        // Loop through each data item and update the corresponding row in the data table
         foreach ($data as $key => $value) {
             $val = $value;
+
+            // Convert objects and arrays to JSON strings
             if (gettype($value) == "object" || gettype($value) == "array") {
                 $val = json_encode($value);
             }
+
+            // Build the update query for the data table
             $update = array(
                 '_value' => $val,
             );
             $where = array($this->primaryKey => $foreing_id, '_key' => $key);
+
+            // Check if a row with the specified key already exists in the data table
             $this->db->where($where);
             $query = $this->db->get($table_data_name);
+
+            // If a row already exists, update it
             if ($query->num_rows() > 0) {
                 $this->db->where($where);
                 $this->db->update($table_data_name, $update);
-            } else {
-                //Try insert if not exit previously
+            }
+            // If a row doesn't exist, insert a new one
+            else {
                 $insert = array(
                     $this->primaryKey => $foreing_id,
                     '_key' => $key,
                     '_value' => $val,
                     'status' => 1,
                 );
-
                 $this->db->insert($table_data_name, $insert);
             }
         }
     }
 
+    /**
+     * Borra los datos asociados a un registro eliminado
+     *
+     * @return bool|int Resultado de la eliminación de datos
+     */
     public function deleted_data()
     {
+        // Nombre de la tabla de datos asociados al registro
         $table_data_name = $this->table . '_data';
+
+        // ID del registro eliminado
         $foreing_id = $this->{$this->primaryKey};
+
+        // Datos a eliminar
         $data = array($this->primaryKey => $foreing_id);
+
+        // Si no hay datos, se devuelve falso
         if (!$data) {
             return false;
         }
+
+        // Se añade la condición de eliminación
         $this->db->where($data);
+
+        // Si no se permite eliminación suave, se borran los datos directamente
         if (!$this->softDelete) {
             return $this->db->delete($table_data_name);
         } else {
+            // Si se permite eliminación suave, se actualiza el estado del registro a "eliminado"
             $this->db->update($table_data_name, ["status" => "0"]);
         }
     }
@@ -732,23 +799,37 @@ class MY_model extends CI_Model implements JsonSerializable
 
     /**
      * Relations data events
+     * Esta función se encarga de mapear las relaciones de datos de los modelos de CodeIgniter
+     * La función mapRelations() se encarga de mapear las relaciones entre las tablas de la base de datos y cargar los datos correspondientes.
+     * Primero, verifica si la propiedad map está establecida en true.
+     * A continuación, recorre las relaciones hasOne y carga los datos correspondientes de la tabla relacionada utilizando el modelo apropiado. Si el valor delay está establecido en el tercer elemento del array de la relación, se deja el modelo sin cargar.
+     * Después, recorre las relaciones hasMany y carga los datos correspondientes de la tabla relacionada utilizando el modelo apropiado. Si el valor delay está establecido en el tercer elemento del array de la relación, se deja el modelo sin cargar. Si hay un cuarto elemento en el array, se fusiona con la cláusula WHERE generada para la consulta.
+     * Por último, recorre las relaciones computed y carga los datos resultantes de la función call_user_func().
      */
     public function mapRelations()
     {
         if ($this->map) {
+            // Mapeo de relaciones uno a uno
             foreach ($this->hasOne as $key => $value) {
                 $this->load->model($value[1]);
+                // Se crea una instancia de la clase correspondiente al modelo relacionado
                 ${$value[2]} = new $value[2]();
+                // Se determina si la carga de los datos de la relación se hace de forma diferida o no
                 if (isset($value[3]) && $value[3] == 'delay') {
                     ${$value[2]} = ${$value[2]};
                 } else {
                     ${$value[2]}->find($this->{$value[0]});
                 }
+                // Se establece el objeto mapeado en la propiedad correspondiente del objeto actual
                 $this->{$key} = ${$value[2]}->map ? ${$value[2]} : null;
             }
+
+            // Mapeo de relaciones uno a muchos
             foreach ($this->hasMany as $key => $value) {
                 $this->load->model($value[1]);
+                // Se crea una instancia de la clase correspondiente al modelo relacionado
                 ${$key} = new $value[2]();
+                // Se determina si la carga de los datos de la relación se hace de forma diferida o no
                 if (isset($value[3]) && $value[3] == 'delay') {
                     $this->{$key} = ${$key};
                 } else {
@@ -756,10 +837,14 @@ class MY_model extends CI_Model implements JsonSerializable
                     if (isset($value[3]) && is_array($value[3])) {
                         $where = array_merge($where, $value[3]);
                     }
+                    // Se establece la condición para recuperar los registros de la relación uno a muchos
                     $this->{$key} = ${$key}->where($where);
                 }
             }
+
+            // Mapeo de relaciones computadas
             foreach ($this->computed as $key => $value) {
+                // Se llama a la función computada correspondiente para obtener el resultado de la relación
                 $this->{$key} = call_user_func(array($this, $value));
             }
         }
@@ -768,50 +853,74 @@ class MY_model extends CI_Model implements JsonSerializable
 
     public function jsonSerialize()
     {
-        if ($this->map) {
-            $object = new StdClass();
+        if ($this->map) { // Se verifica si la propiedad 'map' es verdadera
+            $object = new StdClass(); // Se crea un objeto de la clase StdClass
+            // Se itera sobre los campos 'fields' del objeto y se asignan sus valores al objeto StdClass
             foreach ($this->fields as $key => $value) {
                 $object->{$value} = $this->{$value};
             }
+            // Se itera sobre las relaciones 'hasOne' y se asignan sus valores al objeto StdClass si estos existen en el objeto actual
             foreach ($this->hasOne as $key => $value) {
                 if (isset($this->{$key})) {
                     $object->{$key} = $this->{$key};
                 }
             }
+            // Se itera sobre las relaciones 'hasMany' y se asignan sus valores al objeto StdClass si estos existen en el objeto actual
             foreach ($this->hasMany as $key => $value) {
                 if (isset($this->{$key})) {
                     $object->{$key} = $this->{$key};
                 }
             }
+            // Se itera sobre los campos 'computed' y se asignan sus valores al objeto StdClass si estos existen en el objeto actual
             foreach ($this->computed as $key => $value) {
                 if (isset($this->{$key})) {
                     $object->{$key} = $this->{$key};
                 }
             }
+            // Si la propiedad 'hasData' es verdadera, se crea un nombre de propiedad para los datos del objeto y se asignan estos valores al objeto StdClass
             if ($this->hasData) {
                 $object_data_name = $this->table . '_data';
                 $object->{$object_data_name} = $this->{$object_data_name};
             }
-            return $object;
+            return $object; // Se retorna el objeto StdClass serializado en formato JSON
         }
     }
 
+    /**
+     * Esta función genera una consulta SELECT en formato JSON para una tabla de la base de datos.
+     * La función utiliza la propiedad de la base de datos "list_fields" para obtener todos los campos de la tabla.
+     * Luego, se recorren todos los campos para comprobar si son campos protegidos y no se deben incluir en la consulta.
+     * Si el campo no está protegido, se construye una cadena que representa el nombre del campo en formato JSON válido.
+     * El resultado final es una consulta SELECT que selecciona todos los campos no protegidos de la tabla y los concatena en un objeto JSON utilizando las funciones CONCAT y GROUP_CONCAT de MySQL.
+     */
     public function get_select_json($table_name = null)
     {
+        // Si no se proporciona un nombre de tabla, se utiliza el nombre de tabla predeterminado.
         $table_name = $table_name ? $table_name : $this->table;
+
+        // Se obtienen los campos de la tabla utilizando la propiedad "list_fields" de la base de datos.
         $fields = $this->db->list_fields($table_name);
+
+        // Se inicializa una cadena vacía que se utilizará para concatenar los nombres de campo en formato JSON.
         $str_fields_names = '';
+
+        // Se recorren todos los campos de la tabla.
         foreach ($fields as $field) {
+            // Si el campo no está protegido, se agrega el nombre del campo en formato JSON válido a la cadena de campos.
             if (!in_array($field, $this->protectedFields)) {
                 $str_fields_names .= '\'\"' . $field . '\" : \"\',' . $field . ', \'\",\' ';
             }
         }
-        $pos = strrpos($str_fields_names, ',');
 
+        // Se busca la última coma en la cadena de nombres de campo y se elimina si existe.
+        $pos = strrpos($str_fields_names, ',');
         if ($pos !== false) {
             $str_fields_names = substr_replace($str_fields_names, '', $pos, strlen(','));
         }
 
+        // Se construye la consulta SELECT en formato JSON utilizando las funciones CONCAT y GROUP_CONCAT de MySQL.
+        // Los nombres de los campos se encierran entre comillas dobles para que el resultado final sea un objeto JSON válido.
+        // La agrupación de los campos se realiza por el identificador único de la fila (campo ID de la tabla).
         return 'SELECT ' . $table_name . '.' . $table_name . '_id' . ', CONCAT(\'{\', GROUP_CONCAT(' . $str_fields_names . '), \'}\')  AS ' . $table_name . ' FROM ' . $table_name . ' GROUP BY ' . $table_name . '.' . $table_name . '_id';
     }
 

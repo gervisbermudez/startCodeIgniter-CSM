@@ -68,7 +68,7 @@ var CustomFormLists = new Vue({
       self.loader = true;
       $.ajax({
         type: "DELETE",
-        url: BASEURL + "api/v1/models/" + form.form_custom_id,
+        url: BASEURL + "api/v1/models/" + form.custom_model_id,
         data: {},
         dataType: "json",
         success: function (response) {

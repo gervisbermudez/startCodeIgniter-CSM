@@ -4,8 +4,7 @@
 
 class Custom_model_content_data extends MY_model
 {
-    public $table = 'form_content_data';
-    public $primaryKey = 'form_content_data_id';
+    public $primaryKey = 'custom_model_content_data_id';
 
     public function __construct()
     {
@@ -15,8 +14,8 @@ class Custom_model_content_data extends MY_model
     public function filter_results($collection = [])
     {
         foreach ($collection as $key => &$value) {
-            if (isset($value->form_value) && $value->form_value) {
-                $value->form_value = json_decode($value->form_value);
+            if (isset($value->custom_model_content_data_value) && $value->custom_model_content_data_value) {
+                $value->custom_model_content_data_value = json_decode($value->custom_model_content_data_value);
             }
         }
         return $collection;

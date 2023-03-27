@@ -71,7 +71,7 @@ var FormContentList = new Vue({
       self.loader = true;
       $.ajax({
         type: "DELETE",
-        url: BASEURL + "api/v1/models/data/" + content.form_content_id,
+        url: BASEURL + "api/v1/models/data/" + content.custom_model_content_id,
         data: {},
         dataType: "json",
         success: function (response) {

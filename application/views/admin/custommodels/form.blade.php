@@ -50,7 +50,7 @@
                 </div>
                 <div class="col s12 tab-pane" v-for="(tab, i) in tabs" :id="tab.tabID" :class="{active : tab.active}">
                     <div id="simple-list">
-                        <div class="row" v-for="(field, index) in tab.form_fields">
+                        <div class="row" v-for="(field, index) in tab.custom_model_fields">
                             <div class="col s12 component">
                                 <a class="waves-effect waves-light btn right red darken-2"
                                     @click="removeField(i, index)"><i class="material-icons">delete</i></a>
@@ -105,9 +105,9 @@
     </div>
 </div>
 @include('admin.custommodels.formsFields')
-@isset($form_custom_id)
+@isset($custom_model_id)
 <script>
-const form_custom_id = <?php echo json_encode($form_custom_id); ?>;
+const custom_model_id = <?php echo json_encode($custom_model_id); ?>;
 </script>
 @endisset
 @endsection

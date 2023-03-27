@@ -10,12 +10,12 @@ Vue.component("formTextFormat", {
   ],
   data: function () {
     return {
-      form_field_id: null,
+      custom_model_fields_id: null,
       fieldID: "text_format_" + this.makeid(10),
       fieldName: "text_format",
       fielApiID: "text_format_" + this.makeid(4),
       text: null,
-      form_custom_data_id: null,
+      custom_model_data_id: null,
       fieldPlaceholder: "",
     };
   },
@@ -43,7 +43,7 @@ Vue.component("formTextFormat", {
         fieldID: this.fieldID,
         fieldName: this.fieldName,
         fielApiID: this.fielApiID,
-        form_custom_data_id: this.form_custom_data_id,
+        custom_model_data_id: this.custom_model_data_id,
       };
     },
     getContentData() {
@@ -52,7 +52,7 @@ Vue.component("formTextFormat", {
       };
     },
     init() {
-      setTimeout(() => {        
+      setTimeout(() => {
         tinymce.init({
           selector: "#" + this.fieldID,
           plugins: ["link table code"],
@@ -74,9 +74,9 @@ Vue.component("formTextFormat", {
         }
       }
       if (this.fieldData) {
-        this.form_field_id = this.fieldData.form_field_id;
-        this.form_custom_data_id = this.fieldData.form_custom_data_id;
-        this.text = this.fieldData.form_value.text;
+        this.custom_model_fields_id = this.fieldData.custom_model_fields_id;
+        this.custom_model_data_id = this.fieldData.custom_model_data_id;
+        this.text = this.fieldData.custom_model_content_data_value.text;
       }
       this.init();
     });

@@ -4,8 +4,7 @@
 
 class Custom_model_fields extends MY_Model
 {
-    public $primaryKey = 'form_field_id';
-    public $table = 'form_fields';
+    public $primaryKey = 'custom_model_fields_id';
     public $hasData = true;
 
     public function __construct()
@@ -16,7 +15,7 @@ class Custom_model_fields extends MY_Model
     public function filter_results($collection = [])
     {
         foreach ($collection as $key => &$value) {
-            $value->{'data'} = $this->search_for_data($value->form_field_id, 'form_field_id');
+            $value->{'data'} = $this->search_for_data($value->custom_model_fields_id, 'custom_model_fields_id');
         }
         return $collection;
     }

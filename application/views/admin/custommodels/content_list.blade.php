@@ -50,7 +50,7 @@
                     </thead>
                     <tbody>
                         <tr v-for="(content, index) in filterContents" :key="index">
-                            <td>@{{content.form_custom.form_name}}</td>
+                            <td>@{{content.custom_model.form_name}}</td>
                             <td>@{{getcontentText(content)}}</td>
                             <td><a
                                     :href="base_url('admin/usuarios/ver/' + content.user_id)">@{{content.user.username}}</a>
@@ -66,11 +66,11 @@
                             </td>
                             <td>
                                 <a class='dropdown-trigger' href='#!'
-                                    :data-target='"dropdown_" + content.form_content_id'><i
+                                    :data-target='"dropdown_" + content.custom_model_content_id'><i
                                         class="material-icons">more_vert</i></a>
-                                <ul :id='"dropdown_" + content.form_content_id' class='dropdown-content'>
+                                <ul :id='"dropdown_" + content.custom_model_content_id' class='dropdown-content'>
                                     <li><a
-                                            :href="base_url('admin/custommodels/editData/' + content.form_custom_id + '/' + content.form_content_id)">
+                                            :href="base_url('admin/custommodels/editData/' + content.custom_model_id + '/' + content.custom_model_content_id)">
                                             Editar</a></li>
                                     <li><a class="modal-trigger" href="#deleteModal"
                                             v-on:click="tempDelete(content, index);">Borrar</a></li>
@@ -90,11 +90,11 @@
                         </div>
 
                         <a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href='#!'
-                            :data-target='"dropdown" + content.form_custom_id'>
+                            :data-target='"dropdown" + content.custom_model_id'>
                             <i class="material-icons">more_vert</i></a>
-                        <ul :id='"dropdown" + content.form_custom_id' class='dropdown-content'>
+                        <ul :id='"dropdown" + content.custom_model_id' class='dropdown-content'>
                             <li><a
-                                    :href="base_url('admin/custommodels/editData/' + content.form_custom_id + '/' + content.form_content_id)">
+                                    :href="base_url('admin/custommodels/editData/' + content.custom_model_id + '/' + content.custom_model_content_id)">
                                     Editar</a></li>
                             <li><a class="modal-trigger" href="#deleteModal"
                                     v-on:click="tempDelete(content, index);">Borrar</a></li>
@@ -102,7 +102,7 @@
                     </div>
                     <div class="card-content">
                         <div>
-                            <span class="card-title">@{{content.form_custom.form_name}} <i
+                            <span class="card-title">@{{content.custom_model.form_name}} <i
                                     v-if="content.visibility == 1" class="material-icons tooltipped"
                                     data-position="left" data-delay="50" data-tooltip="Publico">public</i>
                                 <i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
@@ -133,7 +133,7 @@
                         <ul>
                             <li><b>Fecha de publicacion:</b> <br>
                                 @{{content.date_publish ? content.date_publish : content.date_create}}</li>
-                            <li><b>Type:</b>@{{content.form_custom.form_name}}</li>
+                            <li><b>Type:</b>@{{content.custom_model.form_name}}</li>
                             <li><b>Estado:</b>
                                 <span v-if="content.status == 1">
                                     Publicado

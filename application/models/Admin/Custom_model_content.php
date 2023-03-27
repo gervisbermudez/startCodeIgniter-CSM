@@ -1,16 +1,18 @@
-<?php if (!defined('BASEPATH')) {
+<?php
+
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
 class Custom_model_content extends MY_Model
 {
-    public $primaryKey = 'form_content_id';
+    public $primaryKey = 'custom_model_content_id';
     public $softDelete = true;
-    public $table = 'form_content';
+    public $table = 'custom_model_content';
 
     public $hasOne = [
         'user' => ['user_id', 'Admin/User', 'User'],
-        'form_custom' => ['form_custom_id', 'Admin/Custom_model', 'form_custom'],
+        'custom_model' => ['custom_model_id', 'Admin/Custom_model', 'custom_model'],
     ];
 
     public function __construct()
@@ -36,20 +38,20 @@ class Custom_model_content extends MY_Model
         foreach ($collection as $key => &$value) {
             if (isset($value->user_id) && $value->user_id) {
                 $Custom_model = new Custom_model();
-                $Custom_model->find($value->form_custom_id);
-                $value->{'form_custom'} = $Custom_model->as_data();
+                $Custom_model->find($value->custom_model_id);
+                $value->{'custom_model'} = $Custom_model->as_data();
             }
         }
 
         foreach ($collection as $key => &$value) {
             $value->{'data'} = [];
-            if (isset($value->form_custom->tabs)) {
-                foreach ($value->form_custom->tabs as $index => $tab) {
-                    foreach ($tab->form_fields as $form_field) {
+            if (isset($value->custom_model->tabs)) {
+                foreach ($value->custom_model->tabs as $index => $tab) {
+                    foreach ($tab->custom_model_fields as $form_field) {
                         $Custom_model_content_data = new Custom_model_content_data();
-                        $form_field->{'field_data'} = $Custom_model_content_data->where(["form_content_id" => $value->form_content_id, "form_field_id" => $form_field->form_field_id])->first();
-                        $form_value = (Array) $form_field->field_data->form_value;
-                        $value->data[$form_field->data->fielApiID] = $form_value[$form_field->field_name];
+                        $form_field->{'field_data'} = $Custom_model_content_data->where(["custom_model_content_id" => $value->custom_model_content_id, "custom_model_fields_id" => $form_field->custom_model_fields_id])->first();
+                        $custom_model_content_data_value = (Array) $form_field->field_data->custom_model_content_data_value;
+                        $value->data[$form_field->data->fielApiID] = $custom_model_content_data_value[$form_field->field_name];
                     }
                 }
             }
@@ -64,9 +66,9 @@ class Custom_model_content extends MY_Model
 
         foreach ($collection as $item) {
             $data = [];
-            foreach ($item->form_custom->tabs as $tab) {
-                foreach ($tab->form_fields as $form_field) {
-                    $data[$form_field->data->fielApiID] = $form_field->field_data->form_value;
+            foreach ($item->custom_model->tabs as $tab) {
+                foreach ($tab->custom_model_fields as $form_field) {
+                    $data[$form_field->data->fielApiID] = $form_field->field_data->custom_model_content_data_value;
                 }
             }
             $result[] = $data;
@@ -80,20 +82,20 @@ class Custom_model_content extends MY_Model
      */
     public function save_data_form($data)
     {
-        $form_custom_id = $data->form_custom_id;
+        $custom_model_id = $data->custom_model_id;
         foreach ($data->tabs as $tab) {
             $form_content = array(
-                'form_custom_id' => $form_custom_id,
-                'form_tab_id' => $tab['form_tab_id'],
+                'custom_model_id' => $custom_model_id,
+                'custom_model_tab_id' => $tab['custom_model_tab_id'],
                 'user_id' => userdata('user_id'),
             );
             $this->db->insert('form_content', $form_content);
-            $form_content_id = $this->db->insert_id();
-            foreach ($tab['form_fields'] as $key => $form_field) {
+            $custom_model_content_id = $this->db->insert_id();
+            foreach ($tab['custom_model_fields'] as $key => $form_field) {
                 $form_field_data = array(
-                    "form_content_id" => $form_content_id,
-                    "form_field_id" => $form_field['form_field_id'],
-                    "form_value" => json_encode($form_field['data']),
+                    "custom_model_content_id" => $custom_model_content_id,
+                    "custom_model_fields_id" => $form_field['custom_model_fields_id'],
+                    "custom_model_content_data_value" => json_encode($form_field['data']),
                 );
                 $this->db->insert('form_content_data', $form_field_data);
             }
@@ -108,16 +110,16 @@ class Custom_model_content extends MY_Model
     public function update_data_form($data)
     {
         $data = (Object) $data;
-        $form_content_id = $data->form_content_id;
+        $custom_model_content_id = $data->custom_model_content_id;
         foreach ($data->tabs as $tab) {
-            foreach ($tab['form_fields'] as $key => $form_field) {
+            foreach ($tab['custom_model_fields'] as $key => $form_field) {
                 $form_field_data = array(
-                    "form_value" => json_encode($form_field['data']),
+                    "custom_model_content_data_value" => json_encode($form_field['data']),
                 );
 
                 $this->db->where(array(
-                    "form_content_id" => $form_content_id,
-                    "form_field_id" => $form_field['form_field_id'],
+                    "custom_model_content_id" => $custom_model_content_id,
+                    "custom_model_fields_id" => $form_field['custom_model_fields_id'],
                 ));
                 $this->db->update('form_content_data', $form_field_data);
 

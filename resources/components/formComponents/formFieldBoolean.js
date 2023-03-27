@@ -11,12 +11,12 @@ Vue.component("formFieldBoolean", {
   data: function () {
     return {
       fieldPlaceholder: "",
-      form_field_id: null,
+      custom_model_fields_id: null,
       fieldID: this.makeid(10),
       fieldName: "Field Boolean",
       fielApiID: "field_boolean",
       title: null,
-      form_custom_data_id: null,
+      custom_model_data_id: null,
       checkboxes: [
         {
           label: "Option",
@@ -61,7 +61,7 @@ Vue.component("formFieldBoolean", {
         fieldID: this.fieldID,
         fieldName: this.fieldName,
         fielApiID: this.fielApiID,
-        form_custom_data_id: this.form_custom_data_id,
+        custom_model_data_id: this.custom_model_data_id,
         checkboxes: JSON.stringify(this.checkboxes),
       };
     },
@@ -80,14 +80,17 @@ Vue.component("formFieldBoolean", {
         }
       }
       if (this.fieldData) {
-        this.form_field_id = this.fieldData.form_field_id;
-        this.form_custom_data_id = this.fieldData.form_custom_data_id;
-        this.checkboxes = this.fieldData.form_value.bolean.map((checkbox) => {
-          return {
-            label: checkbox.label,
-            checked: checkbox.checked === "true",
-          };
-        });
+        this.custom_model_fields_id = this.fieldData.custom_model_fields_id;
+        this.custom_model_data_id = this.fieldData.custom_model_data_id;
+        this.checkboxes =
+          this.fieldData.custom_model_content_data_value.bolean.map(
+            (checkbox) => {
+              return {
+                label: checkbox.label,
+                checked: checkbox.checked === "true",
+              };
+            }
+          );
       }
     });
   },

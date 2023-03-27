@@ -11,13 +11,13 @@ Vue.component("formFieldDate", {
   data: function () {
     return {
       fieldPlaceholder: "",
-      form_field_id: null,
+      custom_model_fields_id: null,
       fieldID: this.makeid(10),
       fieldName: "Field Date",
       fielApiID: "field_date",
       fielFormat: "yyyy-mm-dd",
       date: null,
-      form_custom_data_id: null,
+      custom_model_data_id: null,
     };
   },
   methods: {
@@ -46,7 +46,7 @@ Vue.component("formFieldDate", {
         fieldID: this.fieldID,
         fieldName: this.fieldName,
         fielApiID: this.fielApiID,
-        form_custom_data_id: this.form_custom_data_id,
+        custom_model_data_id: this.custom_model_data_id,
         fielFormat: this.fielFormat,
       };
     },
@@ -78,9 +78,9 @@ Vue.component("formFieldDate", {
         }
       }
       if (this.fieldData) {
-        this.form_field_id = this.fieldData.form_field_id;
-        this.form_custom_data_id = this.fieldData.form_custom_data_id;
-        this.date = this.fieldData.form_value.date;
+        this.custom_model_fields_id = this.fieldData.custom_model_fields_id;
+        this.custom_model_data_id = this.fieldData.custom_model_data_id;
+        this.date = this.fieldData.custom_model_content_data_value.date;
       }
       this.init();
     });

@@ -87,7 +87,7 @@ var searchComponent = new Vue({
         label: "Options",
         format: (item, colum) => {
           return `<a href="${
-            BASEURL + "admin/custommodels/editForm/" + item.form_custom_id
+            BASEURL + "admin/custommodels/editForm/" + item.custom_model_id
           }">Edit</a>`;
         },
       },
@@ -117,9 +117,9 @@ var searchComponent = new Vue({
           return `<a href="${
             BASEURL +
             "admin/custommodels/editData/" +
-            item.form_custom_id +
+            item.custom_model_id +
             "/" +
-            item.form_content_id
+            item.custom_model_content_id
           }">Edit</a>`;
         },
       },
