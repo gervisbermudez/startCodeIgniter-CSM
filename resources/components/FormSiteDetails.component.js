@@ -50,6 +50,7 @@ var dataDeatils = Vue.component("FormSiteDetails", {
         })
         .catch((response) => {
           self.loader = false;
+          M.toast({ html: "Ocurrió un error inesperado" });
         });
     },
     setArchive: function () {

@@ -2262,3 +2262,39 @@ iframe.components-sandbox {
   }
 
 }
+
+.notifications {
+  width: 44px;
+
+  .icon-container {
+    height: 50px;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .icon-container .badge {
+    position: absolute;
+    top: 8px;
+    min-width: auto;
+    z-index: 1;
+  }
+
+  .icon-container i {
+    height: 50px !important;
+    top: -6px;
+    position: relative;
+  }
+}
+
+.notifications-dropdown {
+  top: 50px !important;
+  width: 284px !important;
+  right: 0px;
+  left: auto !important;
+  max-height: 470px;
+  overflow-y: scroll;
+
+  li {
+    display: flex;
+  }
+}

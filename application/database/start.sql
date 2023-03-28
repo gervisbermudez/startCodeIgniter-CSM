@@ -2831,6 +2831,21 @@ CREATE TABLE IF NOT EXISTS `video-categoria` (
 
 -- Volcando datos para la tabla gervisbermudez_db_prod.video-categoria: ~0 rows (aproximadamente)
 
+-- Volcando estructura para tabla gervisbermudez_db_prod.notifications
+CREATE TABLE IF NOT EXISTS `notifications` (
+  `notification_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `title` varchar(250) NOT NULL,
+  `description` varchar(600) NOT NULL,
+  `type` varchar(600) DEFAULT NULL,
+  `url` varchar(600) DEFAULT NULL,
+  `date_create` timestamp NOT NULL DEFAULT current_timestamp(),
+  `date_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `date_delete` timestamp NOT NULL DEFAULT current_timestamp(),
+  `status` tinyint(1) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`notification_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC COMMENT='Notificaciones del sistema';
+
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;

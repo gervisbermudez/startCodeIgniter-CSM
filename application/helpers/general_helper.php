@@ -102,6 +102,20 @@ function fragment($fragment_name)
     return $fragment->description;
 }
 
+function set_notification($title, $description, $type = 'info', $url = null)
+{
+    $ci = &get_instance();
+    $ci->load->model('Admin/Notifications');
+    $notification = new Notifications();
+    $notification->title = $title;
+    $notification->description = $description;
+    $notification->type = $type;
+    $notification->url = $url;
+    $notification->date_create = date("Y-m-d H:i:s");
+    $notification->status = "1";
+    return $notification->save();
+}
+
 if (!function_exists("config")) {
     function config($config_name)
     {

@@ -376,4 +376,68 @@ class Dashboard extends REST_Controller
         $this->response($response, REST_Controller::HTTP_OK);
     }
 
+    /**
+     * @api {get} /api/v1/dashboard/:dashboard_id Request Categorie information
+     * @apiName GetCategorie
+     * @apiGroup Categorie
+     *
+     * @apiParam {Number} dashboard_id Categorie unique ID.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *   {
+     *       "code": 200,
+     *       "data": [
+     *       ]
+     *   }
+     *
+     * @apiError CategorieNotFound The id of the User was not found.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 404 Not Found
+     * {
+     *     "code": 404,
+     *     "error_message": "Resource not found",
+     *     "data": []
+     * }
+     */
+    public function notifications_get()
+    {
+        $this->load->model('Admin/Notifications');
+
+        $Notifications = new Notifications();
+        $result = $Notifications->where(
+            array(
+                'status' => 1, // 1 = pendiente, 2 = leido
+
+            )
+        );
+
+        $response = array(
+            'code' => 200,
+            'data' => $result,
+        );
+
+        $this->response($response, REST_Controller::HTTP_OK);
+    }
+
+    /**
+     *
+     * @return Response
+     */
+    public function notifications_post($id = null)
+    {
+        $this->load->model('Admin/Notifications');
+
+        $Notifications = new Notifications();
+        $Notifications->find($id);
+        if ($Notifications) {
+            $Notifications->status = 2; //archive
+            $Notifications->save();
+            $this->response_ok($Notifications);
+        } else {
+            $this->response_error(lang('not_found_error'));
+        }
+    }
+
 }
