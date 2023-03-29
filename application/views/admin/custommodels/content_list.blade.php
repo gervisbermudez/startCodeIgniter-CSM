@@ -70,7 +70,7 @@
                                         class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown_" + content.custom_model_content_id' class='dropdown-content'>
                                     <li><a
-                                            :href="base_url('admin/custommodels/editData/' + content.custom_model_id + '/' + content.custom_model_content_id)">
+                                            :href="base_url('admin/CustomModels/editData/' + content.custom_model_id + '/' + content.custom_model_content_id)">
                                             Editar</a></li>
                                     <li><a class="modal-trigger" href="#deleteModal"
                                             v-on:click="tempDelete(content, index);">Borrar</a></li>
@@ -94,7 +94,7 @@
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown" + content.custom_model_id' class='dropdown-content'>
                             <li><a
-                                    :href="base_url('admin/custommodels/editData/' + content.custom_model_id + '/' + content.custom_model_content_id)">
+                                    :href="base_url('admin/CustomModels/editData/' + content.custom_model_id + '/' + content.custom_model_content_id)">
                                     Editar</a></li>
                             <li><a class="modal-trigger" href="#deleteModal"
                                     v-on:click="tempDelete(content, index);">Borrar</a></li>

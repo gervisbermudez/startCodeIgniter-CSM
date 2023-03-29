@@ -77,12 +77,12 @@ var SiteFormSubmitList = new Vue({
   methods: {
     // Redirige al usuario a la página de creación de un nuevo item
     newItem() {
-      window.location = `${BASEURL}admin/siteforms/nuevo/`;
+      window.location = `${BASEURL}admin/SiteForms/nuevo/`;
       return;
     },
     // Redirige al usuario a la página de edición de un item existente
     editItem(data) {
-      window.location = `${BASEURL}admin/siteforms/editar/${data.item.siteform_id}`;
+      window.location = `${BASEURL}admin/SiteForms/editar/${data.item.siteform_id}`;
       return;
     },
     // Elimina un item de la tabla

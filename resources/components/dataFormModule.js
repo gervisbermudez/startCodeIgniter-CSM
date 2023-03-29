@@ -266,7 +266,7 @@ var dataFormModule = new Vue({
             this.custom_model_content_id = response.data;
             M.toast({ html: "Datos guardados!" });
             setTimeout(() => {
-              window.location = BASEURL + "admin/custommodels/content";
+              window.location = BASEURL + "admin/CustomModels/content";
             }, 3000);
           } else {
             M.toast({ html: "Ocurrio un error" });

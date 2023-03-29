@@ -84,7 +84,8 @@ class Dashboard extends REST_Controller
 
         $this->load->model('Admin/User_tracking');
         $User_tracking = new User_tracking();
-        $tempData = $User_tracking->all()->toArray();
+        $tempResult = $User_tracking->all();
+        $tempData = $tempResult ? $tempResult->toArray() : [];
 
         $result['chart1'] = $this->generateTrafficChart($tempData);
         $result['chart2'] = $this->getRequestByMont($tempData);
@@ -106,6 +107,7 @@ class Dashboard extends REST_Controller
 
         // Inicializar arrays para las etiquetas (meses) y los datos (número de visitas)
         $labels = array();
+        $data = array();
         $visits = array();
 
         // Iterar a través de los datos y contar las visitas por mes

@@ -7,6 +7,16 @@ var dataDeatils = Vue.component("FormSiteDetails", {
       endpoint: "api/v1/siteforms/submit/",
       data: {
         siteform_submit_data: {},
+        date_create: "",
+        siteform: {
+          date_create: "",
+        },
+        user_tracking: {
+          client_ip: "",
+          date_create: "",
+          no_of_visits: "",
+          user_agent: "",
+        },
       },
       user: {},
     };

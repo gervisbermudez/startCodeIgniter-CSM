@@ -31,7 +31,7 @@ Vue.component("createContents", {
     },
     getFormsTypeUrl(formObject) {
       return (
-        BASEURL + "admin/custommodels/addData/" + formObject.custom_model_id
+        BASEURL + "admin/CustomModels/addData/" + formObject.custom_model_id
       );
     },
     base_url(path) {

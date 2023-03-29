@@ -55,8 +55,6 @@ $route['translate_uri_dashes'] = false;
 $route['admin'] = 'admin/admin';
 $route['admin/offline'] = 'admin/admin/offline';
 $route['admin/search'] = 'admin/admin/search';
-$route['admin/siteforms'] = 'admin/SiteForms';
-$route['admin/siteforms/nuevo/'] = 'admin/SiteForms/nuevo';
 //Pages system
 $route['admin/paginas/preview'] = 'PageController/preview';
 $route['sitemap\.xml'] = 'PageController/siteMap';

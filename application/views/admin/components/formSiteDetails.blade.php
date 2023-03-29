@@ -10,7 +10,7 @@
                     <ul class="tabs" id="formTabs">
                         <li class="tab col s3"><a class="active" href="#test1"><i class="material-icons">assignment</i>
                                 Detalles</a></li>
-                        <li class="tab col s3"><a href="#test2"><i class="material-icons">assignment_ind</i> Tracking</a>
+                        <li v-if="data.user_tracking_id" class="tab col s3"><a href="#test2"><i class="material-icons">assignment_ind</i> Tracking</a>
                         </li>
                         <li class="tab col s3"><a href="#test3"><i class="material-icons">description</i> Formulario</a>
                         </li>
@@ -53,7 +53,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="test2" class="row">
+                <div id="test2" class="row" v-if="data.user_tracking_id">
                     <div class="col s12">
                         <b>client ip:</b> <br />
                         <div>
@@ -84,7 +84,7 @@
                     </div>
                 </div>
                 <div class="row" id="test3">
-                    
+
                             <div class="col s12">
                                 <b>Nombre:</b> <br />
                                 <div>
@@ -120,7 +120,7 @@
                                 <a :href="base_url('admin/siteforms/editar/' + data.siteform.siteform_id)" class="waves-effect waves-light btn"><i class="material-icons left">edit</i>Editar Formulario</a>
                             </div>
                             <br /><br />
-                            
+
                 </div>
             </div>
         </div>
@@ -136,14 +136,14 @@
 </div>
 </script>
 <style>
-    .form {
-        padding: 10px;
-        width: 95%;
-        background-color: #fff;
-        margin-top: 20px;
-        border-radius: 5px;
-        border: solid 1px #ccc;
-        overflow: hidden;
-        position: relative;
-    }
+.form {
+    padding: 10px;
+    width: 95%;
+    background-color: #fff;
+    margin-top: 20px;
+    border-radius: 5px;
+    border: solid 1px #ccc;
+    overflow: hidden;
+    position: relative;
+}
 </style>

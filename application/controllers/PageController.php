@@ -290,7 +290,7 @@ class PageController extends Base_Controller
 
         $result = $siteform_submit->save();
 
-        set_notification("Recibido mensaje formulario", "Se recibió un registro en el formulario " . $this->input->post('form_reference'), "form_submit", "/admin/siteforms/submit/#/details/" . $siteform_submit->siteform_submit_id);
+        set_notification("Recibido mensaje formulario", "Se recibió un registro en el formulario " . $this->input->post('form_reference'), "form_submit", "/admin/SiteForms/submit/#/details/" . $siteform_submit->siteform_submit_id);
 
         return $result;
     }
