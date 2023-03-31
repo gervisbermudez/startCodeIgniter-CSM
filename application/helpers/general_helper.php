@@ -46,9 +46,12 @@ function getTemplates()
 }
 
 if (!function_exists('getThemePath')) {
-    function getThemePath()
+    function getThemePath($theme = null)
     {
-        $ci = &get_instance();
+        if ($theme) {
+            return str_replace('\\', '/', FCPATH . 'themes' . '/' . $theme);
+        }
+
         $theme_path = config("THEME_PATH");
         if ($theme_path) {
             return str_replace('\\', '/', FCPATH . 'themes' . '/' . $theme_path);

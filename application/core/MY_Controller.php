@@ -127,7 +127,13 @@ class Base_Controller extends CI_Controller
         }
 
         // Carga el controlador de temas local
-        include getThemePath() . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'ThemeController.php';
+        $themeControllerPath = getThemePath() . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'ThemeController.php';
+        if (!file_exists($themeControllerPath)) {
+
+            // Si el controlador de temas no existe en el tema actual, carga el controlador de temas predeterminado
+            $themeControllerPath = getThemePath("awesomeTheme") . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'ThemeController.php';
+        }
+        include $themeControllerPath;
         $this->themeController = new ThemeController();
     }
 
