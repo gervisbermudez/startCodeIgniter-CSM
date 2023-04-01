@@ -17,6 +17,7 @@ var AlbumNewForm = new Vue({
       },
     }),
     description: "",
+    content: "",
     status: false,
     date_publish: "",
     date_create: "",
@@ -268,6 +269,7 @@ var AlbumNewForm = new Vue({
         plugins: ["link table code"],
         setup: (editor) => {
           editor.on("Change", (e) => {
+            this.debug ? console.log("tinymce change fired") : null;
             this.description = tinymce.editors["id_cazary"].getContent();
           });
         },

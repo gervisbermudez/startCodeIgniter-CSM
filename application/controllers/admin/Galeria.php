@@ -23,19 +23,21 @@ class Galeria extends MY_Controller
     {
         if (!$albumid) {
             $this->index();
-        } else {
-            $album = new Album();
-            $album = $album->find($albumid);
-            if ($album) {
-                $data['title'] = ADMIN_TITLE . " | Galería";
-                $data['h1'] = "Galería de Imagenes";
-                $data['header'] = $this->load->view('admin/header', $data, true);
-                echo $this->blade->view("admin.galeria.albumes_items", $data);
-
-            } else {
-                $this->showError('Album no encontrado :(');
-            }
+            return;
         }
+
+        $album = new Album();
+        $album = $album->find($albumid);
+        if ($album) {
+            $data['title'] = ADMIN_TITLE . " | Galería";
+            $data['h1'] = "Galería de Imagenes";
+            $data['header'] = $this->load->view('admin/header', $data, true);
+            echo $this->blade->view("admin.galeria.albumes_items", $data);
+
+        } else {
+            $this->showError('Album no encontrado :(');
+        }
+
     }
 
     public function nuevo()

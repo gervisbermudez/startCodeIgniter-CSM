@@ -37,7 +37,8 @@
             </div>
             <div class="col s12">
                 <ul>
-                    <li><b>Fecha de publicacion:</b> @{{album.date_publish ? timeAgo(album.date_publish) : timeAgo(album.date_create)}}</li>
+                    <li><b>Fecha de publicacion:</b>
+                        @{{album.date_publish ? timeAgo(album.date_publish) : timeAgo(album.date_create)}}</li>
                     <li><b>Estado:</b>
                         <span v-if="album.status == 1">
                             Publicado
@@ -66,19 +67,6 @@
             <ul class="right hide-on-med-and-down">
                 <li><a href="#!" v-on:click="toggleView();"><i class="material-icons">view_module</i></a></li>
                 <li><a href="#!" v-on:click="getPages();"><i class="material-icons">refresh</i></a></li>
-                <li>
-                    <a href="#!" class='dropdown-trigger' data-target='dropdown-options'><i
-                            class="material-icons">more_vert</i></a>
-                    <!-- Dropdown Structure -->
-                    <ul id='dropdown-options' class='dropdown-content'>
-                        <li><a href="#!">one</a></li>
-                        <li><a href="#!">two</a></li>
-                        <li class="divider" tabindex="-1"></li>
-                        <li><a href="#!">three</a></li>
-                        <li><a href="#!"><i class="material-icons">view_module</i>four</a></li>
-                        <li><a href="#!"><i class="material-icons">cloud</i>five</a></li>
-                    </ul>
-                </li>
             </ul>
         </div>
     </nav>
@@ -133,30 +121,19 @@
                         <div class="card-image-container">
                             <img class="materialboxed" :src="getPageImagePath(album)" />
                         </div>
-                        <a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href='#!'
-                            :data-target='"dropdown" + album.album_item_id'>
-                            <i class="material-icons">more_vert</i></a>
-                        <ul :id='"dropdown" + album.album_item_id' class='dropdown-content'>
-                            <li><a :href="base_url('admin/paginas/editar/' + album.album_item_id)">Editar</a></li>
-                            <li><a href="#!" v-on:click="deletePage(album, index);">Borrar</a></li>
-                            <li v-if="album.status == 2"><a
-                                    :href="base_url('admin/paginas/preview?album_item_id=' + album.album_item_id)"
-                                    target="_blank">Preview</a></li>
-                            <li><a :href="base_url(album.path)" target="_blank">Archivar</a></li>
-                        </ul>
                     </div>
                     <div class="card-content">
-                            <span class="card-title activator">@{{album.name}}
-                                <i v-if="album.status == 1" class="material-icons tooltipped" data-position="left"
-                                    data-delay="50" data-tooltip="Publico">public</i>
-                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
-                                    data-tooltip="Privado">lock</i>
-                            </span>
-                            <div class="card-info activator">
-                                <p>
-                                    @{{getcontentText(album.description)}}
-                                </p>
-                            </div>
+                        <span class="card-title activator">@{{album.name}}
+                            <i v-if="album.status == 1" class="material-icons tooltipped" data-position="left"
+                                data-delay="50" data-tooltip="Publico">public</i>
+                            <i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
+                                data-tooltip="Privado">lock</i>
+                        </span>
+                        <div class="card-info activator">
+                            <p>
+                                @{{getcontentText(album.description)}}
+                            </p>
+                        </div>
                     </div>
                     <div class="card-reveal">
                         <span class="card-title grey-text text-darken-4">
@@ -184,98 +161,12 @@
         </div>
     </div>
     <div class="container" v-if="!loader && album.items.length == 0" v-cloak>
-        <h4>No hay paginas</h4>
+        <h4>No hay Items</h4>
     </div>
-    <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-        <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped modal-trigger"
-            @click="setFileToMove(item);" href="#folderSelector" data-position="left" data-delay="50"
-            data-tooltip="Agregar Imagenes al Album">
-            <i class="large material-icons">add</i>
-        </a>
-    </div>
-    <!-- Modal Structure -->
-    <file-explorer-selector :modal="'folderSelector'" :mode="'files'" filter="'images'" :multiple="true" v-on:notify="copyCallcack">
-    </file-explorer-selector>
 </div>
-@include('admin.components.FileExplorerSelector')
 
 @endsection
 
 @section('footer_includes')
-<script src="<?=base_url('public/js/components/FileExplorerSelector.min.js');?>"></script>
-<script src="<?=base_url('public/js/lightbox2-master/dist/js/lightbox.min.js');?>"></script>
-<script src="<?=base_url('public/js/fileinput-master/js/fileinput.min.js');?>"></script>
-<script src="<?=base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js');?>"></script>
-<script src="<?=base_url('public/js/fileinput-master/js/locales/es.js');?>"></script>
-<script>
-    $(document).on('ready', function () {
-        $("#input-100").fileinput({
-            uploadUrl: BASEURL + "admin/archivos/ajax_upload_file",
-            enableResumableUpload: true,
-            resumableUploadOptions: {
-                // uncomment below if you wish to test the file for previous partial uploaded chunks
-                // to the server and resume uploads from that point afterwards
-                // testUrl: "http://localhost/test-upload.php"
-            },
-            uploadExtraData: {
-                'uploadToken': 'SOME-TOKEN', // for access control / security
-                'curDir': './uploads'
-            },
-            showCancel: true,
-            initialPreview: [],
-            fileActionSettings: {
-                showRemove: true,
-                showUpload: true,
-                showDownload: true,
-                showZoom: true,
-                showDrag: true,
-                removeIcon: '<i class="fas fa-trash"></i>',
-                removeClass: 'btn btn-sm btn-kv btn-default btn-outline-secondary',
-                removeErrorClass: 'btn btn-sm btn-kv btn-danger',
-                removeTitle: 'Remove file',
-                uploadIcon: '<i class="fas fa-upload"></i>',
-                uploadClass: 'btn btn-sm btn-kv btn-default btn-outline-secondary',
-                uploadTitle: 'Upload file',
-                uploadRetryIcon: '<i class="glyphicon glyphicon-repeat"></i>',
-                uploadRetryTitle: 'Retry upload',
-                downloadIcon: '<i class="fas fa-download"></i>',
-                downloadClass: 'btn btn-sm btn-kv btn-default btn-outline-secondary',
-                downloadTitle: 'Download file',
-                zoomIcon: '<i class="fas fa-search-plus"></i>',
-                zoomClass: 'btn btn-sm btn-kv btn-default btn-outline-secondary',
-                zoomTitle: 'View Details',
-                dragIcon: '<i class="fas fa-arrows-alt"></i>',
-                dragClass: 'text-info',
-                dragTitle: 'Move / Rearrange',
-                dragSettings: {},
-                indicatorNew: '<i class="glyphicon glyphicon-plus-sign text-warning"></i>',
-                indicatorSuccess: '<i class="glyphicon glyphicon-ok-sign text-success"></i>',
-                indicatorError: '<i class="glyphicon glyphicon-exclamation-sign text-danger"></i>',
-                indicatorLoading: '<i class="glyphicon glyphicon-hourglass text-muted"></i>',
-                indicatorPaused: '<i class="glyphicon glyphicon-pause text-primary"></i>',
-                indicatorNewTitle: 'Not uploaded yet',
-                indicatorSuccessTitle: 'Uploaded',
-                indicatorErrorTitle: 'Upload Error',
-                indicatorLoadingTitle: 'Uploading ...',
-                indicatorPausedTitle: 'Upload Paused'
-            },
-            uploadIcon: '<i class="fas fa-upload"></i>',
-            removeIcon: '<i class="fas fa-trash"></i>',
-            overwriteInitial: false,
-            // initialPreview: [],          // if you have previously uploaded preview files
-            // initialPreviewConfig: [],    // if you have previously uploaded preview files
-            deleteUrl: "http://localhost/file-delete.php",
-            progressClass: 'determinate progress-bar bg-success progress-bar-success progress-bar-striped active',
-            progressInfoClass: 'determinate progress-bar bg-info progress-bar-info progress-bar-striped active',
-            progressCompleteClass: 'determinate progress-bar bg-success progress-bar-success',
-            progressPauseClass: 'determinate progress-bar bg-primary progress-bar-primary progress-bar-striped active',
-            progressErrorClass: 'determinate progress-bar bg-danger progress-bar-danger',
-        }).on('fileuploaded', function (event, previewId, index, fileId) {
-            fileExplorerModule.reloadFileExplorer();
-            M.toast({ html: "File Uploaded!" });
-            M.Modal.getInstance($('#uploaderModal')[0]).close();
-        });
-    });
-</script>
 <script src="{{base_url('public/js/components/AlbumsItemsLists.min.js')}}"></script>
 @endsection
