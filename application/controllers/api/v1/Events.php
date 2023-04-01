@@ -127,6 +127,7 @@ class Events extends REST_Controller
             $this->response_ok($event);
             return;
         }
+
         $this->response_error(lang('unexpected_error'), [], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
     }
 

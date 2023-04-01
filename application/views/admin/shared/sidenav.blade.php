@@ -77,10 +77,6 @@
                     class="material-icons">bookmark_border</i>
                 Fragmentos</a>
         </li>
-        <li class="{{isSectionActive('suscriptores')}}">
-            <a class="waves-effect" href="{{ base_url('admin/suscriptores/') }}"><i
-                    class="material-icons">supervisor_account</i> Suscriptores</a>
-        </li>
         @if(has_permisions('SELECT_FILES'))
         <li class="{{isSectionActive('archivos')}}">
             <a class="waves-effect" href="{{ base_url('admin/archivos') }}"><i
@@ -214,6 +210,12 @@
                 <ul>
                     <li>
                         <a class="waves-effect" href="{{ base_url('admin/configuracion') }}"> Configuración</a>
+                    </li>
+                    <li>
+                        <a class="waves-effect" href="{{ base_url('admin/configuracion/import') }}"> Importar</a>
+                    </li>
+                    <li>
+                        <a class="waves-effect" href="{{ base_url('admin/configuracion/export') }}"> Exportar</a>
                     </li>
                     <li>
                         <a class="waves-effect" href="{{ base_url('admin/configuracion/apilogger') }}"> API Log</a>

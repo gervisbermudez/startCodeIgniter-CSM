@@ -69,8 +69,8 @@ var EventNewForm = new Vue({
     },
     copyCallcack(files) {
       let file = files[0];
-      this.mainImage.push(file);
       file = new ExplorerFile(file);
+      this.mainImage.push(file);
       let instance = M.Modal.getInstance($("#fileUploader"));
       instance.close();
     },
@@ -91,7 +91,7 @@ var EventNewForm = new Vue({
     validateForm() {
       return this.name && this.content;
     },
-   
+
     save() {
       var self = this;
       var callBack = (response) => {
@@ -130,7 +130,7 @@ var EventNewForm = new Vue({
             self.loader = false;
           }
         },
-        error: function (response) {
+        error: function (error) {
           self.loader = false;
           M.toast({ html: "Ocurrió un error inesperado" });
           console.error(error);
@@ -260,9 +260,8 @@ var EventNewForm = new Vue({
         format: "yyyy-mm-dd",
         onClose: function () {
           alert("Datepicker");
-          EventNewForm.datepublish = document.getElementById(
-            "datepublish"
-          ).value;
+          EventNewForm.datepublish =
+            document.getElementById("datepublish").value;
         },
       });
       var elems = document.querySelectorAll(".timepicker");
@@ -271,9 +270,8 @@ var EventNewForm = new Vue({
         defaultTime: "now",
         onCloseEnd: function () {
           alert("Timepicker");
-          EventNewForm.timepublish = document.getElementById(
-            "timepublish"
-          ).value;
+          EventNewForm.timepublish =
+            document.getElementById("timepublish").value;
         },
       });
       tinymce.init({
