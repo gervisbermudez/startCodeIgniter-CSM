@@ -1,5 +1,13 @@
 {
   "description": "A simple CSM building with codeigneiter",
+  "name": "gervisbermudez/csm",
+  "keywords": [
+    "codeigniter",
+    "csm",
+    "simple"
+  ],
+  "homepage": "https://github.com/gervisbermudez/startCodeIgniter-CSM#readme",
+  "version": "2.0.0",
   "type": "project",
   "license": "GNU",
   "require": {

@@ -16,7 +16,9 @@
 | path to your installation.
 |
  */
-$config['base_url'] = 'http://localhost:8000/';
+$config['base_url'] = getenv('APP_BASE_URL');
+$config['enable_profiler'] = false;
+$config['debug_mode'] = false;
 
 /*
 |--------------------------------------------------------------------------
