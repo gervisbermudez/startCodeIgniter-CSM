@@ -22,7 +22,6 @@ class Config extends REST_Controller
 
         $this->load->database();
         $this->load->model('Admin/Site_config');
-
     }
 
     /**
@@ -102,6 +101,11 @@ class Config extends REST_Controller
         $this->input->post('site_config_id') ? $configuration->find($this->input->post('site_config_id')) : false;
         $configuration->config_name = $this->input->post('config_name');
         $configuration->config_value = $this->input->post('config_value');
+        $configuration->config_description = $this->input->post('config_description');
+        $configuration->config_label = $this->input->post('config_label');
+        $configuration->config_data = json_encode($this->input->post('config_data'));
+        $configuration->readonly = $this->input->post('readonly');
+        $configuration->config_type = $this->input->post('config_type');
         $configuration->user_id = userdata('user_id');
         $configuration->status = $this->input->post('status');
         $configuration->date_create = date("Y-m-d H:i:s");
@@ -112,7 +116,6 @@ class Config extends REST_Controller
         }
 
         $this->response_error(lang('unexpected_error'), REST_Controller::HTTP_BAD_REQUEST);
-
     }
 
     /**
@@ -193,7 +196,6 @@ class Config extends REST_Controller
         );
 
         $this->response($response, REST_Controller::HTTP_OK);
-
     }
 
     public function check_update_get()
@@ -263,28 +265,63 @@ class Config extends REST_Controller
         $this->response($response, REST_Controller::HTTP_OK);
     }
 
-    public function install_downloaded_update_get()
+    public function download_install_theme_post()
     {
-        $filename = $this->input->get('packagename');
-        if (file_exists($filename)) {
-            $ignorefiles = ['.', '..', 'config.php', 'database.php'];
-            recurse_copy($source, $destination, $ignorefiles);
-            $response = array(
-                'data' => [
-                    "result" => $result,
-                    "downloaded_file" => $filename,
-                    "message" => "Package installed successfully!",
-                ],
-                "code" => REST_Controller::HTTP_OK,
-            );
-        } else {
-            $response = array(
-                'data' => ["message" => "Unnable to install the package"],
-                "code" => REST_Controller::HTTP_BAD_REQUEST,
-            );
+        $response = array(
+            'data' => ["message" => "Unnable to download the package"],
+            "code" => REST_Controller::HTTP_BAD_REQUEST,
+        );
+
+        $filenamePath = "./temp/startCodeIgniter-CSM-theme-" . date("Ymd");
+        $filename = $filenamePath . ".zip";
+        $url = $this->input->post('theme_url');
+        $result = file_put_contents($filename, fopen($url, 'r'));
+        if ($result && file_exists($filename)) {
+            $zip = new ZipArchive;
+            $extractResult = false;
+            if ($zip->open($filename) === true) {
+                $zip->extractTo('./themes');
+                $zip->close();
+                $extractResult = true;
+                if ($extractResult) {
+                    unlink($filename);
+                    $response = array(
+                        'data' => [
+                            "result" => $result,
+                            "downloaded_file" => $filename,
+                            "message" => "Package downloaded successfully!",
+                        ],
+                        "code" => REST_Controller::HTTP_OK,
+                    );
+                }
+            }
         }
 
         $this->response($response, REST_Controller::HTTP_OK);
+    }
+
+    public function install_downloaded_update_get()
+    {
+        /* $filename = $this->input->get('packagename');
+    if (file_exists($filename)) {
+    $ignorefiles = ['.', '..', 'config.php', 'database.php'];
+    recurse_copy($source, $destination, $ignorefiles);
+    $response = array(
+    'data' => [
+    "result" => $result,
+    "downloaded_file" => $filename,
+    "message" => "Package installed successfully!",
+    ],
+    "code" => REST_Controller::HTTP_OK,
+    );
+    } else {
+    $response = array(
+    'data' => ["message" => "Unnable to install the package"],
+    "code" => REST_Controller::HTTP_BAD_REQUEST,
+    );
+    }
+
+    $this->response($response, REST_Controller::HTTP_OK); */
     }
 
     public function systemlogger_get($logger_id = null)
@@ -347,4 +384,153 @@ class Config extends REST_Controller
         $this->response_error(lang('not_found_error'), $User_tracking->get_pagination_info());
     }
 
+    public function export_data_get()
+    {
+        $data = [];
+
+        //Pages
+        $this->load->model('Admin/Page');
+        $pages = new Page();
+        $data['pages'] = $pages->all();
+
+        $config = new Site_config();
+        $data['config'] = $config->all();
+
+        $this->response_ok($data);
+    }
+
+    private function getWhereStringFrom($arrayData, $id)
+    {
+        $whereString = "";
+        foreach ($arrayData as $key => $value) {
+            if (count($arrayData) === ($key + 1)) {
+                $whereString .= $id . " = " . $value . "";
+            } else {
+                $whereString .= $id . " = " . $value . " OR ";
+            }
+        }
+        return $whereString;
+    }
+
+    public function generate_export_file_post()
+    {
+        $exportData = $this->input->post("exportData");
+
+        function removeUser($item)
+        {
+            unset($item->user);
+            unset($item->imagen_file);
+
+            return $item;
+        }
+
+        $data = [
+            "pages" => [],
+            "config" => [],
+        ];
+
+        if (isset($exportData["pages"])) {
+            //Pages
+            $this->load->model('Admin/Page');
+            $pages = new Page();
+            $data['pages'] = $pages->where($this->getWhereStringFrom($exportData["pages"], "page_id"));
+
+            $data['pages'] = array_map("removeUser", $data['pages']->toArray());
+        }
+
+        if (isset($exportData["config"])) {
+            $config = new Site_config();
+            $data['config'] = $config->where($this->getWhereStringFrom($exportData["config"], "site_config_id"));
+            $data['config'] = array_map("removeUser", $data['config']->toArray());
+        }
+
+        $json = json_encode($data);
+
+        $exportFilename = "export_data_" . date("Y-m-d_H-i-s") . ".json";
+
+        if (!file_exists("./temp/")) {
+            @mkdir("./temp/");
+        }
+
+        if (file_put_contents("./temp/" . $exportFilename, $json)) {
+            $this->response_ok([
+                "message" => "JSON file created successfully",
+                "exportFilename" => $exportFilename,
+            ]);
+        } else {
+            $this->response_error([
+                "message" => "Oops! Error creating json file",
+            ]);
+        }
+    }
+
+    public function import_file_post()
+    {
+        $exportData = json_decode($this->input->post('exportData'));
+
+        if (!move_uploaded_file($_FILES["import_file"]["tmp_name"], "./uploads/" . $_FILES["import_file"]["name"])) {
+            $this->response_error([
+                "message" => "Oops! Error reading json file",
+            ]);
+            return;
+        }
+
+        $string = file_get_contents("./uploads/" . $_FILES["import_file"]["name"]);
+
+        if ($string === false) {
+            $this->response_error([
+                "message" => "Oops! Error reading json file",
+            ]);
+            return;
+        }
+
+        try {
+            $file_content = json_decode($string);
+            if (isset($file_content->pages) && is_array($file_content->pages)) {
+                $this->load->model('Admin/Page');
+                $file_content->pages = array_filter($file_content->pages, function ($page) use ($exportData) {
+                    return in_array($page->page_id, $exportData->pages);
+                });
+                foreach ($file_content->pages as $key => $value) {
+                    $page = new Page();
+                    //field already exist in database, so let's update it
+                    $page->find($value->page_id);
+                    foreach ($value as $index => $val) {
+                        $page->{$index} = $val;
+                    }
+                    $page->save();
+                }
+            }
+
+            if (isset($file_content->config) && is_array($file_content->config)) {
+
+                $file_content->config = array_filter($file_content->config, function ($Site_config) use ($exportData) {
+                    return in_array($Site_config->site_config_id, $exportData->config);
+                });
+                foreach ($file_content->config as $key => $value) {
+                    $Site_config = new Site_config();
+                    //field already exist in database, so let's update it
+                    $Site_config->find($value->site_config_id);
+                    foreach ($value as $index => $val) {
+                        $Site_config->{$index} = $val;
+                    }
+                    $Site_config->save();
+                }
+            }
+
+            $this->response_ok(
+                [
+                    "message" => "JSON file created successfully",
+                ],
+                ["file_content" => $file_content]
+            );
+        } catch (\Throwable $th) {
+            $this->response_error([
+                "message" => "Oops! Error reading json file",
+                "error" => $th->getMessage(),
+                "trace" => $th->getTrace(),
+            ]);
+            return;
+        }
+    }
 }

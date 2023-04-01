@@ -14,6 +14,7 @@ var ConfiguracionList = new Vue({
       "database",
       "theme",
       "updater",
+      "addConfig",
     ],
     files: [],
     themes: [],
@@ -23,6 +24,28 @@ var ConfiguracionList = new Vue({
     updaterInstallProgress: false,
     updaterPackageDownloaded: false,
     updaterPackageDownloadedName: "",
+    newConfig: {
+      site_config_id: "",
+      user_id: "",
+      config_name: "",
+      config_value: "",
+      config_description: "",
+      config_type: "general",
+      config_data: {
+        type_value: "string",
+        validate_as: "text",
+        max_lenght: "250",
+        min_lenght: "5",
+        handle_as: "input",
+        input_type: "text",
+        perm_values: null,
+      },
+      readonly: "0",
+      date_create: "",
+      date_update: "",
+      status: "1",
+      validate: true,
+    },
   },
   mixins: [mixins],
   computed: {
@@ -58,6 +81,44 @@ var ConfiguracionList = new Vue({
     },
   },
   methods: {
+    saveNewConfig: function () {
+      var payload = this.newConfig;
+      payload['config_data'] = JSON.stringify(payload.config_data);
+
+      var data = new FormData();
+      for (var key in payload) {
+        data.append(key, payload[key]);
+      }
+
+      fetch(BASEURL + "/api/v1/config/",
+        {
+          method: "POST",
+          body: data
+        })
+        .then((res) => { return res.json(); })
+        .then((response) => {
+          console.log(response);
+          if (response.code == 200) {
+            this.configurations.push(response.data);
+            M.toast({
+              html: "Config saved!",
+            });
+            this.newConfig.config_name = "";
+            this.newConfig.config_value = "";
+            this.newConfig.config_description = "";
+          } else {
+            console.log(response),
+              M.toast({
+                html: "an unexpected error has occurred",
+              });
+          }
+        }).catch(error => {
+          console.error(error),
+            M.toast({
+              html: "an unexpected error has occurred",
+            });
+        })
+    },
     getConfig: function (e, t = "config_name") {
       let a = null;
       return (
@@ -86,11 +147,11 @@ var ConfiguracionList = new Vue({
         (config = this.getConfig(t)),
         value
           ? config.config_data.perm_values.forEach((e) => {
-              e == config.config_data.true && (value = e);
-            })
+            e == config.config_data.true && (value = e);
+          })
           : config.config_data.perm_values.forEach((e) => {
-              e != config.config_data.true && (value = e);
-            }),
+            e != config.config_data.true && (value = e);
+          }),
         (config.config_value = value),
         this.runSave(config);
     },
@@ -153,8 +214,8 @@ var ConfiguracionList = new Vue({
                   html: e.data.message,
                 }))
               : M.toast({
-                  html: e.data.message,
-                });
+                html: e.data.message,
+              });
           })
           .catch((e) => {
             (this.updaterProgress = !1),
@@ -168,8 +229,8 @@ var ConfiguracionList = new Vue({
       (this.updaterInstallProgress = !0),
         fetch(
           BASEURL +
-            "api/v1/config/install_downloaded_update?packagename=" +
-            this.updaterPackageDownloadedName
+          "api/v1/config/install_downloaded_update?packagename=" +
+          this.updaterPackageDownloadedName
         )
           .then((e) => e.json())
           .then((e) => {
@@ -179,8 +240,8 @@ var ConfiguracionList = new Vue({
                   html: e.data.message,
                 }))
               : M.toast({
-                  html: e.data.message,
-                });
+                html: e.data.message,
+              });
           })
           .catch((e) => {
             (this.updaterInstallProgress = !1),
@@ -271,8 +332,8 @@ var ConfiguracionList = new Vue({
                   html: "Config Saved!",
                 }))
               : M.toast({
-                  html: e.responseJSON.error_message,
-                });
+                html: e.responseJSON.error_message,
+              });
         },
         error: function (e) {
           M.toast({
@@ -319,7 +380,7 @@ var ConfiguracionList = new Vue({
           },
           error: function (e) {
             M.toast({
-              html: response.responseJSON.error_message,
+              html: response.error_message,
             }),
               (a.loader = !1);
           },
@@ -391,12 +452,12 @@ var ConfiguracionList = new Vue({
         .then((e) => {
           "200" == e.code
             ? (M.toast({
-                html: e.result,
-              }),
+              html: e.result,
+            }),
               this.reloadFileExplorer())
             : M.toast({
-                html: e.result,
-              });
+              html: e.result,
+            });
         })
         .catch((e) => {
           M.toast({

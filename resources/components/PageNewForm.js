@@ -1,4 +1,5 @@
 var runningAutoSave = false;
+var trumbowygInstance = null;
 
 var PageNewForm = new Vue({
   el: "#PageNewForm-root",
@@ -29,6 +30,7 @@ var PageNewForm = new Vue({
     status: false,
     path: "",
     content: "Content of the page",
+    json_content: [],
     visibility: 1,
     publishondate: true,
     datepublish: "",
@@ -39,7 +41,7 @@ var PageNewForm = new Vue({
     subcategorie_id: "0",
     page_type_id: "1",
     layouts: [],
-    mainImage: [],
+    mainImage: [], // index = 0 mainImage , index = 1 thumbnailImage
     templates: [],
     pageTypes: [],
     categories: [],
@@ -96,22 +98,35 @@ var PageNewForm = new Vue({
         content: "article",
       },
       {
-        property: "twitter:card",
-        content: "summary",
+        name: "twitter:card",
+        content: "summary_large_image",
       },
       {
-        property: "twitter:title",
+        name: "twitter:site",
         content: "",
       },
       {
-        property: "twitter:description",
+        name: "twitter:creator",
         content: "",
       },
       {
-        property: "twitter:image",
+        name: "twitter:site",
+        content: "",
+      },
+      {
+        name: "twitter:title",
+        content: "",
+      },
+      {
+        name: "twitter:description",
+        content: "",
+      },
+      {
+        name: "twitter:image",
         content: "",
       },
     ],
+    modalCallbackMode: "copyCallcack", //Or insertImage
   },
   mixins: [mixins],
   computed: {
@@ -127,6 +142,9 @@ var PageNewForm = new Vue({
         ? this.datepublish + " " + this.timepublish + ":00"
         : null;
     },
+    full_path: function () {
+      return this.status ? BASEURL + this.path : "";
+    },
     preview_link: function () {
       return this.page_id
         ? BASEURL + "admin/paginas/preview?page_id=" + this.page_id
@@ -138,6 +156,12 @@ var PageNewForm = new Vue({
       }
       return null;
     },
+    getThumbnailImagePath() {
+      if (this.mainImage.length > 1) {
+        return this.mainImage[1].file_id;
+      }
+      return null;
+    },
     getPagePath() {
       let segments = this.getPathSegments().filter((value, index) => {
         return value.length > 0;
@@ -145,12 +169,27 @@ var PageNewForm = new Vue({
       segments = segments.map((value, index) => {
         return this.string_to_slug(value);
       });
-      return segments.join("/");
+
+      let fullPath = segments.join("/");
+      this.setMetaContent(BASEURL + fullPath, "og:url");
+
+      return fullPath;
     },
   },
   watch: {
+    content: function (value) {
+      var span = document.createElement("span");
+      span.innerHTML = value;
+      let text = span.textContent || span.innerText;
+      text = text.replace(/\s+/g, " ").trim();
+      this.setMetaContent(text, "description");
+      this.setMetaContent(text, "og:description");
+      this.setMetaContent(text, "twitter:description");
+    },
     "form.fields.title.value": function (value) {
-      this.setPath(value);
+      if (!this.path) {
+        this.setPath(value);
+      }
     },
     publishondate: function (value) {
       if (value) {
@@ -167,6 +206,9 @@ var PageNewForm = new Vue({
     },
   },
   methods: {
+    setModalMode(mode) {
+      this.modalCallbackMode = mode;
+    },
     addCustomMeta() {
       this.customMetas.push({
         name: "",
@@ -180,14 +222,27 @@ var PageNewForm = new Vue({
         this.metas.splice(index, 1);
       }
     },
+    getMeta(strProperty) {
+      let result_meta = false;
+      this.metas.forEach((meta) => {
+        if (meta.property == strProperty || meta.name == strProperty) {
+          result_meta = meta;
+        }
+      });
+      return result_meta;
+    },
     setMetaContent(strValue, strProperty, index) {
+      var div = document.createElement("div");
+      div.innerHTML = strValue;
+      var text = div.textContent || div.innerText || "";
+      if (text.length > 370) text = text.substring(0, 370) + "...";
       if (index !== undefined) {
-        this.metas[index].content = strValue;
+        this.metas[index].content = text;
         return;
       }
       this.metas = this.metas.map((meta) => {
         if (meta.property == strProperty || meta.name == strProperty) {
-          meta.content = strValue;
+          meta.content = text;
         }
         return meta;
       });
@@ -216,6 +271,12 @@ var PageNewForm = new Vue({
       subcategorie = subcategorie[0] ? subcategorie[0]["name"] : "";
       subcategorie = type == "" ? "" : subcategorie;
       let pagePath = this.path;
+      if (pagePath.indexOf("blog/") !== -1) {
+        pagePath = pagePath.split("blog/")[1];
+      }
+      if (pagePath.indexOf("news/") !== -1) {
+        pagePath = pagePath.split("news/")[1];
+      }
       return [type, categorie, subcategorie, pagePath];
     },
     onChangeTitle(title) {
@@ -242,6 +303,8 @@ var PageNewForm = new Vue({
       }
       if (this.mainImage.length == 0) {
         this.mainImage = [];
+        this.setMetaContent("", "og:image");
+        this.setMetaContent("", "twitter:image");
       }
     },
     getFileImagenPath(file) {
@@ -259,17 +322,18 @@ var PageNewForm = new Vue({
       if (str.length == 0) return "";
 
       str = str.replace(/^\s+|\s+$/g, ""); // trim
+
       str = str.toLowerCase();
 
       // remove accents, swap ñ for n, etc
       var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
-      var to = "aaaaeeeeiiiioooouuuunc------";
+      var to = "aaaaeeeeiiiioooouuuunc-/----";
       for (var i = 0, l = from.length; i < l; i++) {
         str = str.replace(new RegExp(from.charAt(i), "g"), to.charAt(i));
       }
 
       str = str
-        .replace(/[^a-z0-9 -]/g, "") // remove invalid chars
+        .replace(/[^a-z0-9 -/]/g, "") // remove invalid chars
         .replace(/\s+/g, "-") // collapse whitespace and replace by -
         .replace(/-+/g, "-"); // collapse dashes
 
@@ -338,24 +402,44 @@ var PageNewForm = new Vue({
               callBack(response);
             }
           } else {
-            M.toast({ html: response.responseJSON.error_message });
+            M.toast({ html: response.error_message });
             self.loader = false;
           }
         },
         error: function (response) {
-          M.toast({ html: response.responseJSON.error_message });
           self.loader = false;
+          M.toast({ html: "Ocurrió un error inesperado" });
+          console.error(error);
         },
       });
     },
     getData: function () {
+      let content = this.content;
+
+      var span = document.createElement("span");
+      span.innerHTML = content;
+      let text = span.textContent || span.innerText;
+
+      let meta = this.getMeta("description");
+      if ((meta && meta.content == "") || meta.content == "...") {
+        this.setMetaContent(text, "description");
+      }
+      meta = this.getMeta("og:description");
+      if ((meta && meta.content == "") || meta.content == "...") {
+        this.setMetaContent(text, "og:description");
+      }
+      meta = this.getMeta("twitter:description");
+      if ((meta && meta.content == "") || meta.content == "...") {
+        this.setMetaContent(text, "twitter:description");
+      }
       return {
         title: this.form.fields.title.value || "",
         subtitle: this.form.fields.subtitle.value || "",
         path: this.getPagePath || "",
         page_type_id: this.page_type_id || 1,
         status: this.status ? 1 : 2,
-        content: wp.data.select("core/editor").getEditedPostContent() || "Content of the page...",
+        content: this.content,
+        json_content: JSON.stringify(this.json_content),
         page_id: this.page_id || null,
         publishondate: this.publishondate,
         date_publish: this.getDateTimePublish,
@@ -365,6 +449,7 @@ var PageNewForm = new Vue({
         categorie_id: this.categorie_id || 0,
         subcategorie_id: this.subcategorie_id || 0,
         mainImage: this.getMainImagenPath,
+        thumbnailImage: this.getThumbnailImagePath,
         page_data: {
           tags: this.getPageTags(),
           title: this.page_data.title,
@@ -376,8 +461,9 @@ var PageNewForm = new Vue({
     },
     getPageTags() {
       let tags = [];
-      const instance = M.Chips.getInstance(document.getElementById("pageTags"))
-        .chipsData;
+      const instance = M.Chips.getInstance(
+        document.getElementById("pageTags")
+      ).chipsData;
       instance.forEach((element) => {
         tags.push(element.tag);
       });
@@ -396,13 +482,14 @@ var PageNewForm = new Vue({
           self.debug ? console.log(url, response) : null;
           if (response.code == 200) {
             self.templates = response.data.templates.map(function (value) {
-              let template = value.split(".")[0];
+              let template = value.split(".blade")[0];
               return template == "template" ? "default" : template;
             });
             self.layouts = response.data.layouts.map(function (value) {
               let layout = value.split(".")[0];
               return layout == "site" ? "default" : layout;
             });
+            self.initPlugins();
           }
         },
         error: function (error) {
@@ -546,8 +633,9 @@ var PageNewForm = new Vue({
               const instance = M.Chips.getInstance(
                 document.getElementById("pageTags")
               );
-              self.page_data.tags
-                ? self.page_data.tags.forEach((element) => {
+              response.data.page.page_data.tags
+                ? response.data.page.page_data.tags.forEach((element) => {
+                    console.log({ element });
                     instance.addChip({
                       tag: element,
                     });
@@ -560,23 +648,31 @@ var PageNewForm = new Vue({
               if (response.data.page.main_image) {
                 self.mainImage.push(response.data.page.main_image);
               }
+              if (response.data.page.thumbnail_image) {
+                self.mainImage.push(response.data.page.thumbnail_image);
+              }
               self.templates = response.data.templates.map(function (value) {
-                let template = value.split(".")[0];
+                let template = value.split(".blade")[0];
                 return template == "template" ? "default" : template;
               });
               self.layouts = response.data.layouts.map(function (value) {
                 let layout = value.split(".")[0];
                 return layout == "site" ? "default" : layout;
               });
-              self.content = response.data.page;
-              self.setEditorContent(response.data.page);
+              self.json_content = response.data.page.json_content;
+              self.content = response.data.page.content;
+              self.content
+                ? $("#editor").trumbowyg("html", response.data.page.content)
+                : null;
             }
             setTimeout(() => {
               M.updateTextFields();
             }, 1000);
+            this.initPlugins();
           })
           .catch((response) => {
-            M.toast({ html: response.responseJSON.error_message });
+            console.log(response);
+            M.toast({ html: response.error_message });
             self.loader = false;
           });
       } else {
@@ -585,40 +681,70 @@ var PageNewForm = new Vue({
       }
     },
     copyCallcack(files) {
-      let file = files[0];
-      this.mainImage.push(file);
-      let instance = M.Modal.getInstance($("#fileUploader"));
+      files = files.map((file) => new ExplorerFile(file));
+      if (this.modalCallbackMode == "copyCallcack") {
+        let file = files[0];
+        this.mainImage = [...this.mainImage, ...files];
+        if (this.mainImage.length > 2) {
+          this.mainImage = this.mainImage.slice(0, 2);
+        }
+        this.setMetaContent(file.get_relative_file_path(), "og:image");
+        this.setMetaContent(file.get_relative_file_path(), "twitter:image");
+        let instance = M.Modal.getInstance($("#fileUploader"));
+        instance.close();
+        this.initMaterialboxed();
+      } else {
+        let container = document.getElementById(this.modalCallbackTargetID);
+        let img = container.querySelector("img");
+
+        let file = files[0];
+        let url = file.get_full_file_path();
+        img.setAttribute("src", url);
+
+        let instance = M.Modal.getInstance($("#fileUploader"));
+        instance.close();
+        this.initMaterialboxed();
+      }
+    },
+    onSelectImageCallcack(files) {
+      files = files.map((file) => new ExplorerFile(file));
+      console.log(files);
+      let instance = M.Modal.getInstance($("#editorModal"));
       instance.close();
+      files.forEach((file) => {
+        try {
+          var node = $(
+            `<img alt="${file.file_name}" src="${file.get_full_file_path()}" />`
+          )[0];
+          console.log({ trumbowygInstance });
+          if (trumbowygInstance.range == null) {
+            let startNode = $(".trumbowyg-editor")[0];
+            let endNode = $(".trumbowyg-editor")[0];
+            let range = document.createRange();
+            range.setStart(startNode, 1);
+            range.setEnd(endNode, 1);
+            trumbowygInstance.range = range;
+          }
+          console.log({ trumbowygInstance });
+          trumbowygInstance.range.insertNode(node);
+        } catch (error) {
+          console.error(error);
+        }
+      });
     },
     initPlugins() {
-      M.Chips.init(document.getElementById("pageTags"), {});
-      tinymce.init({
-        selector: "#id_cazary",
-        plugins: ["link table code"],
-        setup: (editor) => {
-          editor.on("Change", (e) => {
-            PageNewForm.content = tinymce.editors["id_cazary"].getContent();
-            let content = this.getcontentText(PageNewForm.content, 200);
-            content = content.replace(/(\r\n|\n|\r)/gm, "");
-            this.setMetaContent(content, "description");
-            this.setMetaContent(content, "og:description");
-            this.setMetaContent(content, "twitter:description");
-          });
-        },
-      });
       setTimeout(() => {
         M.Tabs.init(document.getElementById("formTabs"), {});
         var elems = document.getElementById("pageMetas");
-        var instances = M.Collapsible.init(elems, {
+        M.Collapsible.init(elems, {
           accordion: false,
         });
         var elems = document.querySelectorAll(".datepicker");
         M.Datepicker.init(elems, {
           format: "yyyy-mm-dd",
           onClose: function () {
-            PageNewForm.datepublish = document.getElementById(
-              "datepublish"
-            ).value;
+            PageNewForm.datepublish =
+              document.getElementById("datepublish").value;
           },
         });
         var elems = document.querySelectorAll(".timepicker");
@@ -626,55 +752,75 @@ var PageNewForm = new Vue({
           twelveHour: false,
           defaultTime: "now",
           onCloseEnd: function () {
-            PageNewForm.timepublish = document.getElementById(
-              "timepublish"
-            ).value;
+            PageNewForm.timepublish =
+              document.getElementById("timepublish").value;
           },
         });
         this.initSelects();
       }, 1000);
     },
+    initMaterialboxed() {
+      setTimeout(() => {
+        var elems = document.querySelectorAll(".materialboxed");
+        M.Materialbox.init(elems, {});
+      }, 500);
+    },
     initSelects() {
       setTimeout(() => {
         var elems = document.querySelectorAll("select");
-        var instances = M.FormSelect.init(elems, {});
+        M.FormSelect.init(elems, {});
+        this.initMaterialboxed();
       }, 1000);
     },
     setEditorContent: function (page) {
-      console.log({ page });
-      let content = {
-        id: 1,
-        content: {
-          raw: page.content,
-          rendered: page.content,
-        },
-        date: "2020-11-24T21:22:54.913Z",
-        date_gmt: "2020-11-24T21:22:54.913Z",
-        title: { raw: "Preview page", rendered: "Preview page" },
-        excerpt: { raw: "", rendered: "" },
-        status: "draft",
-        revisions: { count: 0, last_id: 0 },
-        parent: 0,
-        theme_style: true,
-        type: "page",
-        link: "http://localhost:8000/preview",
-        categories: [],
-        featured_media: 0,
-        permalink_template: "http://localhost:8000/preview",
-        preview_link: "http://localhost:8000/preview",
-        _links: {
-          "wp:action-assign-categories": [],
-          "wp:action-create-categories": [],
-        },
-      };
- 
-      localStorage.setItem("g-editor-page", JSON.stringify(content));
+      return;
     },
   },
   mounted: function () {
     this.$nextTick(function () {
       this.debug ? console.log("mounted PageNewForm") : null;
-      this.initPlugins();
+
+      M.Chips.init(document.getElementById("pageTags"), {
+        placeholder: "Enter a value",
+      });
+
+      setTimeout(() => {
+        const instance = M.Chips.getInstance(
+          document.getElementById("pageTags")
+        );
+        instance.options.onChipAdd = (value) => {
+          this.page_data.tags = this.getPageTags();
+        };
+        instance.options.onChipDelete = (value) => {
+          this.page_data.tags = this.getPageTags();
+        };
+      }, 2000);
+
+      $("#editor")
+        .trumbowyg({
+          semantic: false,
+          btns: [
+            ["viewHTML"],
+            ["formatting"],
+            ["strong", "em", "del"],
+            ["superscript", "subscript"],
+            ["link"],
+            ["insertImage"],
+            ["uploadimage"],
+            ["justifyLeft", "justifyCenter", "justifyRight", "justifyFull"],
+            ["unorderedList", "orderedList"],
+            ["horizontalRule"],
+            ["removeformat"],
+            ["fullscreen"],
+          ],
+        })
+        .on("tbwfocus", () => {}) // Listen for `tbwfocus` event
+        .on("tbwchange", () => {
+          this.content = $("#editor").trumbowyg("html");
+        }) // Listen for `tbwfocus` event
+        .on("tbwblur", () => {
+          //this.runSaveData(()=> {});
+        });
       this.checkEditMode();
       this.getCategories();
     });

@@ -10,7 +10,6 @@ class PageController extends Base_Controller
         parent::__construct();
         $this->load->model('Admin/Page');
         $config['enable_profiler'] = false;
-
     }
 
     public function index()
@@ -20,36 +19,280 @@ class PageController extends Base_Controller
             $this->error404();
             return;
         }
-        //Load local theme Controller 
-        include getThemePath() . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'ThemeController.php';
-        $themeController = new ThemeController();
-        
-        echo $themeController->render($data);
+        //Load local theme Controller
+        echo $this->themeController->render($data);
     }
 
     public function home()
     {
         //Check if there are a page configured as home page
-        $page_id = config("SITE_HOME_PAGE");
+        $page_id = config("SITE_HOME_PAGE_ID");
         if ($page_id) {
             $data = $this->get_page_info(array('page_id' => $page_id, 'status' => 1));
             if ($data == null) {
                 $this->error404();
                 return;
             }
-
-            //Load local theme Controller 
-            include getThemePath() . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'ThemeController.php';
-            $themeController = new ThemeController();
-            echo $themeController->render($data);
+            echo $this->themeController->render($data);
         } else {
             // Show default
             $data['title'] = config("SITE_TITLE") . " - Home";
-            if (getThemePath()) {
-                $this->blade->changePath(getThemePath());
-            }
-            echo $this->blade->view("site.home", $data);
+            $data['layout'] = 'site';
+            $data['template'] = 'home';
+            $data['meta'] = $this->getPageMetas([]);
+
+            echo $this->themeController->home($data, '');
         }
+    }
+
+    public function blog_list()
+    {
+
+        $this->check_blog_config();
+
+        $data['title'] = config("SITE_TITLE") . " - Blog";
+        $data['layout'] = 'site';
+        $data['template'] = 'blogList';
+        $data['meta'] = $this->getPageMetas([]);
+        $data['blogs'] = $this->Page->where(['page_type_id' => 2, "status" => 1]);
+        $data['list_variant'] = '';
+
+        echo $this->themeController->blog_list($data);
+    }
+
+    public function blog_list_tag($tag)
+    {
+        $this->check_blog_config();
+
+        $data['blogs'] = $this->Page->where(['page_type_id' => 2, "status" => 1]);
+
+        if ($data['blogs']) {
+            $data['blogs'] = $data['blogs']->filter(function ($value, $key) use ($tag) {
+                return (isset($value->page_data['tags']) && in_array($tag, $value->page_data['tags']));
+            });
+        }
+
+        $data['layout'] = 'site';
+        $data['template'] = 'blogList';
+        $data['list_variant'] = 'tag';
+        $data['tag'] = $tag;
+        $data['title'] = config("SITE_TITLE") . " - Blog Tags";
+
+        $data['meta'] = $this->getPageMetas([]);
+        echo $this->themeController->blog_list($data);
+    }
+
+    public function blog_list_author($author)
+    {
+        $this->check_blog_config();
+
+        $this->load->model('Admin/User');
+        $user = new User();
+        $result = $user->find_with(['username' => urldecode($author)]);
+
+        if (!$result) {
+            $this->error404();
+            return;
+        }
+
+        $data['title'] = config("SITE_TITLE") . " - Blog";
+        $data['layout'] = 'site';
+        $data['template'] = 'blogList';
+        $data['list_variant'] = 'author';
+        $data['author_info'] = $user;
+
+        //Filter Blogs by user_id
+        $data['blogs'] = $this->Page->where(['page_type_id' => 2, "status" => 1, 'user_id' => $user->user_id]);
+        $data['meta'] = $this->getPageMetas([]);
+        echo $this->themeController->blog_list($data);
+    }
+
+    public function blog_list_search()
+    {
+        $this->check_blog_config();
+
+        $this->load->model('Admin/User');
+        $user = new User();
+
+        $term = $this->input->get("q");
+        $result = $this->Page->search(urldecode($term));
+
+        if (!$result) {
+            $this->error404();
+            return;
+        }
+
+        $result = $result->filter(function ($value, $key) {
+            return $value->page_type_id == 2;
+        });
+
+        $data['title'] = config("SITE_TITLE") . " - Blog";
+        $data['layout'] = 'site';
+        $data['template'] = 'blogList';
+        $data['list_variant'] = 'author';
+        $data['author_info'] = $user;
+
+        //Filter Blogs by user_id
+        $data['blogs'] = $result;
+        $data['meta'] = $this->getPageMetas([]);
+        echo $this->themeController->blog_list($data);
+    }
+
+    public function blog_list_categorie($categorie)
+    {
+        $this->check_blog_config();
+
+        $this->load->model('Admin/Categories');
+        $categorie_name = (ucwords(str_replace('-', ' ', urldecode($categorie))));
+        $categorie = new Categories();
+        $result = $categorie->find_with(["name" => $categorie_name]);
+
+        if (!$result) {
+            $this->error404();
+            return;
+        }
+
+        $data['title'] = config("SITE_TITLE") . " - Blog";
+        $data['blogs'] = $this->Page->where(['page_type_id' => 2, "status" => 1, 'categorie_id' => $categorie->categorie_id]);
+        $data['blogs'] = $data['blogs'] ? $data['blogs'] : [];
+        $data['layout'] = 'site';
+        $data['categorie'] = $categorie;
+        $data['template'] = 'blogList';
+        $data['list_variant'] = 'categorie';
+
+        $data['meta'] = $this->getPageMetas([]);
+
+        echo $this->themeController->blog_list($data);
+    }
+
+    private function check_blog_config()
+    {
+
+        if (config("SITE_ACTIVE_BLOGS") === "Off") {
+            $this->error404();
+            return false;
+        }
+
+        return true;
+    }
+
+    public function get_blog()
+    {
+        $data = $this->get_page_info(array('path' => $this->uri->uri_string(), 'status' => 1));
+        if ($data == null) {
+            $this->error404();
+            return;
+        }
+
+        //Load local theme Controller
+        echo $this->themeController->blog_post($data);
+    }
+
+    public function formsubmit()
+    {
+        $siteform_id = $this->input->post('form_reference');
+        $this->load->model('Admin/SiteForm');
+        $siteform = new SiteForm();
+        $result = $siteform->where(['siteform_id' => $siteform_id]);
+        if ($result) {
+            $siteforms = $this->session->userdata('siteforms');
+            if ($siteforms && isset($siteforms[$result->first()->name])) {
+                $submited_form = $siteforms[$result->first()->name];
+                $date = new DateTime();
+                if (isset($submited_form['timestamp'])) {
+                    $datetime2 = DateTime::createFromFormat('Y-m-d H:i:s', $submited_form['timestamp']);
+                    $interval = $date->diff($datetime2);
+                    if ($interval->format('%I') >= 3) {
+                        $this->process_form_submit();
+                    }
+                } else {
+                    $this->process_form_submit();
+                }
+                $submited = [$result->first()->name => ['submited' => $submited_form['submited'] + 1, "timestamp" => $date->format('Y-m-d H:i:s')]];
+                $this->session->set_userdata('siteforms', $submited);
+                $data['title'] = config("SITE_TITLE") . " - Submited Form";
+                $data['layout'] = 'site';
+                $data['template'] = 'templates.default';
+                $data['page'] = (object) ["title" => lang('form_submited_title'), "subtitle" => "", "content" => lang("form_submited_message")];
+                echo $this->themeController->render($data, '');
+            }
+        } else {
+            redirect("/");
+        }
+    }
+
+    public function formajaxsubmit()
+    {
+        $this->lang->load('rest_lang', 'english');
+
+        header('Content-Type: application/json');
+
+        $siteform_id = $this->input->post('form_reference');
+        $this->load->model('Admin/SiteForm');
+        $siteform = new SiteForm();
+        $result = $siteform->where(['siteform_id' => $siteform_id]);
+        if ($result) {
+            $siteforms = $this->session->userdata('siteforms');
+            if ($siteforms && isset($siteforms[$result->first()->name])) {
+                $submited_form = $siteforms[$result->first()->name];
+                $date = new DateTime();
+                if (isset($submited_form['timestamp'])) {
+                    $datetime2 = DateTime::createFromFormat('Y-m-d H:i:s', $submited_form['timestamp']);
+                    $interval = $date->diff($datetime2);
+                    if ($interval->format('%I') >= 3) {
+                        $this->process_form_submit();
+                    }
+                } else {
+                    $this->process_form_submit();
+                }
+                $submited = [$result->first()->name => ['submited' => $submited_form['submited'] + 1, "timestamp" => $date->format('Y-m-d H:i:s')]];
+                $this->session->set_userdata('siteforms', $submited);
+                $response = array(
+                    'code' => 200,
+                    'data' => [],
+                    "error_message" => '',
+                    'requets_data' => $_POST,
+                );
+
+                $this->output->set_status_header(200);
+
+                echo json_encode($response);
+                return;
+            }
+        }
+
+        // bad request
+        $response = array(
+            'code' => 400,
+            'data' => [],
+            "error_message" => lang('unexpected_error'),
+            'requets_data' => $_POST,
+        );
+
+        $this->output->set_status_header(400);
+
+        echo json_encode($response);
+
+    }
+
+    private function process_form_submit()
+    {
+        $this->load->model('Admin/Siteform_submit');
+        $siteform_submit = new Siteform_submit();
+        $siteform_submit->siteform_id = $this->input->post('form_reference');
+        $siteform_submit->user_tracking_id = userdata('user_tracking_id');
+        $siteform_submit->date_create = date("Y-m-d H:i:s");
+        $siteform_submit->date_create = date("Y-m-d H:i:s");
+
+        unset($_POST['form_reference']);
+        $siteform_submit->status = 1;
+        $siteform_submit->siteform_submit_data = $_POST;
+
+        $result = $siteform_submit->save();
+
+        set_notification("Recibido mensaje formulario", "Se recibió un registro en el formulario " . $this->input->post('form_reference'), "form_submit", "/admin/SiteForms/submit/#/details/" . $siteform_submit->siteform_submit_id);
+
+        return $result;
     }
 
     public function preview()
@@ -65,49 +308,40 @@ class PageController extends Base_Controller
             $this->error404();
             return;
         }
-        
-        //Load local theme Controller 
-        include getThemePath() . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'ThemeController.php';
-        $themeController = new ThemeController();
-        echo $themeController->render($data);
 
+        $data["related_pages"] = [];
+
+        //Load local theme Controller
+        echo $this->themeController->render($data);
     }
 
     public function siteMap()
     {
-        $data['pages'] = $this->Page->where(["status" => 1]);
+        if (config("SITE_ACTIVE_BLOGS") === "Off") {
+            $data['pages'] = $this->Page->where(["status" => 1, "page_type_id" => 1]);
+        } else {
+            $data['pages'] = $this->Page->where(["status" => 1]);
+        }
+
         header("Content-Type: text/xml;charset=iso-8859-1");
         echo $this->blade->view("admin.xml.sitemap", $data);
     }
 
-    private function get_page_info($where)
+    public function blogFeed()
     {
-        $pageInfo = new Page();
-        $data['result'] = $pageInfo->find_with($where);
-        if (!$data['result']) {
-            //Not found Page
-            return null;
-        }
-        //Is the page published?
-        $date_now = new DateTime();
-        $data['pagePublishTime'] = DateTime::createFromFormat('Y-m-d H:i:s', $pageInfo->date_publish);
+        $this->check_blog_config();
 
-        if ($date_now < $data['pagePublishTime']) {
-            return null;
-        }
-
-        $data['page'] = $pageInfo;
-        $data['meta'] = $this->getPageMetas($pageInfo);
-        $data['title'] = $pageInfo->page_data["title"] ? config("SITE_TITLE") . " - " . $pageInfo->page_data["title"] : config("SITE_TITLE") . " - " . $pageInfo->title;
-        $data['layout'] = $pageInfo->layout == 'default' ? 'site' : $pageInfo->layout;
-        $data['headers_includes'] = isset($pageInfo->page_data["headers_includes"]) ? $pageInfo->page_data["headers_includes"] : "";
-        $data['footer_includes'] = isset($pageInfo->page_data["footer_includes"]) ? $pageInfo->page_data["footer_includes"] : "";
-        $data['template'] = $pageInfo->template == 'default' ? 'template' : $pageInfo->template;
-        $this->load->model('Admin/Menu');
-        $menu = new Menu();
-        $menu->find_with(['menu_id' => 1]);
-        $data["menu"] = $menu;
-        return $data;
+        $this->load->helper('xml');
+        $this->load->helper('text');
+        $data['feed_name'] = config("SITE_TITLE");
+        $data['encoding'] = 'UTF-8';
+        $data['feed_url'] = base_url('feed');
+        $data['page_description'] = config("SITE_DESCRIPTION");
+        $data['page_language'] = 'en-en';
+        $data['creator_email'] = config("SITE_ADMIN_EMAIL");
+        $data['site_language'] = config("SITE_LANGUAGE");
+        $data['posts'] = $this->Page->where(['page_type_id' => 2, "status" => 1]);
+        header("Content-Type: application/rss+xml");
+        echo $this->blade->view("admin.xml.rss", $data);
     }
-
 }

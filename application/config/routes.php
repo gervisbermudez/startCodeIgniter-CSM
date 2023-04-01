@@ -59,10 +59,18 @@ $route['admin/search'] = 'admin/admin/search';
 $route['admin/paginas/preview'] = 'PageController/preview';
 $route['sitemap\.xml'] = 'PageController/siteMap';
 $route['sitemap'] = 'PageController/siteMap';
+$route['form/submit'] = 'PageController/formsubmit';
+$route['form/ajaxsubmit'] = 'PageController/formajaxsubmit';
+
+$route['form/success'] = 'PageController/formsuccess';
+$route['form/error'] = 'PageController/formerror';
+$route['admin/Fragments/'] = 'admin/Fragments';
 
 //Blog pages
-$route['feed'] = 'BlogController/blogFeed';
-$route['blog'] = 'BlogController/list';
-$route['blog/(:any)'] = 'BlogController/get_blog/$1';
-$route['blog/(:any)/(:any)'] = 'BlogController/get_blog_categorie/$1/$2';
-$route['blog/(:any)/(:any)/(:any)'] = 'BlogController/get_blog_subcategorie/$1/$2/$3';
+$route['feed'] = 'PageController/blogFeed';
+$route['blog'] = 'PageController/blog_list';
+$route['blog/search'] = 'PageController/blog_list_search/';
+$route['blog/author/(:any)'] = 'PageController/blog_list_author/$1';
+$route['blog/tag/(:any)'] = 'PageController/blog_list_tag/$1';
+$route['blog/categorie/(:any)'] = 'PageController/blog_list_categorie/$1';
+$route['blog/(:any)'] = 'PageController/get_blog/$1';

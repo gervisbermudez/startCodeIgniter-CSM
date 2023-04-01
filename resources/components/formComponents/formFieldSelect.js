@@ -11,7 +11,7 @@ Vue.component("formFieldSelect", {
   data: function () {
     return {
       fieldPlaceholder: "",
-      form_field_id: null,
+      custom_model_fields_id: null,
       fieldID: this.makeid(10),
       fieldName: "Field select",
       fielApiID: "field_select",
@@ -30,7 +30,7 @@ Vue.component("formFieldSelect", {
           value: 2,
         },
       ],
-      form_custom_data_id: null,
+      custom_model_data_id: null,
     };
   },
   watch: {
@@ -75,7 +75,7 @@ Vue.component("formFieldSelect", {
         fieldID: this.fieldID,
         fieldName: this.fieldName,
         fielApiID: this.fielApiID,
-        form_custom_data_id: this.form_custom_data_id,
+        custom_model_data_id: this.custom_model_data_id,
         selectOptions: JSON.stringify(this.selectOptions),
       };
     },
@@ -117,9 +117,10 @@ Vue.component("formFieldSelect", {
         }
       }
       if (this.fieldData) {
-        this.form_field_id = this.fieldData.form_field_id;
-        this.form_custom_data_id = this.fieldData.form_custom_data_id;
-        this.selectValue = this.fieldData.form_value.dropdown_select;
+        this.custom_model_fields_id = this.fieldData.custom_model_fields_id;
+        this.custom_model_data_id = this.fieldData.custom_model_data_id;
+        this.selectValue =
+          this.fieldData.custom_model_content_data_value.dropdown_select;
       }
       this.init();
     });

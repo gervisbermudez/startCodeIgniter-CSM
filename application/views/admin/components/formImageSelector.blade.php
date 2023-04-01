@@ -1,8 +1,11 @@
 <script type="text/x-template" id="formImageSelector-template">
   <div class="row formImageSelector">
-      <div class="col s12">
+      <div class="col s12" v-if="configurable">
           <b>Field Preview:</b>
       </div>
+      <div class="col s12" v-else>
+        <b>@{{fieldName ? fieldName : 'Agregar imagen'}}</b>
+    </div>
       <div class="input-field col s12">
           <a type="button" class="btn btn-primary modal-trigger" href="#folderSelector">
               <span><i class="material-icons right">image</i> @{{fieldName ? fieldName : 'Agregar imagen'}}</span>
@@ -56,7 +59,14 @@
               </li>
           </ul>
       </div>
-      <file-explorer-selector :preselected="preselected" :modal="'folderSelector'" :mode="mode" :filter="filter"
-          :multiple="multiple" v-on:notify="copyCallcack"></file-explorer-selector>
+      <file-explorer-selector 
+      :uploader="'single'"
+      :preselected="preselected" 
+      :modal="'folderSelector'" 
+      :mode="mode" 
+      :filter="filter"
+      :multiple="multiple" 
+      v-on:notify="copyCallcack"
+        ></file-explorer-selector>
   </div>
 </script>

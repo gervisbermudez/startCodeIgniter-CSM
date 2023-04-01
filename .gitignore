@@ -209,3 +209,8 @@ doc/*
 /cache
 backups/database/*
 themes/myGreatTheme/cache/*
+application/config/production/*
+themes/*
+uploads/*
+workspace.code-workspace
+trash/*

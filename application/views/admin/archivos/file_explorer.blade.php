@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="<?=base_url('public/css/admin/file_explorer.min.css')?>">
 <link rel="stylesheet" href="<?=base_url('public/js/fileinput-master/css/fileinput.min.css')?>">
 <link rel="stylesheet" href="<?=base_url('public/font-awesome/css/all.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/js/prism.js/prism.css')?>">
 @endsection
 
 @section('content')
@@ -52,7 +53,8 @@
                         </ul>
                         <ul class="collapsible hide-on-med-and-up">
                             <li>
-                                <div class="collapsible-header"><a class="subheader"><i class="fas fa-cloud"></i> My Drive</a></div>
+                                <div class="collapsible-header"><a class="subheader"><i class="fas fa-cloud"></i> My
+                                        Drive</a></div>
                                 <div class="collapsible-body">
                                     <ul class="suboptions">
                                         <li><a href="#" class="waves-effect waves-teal">
@@ -92,23 +94,48 @@
                         </ul>
                     </div>
                     <div class="col s12 m10 files">
-                        <div class="file-overlay" v-bind:class="{ show: showSideRightBar }" @click="setCloseSideRightBar();"></div>
+                        <div class="file-overlay" v-bind:class="{ show: showSideRightBar }">
+                            <i class="material-icons" @click="setCloseSideRightBar();">close</i>
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col s12">
+                                        <div v-if="showFile.file_content">
+                                            <h4>@{{showFile.file_name + '.' + showFile.file_type }}</h4>
+                                            <div v-if="!showFile.isImagen">
+                                                <pre :class="'language-' + showFile.file_type">
+                                                <code :class="'language-' + showFile.file_type" v-html="showFile.file_content"></code>
+                                                </pre>
+                                            </div>
+                                            <div v-else>
+
+                                                <a :href="getImagePath(showFile)" data-lightbox="roadtrip">
+                                                    <img :src="getFullFilePath(showFile)">
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div class="preloader">
+                                            <preloader v-show="!showFile.file_content" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="row search">
                             <div class="col s12">
-                                <nav  v-if="!backto" class="search-nav">
+                                <nav v-if="!backto" class="search-nav">
                                     <div class="nav-wrapper">
-                                       <form>
-                                            <div class="input-field">
-                                                <input class="input-search" type="search" placeholder="Buscar Archivos..."
-                                                    v-model="search" v-on:keyup.enter="searchfiles()">
-                                                <label class="label-icon" for="search"><i
-                                                        class="material-icons">search</i></label>
-                                                <i class="material-icons" @click="resetSearch()">close</i>
-                                            </div>
-                                        </form>
+                                        <div class="input-field">
+                                            <input class="input-search" type="search" placeholder="Buscar Archivos..."
+                                                v-model="search" v-on:keyup="searchfiles()">
+                                            <label class="label-icon" for="search"><i
+                                                    class="material-icons">search</i></label>
+                                            <i class="material-icons" @click="resetSearch()">close</i>
+                                        </div>
                                         <ul class="right hide-on-med-and-down">
-                                            <li><a href="#!" v-on:click="toggleView();"><i class="material-icons">view_module</i></a></li>
-                                            <li><a href="#!" v-on:click="reloadFileExplorer();"><i class="material-icons">refresh</i></a></li>
+                                            <li><a href="#!" v-on:click="toggleView();"><i
+                                                        class="material-icons">view_module</i></a></li>
+                                            <li><a href="#!" v-on:click="reloadFileExplorer();"><i
+                                                        class="material-icons">refresh</i></a></li>
                                         </ul>
                                     </div>
                                 </nav>
@@ -116,7 +143,7 @@
                                     <div class="nav-wrapper">
                                         <div class="col s12 breadcrumb-nav" v-if="getbreadcrumb">
                                             <a href="#!" class="breadcrumb" @click="navigateFiles(getBackPath)"><i
-                                                class="material-icons">arrow_back</i></a>
+                                                    class="material-icons">arrow_back</i></a>
                                         </div>
                                         <div class="col s12 breadcrumb-nav" v-if="getbreadcrumb">
                                             <a href="#!" class="breadcrumb" v-for="(item, index) in getbreadcrumb"
@@ -128,10 +155,10 @@
                             </div>
                         </div>
                         <div class="row filelist">
-                            <div class="col s12 center"  v-bind:class="{ hide: !fileloader }">
+                            <div class="col s12 center" v-bind:class="{ hide: !fileloader }">
                                 <preloader />
                             </div>
-                            <div v-if="recentlyFiles.length">
+                            <div v-bind:class="{ hide: fileloader }" v-if="recentlyFiles.length">
                                 <div class="col s12">
                                     <h5>Recently Accessed Files</h5>
                                 </div>
@@ -150,7 +177,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div v-if="getFolders.length">
+                            <div v-bind:class="{ hide: fileloader }" v-if="getFolders.length">
                                 <div class="col s12">
                                     <h5>Folders</h5>
                                 </div>
@@ -170,21 +197,23 @@
                                     </div>
                                 </div>
                             </div>
-                            <div v-if="getFiles.length">
+                            <div v-if="getFiles.length" v-bind:class="{ hide: fileloader }">
                                 <div class="col s12">
                                     <h5>Files</h5>
                                 </div>
                                 <div class="col s12">
                                     <div class="row">
-                                        <div class="col s12 m6 l4 xl3 file" v-for="(item, index) in getFiles" :key="index">
+                                        <div class="col s12 m6 l4 xl3 file" v-for="(item, index) in getFiles"
+                                            :key="index">
                                             <div class="card">
                                                 <!-- Dropdown Structure -->
                                                 <a class="grey-text text-darken-4 dropdown-trigger" href='#!'
                                                     :data-target="'file_options' + index"><i
                                                         class="material-icons right">more_vert</i></a>
-                                                <ul :id="'file_options' + index" class='dropdown-content' v-if="curDir != './trash/'">
-                                                    <li><a href="#!">
-                                                            <i class="fas fa-share-alt"></i> Share file</a>
+                                                <ul :id="'file_options' + index" class='dropdown-content'
+                                                    v-if="curDir != './trash/'">
+                                                    <li><a href="#!" @click="getFileContent(item)">
+                                                            <i class="fas fa-share-alt"></i> view file</a>
                                                     </li>
                                                     <li>
                                                         <a class="waves-effect waves-light modal-trigger" href="#modal1"
@@ -193,13 +222,15 @@
                                                             Rename</a>
                                                     </li>
                                                     <li>
-                                                        <a class="waves-effect waves-light modal-trigger" @click="setFileToMove(item);" href="#folderSelectorMove">
-                                                            <i class="fas fa-cut" ></i>
+                                                        <a class="waves-effect waves-light modal-trigger"
+                                                            @click="setFileToMove(item);" href="#folderSelectorMove">
+                                                            <i class="fas fa-cut"></i>
                                                             Move</a>
                                                     </li>
                                                     <li>
-                                                        <a class="waves-effect waves-light modal-trigger" @click="setFileToMove(item);" href="#folderSelectorCopy">
-                                                            <i class="fas fa-copy" ></i>
+                                                        <a class="waves-effect waves-light modal-trigger"
+                                                            @click="setFileToMove(item);" href="#folderSelectorCopy">
+                                                            <i class="fas fa-copy"></i>
                                                             Copy</a>
                                                     </li>
                                                     <li><a href="#!" @click="featuredFileServe(item);">
@@ -207,21 +238,22 @@
                                                                 :class='[item.featured == 1 ? "fas" : "far"]'></i>
                                                             Important</a></li>
                                                     <li>
-                                                        <a class="waves-effect waves-light modal-trigger" href="#deleteFileModal"
-                                                            @click="trashFile(item);">
+                                                        <a class="waves-effect waves-light modal-trigger"
+                                                            href="#deleteFileModal" @click="trashFile(item);">
                                                             <i class="fas fa-trash"></i> Delete
                                                         </a>
                                                     </li>
                                                 </ul>
                                                 <ul :id="'file_options' + index" class='dropdown-content' v-else>
                                                     <li>
-                                                        <a class="waves-effect waves-light modal-trigger" @click="setFileToMove(item);" href="#folderSelectorMove">
-                                                            <i class="fas fa-cut" ></i>
+                                                        <a class="waves-effect waves-light modal-trigger"
+                                                            @click="setFileToMove(item);" href="#folderSelectorMove">
+                                                            <i class="fas fa-cut"></i>
                                                             Move</a>
                                                     </li>
                                                     <li>
-                                                        <a class="waves-effect waves-light modal-trigger" href="#deleteFileModal"
-                                                            @click="trashFile(item);">
+                                                        <a class="waves-effect waves-light modal-trigger"
+                                                            href="#deleteFileModal" @click="trashFile(item);">
                                                             <i class="fas fa-trash"></i> Delete
                                                         </a>
                                                     </li>
@@ -240,7 +272,8 @@
                                                     @{{(item.file_name + getExtention(item)) | shortName}}
                                                 </div>
                                                 <div class="card-reveal">
-                                                    <span class="card-title grey-text text-darken-4">@{{item.file_name}}<i
+                                                    <span
+                                                        class="card-title grey-text text-darken-4">@{{item.file_name}}<i
                                                             class="material-icons right">close</i></span>
                                                     <p>
                                                         <b>Type</b>: @{{item.file_type}} <br />
@@ -256,7 +289,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div v-if="getFiles.length == 0 && !fileloader">
+                            <div v-if="getFiles.length == 0 && !fileloader" v-bind:class="{ hide: fileloader }">
                                 <div class="row">
                                     <div class="col s12">
                                         <h5>No hay archivos</h5>
@@ -264,41 +297,41 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="file-info-colum side-right"  v-bind:class="{ show: showSideRightBar }" v-if="showSideRightBar">
+                        <div class="file-info-colum side-right" v-bind:class="{ show: showSideRightBar }"
+                            v-if="showSideRightBar">
                             <div class="side-header">
-                                <span class="filename">@{{(sideRightBarSelectedFile.file_name + getExtention(sideRightBarSelectedFile))}}</span>
+                                <span
+                                    class="filename">@{{(sideRightBarSelectedFile.file_name + getExtention(sideRightBarSelectedFile))}}</span>
                                 <a class="waves-effect waves-light modal-trigger right" href="#deleteFileModal"
-                                @click="trashFile(sideRightBarSelectedFile);">
-                                <i class="fas fa-trash grey-text text-darken-4 "></i></a>
+                                    @click="trashFile(sideRightBarSelectedFile);">
+                                    <i class="fas fa-trash grey-text text-darken-4 "></i></a>
                             </div>
-                            <br/>
+                            <br />
                             <div class="row">
                                 <div class="col s12">
                                     <ul class="tabs" id="filetabs">
-                                        <li class="tab col s6"><a class="active" href="#fileinfo"><i class="material-icons">info_outline</i> Info</a></li>
-                                        <li class="tab col s6"><a href="#filehistory"><i class="material-icons">linear_scale</i> History</a></li>
+                                        <li class="tab col s6"><a class="active" href="#fileinfo"><i
+                                                    class="material-icons">info_outline</i> Info</a></li>
+                                        <li class="tab col s6"><a href="#filehistory"><i
+                                                    class="material-icons">linear_scale</i> History</a></li>
                                     </ul>
                                 </div>
                                 <div class="tabsbody">
-                                    <div class="preview">
-                                        <div class="card-image"
-                                            v-if="!isImage(sideRightBarSelectedFile)">
-                                            <div class="file icon ">
-                                                <i :class="getIcon(sideRightBarSelectedFile)"></i>
+                                    <div id="fileinfo" class="col s12">
+                                        <div class="preview">
+                                            <div class="card-image" v-if="!isImage(sideRightBarSelectedFile)">
+                                                <div class="file icon ">
+                                                    <i :class="getIcon(sideRightBarSelectedFile)"></i>
+                                                </div>
+                                                <div class="divider"></div>
                                             </div>
                                         </div>
-                                        <div class="card-image" v-if="isImage(sideRightBarSelectedFile)">
-                                            <a :href="getImagePath(sideRightBarSelectedFile)" data-lightbox="roadtrip"><img
-                                                    :src="getImagePath(sideRightBarSelectedFile)"></a>
-                                        </div>
-                                    </div>
-                                    <div class="divider"></div>
-                                    <div id="fileinfo" class="col s12">
-                                    <ul class="file_options">
+                                        <ul class="file_options">
                                             <li>
-                                                <a :href="getFullFilePath(sideRightBarSelectedFile)" target="_blank"><i class="fas fa-cloud-download-alt"></i> Download File</a>
+                                                <a :href="getFullFilePath(sideRightBarSelectedFile)" target="_blank"><i
+                                                        class="fas fa-cloud-download-alt"></i> Download File</a>
                                             </li>
-                                            <li><a href="#!">
+                                            <li><a href="#!" @click="shareFile(sideRightBarSelectedFile)">
                                                     <i class="fas fa-share-alt"></i> Share file</a>
                                             </li>
                                             <li>
@@ -312,27 +345,58 @@
                                                         :class='[sideRightBarSelectedFile.featured == 1 ? "fas" : "far"]'></i>
                                                     Important</a></li>
                                             <li v-if="curDir != './trash/'">
-                                                <a class="waves-effect waves-light modal-trigger" href="#deleteFileModal"
+                                                <a class="waves-effect waves-light modal-trigger"
+                                                    href="#deleteFileModal"
                                                     @click="trashFile(sideRightBarSelectedFile);">
                                                     <i class="fas fa-trash"></i> Delete
                                                 </a>
                                             </li>
-                                    </ul>
-                                    <ul class="collection">
-                                            <li class="collection-item">Type: <span class="secondary-content">@{{sideRightBarSelectedFile.file_type}}</span></li>
-                                            <li class="collection-item">Create: <span class="secondary-content">@{{timeAgo(sideRightBarSelectedFile.date_create)}}</span> </li>
-                                            <li class="collection-item">Update: <span class="secondary-content">@{{timeAgo(sideRightBarSelectedFile.date_update)}}</span> </li>
-                                            <li class="collection-item">Folder: <span class="secondary-content">@{{(sideRightBarSelectedFile.file_path)}}</span> </li>
-                                            <li class="collection-item">File key: <span class="secondary-content">@{{(sideRightBarSelectedFile.rand_key)}}</span> </li>
-                                            <li class="collection-item" v-if="sideRightBarSelectedFile.user_group">Shared with: <span class="secondary-content">@{{sideRightBarSelectedFile.user_group.name}}</span></li>
+                                        </ul>
+                                        <ul class="collection">
+                                            <li class="collection-item">Type: <span
+                                                    class="secondary-content">@{{sideRightBarSelectedFile.file_type}}</span>
+                                            </li>
+                                            <li class="collection-item">Create: <span
+                                                    class="secondary-content">@{{timeAgo(sideRightBarSelectedFile.date_create)}}</span>
+                                            </li>
+                                            <li class="collection-item">Update: <span
+                                                    class="secondary-content">@{{timeAgo(sideRightBarSelectedFile.date_update)}}</span>
+                                            </li>
+                                            <li class="collection-item">Folder: <span
+                                                    class="secondary-content">@{{(sideRightBarSelectedFile.file_path)}}</span>
+                                            </li>
+                                            <li class="collection-item">File key: <span
+                                                    class="secondary-content">@{{(sideRightBarSelectedFile.rand_key)}}</span>
+                                            </li>
+                                            <li class="collection-item" v-if="sideRightBarSelectedFile.user_group">
+                                                Shared with: <span
+                                                    class="secondary-content">@{{sideRightBarSelectedFile.user_group.name}}</span>
+                                            </li>
                                             <li class="collection-item" v-if="sideRightBarSelectedFile.user">
-                                                Create by: <br/>
+                                                Create by: <br />
                                                 <user-info :user="sideRightBarSelectedFile.user" />
                                             </li>
                                         </ul>
 
                                     </div>
-                                    <div id="filehistory" class="col s12" style="display: none;"> History</div>
+                                    <div id="filehistory" class="col s12" style="display: none;">
+                                        <ul class="collection filehistory">
+                                            <li class="collection-item avatar"
+                                                v-for="(history, index) in sideRightBarSelectedFile.history"
+                                                :key="index">
+                                                <i
+                                                    class="material-icons circle teal">@{{getFileHistoryIcon(history.action)}}</i>
+                                                <span class="title">@{{history.description}}</span>
+                                                <p>
+                                                    <a :href="history.user.get_profileurl()">@{{history.user.get_fullname()}}
+                                                    </a>
+                                                    <br>
+                                                    @{{timeAgo(history.date_create)}}
+                                                </p>
+                                            </li>
+                                        </ul>
+
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -346,11 +410,11 @@
         <div class="modal-content">
             <h4>Rename File</h4>
             <p>
-                <div class="input-field col s6">
-                    <input placeholder="Placeholder" id="first_name" type="text" v-on:keyup.enter="renameFileServe()"
-                        v-model="editFile.new_name" class="validate">
-                    <label for="first_name">Rename</label>
-                </div>
+            <div class="input-field col s6">
+                <input placeholder="Placeholder" id="first_name" type="text" v-on:keyup.enter="renameFileServe()"
+                    v-model="editFile.new_name" class="validate">
+                <label for="first_name">Rename</label>
+            </div>
             </p>
         </div>
         <div class="modal-footer">
@@ -372,23 +436,13 @@
         </div>
     </div>
     <!-- Modal Structure -->
-        <file-explorer-selector 
-        :modal="'folderSelectorMove'" 
-        :preselected="[]" 
-        :mode="'folders'" 
-        :multiple="false" 
-        v-on:notify="moveCallcack"
-        >
-        </file-explorer-selector>
+    <file-explorer-selector :modal="'folderSelectorMove'" :preselected="[]" :mode="'folders'" :multiple="false"
+        v-on:notify="moveCallcack">
+    </file-explorer-selector>
     <!-- Modal Structure -->
-        <file-explorer-selector 
-        :modal="'folderSelectorCopy'" 
-        :preselected="[]" 
-        :mode="'folders'" 
-        :multiple="false" 
-        v-on:notify="copyCallcack"
-        >
-        </file-explorer-selector>
+    <file-explorer-selector :modal="'folderSelectorCopy'" :preselected="[]" :mode="'folders'" :multiple="false"
+        v-on:notify="copyCallcack">
+    </file-explorer-selector>
 
 </div>
 <!-- Modal Structure -->
@@ -402,6 +456,8 @@
     </div>
 </div>
 
+
+
 @include('admin.components.FileExplorerSelector')
 
 @endsection
@@ -414,23 +470,25 @@
 <script src="<?=base_url('public/js/fileinput-master/js/fileinput.min.js');?>"></script>
 <script src="<?=base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js');?>"></script>
 <script src="<?=base_url('public/js/fileinput-master/js/locales/es.js');?>"></script>
+<script src="<?=base_url('public/js/prism.js/prism.js');?>"></script>
+
 <script>
-    $(document).on('ready', function () {
-        $("#input-100").fileinput({
-            uploadUrl: BASEURL + "admin/archivos/ajax_upload_file",
-            enableResumableUpload: true,
-            resumableUploadOptions: {
+$(document).on('ready', function() {
+    $("#input-100").fileinput({
+        uploadUrl: BASEURL + "admin/archivos/ajax_upload_file",
+        enableResumableUpload: true,
+        resumableUploadOptions: {
             // uncomment below if you wish to test the file for previous partial uploaded chunks
             // to the server and resume uploads from that point afterwards
             // testUrl: "http://localhost/test-upload.php"
-            },
-            uploadExtraData: {
-                'uploadToken': 'SOME-TOKEN', // for access control / security
-                'curDir': './uploads'
-            },
-            showCancel: true,
-            initialPreview: [],
-            fileActionSettings: {
+        },
+        uploadExtraData: {
+            'uploadToken': 'SOME-TOKEN', // for access control / security
+            'curDir': './uploads'
+        },
+        showCancel: true,
+        initialPreview: [],
+        fileActionSettings: {
             showRemove: true,
             showUpload: true,
             showDownload: true,
@@ -469,19 +527,21 @@
         uploadIcon: '<i class="fas fa-upload"></i>',
         removeIcon: '<i class="fas fa-trash"></i>',
         overwriteInitial: false,
-            // initialPreview: [],          // if you have previously uploaded preview files
-            // initialPreviewConfig: [],    // if you have previously uploaded preview files
+        // initialPreview: [],          // if you have previously uploaded preview files
+        // initialPreviewConfig: [],    // if you have previously uploaded preview files
         deleteUrl: "http://localhost/file-delete.php",
         progressClass: 'determinate progress-bar bg-success progress-bar-success progress-bar-striped active',
         progressInfoClass: 'determinate progress-bar bg-info progress-bar-info progress-bar-striped active',
         progressCompleteClass: 'determinate progress-bar bg-success progress-bar-success',
         progressPauseClass: 'determinate progress-bar bg-primary progress-bar-primary progress-bar-striped active',
         progressErrorClass: 'determinate progress-bar bg-danger progress-bar-danger',
-        }).on('fileuploaded', function(event, previewId, index, fileId) {
-            fileExplorerModule.reloadFileExplorer();
-            M.toast({ html: "File Uploaded!" });
-            M.Modal.getInstance($('#uploaderModal')[0]).close();
+    }).on('fileuploaded', function(event, previewId, index, fileId) {
+        fileExplorerModule.reloadFileExplorer();
+        M.toast({
+            html: "File Uploaded!"
         });
+        M.Modal.getInstance($('#uploaderModal')[0]).close();
     });
+});
 </script>
 @endsection

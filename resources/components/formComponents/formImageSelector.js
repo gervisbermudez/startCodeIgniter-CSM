@@ -10,12 +10,12 @@ Vue.component("formImageSelector", {
   ],
   data: function () {
     return {
-      form_field_id: null,
+      custom_model_fields_id: null,
       fieldID: this.makeid(10),
       fieldName: "Agregar Imagen",
       fielApiID: "file_imagen",
       text: null,
-      form_custom_data_id: null,
+      custom_model_data_id: null,
       fieldPlaceholder: "",
       preselected: [],
       mode: "files",
@@ -70,7 +70,7 @@ Vue.component("formImageSelector", {
         fieldID: this.fieldID,
         fieldName: this.fieldName,
         fielApiID: this.fielApiID,
-        form_custom_data_id: this.form_custom_data_id,
+        custom_model_data_id: this.custom_model_data_id,
         mode: this.mode,
         filter: this.filter,
         multiple: this.multiple,
@@ -91,11 +91,12 @@ Vue.component("formImageSelector", {
         }
       }
       if (this.fieldData) {
-        this.form_field_id = this.fieldData.form_field_id;
-        this.form_custom_data_id = this.fieldData.form_custom_data_id;
-        this.preselected = this.fieldData.form_value.image.map(
-          (file) => new ExplorerFile(file)
-        );
+        this.custom_model_fields_id = this.fieldData.custom_model_fields_id;
+        this.custom_model_data_id = this.fieldData.custom_model_data_id;
+        this.preselected =
+          this.fieldData.custom_model_content_data_value.image.map(
+            (file) => new ExplorerFile(file)
+          );
       }
 
       if (this.multiple == "1") {

@@ -10,11 +10,11 @@ class User extends MY_model
     public $user_data = null;
     public $hasData = true;
     public $softDelete = true;
-    
+
     public $hasOne = [
         "usergroup" => ['usergroup_id', 'Admin/Usergroup', 'usergroup'],
     ];
-    
+
     public $protectedFields = array('password');
 
     public function __construct()
@@ -46,7 +46,7 @@ class User extends MY_model
 		INNER JOIN `usergroup` g ON g.usergroup_id = u.usergroup_id
         INNER JOIN (" . $this->get_select_json('usergroup') . ") subu ON subu.usergroup_id = u.usergroup_id
         WHERE u.status = 1
-        AND u.usergroup_id >= '".userdata('usergroup_id')."'
+        AND u.usergroup_id >= '" . userdata('usergroup_id') . "'
         $where
         GROUP BY s.user_id;";
         $data = $this->db->query($sql);
@@ -81,22 +81,22 @@ class User extends MY_model
         }
 
         $this->load->model('Admin/Page');
-        $this->load->model('Admin/Form_content');
-        $this->load->model('Admin/Form_custom');
+        $this->load->model('Admin/Custom_model_content');
+        $this->load->model('Admin/Custom_model');
 
         $pages = new Page();
         $pages = $pages->where(["user_id" => $user_id]);
         $pages = $pages ? $pages->all() : [];
 
-        $Form_content = new Form_content();
-        $Form_content = $Form_content->where(["user_id" => $user_id]);
-        $Form_content = $Form_content ? $Form_content->all() : [];
+        $Custom_model_content = new Custom_model_content();
+        $Custom_model_content = $Custom_model_content->where(["user_id" => $user_id]);
+        $Custom_model_content = $Custom_model_content ? $Custom_model_content->all() : [];
 
-        $Form_custom = new Form_custom();
-        $Form_custom = $Form_custom->where(["user_id" => $user_id]);
-        $Form_custom = $Form_custom ? $Form_custom->all() : [];
+        $Custom_model = new Custom_model();
+        $Custom_model = $Custom_model->where(["user_id" => $user_id]);
+        $Custom_model = $Custom_model ? $Custom_model->all() : [];
 
-        $time_line_collection = array_merge($pages, $Form_custom, $Form_content);
+        $time_line_collection = array_merge($pages, $Custom_model, $Custom_model_content);
 
         function sortFunction($a, $b)
         {
@@ -114,4 +114,46 @@ class User extends MY_model
         return new Collection($time_line_collection);
     }
 
+    public function search($str_term)
+    {
+        $collection = $this->get_full_info();
+
+        if (!$collection) {
+            return [];
+        }
+
+        $result = array_filter($collection->toArray(), function ($item) use ($str_term) {
+            $is_acceptable = false;
+
+            foreach ($item as $key => $value) {
+                if (is_string($value)) {
+                    $pos = strpos(strtolower($value), strtolower($str_term));
+                    if ($pos !== false) {
+                        $is_acceptable = true;
+                        break;
+                    }
+                }
+
+                if ($key == 'user_data') {
+                    foreach ($value as $i => $val) {
+                        $pos = strpos(strtolower($val), strtolower($str_term));
+                        if ($pos !== false) {
+                            $is_acceptable = true;
+                            break;
+                        }
+                    }
+                }
+
+            }
+            return $is_acceptable;
+        });
+
+        $return_array = array();
+
+        foreach ($result as $key => $value) {
+            $return_array[] = $value;
+        }
+
+        return $return_array;
+    }
 }

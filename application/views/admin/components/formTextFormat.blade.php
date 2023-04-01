@@ -1,7 +1,10 @@
 <script type="text/x-template" id="formTextFormat-template">
     <div class="row formTextFormat">
-        <div class="col s12">
-            <b>Field Preview:</b>
+    <div class="col s12" v-if="configurable">
+          <b>Field Preview:</b>
+      </div>
+        <div class="col s12" v-else>
+        <b>@{{fieldName}}</b>
         </div>
         <div class="input-field col s12">
             <textarea :id="fieldID" name="content" v-if="configurable" type="text" class="materialize-textarea"></textarea>

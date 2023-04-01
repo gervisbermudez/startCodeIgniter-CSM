@@ -32,6 +32,10 @@ class File extends MY_Model
         "aspx.cs",
     );
 
+    public $hasMany = [
+        'history' => ['file_id', 'Admin/File_activity', 'File_activity'],
+    ];
+
     public function __construct()
     {
         parent::__construct();
@@ -48,11 +52,7 @@ class File extends MY_Model
         $curdir = $this->current_dir . $this->current_folder;
         $this->save_dir($directorio, $curdir);
 
-        if (!$this->Site_config->get_data(array('config_name' => 'LAST_UPDATE_FILEMANAGER'), 'site_config')) {
-            return $this->Site_config->update_data(array('config_name' => 'LAST_UPDATE_FILEMANAGER'), array('config_value' => date("Y-m-d H:i:s")), 'site_config');
-        } else {
-            return $this->Site_config->set_data(array('config_name' => 'LAST_UPDATE_FILEMANAGER', 'config_value' => date("Y-m-d H:i:s")), 'site_config');
-        }
+        return $this->Site_config->update_data(array('config_name' => 'LAST_UPDATE_FILEMANAGER'), array('config_value' => date("Y-m-d H:i:s")), 'site_config');
     }
 
     /**
@@ -81,8 +81,8 @@ class File extends MY_Model
         } else {
             $insert_array = $this->get_array_save_file($value, $dir);
         }
-        
-        if(!in_array($insert_array["file_type"], $this->exclude_file_types)){
+
+        if (!in_array($insert_array["file_type"], $this->exclude_file_types)) {
             $result = $this->get_data(array('file_name' => $insert_array['file_name'], 'file_path' => $insert_array['file_path']), "1");
             if (!$result) {
                 $this->set_data($insert_array, $this->table);
@@ -101,7 +101,7 @@ class File extends MY_Model
             $this->db->order_by($this->primaryKey, 'ASC');
         }
         $this->db->like($column, $filters[0]);
-        for ($i=1; $i < count($filters); $i++) { 
+        for ($i = 1; $i < count($filters); $i++) {
             $this->db->or_like($column, $filters[$i]);
         }
         $query = $this->db->get();
@@ -241,18 +241,20 @@ class File extends MY_Model
 
     public function getFileFrontPath()
     {
-        if ($this->map) {
+        try {
             return substr($this->file_path . $this->getFileFullName(), 2);
+        } catch (\Throwable $th) {
+            return "";
         }
-        return '';
     }
 
     public function getFileFullName()
     {
-        if ($this->map) {
+        try {
             return $this->file_name . '.' . $this->file_type;
+        } catch (\Throwable $th) {
+            return '';
         }
-        return '';
     }
 
 }

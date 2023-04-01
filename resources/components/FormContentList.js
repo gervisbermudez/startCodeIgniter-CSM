@@ -49,7 +49,7 @@ var FormContentList = new Vue({
       var self = this;
       $.ajax({
         type: "GET",
-        url: BASEURL + "api/v1/forms/data",
+        url: BASEURL + "api/v1/models/data",
         data: {},
         dataType: "json",
         success: function (response) {
@@ -60,8 +60,9 @@ var FormContentList = new Vue({
           }, 1000);
         },
         error: function (error) {
-          M.toast({ html: response.responseJSON.error_message });
           self.loader = false;
+          M.toast({ html: "Ocurrió un error inesperado" });
+          console.error(error);
         },
       });
     },
@@ -70,7 +71,7 @@ var FormContentList = new Vue({
       self.loader = true;
       $.ajax({
         type: "DELETE",
-        url: BASEURL + "api/v1/forms/data/" + content.form_content_id,
+        url: BASEURL + "api/v1/models/data/" + content.custom_model_content_id,
         data: {},
         dataType: "json",
         success: function (response) {
@@ -83,8 +84,9 @@ var FormContentList = new Vue({
           }, 1000);
         },
         error: function (error) {
-          M.toast({ html: response.responseJSON.error_message });
           self.loader = false;
+          M.toast({ html: "Ocurrió un error inesperado" });
+          console.error(error);
         },
       });
     },

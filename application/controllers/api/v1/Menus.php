@@ -123,6 +123,7 @@ class Menus extends REST_Controller
             $this->save_menu_items($menu_items, $menu);
             $menu->find($menu->menu_id);
             $this->response_ok($menu);
+            return;
         }
         $this->response_error(lang('unexpected_error'), [], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
     }
@@ -413,9 +414,9 @@ class Menus extends REST_Controller
     public function templates_get()
     {
         $this->load->helper('directory');
-        $directory = APPPATH . 'views\\site\\templates\\menu';
+        $directory = APPPATH . '/views/site/templates/menu';
         if (getThemePath()) {
-            $directory = getThemePath() . 'views\\site\\templates\\menu';
+            $directory = getThemePath() . '/views/site/templates/menu';
         }
         $map = directory_map($directory);
         $this->response_ok($map);

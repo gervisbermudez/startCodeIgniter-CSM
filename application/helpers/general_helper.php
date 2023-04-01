@@ -9,21 +9,114 @@ if (!function_exists('fnGetTitle')) {
     }
 }
 
-if (!function_exists('getThemePath')) {
-    function getThemePath()
+if (!function_exists('url')) {
+    function url($strUrlSegment)
     {
-        $ci = &get_instance();
-        $theme_path = $ci->config->item("THEME_PATH");
-        $theme_path = str_replace('\\', '/', $theme_path);
+        return base_url($strUrlSegment);
+    }
+}
+
+function getTemplates()
+{
+    $ci = &get_instance();
+    $ci->load->helper('directory');
+    $layouts = directory_map(getThemePath() . '/views/site/layouts', 1);
+    $templates = directory_map(getThemePath() . '/views/site/templates', 1);
+    $pages = directory_map(getThemePath() . '/views/site', 1);
+
+    function filter_files($strName)
+    {
+        return !(strpos($strName, "\\"));
+    }
+
+    function add_folder_path($strName)
+    {
+        return "templates." . $strName;
+    }
+
+    $layouts = array_filter($layouts, 'filter_files');
+    $templates = array_filter($templates, 'filter_files');
+    $templates = array_map('add_folder_path', $templates);
+    $pages = array_filter($pages, 'filter_files');
+
+    return [
+        'layouts' => $layouts ? $layouts : [],
+        'templates' => $templates ? array_merge($templates, $pages) : [],
+    ];
+}
+
+if (!function_exists('getThemePath')) {
+    function getThemePath($theme = null)
+    {
+        if ($theme) {
+            return str_replace('\\', '/', FCPATH . 'themes' . '/' . $theme);
+        }
+
+        $theme_path = config("THEME_PATH");
         if ($theme_path) {
-            return FCPATH . 'themes' . '/' . $theme_path;
+            return str_replace('\\', '/', FCPATH . 'themes' . '/' . $theme_path);
         }
         if (SITE_THEME) {
-            return FCPATH . 'themes' . '/' . SITE_THEME;
+            return str_replace('\\', '/', FCPATH . 'themes' . '/' . SITE_THEME);
         }
 
         return null;
     }
+}
+
+function init_form($siteform_name)
+{
+    $ci = &get_instance();
+    $siteforms = $ci->session->userdata('siteforms');
+    if (!$siteforms && !isset($siteforms[$siteform_name])) {
+        $ci->session->set_userdata('siteforms', [$siteform_name => ['submited' => 0]]);
+    }
+}
+
+function render_form($siteform_name)
+{
+    $ci = &get_instance();
+    $ci->load->model('Admin/SiteForm');
+    $siteform = new SiteForm();
+    $result = $siteform->find_with(['name' => $siteform_name]);
+    if (!$result) {
+        return '';
+    }
+
+    if (getThemePath()) {
+        $ci->blade->changePath(getThemePath());
+    }
+
+    init_form($siteform_name);
+
+    return $ci->blade->view("site.templates.forms." . $siteform->template, ['siteform' => $siteform]);
+}
+
+function fragment($fragment_name)
+{
+    $ci = &get_instance();
+    $ci->load->model('Admin/Fragmentos');
+    $fragment = new Fragmentos();
+    $result = $fragment->find_with(['name' => $fragment_name]);
+    if (!$result) {
+        return '';
+    }
+
+    return $fragment->description;
+}
+
+function set_notification($title, $description, $type = 'info', $url = null)
+{
+    $ci = &get_instance();
+    $ci->load->model('Admin/Notifications');
+    $notification = new Notifications();
+    $notification->title = $title;
+    $notification->description = $description;
+    $notification->type = $type;
+    $notification->url = $url;
+    $notification->date_create = date("Y-m-d H:i:s");
+    $notification->status = "1";
+    return $notification->save();
 }
 
 if (!function_exists("config")) {
@@ -46,7 +139,7 @@ if (!function_exists('getThemePublicPath')) {
         $config = new stdClass();
         $theme_path = $ci->config->item("THEME_PATH");
         if ($theme_path) {
-            return 'themes' . '/' . $theme_path . '/' . 'public' . '/';
+            return 'themes/' . $theme_path . '/public/';
         }
         return '';
     }
@@ -265,7 +358,7 @@ function render_menu($name)
         $blade = new Blade();
 
         if (getThemePath()) {
-            if (file_exists(getThemePath() . '\\views\\site\\templates\\menu\\menu.blade.php')) {
+            if (file_exists(getThemePath() . '' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . 'site' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'menu' . DIRECTORY_SEPARATOR . 'menu.blade.php')) {
                 $blade->changePath(getThemePath());
             } else {
                 $blade->changePath(APPPATH);
@@ -275,6 +368,19 @@ function render_menu($name)
 
         return $rendered_menu;
     }
+}
+
+function get_string_between($string, $start, $end)
+{
+    $string = ' ' . $string;
+    $ini = strpos($string, $start);
+    if ($ini == 0) {
+        return '';
+    }
+
+    $ini += strlen($start);
+    $len = strpos($string, $end, $ini) - $ini;
+    return substr($string, $ini, $len);
 }
 
 function system_logger($type, $type_id, $token, $comment = '')
@@ -302,4 +408,38 @@ function system_logger($type, $type_id, $token, $comment = '')
         return $Logger->save();
     }
     return false;
+}
+
+/**
+ * Class casting
+ * @see https: //stackoverflow.com/questions/3243900/convert-cast-an-stdclass-object-to-another-class
+ * @param string|object $destination
+ * @param object $sourceObject
+ * @return object
+ */
+function cast($destination, $sourceObject)
+{
+    if (is_string($destination)) {
+        if (!class_exists($destination)) {
+            $ci = &get_instance();
+            $ci->load->model('Admin/' . $destination);
+        }
+        $destination = new $destination();
+    }
+    $sourceReflection = new ReflectionObject($sourceObject);
+    $destinationReflection = new ReflectionObject($destination);
+    $sourceProperties = $sourceReflection->getProperties();
+    foreach ($sourceProperties as $sourceProperty) {
+        $sourceProperty->setAccessible(true);
+        $name = $sourceProperty->getName();
+        $value = $sourceProperty->getValue($sourceObject);
+        if ($destinationReflection->hasProperty($name)) {
+            $propDest = $destinationReflection->getProperty($name);
+            $propDest->setAccessible(true);
+            $propDest->setValue($destination, $value);
+        } else {
+            $destination->$name = $value;
+        }
+    }
+    return $destination;
 }

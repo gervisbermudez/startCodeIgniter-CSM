@@ -13,9 +13,10 @@ class Usergroup extends MY_model
     protected $attributes = array(
         'status' => 1,
         'level' => 3,
+
     );
 
-    public $computed = array('usergroup_permisions' => 'usergroup_permisions');
+    public $computed = array('usergroup_permisions' => 'get_default_usergroup_permisions');
 
     public function __construct()
     {
@@ -47,12 +48,17 @@ class Usergroup extends MY_model
         return $this->get_permisions($this->usergroup_id);
     }
 
+    public function get_default_usergroup_permisions()
+    {
+        return [];
+    }
+
     private function get_permisions($usergroup_id)
     {
         $this->load->model('Admin/Usergroup_permisions');
         $Usergroup_permisions = new Usergroup_permisions();
         $result = $Usergroup_permisions->where(["usergroup_id" => $usergroup_id]);
-        if($result){
+        if ($result) {
             $result = array_merge($this->permisions, $result->toArray());
             return $result;
         }

@@ -694,7 +694,7 @@
 							]
 						},
 						"url": {
-							"raw": "{{BASEURL}}/api/v1/forms/:form_id",
+							"raw": "{{BASEURL}}/api/v1/models/:form_id",
 							"host": [
 								"{{BASEURL}}"
 							],
@@ -733,7 +733,7 @@
 							]
 						},
 						"url": {
-							"raw": "{{BASEURL}}/api/v1/forms/data/:form_id",
+							"raw": "{{BASEURL}}/api/v1/models/data/:form_id",
 							"host": [
 								"{{BASEURL}}"
 							],

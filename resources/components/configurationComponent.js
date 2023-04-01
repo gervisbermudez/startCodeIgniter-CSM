@@ -86,11 +86,11 @@ Vue.component("configuration", {
             }
             M.toast({ html: "Config Saved!" });
           } else {
-            M.toast({ html: response.responseJSON.error_message });
+            M.toast({ html: response.error_message });
           }
         },
         error: function (response) {
-          M.toast({ html: response.responseJSON.error_message });
+          M.toast({ html: response.error_message });
         },
       });
     },

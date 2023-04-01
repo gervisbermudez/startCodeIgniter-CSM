@@ -1,31 +1,65 @@
+// Definición del componente Vue llamado "dataTable"
 var dataTable = Vue.component("dataTable", {
+  // Plantilla HTML utilizada para mostrar los datos de la tabla
   template: "#dataTableComponent-template",
+
+  // Propiedades que se utilizan para personalizar el comportamiento del componente
   props: {
+    // Ruta de acceso a los datos de la tabla
     endpoint: {
       type: String,
       required: false,
     },
+    // Nombre de la clave que contiene los datos en la respuesta
     index_data: {
       type: String,
       required: false,
     },
+    // Indica si se deben ocultar los IDs de las filas en la tabla
     hideids: {
       type: Boolean,
       default: false,
     },
+    // Personalización de las columnas de la tabla
     colums: {
       type: Array,
       required: false,
       default: null,
     },
+    // Indica si se debe mostrar la paginación en la tabla
     pagination: {
       type: Boolean,
       required: false,
       default: false,
     },
+    // Indica si se debe mostrar un campo de búsqueda en la tabla
+    search_input: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
+    // Indica si se debe mostrar un campo de búsqueda vacío al cargar la tabla
+    show_empty_input: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
+    // Nombre del módulo que se está utilizando
     module: {
       type: String,
       required: false,
+    },
+    // Datos predefinidos que se mostrarán en la tabla
+    preset_data: {
+      type: Array,
+      required: false,
+      default: null,
+    },
+    // Definición de las opciones de la tabla, como los botones de acción
+    options: {
+      type: Array,
+      required: false,
+      default: null,
     },
   },
   data: function () {
@@ -57,6 +91,10 @@ var dataTable = Vue.component("dataTable", {
         strPropertyName: null,
         sort_as: "asc",
       },
+      toDeleteItem: {
+        item: null,
+        index: null,
+      },
     };
   },
   mixins: [mixins],
@@ -85,12 +123,56 @@ var dataTable = Vue.component("dataTable", {
           label: '<i class="material-icons">chevron_left</i>',
           class: this.paginator.prev_page == 0 ? "disabled" : "waves-effect",
         });
-        for (let index = 1; index <= this.paginator.total_pages; index++) {
+        let pages = this.rangodepaginas(
+          this.paginator.current_page - 0,
+          2,
+          this.paginator.total_pages
+        );
+
+        pages = this.paginaEllipsis(pages);
+
+        if (!pages.includes(1)) {
           links.push({
-            page: index,
-            label: index,
+            page: 1,
+            label: 1,
+            class: this.paginator.current_page == 1 ? "active" : "waves-effect",
+          });
+        }
+        console.log({ pages });
+        for (let index = 1; index <= pages.length; index++) {
+          if (pages[index - 1] == "...") {
+            if (index === 2) {
+              links.push({
+                page: parseInt(pages[index]) - 1,
+                label: pages[index - 1],
+                class: `waves-effect `,
+              });
+            } else {
+              links.push({
+                page: parseInt(pages[index - 2]) + 1,
+                label: pages[index - 1],
+                class: `waves-effect `,
+              });
+            }
+          } else {
+            links.push({
+              page: pages[index - 1],
+              label: pages[index - 1],
+              class:
+                this.paginator.current_page == pages[index - 1]
+                  ? "active"
+                  : "waves-effect",
+            });
+          }
+        }
+        if (!pages.includes(this.paginator.total_pages)) {
+          links.push({
+            page: this.paginator.total_pages,
+            label: this.paginator.total_pages,
             class:
-              this.paginator.current_page == index ? "active" : "waves-effect",
+              this.paginator.current_page == this.paginator.total_pages
+                ? "active"
+                : "waves-effect",
           });
         }
         links.push({
@@ -101,9 +183,39 @@ var dataTable = Vue.component("dataTable", {
               ? "disabled"
               : "waves-effect",
         });
+
         return (this.paginatorLinks = links);
       }
       return null;
+    },
+    rangodepaginas: function (actual, rango, final) {
+      var desde = actual - rango,
+        hasta = actual + rango,
+        paginas = [];
+      for (var i = 1; i <= final; i++) {
+        if (i === 1 || i === final || (i >= desde && i <= hasta)) {
+          paginas.push(i);
+        }
+      }
+      return paginas;
+    },
+    paginaEllipsis: function (paginas) {
+      var final = paginas.pop();
+      paginas.push(final);
+      rango_con_ellipsis = [];
+      for (var i = 1; i < paginas.length - 1; i++) {
+        if (paginas[i - 1] === 1 && paginas[i] !== 2) {
+          rango_con_ellipsis.push(1);
+          rango_con_ellipsis.push("...");
+        }
+        rango_con_ellipsis.push(paginas[i]);
+
+        if (paginas[i + 1] === final && paginas[i] !== final - 1) {
+          rango_con_ellipsis.push("...");
+          rango_con_ellipsis.push(final);
+        }
+      }
+      return rango_con_ellipsis;
     },
     toggleEddit(configuration) {
       configuration.editable = !configuration.editable;
@@ -139,28 +251,6 @@ var dataTable = Vue.component("dataTable", {
         .then((response) => response.json())
         .then((response) => {
           let data = response.data;
-          data.map((element) => {
-            if (element.user) {
-              element.user = new User(element.user);
-            } else {
-              element.user = new User({});
-            }
-            return element;
-          });
-          if (data.length && !this.colums) {
-            this.labels = Object.keys(data[0]);
-            if (this.hideids) {
-              this.labels = this.labels.filter((label) => {
-                return label.indexOf("_id") == -1;
-              });
-            }
-            this.colums = this.labels.map((label) => {
-              return {
-                colum: label,
-                label: label,
-              };
-            });
-          }
           if (response.current_page && this.pagination) {
             this.showPagination = true;
             this.paginator.current_page = response.current_page;
@@ -174,7 +264,7 @@ var dataTable = Vue.component("dataTable", {
             this.paginator.prev_page = response.prev_page;
             this.set_paginatorLinks();
           }
-          self.data = data;
+          self.data = this.preProssesData(data);
           self.loader = false;
           this.initPlugins();
         })
@@ -182,27 +272,52 @@ var dataTable = Vue.component("dataTable", {
           self.loader = false;
         });
     },
+    preProssesData(data) {
+      data.map((element) => {
+        if (element.user) {
+          element.user = new User(element.user);
+        } else {
+          element.user = new User({});
+        }
+        return element;
+      });
+      if (data.length && !this.colums) {
+        this.labels = Object.keys(data[0]);
+        if (this.hideids) {
+          this.labels = this.labels.filter((label) => {
+            return label.indexOf("_id") == -1;
+          });
+        }
+        this.colums = this.labels.map((label) => {
+          return {
+            colum: label,
+            label: label,
+          };
+        });
+      }
+      return data;
+    },
     getContent(item, colum) {
-      let label = colum.colum;
+      let columName = colum.colum;
       if (colum.format && typeof colum.format == "function") {
         return colum.format(item, colum);
       }
       let result = "";
-      switch (label) {
+      switch (columName) {
         case "user":
-          result = `<a href="${BASEURL + item[label].get_profileurl()}">${item[
-            label
+          result = `<a href="${item[columName].get_profileurl()}">${item[
+            columName
           ].get_fullname()}</a>`;
           break;
         case "status":
           result = `<span>
                 <i class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="${
-                  this.statusIcons[item[label]].tooltip
-                }">${this.statusIcons[item[label]].icon}</i>
+                  this.statusIcons[item[columName]].tooltip
+                }">${this.statusIcons[item[columName]].icon}</i>
               </span>`;
           break;
         default:
-          result = item[label];
+          result = resolve(item, columName);
           break;
       }
 
@@ -228,15 +343,40 @@ var dataTable = Vue.component("dataTable", {
       }
       return;
     },
-    createItem() {
+    routerPush({ option, index, item }) {
+      console.log("routerPush", { option, item, index });
+      let params = {};
+
+      if (option.params) {
+        option.params.forEach((param) => {
+          params[param] = item[param];
+        });
+      }
+
       this.$router.push({
-        name: "edit",
+        name: option.href,
         params: {
+          ...params,
           data: {
-            mode: "new",
+            index,
+            item,
           },
         },
       });
+    },
+    createItem() {
+      if (this.$listeners && this.$listeners.new) {
+        this.$emit("new");
+      } else {
+        this.$router.push({
+          name: "edit",
+          params: {
+            data: {
+              mode: "new",
+            },
+          },
+        });
+      }
     },
     deleteItem(item, index) {
       if (this.$listeners && this.$listeners.delete) {
@@ -249,29 +389,32 @@ var dataTable = Vue.component("dataTable", {
       }
       return;
     },
+    setToDeleteItem(item, index) {
+      this.toDeleteItem = {
+        item,
+        index,
+      };
+      return;
+    },
+    confirmCallback(data) {
+      console.log("confirmCallback", data);
+      if (data) {
+        this.deleteItem(this.toDeleteItem.item, this.toDeleteItem.index);
+      }
+    },
     archiveItem(item, index) {
       if (this.$listeners && this.$listeners.archive) {
         this.$emit("archive", {
           item: item,
           index: index,
         });
-        return;
       } else {
         return;
       }
     },
-    delete(item, index) {
-      console.log({ item, index });
-      return;
-    },
     tempDelete: function (item, index) {
       this.toDeleteItem.item = item;
       this.toDeleteItem.index = index;
-    },
-    confirmCallback(data) {
-      if (data) {
-        this.delete(this.toDeleteItem.item, this.toDeleteItem.index);
-      }
     },
     initPlugins: function () {
       setTimeout(() => {
@@ -286,9 +429,13 @@ var dataTable = Vue.component("dataTable", {
     this.$nextTick(function () {
       if (this.endpoint) {
         this.getData();
+      } else if (this.preset_data) {
+        this.data = this.preProssesData(this.preset_data);
+        this.loader = false;
       } else {
         this.loader = false;
       }
+
       this.$root.$on("eventing", (data) => {
         this.data[data.index] = data.item;
       });

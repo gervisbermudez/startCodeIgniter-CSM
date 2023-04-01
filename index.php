@@ -1,4 +1,4 @@
-<?php
+<?php use DevCoder\DotEnv;
 /**
  * CodeIgniter
  *
@@ -53,7 +53,11 @@
  *
  * NOTE: If you change these, also change the error_reporting() code below
  */
-define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
+
+include "DevCoder.php";
+(new DotEnv(__DIR__ . '/.env'))->load();
+
+define('ENVIRONMENT', getenv('APP_ENV'));
 
 /*
  *---------------------------------------------------------------

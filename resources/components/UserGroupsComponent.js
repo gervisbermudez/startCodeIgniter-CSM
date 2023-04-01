@@ -89,11 +89,11 @@ var UserGroupsComponents = new Vue({
             }
             M.toast({ html: "Config Saved!" });
           } else {
-            M.toast({ html: response.responseJSON.error_message });
+            M.toast({ html: response.error_message });
           }
         },
         error: function (response) {
-          M.toast({ html: response.responseJSON.error_message });
+          M.toast({ html: response.error_message });
         },
       });
     },
@@ -134,8 +134,9 @@ var UserGroupsComponents = new Vue({
           }
         },
         error: function (error) {
-          M.toast({ html: response.responseJSON.error_message });
           self.loader = false;
+          M.toast({ html: "Ocurrió un error inesperado" });
+          console.error(error);
         },
       });
     },

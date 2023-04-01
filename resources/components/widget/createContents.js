@@ -15,9 +15,12 @@ Vue.component("createContents", {
       var self = this;
       $.ajax({
         type: "POST",
-        url: BASEURL + "api/v1/forms/data_set_status/" + item.form_content_id,
+        url:
+          BASEURL +
+          "api/v1/models/data_set_status/" +
+          item.custom_model_content_id,
         data: {
-          status: item.status ? "1" : "0"
+          status: item.status ? "1" : "0",
         },
         dataType: "json",
         success: function (response) {
@@ -27,7 +30,9 @@ Vue.component("createContents", {
       });
     },
     getFormsTypeUrl(formObject) {
-      return BASEURL + "admin/formularios/addData/" + formObject.form_custom_id;
+      return (
+        BASEURL + "admin/CustomModels/addData/" + formObject.custom_model_id
+      );
     },
     base_url(path) {
       return BASEURL + path;

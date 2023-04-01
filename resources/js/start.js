@@ -4,9 +4,25 @@ jQuery(document).ready(function ($) {
   $("a.sidenav-trigger-lg").click(function (e) {
     $("body").toggleClass("sidenav-open");
     $("#slide-out").removeAttr("style");
+    if ($("body").hasClass("sidenav-open")) {
+      localStorage.setItem("sidenav-open", "sidenav-open");
+    } else {
+      localStorage.removeItem("sidenav-open", "sidenav-open");
+    }
   });
 
-  $(".sidenav").niceScroll();
+  $(".sidenav").hover(
+    function () {
+      // over
+      $this = $(this);
+      $this.addClass("animate-open");
+    },
+    function () {
+      // out
+      $this = $(this);
+      $this.removeClass("animate-open");
+    }
+  );
 
   $("#darkmode-switch").change(function (e) {
     e.preventDefault();
@@ -24,21 +40,48 @@ jQuery(document).ready(function ($) {
     $("html").toggleClass("dark-mode");
     $("#darkmode-switch").prop("checked", true);
   }
+
+  if (localStorage.getItem("sidenav-open")) {
+    $("body").toggleClass("sidenav-open");
+  }
 });
+
+// Función que resuelve un camino en un objeto
+function resolve(obj, path) {
+  // Separamos el camino en un array
+  path = path.split(".");
+  // Establecemos el objeto actual como el objeto inicial
+  var current = obj;
+  // Mientras que el camino tenga elementos
+  while (path.length) {
+    // Si el objeto actual no es de tipo "object" (por ejemplo, es una cadena), retornamos indefinido
+    if (typeof current !== "object") return undefined;
+    // Establecemos el objeto actual como el siguiente objeto del camino
+    current = current[path.shift()];
+  }
+  // Retornamos el objeto actual al final del camino
+  return current;
+}
+
+function getFuncName() {
+  return getFuncName.caller.name;
+}
 
 var mixins = {
   data() {
     return {
-      debug: DEBUGMODE,
+      debug: DEBUGMODE, // Variable que indica si el modo debug está activado o no
       orderDataConf: {
-        strPropertyName: null,
-        sort_as: "asc",
+        // Configuración para ordenamiento de datos
+        strPropertyName: null, // Propiedad por la cual se ordena (por defecto es null)
+        sort_as: "asc", // Ordenamiento ascendente por defecto
       },
-      toDeleteItem: {}
-    }
+      toDeleteItem: {}, // Variable para guardar el ítem a eliminar
+    };
   },
   filters: {
     capitalize: function (value) {
+      // Filtro para capitalizar una cadena de texto
       if (!value) return "";
       value = value.toString();
       return value.charAt(0).toUpperCase() + value.slice(1);
@@ -46,6 +89,7 @@ var mixins = {
   },
   methods: {
     searchInObject(object, strSearchTerm) {
+      // Función para buscar un término dentro de un objeto
       var keys = Object.keys(object);
       var result = false;
       for (var i = 0; i < keys.length; i++) {
@@ -60,12 +104,15 @@ var mixins = {
       return result;
     },
     getFullFileName(file) {
+      // Función para obtener el nombre completo de un archivo
       return file.file_name + "." + file.file_type;
     },
     getFullFilePath(file) {
+      // Función para obtener la ruta completa de un archivo
       return BASEURL + file.file_path + this.getFullFileName(file);
     },
     getSortData(strPropertyName) {
+      // Función para obtener los datos de ordenamiento
       if (this.orderDataConf.strPropertyName == strPropertyName) {
         return "sort_desc";
       }
@@ -75,6 +122,7 @@ var mixins = {
       return "both";
     },
     sortData(strPropertyName, array) {
+      // Función para ordenar los datos
       strPropertyName =
         this.orderDataConf.strPropertyName == null
           ? strPropertyName
@@ -86,6 +134,7 @@ var mixins = {
       array = sorted;
     },
     dynamicSort(property) {
+      // Función para ordenamiento dinámico
       var sortOrder = 1;
       if (property[0] === "-") {
         sortOrder = -1;
@@ -101,19 +150,22 @@ var mixins = {
       };
     },
     base_url: function (path) {
+      // Función para obtener la URL base
       return BASEURL + path;
     },
     getcontentText: function (html, length = 120) {
+      // Función para obtener el texto de un contenido
       var span = document.createElement("span");
       span.innerHTML = html;
       let text = span.textContent || span.innerText;
       return text.substring(0, length) + "...";
     },
     makeid: function (length) {
-      var result = "";
+      // Función para generar un ID aleatorio
       var characters =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
       var charactersLength = characters.length;
+      let result = "";
       for (var i = 0; i < length; i++) {
         result += characters.charAt(
           Math.floor(Math.random() * charactersLength)
@@ -297,7 +349,9 @@ formsElements = [
   },
 ];
 
+// Definición de la clase "User"
 class User {
+  // Propiedades de la clase
   user_id = null;
   username = "";
   email = "";
@@ -314,14 +368,16 @@ class User {
     "create by": "",
   };
 
+  // Constructor de la clase
   constructor(params) {
     for (const param in params) {
       if (params.hasOwnProperty(param)) {
-        this[param] = params[param] || "";
+        this[param] = params[param] || ""; // Asigna los valores recibidos a las propiedades de la clase
       }
     }
   }
 
+  // Método de la clase que retorna el nombre completo del usuario
   get_fullname = () => {
     if (this.user_data.nombre && this.user_data.apellido) {
       return this.user_data.nombre + " " + this.user_data.apellido;
@@ -330,10 +386,12 @@ class User {
     }
   };
 
+  // Método de la clase que retorna la URL del perfil del usuario
   get_profileurl = () => {
     return BASEURL + "admin/usuarios/ver/" + this.user_id;
   };
 
+  // Método de la clase que retorna la URL del avatar del usuario
   get_avatarurl = () => {
     if (this.user_data.avatar) {
       return BASEURL + this.user_data.avatar;
@@ -342,12 +400,14 @@ class User {
     }
   };
 
+  // Método de la clase que retorna la URL de edición del usuario
   get_edit_url = () => {
     return BASEURL + "admin/usuarios/edit/" + this.user_id;
   };
 }
 
 class Page {
+  // Propiedades de la clase
   page_id = null;
   categorie_id = "";
   content = "";
@@ -368,7 +428,9 @@ class Page {
   user_id = "";
   visibility = "";
 
+  // Constructor de la clase
   constructor(params) {
+    // Recorre los parametros del objeto params y le asigna el valor al atributo correspondiente
     for (const param in params) {
       if (params.hasOwnProperty(param)) {
         this[param] = params[param] || "";
@@ -376,6 +438,7 @@ class Page {
     }
   }
 
+  // Método para obtener una versión resumida del contenido de la página
   getcontentText = function () {
     var span = document.createElement("span");
     span.innerHTML = this.content;
@@ -383,6 +446,7 @@ class Page {
     return text.substring(0, 220) + "...";
   };
 
+  // Método para obtener la ruta de la imagen principal de la página
   getPageImagePath() {
     if (this.imagen_file) {
       return (
@@ -396,6 +460,7 @@ class Page {
     return BASEURL + "public/img/default.jpg";
   }
 
+  // Método para obtener la ruta completa de la página
   getPageFullPath = function () {
     if (this.status == 1) {
       return BASEURL + this.path;
@@ -405,20 +470,20 @@ class Page {
 }
 
 class ExplorerFile {
-  date_create = "";
-  date_update = "";
-  featured = "";
-  file_id = "";
-  file_name = "";
-  file_path = "";
-  file_type = "";
-  parent_name = "";
-  rand_key = "";
-  share_link = "";
-  shared_user_group_id = "";
-  status = "";
-  user_id = "";
-  user = new User();
+  date_create = ""; // fecha de creación del archivo
+  date_update = ""; // fecha de actualización del archivo
+  featured = ""; // marca de destacado del archivo
+  file_id = ""; // identificador del archivo
+  file_name = ""; // nombre del archivo
+  file_path = ""; // ruta del archivo
+  file_type = ""; // tipo de archivo
+  parent_name = ""; // nombre del directorio padre
+  rand_key = ""; // clave aleatoria
+  share_link = ""; // enlace para compartir el archivo
+  shared_user_group_id = ""; // identificador del grupo de usuarios compartidos
+  status = ""; // estado del archivo
+  user_id = ""; // identificador del usuario propietario
+  user = new User(); // objeto usuario asociado al archivo
 
   constructor(params) {
     for (const param in params) {
@@ -428,22 +493,27 @@ class ExplorerFile {
     }
   }
 
+  // devuelve el nombre completo del archivo (nombre + extensión)
   get_filename = () => {
     return this.file_name + "." + this.file_type;
   };
 
+  // devuelve la ruta relativa del archivo
   get_relative_file_path = () => {
     return this.file_path + this.get_filename();
   };
 
+  // devuelve la ruta completa del archivo (con el nombre completo y la URL base)
   get_full_file_path = () => {
     return BASEURL + this.file_path + this.get_filename();
   };
 
+  // devuelve la ruta completa para compartir el archivo (con la URL base)
   get_full_share_path = () => {
     return BASEURL + this.share_link;
   };
 
+  // devuelve la clase de icono correspondiente al tipo de archivo
   get_icon() {
     let icon = "far fa-file";
     switch (this.file_type) {
@@ -486,6 +556,7 @@ class ExplorerFile {
     return icon;
   }
 
+  // devuelve verdadero si el archivo es una imagen
   is_image() {
     if (
       this.file_type == "jpg" ||
@@ -498,7 +569,9 @@ class ExplorerFile {
   }
 }
 
+// Definición de la clase Config_data
 class Config_data {
+  // Propiedades de la clase
   type_value = "string";
   validate_as = "text";
   max_lenght = "120";
@@ -507,13 +580,16 @@ class Config_data {
   input_type = "text";
   perm_values = null;
 
+  // Constructor de la clase
   constructor(params) {
+    // Ciclo for para asignar las propiedades pasadas como argumento
     for (const param in params) {
       if (params.hasOwnProperty(param)) {
         this[param] = params[param];
       }
     }
 
+    // Switch statement para definir el valor de la propiedad "handle_as" basado en el valor de "type_value"
     switch (this.type_value) {
       case "boolean":
         this.handle_as = "switch";
@@ -530,11 +606,97 @@ class Config_data {
   }
 }
 
-if ("serviceWorker" in navigator && window.location.protocol == "https:") {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/service-worker.min.js", {
-      scope: "/admin",
+function showRefreshUI(registration) {
+  // TODO: Display a toast or refresh UI.
+  document.getElementsByTagName("body")[0].insertAdjacentHTML(
+    "beforeend",
+    `<div id = "update-app-zone" >
+       <div class="card blue-grey darken-1">
+        <div class="card-content white-text">
+          <p><span>Hay una nueva version de la aplicacion, haz click aquí para actualizar</span></p>
+        </div>
+        <div class="card-action">
+          <a href="#"><i class="fas fa-redo"></i> Actualizar</a>
+        </div>
+      </div>
+      </div>`
+  );
+  const element = document.querySelector("#update-app-zone a");
+  element.addEventListener("click", function () {
+    if (!registration.waiting) {
+      // Just to ensure registration.waiting is available before
+      // calling postMessage()
+      return;
+    }
+    if (window.location.href.includes("admin/login")) {
+      localStorage.clear();
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i];
+        const eqPos = cookie.indexOf("=");
+        const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      }
+    }
+    registration.waiting.postMessage("skipWaiting");
+  });
+}
+
+function onNewServiceWorker(registration, callback) {
+  if (registration.waiting) {
+    // SW is waiting to activate. Can occur if multiple clients open and
+    // one of the clients is refreshed.
+    return callback();
+  }
+
+  function listenInstalledStateChange() {
+    registration.installing.addEventListener("statechange", function (event) {
+      if (event.target.state === "installed") {
+        // A new service worker is available, inform the user
+        callback();
+      }
     });
+  }
+
+  if (registration.installing) {
+    return listenInstalledStateChange();
+  }
+
+  // We are currently controlled so a new SW may be found...
+  // Add a listener in case a new SW is found,
+  registration.addEventListener("updatefound", listenInstalledStateChange);
+}
+
+if (navigator.serviceWorker) {
+  window.addEventListener("load", async function () {
+    let refreshing;
+    // When the user asks to refresh the UI, we'll need to reload the window
+    navigator.serviceWorker.addEventListener(
+      "controllerchange",
+      function (event) {
+        if (refreshing) return; // prevent infinite refresh loop when you use "Update on Reload"
+        refreshing = true;
+        window.location.reload();
+      }
+    );
+
+    navigator.serviceWorker
+      .register("/sw.js", {
+        scope: BASEURL + "admin/",
+      })
+      .then(function (registration) {
+        // Track updates to the Service Worker.
+        if (!navigator.serviceWorker.controller) {
+          // The window client isn't currently controlled so it's a new service
+          // worker that will activate immediately
+          return;
+        }
+        registration.update();
+
+        onNewServiceWorker(registration, function () {
+          showRefreshUI(registration);
+        });
+      });
   });
 }
 
@@ -545,14 +707,13 @@ Vue.component("userInfo", {
       <a :href="user.get_profileurl()">
         <img :src="user.get_avatarurl()" alt="" class="circle profile-img">
         <span class="title">{{user.get_fullname()}}</span>
-        <div>{{user.usergroup.name}}</div>
+        <div>{{user.role ? user.role : user.usergroup.name}}</div>
       </a>
     </div>
   </div>
   `,
   props: ["user"],
 });
-
 
 Vue.component("preloader", {
   template: `
@@ -591,8 +752,8 @@ Vue.component("confirmModal", {
           </div>
       </div>
       <div class="modal-footer">
-          <a href="#!" class="modal-action modal-close waves-effect waves-red btn red" @click="onClickButton(false);">Cancelar</a>
-          <a href="#!" class="modal-close waves-effect waves-green btn" @click="onClickButton(true);">Aceptar</a>
+          <button type="button" class="modal-action modal-close waves-effect waves-red btn red" @click="onClickButton(false);">Cancelar</button>
+          <button type="button" class="modal-close waves-effect waves-green btn" @click="onClickButton(true);">Aceptar</button>
       </div>
   </div>
   `,
@@ -608,14 +769,15 @@ Vue.component("preview", {
   data() {
     return {
       fullScreen: false,
-      previewUrl: ''
-    }
+      previewUrl: "",
+    };
   },
   template: `
   <div class="preview-container" v-bind:class="{fixed: fullScreen}">
     <div class="preview-options">
-    <input type="text" name="url" id="url" v-model="previewUrl">
+    <input type="text" name="url" id="url" readonly :value="previewUrl">
     <a href="#!" class="option"><i class="material-icons" v-on:click="expand();">aspect_ratio</i></a>
+    <a :href="previewUrl" class="option" target="_blank"><i class="material-icons">open_in_new</i></a>
     </div>
     <iframe class="responsive-iframe" :src="previewUrl"></iframe>
   </div>
@@ -623,7 +785,7 @@ Vue.component("preview", {
   watch: {
     url: function (val) {
       this.previewUrl = val;
-    }
+    },
   },
   mounted() {
     this.$nextTick(function () {

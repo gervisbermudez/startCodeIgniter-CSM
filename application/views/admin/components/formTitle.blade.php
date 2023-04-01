@@ -1,8 +1,8 @@
 <script type="text/x-template" id="formFieldTitle-template">
     <div class="row formFieldTitle">
-        <div class="col s12">
-            <b>Field Preview:</b>
-        </div>
+    <div class="col s12" v-if="configurable">
+          <b>Field Preview:</b>
+      </div>
         <div class="input-field col s12">
             <input :placeholder="fieldPlaceholder" v-if="configurable" v-model="fieldName" @keyup="convertfielApiID()" :id="fieldID" type="text" class="validate">
             <input :placeholder="fieldPlaceholder" v-else v-model="title" :id="fieldID" type="text" class="validate">

@@ -17,6 +17,7 @@ var AlbumNewForm = new Vue({
       },
     }),
     description: "",
+    content: "",
     status: false,
     date_publish: "",
     date_create: "",
@@ -162,13 +163,14 @@ var AlbumNewForm = new Vue({
               callBack(response);
             }
           } else {
-            M.toast({ html: response.responseJSON.error_message });
+            M.toast({ html: response.error_message });
             self.loader = false;
           }
         },
         error: function (response) {
-          M.toast({ html: response.responseJSON.error_message });
           self.loader = false;
+          M.toast({ html: "Ocurrió un error inesperado" });
+          console.error(error);
         },
       });
     },
@@ -248,7 +250,7 @@ var AlbumNewForm = new Vue({
             }, 1000);
           })
           .catch((response) => {
-            M.toast({ html: response.responseJSON.error_message });
+            M.toast({ html: response.error_message });
             self.loader = false;
           });
       } else {
@@ -267,6 +269,7 @@ var AlbumNewForm = new Vue({
         plugins: ["link table code"],
         setup: (editor) => {
           editor.on("Change", (e) => {
+            this.debug ? console.log("tinymce change fired") : null;
             this.description = tinymce.editors["id_cazary"].getContent();
           });
         },

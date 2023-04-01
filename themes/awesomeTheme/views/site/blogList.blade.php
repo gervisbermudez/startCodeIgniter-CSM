@@ -1,4 +1,4 @@
-@extends('site.layouts.site')
+@extends('site.layouts.' . $layout)
 
 @section('title', $title)
 
@@ -36,7 +36,7 @@
           <div class="card-body">
             <h2 class="card-title">{{$blog->title}}</h2>
             <p class="card-text">
-            
+              {{character_limiter(strip_tags($blog->content), 250)}}
             </p>
             <a href="{{base_url($blog->path)}}" class="btn btn-primary">Read More &rarr;</a>
           </div>

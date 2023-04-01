@@ -88,13 +88,14 @@ var MenuNewForm = new Vue({
               callBack(response);
             }
           } else {
-            M.toast({ html: response.responseJSON.error_message });
+            M.toast({ html: response.error_message });
             self.loader = false;
           }
         },
         error: function (response) {
-          M.toast({ html: response.responseJSON.error_message });
           self.loader = false;
+          M.toast({ html: "Ocurrió un error inesperado" });
+          console.error(error);
         },
       });
     },
@@ -180,11 +181,12 @@ var MenuNewForm = new Vue({
             this.initPlugins();
           })
           .catch((response) => {
-            M.toast({ html: response.responseJSON.error_message });
+            M.toast({ html: response.error_message });
             self.loader = false;
           });
       } else {
         self.loader = false;
+        this.initPlugins();
       }
     },
     addItem() {

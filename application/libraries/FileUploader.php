@@ -4,7 +4,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class FileUploader
 {
 
-    public function __construct(){
+    public function __construct()
+    {
 
     }
 
@@ -14,7 +15,7 @@ class FileUploader
     public function upload()
     {
         $preview = $config = $errors = [];
-        $targetDir = $_POST['curDir'];
+        $targetDir = $_POST['curDir'] . date("Y-m-d/");
         if (!file_exists($targetDir)) {
             @mkdir($targetDir);
         }
@@ -27,7 +28,8 @@ class FileUploader
             $fileId = $_POST['fileId']; // you receive the file identifier as a separate post data
             $index = $_POST['chunkIndex']; // the current file chunk index
             $totalChunks = $_POST['chunkCount']; // the total number of chunks for this file
-            $targetFile = $targetDir . '/' . $fileName; // your target file path
+            $filenameParts = explode(".", $fileName);
+            $targetFile = $targetDir . '/' . slugify($filenameParts[0]) . '-' . date("Y-m-d-His") . '.' . $filenameParts[1]; // your target file path
             if ($totalChunks > 1) { // create chunk files only if chunks are greater than 1
                 $targetFile .= '_' . str_pad($index, 4, '0', STR_PAD_LEFT);
             }

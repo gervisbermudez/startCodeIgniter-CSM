@@ -10,204 +10,204 @@
 @section('content')
 <div id="root" class="configuration-root">
     <transition>
-    <div class="row" v-show="sectionActive == 'home'">
-        <div class="col s12 m3">
-            <div v-on:click="changeSectionActive('general')" class="config-card card-panel blue">
-                <div class="row">
-                    <div class="col s6">
-                        <div class="div">
-                            <i class="material-icons medium white-text">build</i>
+        <div class="row" v-show="sectionActive == 'home'">
+            <div class="col s12 m3">
+                <div v-on:click="changeSectionActive('general')" class="config-card card-panel blue">
+                    <div class="row">
+                        <div class="col s5">
+                            <div class="div">
+                                <i class="material-icons medium white-text">build</i>
+                            </div>
+                            <div class="white-text">
+                                General
+                            </div>
                         </div>
-                        <div class="white-text">
-                            General
-                        </div>
-                    </div>
-                    <div class="col s6 tooltipped" data-position="bottom" data-tooltip="Ver más">
-                        <div class="info white-text right-align">
-                            @{{generalConfigurations.length}}
-                            <br />
-                            Configuraciones
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col s12 m3">
-            <div v-on:click="changeSectionActive('theme')" class="config-card card-panel pink">
-                <div class="row">
-                    <div class="col s6">
-                        <div class="div">
-                            <i class="material-icons medium white-text">brush</i>
-                        </div>
-                        <div class="white-text">
-                            Theme
-                        </div>
-                    </div>
-                    <div class="col s6 tooltipped" data-position="bottom" data-tooltip="Ver más">
-                        <div class="info white-text right-align">
-                            @{{themeConfigurations.length}}
-                            <br />
-                            Configuraciones
+                        <div class="col s7 tooltipped" data-position="bottom" data-tooltip="Ver más">
+                            <div class="info white-text right-align">
+                                @{{generalConfigurations.length}}
+                                <br />
+                                Configuraciones
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col s12 m3">
-            <div class="config-card card-panel teal">
-                <div class="row">
-                    <div class="col s6" v-on:click="changeSectionActive('analytics')">
-                        <div class="div">
-                            <i class="material-icons medium white-text">insert_chart</i>
+            <div class="col s12 m3">
+                <div v-on:click="changeSectionActive('theme')" class="config-card card-panel pink">
+                    <div class="row">
+                        <div class="col s5">
+                            <div class="div">
+                                <i class="material-icons medium white-text">brush</i>
+                            </div>
+                            <div class="white-text">
+                                Theme
+                            </div>
                         </div>
-                        <div class="white-text">
-                            Analytics
+                        <div class="col s7 tooltipped" data-position="bottom" data-tooltip="Ver más">
+                            <div class="info white-text right-align">
+                                @{{themeConfigurations.length}}
+                                <br />
+                                Configuraciones
+                            </div>
                         </div>
                     </div>
-                    <div class="col s6 tooltipped" data-position="bottom" data-tooltip="Ver más">
-                        <div class="info white-text right-align">
-                            Seguimiento <br />
-                            <div class="switch">
-                                <label>
-                                    Off
-                                    <input type="checkbox" :checked="getConfigValueBoolean('ANALYTICS_ACTIVE')"
-                                        v-on:change="updateConfigCheckbox($event, 'ANALYTICS_ACTIVE')">
-                                    <span class="lever"></span>
-                                    On
-                                </label>
+                </div>
+            </div>
+            <div class="col s12 m3">
+                <div class="config-card card-panel teal">
+                    <div class="row">
+                        <div class="col s5" v-on:click="changeSectionActive('analytics')">
+                            <div class="div">
+                                <i class="material-icons medium white-text">insert_chart</i>
+                            </div>
+                            <div class="white-text">
+                                Analytics
+                            </div>
+                        </div>
+                        <div class="col s7 tooltipped" data-position="bottom" data-tooltip="Ver más">
+                            <div class="info white-text right-align">
+                                Seguimiento <br />
+                                <div class="switch">
+                                    <label>
+                                        Off
+                                        <input type="checkbox" :checked="getConfigValueBoolean('ANALYTICS_ACTIVE')"
+                                            v-on:change="updateConfigCheckbox($event, 'ANALYTICS_ACTIVE')">
+                                        <span class="lever"></span>
+                                        On
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col s12 m3">
+                <div v-on:click="changeSectionActive('seo')" class="config-card card-panel green">
+                    <div class="row">
+                        <div class="col s5">
+                            <div class="div">
+                                <i class="material-icons medium white-text">trending_up</i>
+                            </div>
+                            <div class="white-text">
+                                SEO
+                            </div>
+                        </div>
+                        <div class="col s7 tooltipped" data-position="bottom" data-tooltip="Ver más">
+                            <div class="info white-text right-align">
+                                @{{generalConfigurations.length}}
+                                <br />
+                                Configuraciones
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col s12 m3">
+                <div class="config-card card-panel deep-purple">
+                    <div class="row">
+                        <div class="col s5" v-on:click="changeSectionActive('pixel')">
+                            <div class="div">
+                                <i class="material-icons medium white-text">insert_chart</i>
+                            </div>
+                            <div class="white-text">
+                                Pixel Facebook
+                            </div>
+                        </div>
+                        <div class="col s7 tooltipped" data-position="bottom" data-tooltip="Ver más">
+                            <div class="info white-text right-align">
+                                Seguimiento <br />
+                                <div class="switch">
+                                    <label>
+                                        Off
+                                        <input type="checkbox" :checked="getConfigValueBoolean('PIXEL_ACTIVE')"
+                                            v-on:change="updateConfigCheckbox($event, 'PIXEL_ACTIVE')">
+                                        <span class="lever"></span>
+                                        On
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col s12 m3">
+                <div class="config-card card-panel amber">
+                    <div class="row">
+                        <div class="col s5" v-on:click="changeSectionActive('database')">
+                            <div class="div">
+                                <i class="material-icons medium white-text">sd_card</i>
+                            </div>
+                            <div class="white-text">
+                                Database
+                            </div>
+                        </div>
+                        <div class="col s7 tooltipped" data-position="bottom" data-tooltip="Ver más">
+                            <div class="info white-text right-align">
+                                @{{files.length}}
+                                <br />
+                                Create Backup
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col s12 m3">
+                <div v-on:click="changeSectionActive('updater')" class="config-card card-panel red">
+                    <div class="row">
+                        <div class="col s5">
+                            <div class="div">
+                                <i class="material-icons medium white-text">system_update_alt</i>
+                            </div>
+                            <div class="white-text">
+                                Updater
+                            </div>
+                        </div>
+                        <div class="col s7 tooltipped" data-position="bottom" data-tooltip="Ver más">
+                            <div class="info white-text right-align">
+                                Manual Check <br />
+                                <div class="switch">
+                                    <label>
+                                        Off
+                                        <input type="checkbox" :checked="getConfigValueBoolean('UPDATER_MANUAL_CHECK')"
+                                            v-on:change="updateConfigCheckbox($event, 'UPDATER_MANUAL_CHECK')">
+                                        <span class="lever"></span>
+                                        On
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col s12 m3">
+                <div class="config-card card-panel indigo">
+                    <div class="row">
+                        <div class="col s5" v-on:click="changeSectionActive('logger')">
+                            <div class="div">
+                                <i class="material-icons medium white-text">list</i>
+                            </div>
+                            <div class="white-text">
+                                Logger
+                            </div>
+                        </div>
+                        <div class="col s7 tooltipped" data-position="bottom" data-tooltip="Ver más">
+                            <div class="info white-text right-align">
+                                System logger <br />
+                                <div class="switch">
+                                    <label>
+                                        Off
+                                        <input type="checkbox" :checked="getConfigValueBoolean('SYSTEM_LOGGER')"
+                                            v-on:change="updateConfigCheckbox($event, 'SYSTEM_LOGGER')">
+                                        <span class="lever"></span>
+                                        On
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col s12 m3">
-            <div v-on:click="changeSectionActive('seo')" class="config-card card-panel green">
-                <div class="row">
-                    <div class="col s6">
-                        <div class="div">
-                            <i class="material-icons medium white-text">trending_up</i>
-                        </div>
-                        <div class="white-text">
-                            SEO
-                        </div>
-                    </div>
-                    <div class="col s6 tooltipped" data-position="bottom" data-tooltip="Ver más">
-                        <div class="info white-text right-align">
-                            @{{generalConfigurations.length}}
-                            <br />
-                            Configuraciones
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col s12 m3">
-            <div class="config-card card-panel deep-purple">
-                <div class="row">
-                    <div class="col s6" v-on:click="changeSectionActive('pixel')">
-                        <div class="div">
-                            <i class="material-icons medium white-text">insert_chart</i>
-                        </div>
-                        <div class="white-text">
-                            Pixel Facebook
-                        </div>
-                    </div>
-                    <div class="col s6 tooltipped" data-position="bottom" data-tooltip="Ver más">
-                        <div class="info white-text right-align">
-                            Seguimiento <br />
-                            <div class="switch">
-                                <label>
-                                    Off
-                                    <input type="checkbox" :checked="getConfigValueBoolean('PIXEL_ACTIVE')"
-                                        v-on:change="updateConfigCheckbox($event, 'PIXEL_ACTIVE')">
-                                    <span class="lever"></span>
-                                    On
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col s12 m3">
-            <div class="config-card card-panel amber">
-                <div class="row">
-                    <div class="col s6" v-on:click="changeSectionActive('database')">
-                        <div class="div">
-                            <i class="material-icons medium white-text">sd_card</i>
-                        </div>
-                        <div class="white-text">
-                            Database
-                        </div>
-                    </div>
-                    <div class="col s6 tooltipped" data-position="bottom" data-tooltip="Ver más">
-                        <div class="info white-text right-align">
-                            @{{files.length}}
-                            <br />
-                            Create Backup
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col s12 m3">
-            <div v-on:click="changeSectionActive('updater')" class="config-card card-panel red">
-                <div class="row">
-                    <div class="col s6">
-                        <div class="div">
-                            <i class="material-icons medium white-text">system_update_alt</i>
-                        </div>
-                        <div class="white-text">
-                            Updater
-                        </div>
-                    </div>
-                    <div class="col s6 tooltipped" data-position="bottom" data-tooltip="Ver más">
-                        <div class="info white-text right-align">
-                            Manual Check <br />
-                            <div class="switch">
-                                <label>
-                                    Off
-                                    <input type="checkbox" :checked="getConfigValueBoolean('UPDATER_MANUAL_CHECK')"
-                                        v-on:change="updateConfigCheckbox($event, 'UPDATER_MANUAL_CHECK')">
-                                    <span class="lever"></span>
-                                    On
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col s12 m3">
-            <div class="config-card card-panel indigo">
-                <div class="row">
-                    <div class="col s6" v-on:click="changeSectionActive('logger')">
-                        <div class="div">
-                            <i class="material-icons medium white-text">list</i>
-                        </div>
-                        <div class="white-text">
-                            Logger
-                        </div>
-                    </div>
-                    <div class="col s6 tooltipped" data-position="bottom" data-tooltip="Ver más">
-                        <div class="info white-text right-align">
-                            System logger <br />
-                            <div class="switch">
-                                <label>
-                                    Off
-                                    <input type="checkbox" :checked="getConfigValueBoolean('SYSTEM_LOGGER')"
-                                        v-on:change="updateConfigCheckbox($event, 'SYSTEM_LOGGER')">
-                                    <span class="lever"></span>
-                                    On
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     </transition>
     <transition name="fade">
         <div v-show="sectionActive == 'analytics'" class="container form">
@@ -247,6 +247,69 @@
                                     <input :value="getConfigValue('ANALYTICS_CODE')" placeholder="" type="text"
                                         class="validate" v-on:change="updateConfig($event, 'ANALYTICS_CODE')">
                                     <label>Head Code</label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </transition>
+    <transition name="fade">
+        <div v-show="sectionActive == 'addConfig'" class="container form">
+            <div class="row">
+                <div class="col s12">
+                    <h4>Agregar Entrada de Configuracion</h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <div class="row">
+                        <form class="col s12">
+                            <div class="row">
+                                <div class="input-field col s6">
+                                    <input v-model="newConfig.config_name" placeholder="Config Name" type="text"
+                                        class="validate">
+                                    <label>Config Name</label>
+                                </div>
+                                <div class="input-field col s6">
+                                    <input v-model="newConfig.config_value" placeholder="Config Value" type="text"
+                                        class="validate">
+                                    <label>Config Value</label>
+                                </div>
+                                <div class="input-field col s12">
+                                    <input v-model="newConfig.config_description" placeholder="Config Description"
+                                        type="text" class="validate">
+                                    <label>Config Description</label>
+                                </div>
+                                <div class="input-field col s12">
+                                    <select name="config_type" v-model="newConfig.config_type">
+                                        <option value="" disabled selected>Choose your option</option>
+                                        <option value="general">general</option>
+                                        <option value="seo">seo</option>
+                                        <option value="theme">theme</option>
+                                        <option value="analytics">analytics</option>
+                                        <option value="updater">updater</option>
+                                        <option value="logger">logger</option>
+                                    </select>
+                                    <label>Config Type</label>
+                                </div>
+                                <div class="input-field col s12">
+                                    Activar
+                                    <div class="switch">
+                                        <label>
+                                            No activo
+                                            <input type="checkbox" name="visible_form" value="1"
+                                                v-model="newConfig.status">
+                                            <span class="lever"></span>
+                                            Activo
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="input-field col s12">
+                                    <button type="button" class="btn btn-primary" @click="saveNewConfig()">
+                                        <span><i class="material-icons right">edit</i> Guardar</span>
+                                    </button>
                                 </div>
                             </div>
                         </form>
@@ -416,16 +479,11 @@
 
                         <li><a href="#!" v-on:click="getPages();"><i class="material-icons">refresh</i></a></li>
                         <li>
-                            <a href="#!" class='dropdown-trigger' data-target='dropdown-options'><i
+                            <a href="#!" class='dropdown-trigger' data-target='dropdown-options-general'><i
                                     class="material-icons">more_vert</i></a>
                             <!-- Dropdown Structure -->
-                            <ul id='dropdown-options' class='dropdown-content'>
-                                <li><a href="#!">one</a></li>
-                                <li><a href="#!">two</a></li>
-                                <li class="divider" tabindex="-1"></li>
-                                <li><a href="#!">three</a></li>
-                                <li><a href="#!"><i class="material-icons">view_module</i>four</a></li>
-                                <li><a href="#!"><i class="material-icons">cloud</i>five</a></li>
+                            <ul id='dropdown-options-general' class='dropdown-content'>
+                                <li><a href="#!" v-on:click="changeSectionActive('addConfig')">Add</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -620,7 +678,7 @@
                         <div class="subtitle">
                             Current Start CMS Version:
                         </div>
-                        <ul class="collection" >
+                        <ul class="collection">
                             <li class="collection-item"><b>Name</b>: @{{updaterInfo.local.name}}</li>
                             <li class="collection-item"><b>Description</b>: @{{updaterInfo.local.description}}</li>
                             <li class="collection-item"><b>Version</b>: @{{updaterInfo.local.version}}</li>
@@ -633,7 +691,7 @@
                         <div class="subtitle">
                             Available Start CMS Version:
                         </div>
-                        <ul class="collection" >
+                        <ul class="collection">
                             <li class="collection-item"><b>Name</b>: @{{updaterInfo.remote.name}}</li>
                             <li class="collection-item"><b>Description</b>: @{{updaterInfo.remote.description}}</li>
                             <li class="collection-item"><b>Version</b>: @{{updaterInfo.remote.version}}</li>
@@ -659,32 +717,34 @@
                                 class="material-icons left">sync</i> Check for updates</a>
                     </p>
                 </div>
-                <div class="col s12" v-if="updaterInfo && (updaterInfo.remote.version > updaterInfo.local.version) && !updaterPackageDownloaded">
+                <div class="col s12"
+                    v-if="updaterInfo && (updaterInfo.remote.version > updaterInfo.local.version) && !updaterPackageDownloaded">
                     <div class="download-progress center-align" v-if="updaterProgress">
                         Downloading package...
-                        <br/>
-                        <br/>
+                        <br />
+                        <br />
                         <div class="progress">
                             <div class="indeterminate"></div>
                         </div>
                     </div>
                     <p v-if="!updaterProgress">
                         <a class="waves-effect waves-light btn" @click="downloadUpdateVersion()"><i
-                            class="material-icons left">file_download</i> Download Package</a>
+                                class="material-icons left">file_download</i> Download Package</a>
                     </p>
                 </div>
-                <div class="col s12" v-if="updaterInfo && (updaterInfo.remote.version > updaterInfo.local.version) && updaterPackageDownloaded">
+                <div class="col s12"
+                    v-if="updaterInfo && (updaterInfo.remote.version > updaterInfo.local.version) && updaterPackageDownloaded">
                     <div class="download-progress center-align" v-if="updaterInstallProgress">
                         Installing package in progress...
-                        <br/>
-                        <br/>
+                        <br />
+                        <br />
                         <div class="progress">
                             <div class="indeterminate"></div>
                         </div>
                     </div>
                     <p v-if="!updaterInstallProgress">
                         <a class="waves-effect waves-light btn" @click="installDownloadedPackage()"><i
-                            class="material-icons left">system_update_alt</i> Install Package</a>
+                                class="material-icons left">system_update_alt</i> Install Package</a>
                     </p>
                 </div>
             </div>
@@ -793,6 +853,15 @@
             </div>
         </div>
     </transition>
+    @if(has_permisions('CREATE_CONFIG'))
+    <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
+        <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left"
+            data-delay="50" data-tooltip="Agregar configuracion"
+            href="<?php echo base_url('admin/configuracion/new/') ?>">
+            <i class="large material-icons">add</i>
+        </a>
+    </div>
+    @endif
 </div>
 @include('admin.components.configurationComponent')
 @endsection

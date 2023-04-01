@@ -10,12 +10,12 @@ Vue.component("formFieldTextArea", {
   ],
   data: function () {
     return {
-      form_field_id: null,
+      custom_model_fields_id: null,
       fieldID: this.makeid(10),
       fieldName: "",
       fielApiID: "",
       text: null,
-      form_custom_data_id: null,
+      custom_model_data_id: null,
       fieldPlaceholder: "",
     };
   },
@@ -43,7 +43,7 @@ Vue.component("formFieldTextArea", {
         fieldID: this.fieldID,
         fieldName: this.fieldName,
         fielApiID: this.fielApiID,
-        form_custom_data_id: this.form_custom_data_id,
+        custom_model_data_id: this.custom_model_data_id,
       };
     },
     getContentData() {
@@ -61,9 +61,9 @@ Vue.component("formFieldTextArea", {
         }
       }
       if (this.fieldData) {
-        this.form_field_id = this.fieldData.form_field_id;
-        this.form_custom_data_id = this.fieldData.form_custom_data_id;
-        this.text = this.fieldData.form_value.text;
+        this.custom_model_fields_id = this.fieldData.custom_model_fields_id;
+        this.custom_model_data_id = this.fieldData.custom_model_data_id;
+        this.text = this.fieldData.custom_model_content_data_value.text;
       }
     });
   },

@@ -38,10 +38,15 @@ class Pages extends REST_Controller
         if ($page_id) {
             $result = $page->find($page_id);
             $result = $result ? $page : [];
+        } else if ($this->input->get('filters')) {
+            $result = $page->where($this->input->get('filters'));
+            $result = $result ? $result->toArray() : [];
         } else {
             $result = $page->where(['status' => '1']);
             $archived = $page->where(['status' => '2']);
-            $result = ($result && $archived) ? ($archived->concat($result)) : [];
+            $result = $result ? $result->toArray() : [];
+            $archived = $archived ? $archived->toArray() : [];
+            $result = array_merge($result, $archived);
         }
 
         if ($result) {
@@ -104,6 +109,7 @@ class Pages extends REST_Controller
         $page->subtitle = $this->input->post('subtitle');
         $page->path = $this->input->post('path');
         $page->content = $this->input->post('content');
+        $page->json_content = $this->input->post('json_content');
         $page->user_id = userdata('user_id');
         $page->page_type_id = $this->input->post('page_type_id');
         $page->status = $this->input->post('status');
@@ -115,6 +121,7 @@ class Pages extends REST_Controller
         $page->categorie_id = $this->input->post('categorie_id');
         $page->subcategorie_id = $this->input->post('subcategorie_id');
         $page->mainImage = $this->input->post('mainImage') ? $this->input->post('mainImage') : null;
+        $page->thumbnailImage = $this->input->post('thumbnailImage') ? $this->input->post('thumbnailImage') : null;
         $page->{"page_data"} = $this->input->post('page_data');
 
         if ($page->save()) {
@@ -155,6 +162,25 @@ class Pages extends REST_Controller
         }
     }
 
+    /**
+     * Get All Data from this method.
+     *
+     * @return Response
+     */
+    public function archive_post($id = null)
+    {
+        $page = new Page();
+        $page->find($id);
+        if ($page) {
+            $page->status = 3;
+            $page->save();
+            system_logger('pages', $page->page_id, ("archive"), ("A page has been archive"));
+            $this->response_ok($page);
+        } else {
+            $this->response_error(lang('not_found_error'));
+        }
+    }
+
     public function types_get()
     {
         $this->load->model('Admin/Page_type');
@@ -173,16 +199,9 @@ class Pages extends REST_Controller
 
     public function templates_get()
     {
-        $this->load->helper('directory');
-        $layouts = directory_map('./application/views/site/layouts', 1);
-        $templates = directory_map('./application/views/site/templates', 1);
-
         $response = array(
             'code' => REST_Controller::HTTP_OK,
-            'data' => [
-                'layouts' => $layouts ? $layouts : [],
-                'templates' => $templates ? $templates : [],
-            ]
+            'data' => getTemplates(),
         );
 
         $this->response($response, REST_Controller::HTTP_OK);
@@ -215,23 +234,56 @@ class Pages extends REST_Controller
             return;
         }
 
-        //Templates
-
-        $layouts = directory_map('./application/views/site/layouts', 1);
-        $templates = directory_map('./application/views/site/templates', 1);
+        $themeTemplates = getTemplates();
 
         $response = array(
             'code' => 200,
             'data' => array(
                 'page' => $page,
                 'page_types' => $page_types,
-                'layouts' => $layouts ? $layouts : [],
-                'templates' => $templates ? $templates : [],
+                'layouts' => $themeTemplates['layouts'],
+                'templates' => $themeTemplates['templates'],
             ),
         );
 
         $this->response($response, REST_Controller::HTTP_OK);
         return;
+    }
+
+    /**
+     * Get All Data from this method.
+     *
+     * @return Response
+     */
+    public function autocomplete_get()
+    {
+        $search = $this->input->get("search");
+        $page = new Page();
+        $result = $page->search($search);
+
+        if ($result) {
+
+            $response = [
+                "items" => array_map(function ($value) {
+                    return [
+                        "href" => base_url($value->path),
+                        "name" => $value->title,
+                        "description" => character_limiter(strip_tags($value->content), 120),
+                    ];
+                }, $result->toArray()),
+                "success" => true,
+            ];
+
+            $this->response($response, REST_Controller::HTTP_OK);
+            return;
+        }
+
+        $response = array(
+            'code' => REST_Controller::HTTP_OK,
+            'data' => [],
+        );
+
+        $this->response($response, REST_Controller::HTTP_OK);
     }
 
 }

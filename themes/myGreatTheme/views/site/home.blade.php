@@ -1,5 +1,4 @@
-@extends('site.layouts.site')
-
+@extends('site.layouts.' . $layout)
 @section('title', $title)
 
 @section('footer')

@@ -23,6 +23,7 @@ Vue.component("FileExplorerSelector", {
       search: "",
       create_folder_process: false,
       new_folder_name: "new folder",
+      input_id: this.makeid(15),
     };
   },
   mixins: [mixins],
@@ -94,8 +95,8 @@ Vue.component("FileExplorerSelector", {
     makeNewFolder() {
       this.create_folder_process = true;
       setTimeout(() => {
-        $("#folder_name").focus();
-        $("#folder_name").select();
+        $(`#folder_name` + this.modal).focus();
+        $(`#folder_name` + this.modal).select();
       }, 1000);
     },
     makeFolderServer() {
@@ -105,7 +106,7 @@ Vue.component("FileExplorerSelector", {
         url: BASEURL + "api/v1/files/make_dir",
         data: {
           path: self.curDir,
-          new_folder_name: $("#folder_name").val(),
+          new_folder_name: $(`#folder_name` + this.modal).val(),
         },
         dataType: "json",
         success: function (response) {
@@ -164,10 +165,15 @@ Vue.component("FileExplorerSelector", {
       };
     },
     onClickButton(event) {
+      let files = this.getSelected();
       this.$emit(
         "notify",
-        this.selectedRoot ? [this.getSelectedRoot()] : this.getSelected()
+        this.selectedRoot ? [this.getSelectedRoot()] : files
       );
+      this.files = this.files.map((file) => {
+        file.selected = false;
+        return file;
+      });
     },
     getFullFileName(file) {
       return file.file_name + "." + file.file_type;
@@ -324,18 +330,21 @@ Vue.component("FileExplorerSelector", {
     getFilterFiles(filter_name, filter_value) {
       var self = this;
       $.ajax({
-        type: "POST",
+        type: "GET",
         url: BASEURL + "api/v1/files/filter_files",
         data: {
           filter_name: filter_name,
           filter_value: filter_value,
         },
         dataType: "json",
-        success: function (response) {
+        success: (response) => {
           if (response.code == 200) {
             self.files = response.data;
             self.init();
           }
+        },
+        error: (error) => {
+          console.log({ error });
         },
       });
     },
@@ -343,11 +352,11 @@ Vue.component("FileExplorerSelector", {
       setTimeout(() => {
         var elems = document.querySelectorAll(".materialboxed");
         M.Materialbox.init(elems, {});
-        M.Tabs.init(document.getElementById("selectorTabs"), {});
+        M.Tabs.init(document.getElementById("selectorTabs_" + this.modal), {});
       }, 3000);
     },
     initUploader() {
-      $("#input-100")
+      $(`#${this.input_id}`)
         .fileinput({
           uploadUrl: BASEURL + "admin/archivos/ajax_upload_file",
           enableResumableUpload: true,
@@ -409,7 +418,7 @@ Vue.component("FileExplorerSelector", {
           overwriteInitial: false,
           // initialPreview: [],          // if you have previously uploaded preview files
           // initialPreviewConfig: [],    // if you have previously uploaded preview files
-          deleteUrl: "http://localhost/file-delete.php",
+          deleteUrl: "",
           progressClass:
             "determinate progress-bar bg-success progress-bar-success progress-bar-striped active",
           progressInfoClass:
@@ -423,7 +432,7 @@ Vue.component("FileExplorerSelector", {
         })
         .on("fileuploaded", (event, previewId, index, fileId) => {
           let instance = M.Tabs.init(
-            document.getElementById("selectorTabs"),
+            document.getElementById("selectorTabs_" + this.modal),
             {}
           );
           instance.select("selector");
@@ -431,7 +440,7 @@ Vue.component("FileExplorerSelector", {
         });
     },
     destroyFileinputInstance() {
-      $("#input-100").fileinput("destroy");
+      $(`#${this.input_id}`).fileinput("destroy");
     },
     updateSelector() {
       if (!this.preselected) {

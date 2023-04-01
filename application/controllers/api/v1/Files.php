@@ -1,4 +1,6 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); 
+<?php if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
 
 require APPPATH . 'libraries/REST_Controller.php';
 
@@ -18,6 +20,7 @@ class Files extends REST_Controller
         }
         $this->load->database();
         $this->load->model('Admin/File');
+        $this->load->model('Admin/File_activity');
 
     }
 
@@ -54,7 +57,7 @@ class Files extends REST_Controller
 
     public function index_post()
     {
-        $this->response(array('Metodo no permitido'), REST_Controller::HTTP_METHOD_NOT_ALLOWED);  
+        $this->response(array('Metodo no permitido'), REST_Controller::HTTP_METHOD_NOT_ALLOWED);
     }
 
     /**
@@ -99,8 +102,8 @@ class Files extends REST_Controller
             $file->delete();
             $this->response_ok($result);
             return;
-        } 
-        $this->response_error(lang('not_found_error')); 
+        }
+        $this->response_error(lang('not_found_error'));
     }
 
     public function featured_file_post()
@@ -111,19 +114,38 @@ class Files extends REST_Controller
         if ($result) {
             $file->featured = $post_file["featured"];
             $result = $file->save();
+
+            $file_activity = new File_activity();
+            $file_activity->file_id = $file->file_id;
+            $file_activity->user_id = userdata('user_id');
+            $file_activity->action = "featured";
+            $file_activity->description = $post_file["featured"] ? "The file has been marked as featured" : "The file has been removed as featured";
+            $file_activity->date_create = date("Y-m-d H:i:s");
+            $file_activity->status = 1;
+            $file_activity->save();
+
             $this->response_ok($result);
             return;
-        } 
+        }
         $this->response_error(lang('not_found_error'));
     }
 
     public function reload_file_explorer_post($folder = null)
     {
-        $file = new File();
+        $File = new File();
         if ($folder != null) {
-            $file->current_folder = $folder . '/';
+            $File->current_folder = $folder . '/';
         }
-        $this->response_ok(['result' => $file->map_files()]);
+        $allFiles = $File->all();
+
+        foreach ($allFiles as $key => $file) {
+            if (!file_exists($file->file_path . $file->file_name . '.' . $file->file_type)) {
+                $File->find($file->file_id);
+                $File->delete();
+            }
+        }
+
+        $this->response_ok(['result' => $File->map_files()]);
     }
 
     public function move_file_post()
@@ -137,10 +159,20 @@ class Files extends REST_Controller
             $file_model->save();
             $file_name = $file['file_name'] . '.' . $file['file_type'];
             $rename = rename($file['file_path'] . $file_name, $newPath . $file_name);
+
+            $file_activity = new File_activity();
+            $file_activity->file_id = $file_model->file_id;
+            $file_activity->user_id = userdata('user_id');
+            $file_activity->action = "move";
+            $file_activity->description = "The file was moved to " . $newPath;
+            $file_activity->date_create = date("Y-m-d H:i:s");
+            $file_activity->status = 1;
+            $file_activity->save();
+
             $this->response_ok($rename);
             return;
-        } 
-        
+        }
+
         $this->response_error(lang('not_found_error'));
     }
 
@@ -195,9 +227,9 @@ class Files extends REST_Controller
                 'data' => $folder,
             );
             $this->response_ok($folder);
-        } 
-        
-        $this->response_error(lang('not_found_error')); 
+        }
+
+        $this->response_error(lang('not_found_error'));
     }
 
     public function rename_file_post()
@@ -212,17 +244,59 @@ class Files extends REST_Controller
                 $file['file_path'] . $file['file_name'] . '.' . $file['file_type'],
                 $file['file_path'] . $file['new_name'] . '.' . $file['file_type']
             );
+
+            $file_activity = new File_activity();
+            $file_activity->file_id = $file_model->file_id;
+            $file_activity->user_id = userdata('user_id');
+            $file_activity->action = "rename";
+            $file_activity->description = "The file " . $file['file_name'] . '.' . $file['file_type'] . " was renamed to " . $file['new_name'] . '.' . $file['file_type'];
+            $file_activity->date_create = date("Y-m-d H:i:s");
+            $file_activity->status = 1;
+            $file_activity->save();
+
             $this->response_ok($result);
-        } 
+        }
         $this->response_error(lang('not_found_error'));
     }
 
-    public function filter_files_post()
+    public function filter_files_get()
     {
-        $filter_name = $this->input->post('filter_name');
-        $filter_value = $this->input->post('filter_value');
+        $filter_name = $this->input->get('filter_name');
+        $filter_value = $this->input->get('filter_value');
         $result = $this->File->get_filter_files($filter_name, $filter_value, null, array('date_update', "DESC"));
         $this->response_ok($result);
+    }
+
+    public function get_file_content_get()
+    {
+        $file = $this->input->get('file');
+        $file_model = new File();
+        $result = $file_model->find($file["file_id"]);
+
+        if (!$result) {
+            $this->response_error([
+                "message" => "File seems doesn't exist!",
+            ]);
+            return;
+        }
+
+        try {
+            $string = file_get_contents($file_model->getFileFullPath());
+            $this->response_ok(
+                [
+                    "message" => "File content",
+                ],
+                ["file_content" => $string]
+            );
+        } catch (\Throwable $th) {
+            if ($string === false) {
+                $this->response_error([
+                    "message" => "Oops! Error reading file",
+                ]);
+                return;
+            }
+        }
+
     }
 
 }

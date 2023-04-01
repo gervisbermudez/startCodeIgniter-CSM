@@ -1,7 +1,7 @@
 const gulp = require("gulp");
 const concat = require("gulp-concat");
 const terser = require("gulp-terser");
-const sass = require("gulp-sass");
+const sass = require('gulp-sass')(require('sass'));
 const rename = require("gulp-rename");
 const gutil = require("gulp-util");
 const git = require("gulp-git");
@@ -66,9 +66,11 @@ function inc(importance) {
 gulp.task("patch", function () {
   return inc("patch");
 });
+
 gulp.task("feature", function () {
   return inc("minor");
 });
+
 gulp.task("release", function () {
   return inc("major");
 });

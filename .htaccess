@@ -1,3 +1,12 @@
+# Disable Directory listing
+Options -Indexes
+
+# block files which needs to be hidden, specify .example extension of the file
+<Files ~ "\.(env|config.js|md|gitignore|gitattributes|lock)$">
+    Order allow,deny
+    Deny from all
+</Files>
+
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
@@ -62,6 +71,9 @@ RewriteRule ^(.*)$ index.php/$1 [L]
         SetOutputFilter DEFLATE
     </filesMatch>
 </IfModule>
+<FilesMatch "\.(jpg|jpeg|png|gif|swf)$">
+    Header set Cache-Control "max-age=604800, public"
+</FilesMatch>
 # gzip Compression if availiable
 <IfModule mod_gzip.c>
 mod_gzip_on Yes

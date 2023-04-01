@@ -15,25 +15,27 @@
         <sy:updateFrequency>
             1 </sy:updateFrequency>
         <generator>https://github.com/gervisbermudez/startCodeIgniter-CSM</generator>
-        <?php foreach($posts as $post): ?>
-        <item>
-            <title><?php echo xml_convert($post->title); ?></title>
-            <link><?php echo site_url($post->path) ?></link>
-            <comments><?php echo site_url($post->path) ?>#respond</comments>
-            <dc:creator>
-                <![CDATA[<?php echo ($post->user->username) ?>]]>
-            </dc:creator>
-            <pubDate><?php echo ($post->date_create) ?></pubDate>
-            <guid isPermaLink="false"><?php echo site_url($post->path) ?></guid>
-            <description>
-                <![CDATA[<?php echo character_limiter($post->content, 200); ?>]]>
-            </description>
-            <content:encoded>
-                <![CDATA[<?php echo character_limiter($post->content, 200); ?> ]]>
-            </content:encoded>
-            <wfw:commentRss><?php echo site_url($post->path) ?>/feed/</wfw:commentRss>
-            <slash:comments>0</slash:comments>
-        </item>
-        <?php endforeach; ?>
+        <?php if($posts && count($posts)): ?>
+            <?php foreach($posts as $post): ?>
+                <item>
+                    <title><?php echo xml_convert($post->title); ?></title>
+                    <link><?php echo site_url($post->path) ?></link>
+                    <comments><?php echo site_url($post->path) ?>#respond</comments>
+                    <dc:creator>
+                        <![CDATA[<?php echo ($post->user->username) ?>]]>
+                    </dc:creator>
+                    <pubDate><?php echo ($post->date_create) ?></pubDate>
+                    <guid isPermaLink="false"><?php echo site_url($post->path) ?></guid>
+                    <description>
+                        <![CDATA[<?php echo character_limiter(strip_tags($post->content), 200); ?>]]>
+                    </description>
+                    <content:encoded>
+                        <![CDATA[<?php echo character_limiter(strip_tags($post->content), 200); ?> ]]>
+                    </content:encoded>
+                    <wfw:commentRss><?php echo site_url($post->path) ?>/feed/</wfw:commentRss>
+                    <slash:comments>0</slash:comments>
+                </item>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </channel>
 </rss>

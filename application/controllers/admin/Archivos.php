@@ -9,6 +9,7 @@ class Archivos extends MY_Controller
     {
         parent::__construct();
         $this->load->model('Admin/File');
+        $this->load->model('Admin/File_activity');
     }
 
     public function index()
@@ -30,7 +31,9 @@ class Archivos extends MY_Controller
         //persit on database
         if (!isset($result['error'])) {
             $file = new File();
-            $insert_array = $file->get_array_save_file($_POST['fileName'], $_POST['curDir']);
+            $filenameParts = explode(".", $_POST['fileName']);
+
+            $insert_array = $file->get_array_save_file(slugify($filenameParts[0]) . '-' . date("Y-m-d-His") . '.' . $filenameParts[1], $_POST['curDir'] . date("Y-m-d/"));
             $find_result = $file->find_with(
                 [
                     "file_path" => $insert_array['file_path'],
@@ -38,12 +41,21 @@ class Archivos extends MY_Controller
                     "file_type" => $insert_array['file_type'],
                 ]
             );
+
             if (!$find_result) {
                 $this->File->set_data($insert_array, $this->File->table);
                 $result['file_object'] = $this->File->get_data(array('file_id' => $this->db->insert_id()));
+                $file_activity = new File_activity();
+                $file_activity->file_id = $result['file_object'][0]->file_id;
+                $file_activity->user_id = userdata('user_id');
+                $file_activity->action = "upload";
+                $file_activity->description = "The file was upload";
+                $file_activity->date_create = date("Y-m-d H:i:s");
+                $file_activity->status = 1;
+                $file_activity->save();
+
             } else {
                 $file->date_update = date("Y-m-d H:i:s");
-                $file->save();
                 $result['file_object'] = $file->as_data();
             }
         }
