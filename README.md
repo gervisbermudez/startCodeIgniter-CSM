@@ -49,8 +49,7 @@ startCodeIgniter CSM requires [Composer](https://getcomposer.org/).
 Install the dependencies and devDependencies and start the server.
 
 ```sh
-
-`$ git clone https://github.com/gervisbermudez/startCodeIgniter-CSM.git
+$ git clone https://github.com/gervisbermudez/startCodeIgniter-CSM.git
 $ cd ./startCodeIgniter-CSM
 $ composer install
 $ npm install
