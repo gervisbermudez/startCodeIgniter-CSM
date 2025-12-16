@@ -245,7 +245,7 @@ class Base_Controller extends CI_Controller
 
             // Si se obtuvo el ID de la página, se obtiene la información de la página
             if ($page_id) {
-                $data = $this->get_page_info(array('page_id' => $page_id));
+                $data = $this->get_page_info(array('page_id' => $page_id, 'status' => 1));
             }
 
             // Si se obtuvo la información de la página de error 404, se carga la vista correspondiente del tema actual
