@@ -358,7 +358,7 @@ Vue.component("FileExplorerSelector", {
     initUploader() {
       $(`#${this.input_id}`)
         .fileinput({
-          uploadUrl: BASEURL + "admin/archivos/ajax_upload_file",
+          uploadUrl: BASEURL + "admin/files/ajax_upload_file",
           enableResumableUpload: true,
           resumableUploadOptions: {
             // uncomment below if you wish to test the file for previous partial uploaded chunks

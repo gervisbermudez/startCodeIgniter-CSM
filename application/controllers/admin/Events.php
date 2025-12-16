@@ -2,7 +2,7 @@
     exit('No direct script access allowed');
 }
 
-class Eventos extends MY_Controller
+class Events extends MY_Controller
 {
 
     public function __construct()

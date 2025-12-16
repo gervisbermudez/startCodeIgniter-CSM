@@ -43,7 +43,7 @@
                                         <p>@{{page.path}}<br>
                                             @{{page.user.get_fullname()}}
                                         </p>
-                                        <a :href="base_url('admin/paginas/view/' + page.page_id)"
+                                        <a :href="base_url('admin/pages/view/' + page.page_id)"
                                             class="secondary-content"><i class="material-icons">play_arrow</i></a>
                                     </li>
                                 </ul>
@@ -72,7 +72,7 @@
                                             @{{item.config_value}}<br>
                                             @{{item.config_type}}
                                         </p>
-                                        <a :href="base_url('admin/configuracion?section=' + item.config_type)"
+                                        <a :href="base_url('admin/configuration?section=' + item.config_type)"
                                             class="secondary-content"><i class="material-icons">edit</i></a>
                                     </li>
                                 </ul>
@@ -83,7 +83,7 @@
             </div>
 
             <div class="input-field" id="buttons">
-                <a href="<?php echo base_url('admin/configuracion/'); ?>" class="btn-flat">Cancelar</a>
+                <a href="<?php echo base_url('admin/configuration/'); ?>" class="btn-flat">Cancelar</a>
                 <button type="submit" class="btn btn-primary" @click="generateFile()" :class="{disabled: !btnEnable}">
                     <span><i class="material-icons right">file_download</i> Export</span>
                 </button>

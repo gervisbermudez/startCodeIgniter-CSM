@@ -55,9 +55,9 @@ class Usergroup extends MY_model
 
     private function get_permisions($usergroup_id)
     {
-        $this->load->model('Admin/Usergroup_permisions');
-        $Usergroup_permisions = new Usergroup_permisions();
-        $result = $Usergroup_permisions->where(["usergroup_id" => $usergroup_id]);
+        $this->load->model('Admin/UsergroupPermissions');
+        $UsergroupPermissions = new UsergroupPermissions();
+        $result = $UsergroupPermissions->where(["usergroup_id" => $usergroup_id]);
         if ($result) {
             $result = array_merge($this->permisions, $result->toArray());
             return $result;

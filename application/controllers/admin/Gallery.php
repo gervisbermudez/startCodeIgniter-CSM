@@ -2,7 +2,7 @@
     exit('No direct script access allowed');
 }
 
-class Galeria extends MY_Controller
+class Gallery extends MY_Controller
 {
 
     public function __construct()

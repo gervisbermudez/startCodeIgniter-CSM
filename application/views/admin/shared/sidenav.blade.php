@@ -14,15 +14,15 @@
                 <ul>
                     @if(has_permisions('SELECT_USERS'))
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/usuarios/') }}">Todos</a>
+                        <a class="waves-effect" href="{{ base_url('admin/users/') }}">Todos</a>
                     </li>
                     @endif
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/usuarios/usergroups') }}">Grupos</a>
+                        <a class="waves-effect" href="{{ base_url('admin/users/usergroups') }}">Grupos</a>
                     </li>
                     @if(has_permisions('CREATE_USER'))
                     <li>
-                        <a href="{{ base_url('admin/usuarios/agregar/') }}">Nuevo</a>
+                        <a href="{{ base_url('admin/users/agregar/') }}">Nuevo</a>
                     </li>
                     @endif
                 </ul>
@@ -37,12 +37,12 @@
                 <ul>
                     @if(has_permisions('SELECT_PAGES'))
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/paginas/') }}">Todas</a>
+                        <a class="waves-effect" href="{{ base_url('admin/pages/') }}">Todas</a>
                     </li>
                     @endif
                     @if(has_permisions('CREATE_PAGE'))
                     <li>
-                        <a href="{{ base_url('admin/paginas/nueva/') }}">Nueva</a>
+                        <a href="{{ base_url('admin/pages/nueva/') }}">Nueva</a>
                     </li>
                     @endif
 
@@ -69,7 +69,7 @@
             </div>
         </li>
         <li class="{{isSectionActive('calendario')}}">
-            <a class="waves-effect" href="{{ base_url('admin/calendario') }}"><i class="material-icons">event_note</i>
+            <a class="waves-effect" href="{{ base_url('admin/calendar') }}"><i class="material-icons">event_note</i>
                 Calendario</a>
         </li>
         <li class="{{isSectionActive('Fragments')}}">
@@ -79,7 +79,7 @@
         </li>
         @if(has_permisions('SELECT_FILES'))
         <li class="{{isSectionActive('archivos')}}">
-            <a class="waves-effect" href="{{ base_url('admin/archivos') }}"><i
+            <a class="waves-effect" href="{{ base_url('admin/files') }}"><i
                     class="material-icons">markunread_mailbox</i>
                 Archivos</a>
         </li>
@@ -114,12 +114,12 @@
                 <ul>
                     @if(has_permisions('SELECT_CATEGORIES'))
                     <li>
-                        <a href="{{ base_url('admin/categorias/') }}">Todas</a>
+                        <a href="{{ base_url('admin/categories/') }}">Todas</a>
                     </li>
                     @endif
                     @if(has_permisions('CREATE_CATEGORIE'))
                     <li>
-                        <a href="{{ base_url('admin/categorias/nueva/') }}">Nueva</a>
+                        <a href="{{ base_url('admin/categories/nueva/') }}">Nueva</a>
                     </li>
                     @endif
                 </ul>
@@ -133,10 +133,10 @@
             <div class="collapsible-body">
                 <ul>
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/eventos/') }}">Todos</a>
+                        <a class="waves-effect" href="{{ base_url('admin/events/') }}">Todos</a>
                     </li>
                     <li>
-                        <a href="{{ base_url('admin/eventos/agregar/') }}">Nuevo</a>
+                        <a href="{{ base_url('admin/events/agregar/') }}">Nuevo</a>
                     </li>
                 </ul>
             </div>
@@ -149,10 +149,10 @@
             <div class="collapsible-body">
                 <ul>
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/galeria') }}"> Todos</a>
+                        <a class="waves-effect" href="{{ base_url('admin/gallery') }}"> Todos</a>
                     </li>
                     <li>
-                        <a href="{{ base_url('admin/galeria/nuevo/') }}">Nuevo Album</a>
+                        <a href="{{ base_url('admin/gallery/nuevo/') }}">Nuevo Album</a>
                     </li>
                 </ul>
             </div>
@@ -209,22 +209,22 @@
             <div class="collapsible-body">
                 <ul>
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/configuracion') }}"> Configuración</a>
+                        <a class="waves-effect" href="{{ base_url('admin/configuration') }}"> Configuración</a>
                     </li>
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/configuracion/import') }}"> Importar</a>
+                        <a class="waves-effect" href="{{ base_url('admin/configuration/import') }}"> Importar</a>
                     </li>
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/configuracion/export') }}"> Exportar</a>
+                        <a class="waves-effect" href="{{ base_url('admin/configuration/export') }}"> Exportar</a>
                     </li>
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/configuracion/apilogger') }}"> API Log</a>
+                        <a class="waves-effect" href="{{ base_url('admin/configuration/apilogger') }}"> API Log</a>
                     </li>
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/configuracion/logger') }}"> System Log</a>
+                        <a class="waves-effect" href="{{ base_url('admin/configuration/logger') }}"> System Log</a>
                     </li>
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/configuracion/usertrackinglogger') }}"> User
+                        <a class="waves-effect" href="{{ base_url('admin/configuration/usertrackinglogger') }}"> User
                             Tracking</a>
                     </li>
                 </ul>

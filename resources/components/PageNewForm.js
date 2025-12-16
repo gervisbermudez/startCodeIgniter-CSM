@@ -147,7 +147,7 @@ var PageNewForm = new Vue({
     },
     preview_link: function () {
       return this.page_id
-        ? BASEURL + "admin/paginas/preview?page_id=" + this.page_id
+        ? BASEURL + "admin/pages/preview?page_id=" + this.page_id
         : "";
     },
     getMainImagenPath() {
@@ -369,7 +369,7 @@ var PageNewForm = new Vue({
           var toastHTML =
             '<span>Draf saved </span><a target="_blank" href="' +
             BASEURL +
-            "admin/paginas/preview?page_id=" +
+            "admin/pages/preview?page_id=" +
             response.data.page_id +
             '" class="btn-flat toast-action">Preview</a>';
         }
@@ -515,7 +515,7 @@ var PageNewForm = new Vue({
     },
     serverValidation(field) {
       var self = this;
-      var url = BASEURL + "admin/usuarios/ajax_check_field";
+      var url = BASEURL + "admin/users/ajax_check_field";
       $.ajax({
         type: "POST",
         url: url,

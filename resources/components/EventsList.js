@@ -31,7 +31,7 @@ var EventsList = new Vue({
   computed: {},
   methods: {
     editEvent(data) {
-      window.location = `${BASEURL}admin/eventos/editar/${data.item.event_id}`;
+      window.location = `${BASEURL}admin/events/editar/${data.item.event_id}`;
       return;
     },
     deleteItem(data) {
@@ -43,7 +43,7 @@ var EventsList = new Vue({
       return;
     },
     newEvent() {
-      window.location = `${BASEURL}admin/eventos/agregar/`;
+      window.location = `${BASEURL}admin/events/agregar/`;
       return;
     },
   },

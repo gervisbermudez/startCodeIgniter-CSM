@@ -51,7 +51,7 @@
                             </thead>
                             <tbody>
                                 <tr v-for="(user, index) in filterUsers" :key="index">
-                                    <td><a :href="base_url('admin/usuarios/ver/' + user.user_id)">@{{user.username}}</a></td>
+                                    <td><a :href="base_url('admin/users/ver/' + user.user_id)">@{{user.username}}</a></td>
                                     <td>@{{user.user_data.nombre + ' ' + user.user_data.apellido}}</td>
                                     <td>@{{user.role}}</td>
                                     <td>@{{user.lastseen}}</td>
@@ -64,7 +64,7 @@
                                         <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + user.user_id'><i class="material-icons">more_vert</i></a>
                                         <ul :id='"dropdown" + user.user_id' class='dropdown-content'>
                                             @if(has_permisions('UPDATE_USER'))
-                                            <li><a :href="base_url('admin/usuarios/edit/' + user.user_id)">Editar</a></li>
+                                            <li><a :href="base_url('admin/users/edit/' + user.user_id)">Editar</a></li>
                                             @endif
                                             @if(has_permisions('DELETE_USER'))
                                             <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(user, index);">Borrar</a></li>
@@ -98,7 +98,7 @@
     </confirm-modal>
 </div>
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Crear Usuario" href="{{base_url('admin/usuarios/agregar/')}} ">
+    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Crear Usuario" href="{{base_url('admin/users/agregar/')}} ">
         <i class="large material-icons">add</i>
     </a>
 </div>
@@ -108,12 +108,12 @@
 			<div class="card-image-container">
 				<img :src="user.get_avatarurl()">
 			</div>
-			<span class="card-title"><a :href="base_url('admin/usuarios/ver/' + user.user_id)" class="white-text">@{{user.user_data.nombre + ' ' + user.user_data.apellido}}</a></span>
+			<span class="card-title"><a :href="base_url('admin/users/ver/' + user.user_id)" class="white-text">@{{user.user_data.nombre + ' ' + user.user_data.apellido}}</a></span>
 				<a class='btn-floating halfway-fab waves-effect waves-light dropdown-trigger' href='#!' :data-target='"dropdown" + user.user_id'>
 					<i class="material-icons">more_vert</i></a>
 				<ul :id='"dropdown" + user.user_id' class='dropdown-content'>
                     @if(has_permisions('UPDATE_USER'))
-					<li><a :href="base_url('admin/usuarios/edit/' + user.user_id)">Editar</a></li>
+					<li><a :href="base_url('admin/users/edit/' + user.user_id)">Editar</a></li>
                     @endif
                     @if(has_permisions('DELETE_USER'))
                     <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(user, index);">Borrar</a></li>

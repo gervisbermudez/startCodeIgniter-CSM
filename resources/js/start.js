@@ -388,7 +388,7 @@ class User {
 
   // Método de la clase que retorna la URL del perfil del usuario
   get_profileurl = () => {
-    return BASEURL + "admin/usuarios/ver/" + this.user_id;
+    return BASEURL + "admin/users/ver/" + this.user_id;
   };
 
   // Método de la clase que retorna la URL del avatar del usuario
@@ -402,7 +402,7 @@ class User {
 
   // Método de la clase que retorna la URL de edición del usuario
   get_edit_url = () => {
-    return BASEURL + "admin/usuarios/edit/" + this.user_id;
+    return BASEURL + "admin/users/edit/" + this.user_id;
   };
 }
 
@@ -465,7 +465,7 @@ class Page {
     if (this.status == 1) {
       return BASEURL + this.path;
     }
-    return BASEURL + "admin/paginas/editar/" + this.page_id;
+    return BASEURL + "admin/pages/editar/" + this.page_id;
   };
 }
 

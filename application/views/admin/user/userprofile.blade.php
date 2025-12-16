@@ -88,8 +88,8 @@
                                                 :data-target='"page_id" + element.page_id'>
                                                 <i class="material-icons">more_vert</i></a>
                                                 <ul :id='"page_id" + element.page_id' class='dropdown-content'>
-                                                    <li><a :href="base_url('admin/paginas/editar/' + element.page_id)">Editar</a></li>
-                                                    <li ><a :href="base_url('admin/paginas/view/' + element.page_id)">Preview</a></li>
+                                                    <li><a :href="base_url('admin/pages/editar/' + element.page_id)">Editar</a></li>
+                                                    <li ><a :href="base_url('admin/pages/view/' + element.page_id)">Preview</a></li>
                                                 </ul>
 
                                             </div>
@@ -102,8 +102,8 @@
                                                     @{{getcontentText(element)}}
                                                 </p>                                            </div>
                                             <div class="card-action">
-                                            <a :href="base_url('admin/paginas/editar/' + element.page_id)">Editar</a>
-                                            <a :href="base_url('admin/paginas/view/' + element.page_id)">Preview</a>
+                                            <a :href="base_url('admin/pages/editar/' + element.page_id)">Editar</a>
+                                            <a :href="base_url('admin/pages/view/' + element.page_id)">Preview</a>
                                             </div>
                                         </div>
                                     </div>

@@ -57,9 +57,9 @@
                     <tbody>
                         <tr v-for="(page, index) in filterAll" :key="index">
                             <td>@{{page.title}}</td>
-                            <td><a :href="base_url('admin/paginas/view/' + page.page_id)">@{{page.path}}</a></td>
+                            <td><a :href="base_url('admin/pages/view/' + page.page_id)">@{{page.path}}</a></td>
                             <td><a
-                                    :href="base_url('admin/usuarios/ver/' + page.user_id)">@{{page.user.get_fullname()}}</a>
+                                    :href="base_url('admin/users/ver/' + page.user_id)">@{{page.user.get_fullname()}}</a>
                             </td>
                             <td>
                                 @{{page.date_publish ? page.date_publish : page.date_create}}
@@ -80,9 +80,9 @@
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + page.page_id'><i
                                         class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + page.page_id' class='dropdown-content'>
-                                    <li><a :href="base_url('admin/paginas/view/' + page.page_id)">Preview</a></li>
+                                    <li><a :href="base_url('admin/pages/view/' + page.page_id)">Preview</a></li>
                                     @if(has_permisions('UPDATE_PAGES'))
-                                    <li><a :href="base_url('admin/paginas/editar/' + page.page_id)">Editar</a></li>
+                                    <li><a :href="base_url('admin/pages/editar/' + page.page_id)">Editar</a></li>
                                     @endif
                                     @if(has_permisions('DELETE_PAGE'))
                                     <li><a class="modal-trigger" href="#deleteModal"
@@ -109,9 +109,9 @@
                             :data-target='"dropdown" + page.page_id'>
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown" + page.page_id' class='dropdown-content'>
-                            <li><a :href="base_url('admin/paginas/view/' + page.page_id)">Preview</a></li>
+                            <li><a :href="base_url('admin/pages/view/' + page.page_id)">Preview</a></li>
                             @if(has_permisions('UPDATE_PAGE'))
-                            <li><a :href="base_url('admin/paginas/editar/' + page.page_id)">Editar</a></li>
+                            <li><a :href="base_url('admin/pages/editar/' + page.page_id)">Editar</a></li>
                             @endif
                             @if(has_permisions('DELETE_PAGE'))
                             <li><a class="modal-trigger" href="#deleteModal"
@@ -123,7 +123,7 @@
                     <div class="card-content">
                         <div>
                             <span class="card-title"><a
-                                    :href="base_url('admin/paginas/view/' + page.page_id)">@{{page.title}}</a>
+                                    :href="base_url('admin/pages/view/' + page.page_id)">@{{page.title}}</a>
                                 <i v-if="page.status == 1" class="material-icons tooltipped" data-position="left"
                                     data-delay="50" data-tooltip="Publicado">public</i>
                                 <i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
@@ -190,9 +190,9 @@
                     <tbody>
                         <tr v-for="(page, index) in filterPages" :key="index">
                             <td>@{{page.title}}</td>
-                            <td><a :href="base_url('admin/paginas/view/' + page.page_id)">@{{page.path}}</a></td>
+                            <td><a :href="base_url('admin/pages/view/' + page.page_id)">@{{page.path}}</a></td>
                             <td><a
-                                    :href="base_url('admin/usuarios/ver/' + page.user_id)">@{{page.user.get_fullname()}}</a>
+                                    :href="base_url('admin/users/ver/' + page.user_id)">@{{page.user.get_fullname()}}</a>
                             </td>
                             <td>
                                 @{{page.date_publish ? page.date_publish : page.date_create}}
@@ -213,9 +213,9 @@
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + page.page_id'><i
                                         class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + page.page_id' class='dropdown-content'>
-                                    <li><a :href="base_url('admin/paginas/view/' + page.page_id)">Preview</a></li>
+                                    <li><a :href="base_url('admin/pages/view/' + page.page_id)">Preview</a></li>
                                     @if(has_permisions('UPDATE_PAGES'))
-                                    <li><a :href="base_url('admin/paginas/editar/' + page.page_id)">Editar</a></li>
+                                    <li><a :href="base_url('admin/pages/editar/' + page.page_id)">Editar</a></li>
                                     @endif
                                     @if(has_permisions('DELETE_PAGE'))
                                     <li><a class="modal-trigger" href="#deleteModal"
@@ -242,9 +242,9 @@
                             :data-target='"dropdown" + page.page_id'>
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown" + page.page_id' class='dropdown-content'>
-                            <li><a :href="base_url('admin/paginas/view/' + page.page_id)">Preview</a></li>
+                            <li><a :href="base_url('admin/pages/view/' + page.page_id)">Preview</a></li>
                             @if(has_permisions('UPDATE_PAGE'))
-                            <li><a :href="base_url('admin/paginas/editar/' + page.page_id)">Editar</a></li>
+                            <li><a :href="base_url('admin/pages/editar/' + page.page_id)">Editar</a></li>
                             @endif
                             @if(has_permisions('DELETE_PAGE'))
                             <li><a class="modal-trigger" href="#deleteModal"
@@ -256,7 +256,7 @@
                     <div class="card-content">
                         <div>
                             <span class="card-title"><a
-                                    :href="base_url('admin/paginas/view/' + page.page_id)">@{{page.title}}</a>
+                                    :href="base_url('admin/pages/view/' + page.page_id)">@{{page.title}}</a>
                                 <i v-if="page.status == 1" class="material-icons tooltipped" data-position="left"
                                     data-delay="50" data-tooltip="Publicado">public</i>
                                 <i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
@@ -324,9 +324,9 @@
                         <tr v-for="(page, index) in blogs" :key="index">
                             <td>@{{page.title}}</td>
                             <td class="truncate"><a
-                                    :href="base_url('admin/paginas/view/' + page.page_id)">@{{page.path}}</a></td>
+                                    :href="base_url('admin/pages/view/' + page.page_id)">@{{page.path}}</a></td>
                             <td><a
-                                    :href="base_url('admin/usuarios/ver/' + page.user_id)">@{{page.user.get_fullname()}}</a>
+                                    :href="base_url('admin/users/ver/' + page.user_id)">@{{page.user.get_fullname()}}</a>
                             </td>
                             <td>
                                 @{{page.date_publish ? page.date_publish : page.date_create}}
@@ -347,9 +347,9 @@
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + page.page_id'><i
                                         class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + page.page_id' class='dropdown-content'>
-                                    <li><a :href="base_url('admin/paginas/view/' + page.page_id)">Preview</a></li>
+                                    <li><a :href="base_url('admin/pages/view/' + page.page_id)">Preview</a></li>
                                     @if(has_permisions('UPDATE_PAGES'))
-                                    <li><a :href="base_url('admin/paginas/editar/' + page.page_id)">Editar</a></li>
+                                    <li><a :href="base_url('admin/pages/editar/' + page.page_id)">Editar</a></li>
                                     @endif
                                     @if(has_permisions('DELETE_PAGE'))
                                     <li><a class="modal-trigger" href="#deleteModal"
@@ -376,9 +376,9 @@
                             :data-target='"dropdown" + page.page_id'>
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown" + page.page_id' class='dropdown-content'>
-                            <li><a :href="base_url('admin/paginas/view/' + page.page_id)">Preview</a></li>
+                            <li><a :href="base_url('admin/pages/view/' + page.page_id)">Preview</a></li>
                             @if(has_permisions('UPDATE_PAGE'))
-                            <li><a :href="base_url('admin/paginas/editar/' + page.page_id)">Editar</a></li>
+                            <li><a :href="base_url('admin/pages/editar/' + page.page_id)">Editar</a></li>
                             @endif
                             @if(has_permisions('DELETE_PAGE'))
                             <li><a class="modal-trigger" href="#deleteModal"
@@ -390,7 +390,7 @@
                     <div class="card-content">
                         <div>
                             <span class="card-title"><a
-                                    :href="base_url('admin/paginas/view/' + page.page_id)">@{{page.title}}</a>
+                                    :href="base_url('admin/pages/view/' + page.page_id)">@{{page.title}}</a>
                                 <i v-if="page.status == 1" class="material-icons tooltipped" data-position="left"
                                     data-delay="50" data-tooltip="Publicado">public</i>
                                 <i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
@@ -450,7 +450,7 @@
 </div>
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
     <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left"
-        data-delay="50" data-tooltip="Nueva Pagina" href="{{base_url('admin/paginas/nueva/')}}">
+        data-delay="50" data-tooltip="Nueva Pagina" href="{{base_url('admin/pages/nueva/')}}">
         <i class="large material-icons">add</i>
     </a>
 </div>

@@ -45,7 +45,7 @@ var searchComponent = new Vue({
         label: "Options",
         format: (item, colum) => {
           return `<a href="${
-            BASEURL + "admin/categorias/editar/" + item.categorie_id
+            BASEURL + "admin/categories/editar/" + item.categorie_id
           }">Edit</a>`;
         },
       },

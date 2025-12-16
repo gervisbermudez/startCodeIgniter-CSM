@@ -2,7 +2,7 @@
     exit('No direct script access allowed');
 }
 
-class Archivos extends MY_Controller
+class Files extends MY_Controller
 {
 
     public function __construct()

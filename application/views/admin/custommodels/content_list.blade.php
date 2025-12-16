@@ -53,7 +53,7 @@
                             <td>@{{content.custom_model.form_name}}</td>
                             <td>@{{getcontentText(content)}}</td>
                             <td><a
-                                    :href="base_url('admin/usuarios/ver/' + content.user_id)">@{{content.user.username}}</a>
+                                    :href="base_url('admin/users/ver/' + content.user_id)">@{{content.user.username}}</a>
                             </td>
                             <td>
                                 <i v-if="content.status == 1" class="material-icons tooltipped" data-position="left"
@@ -116,7 +116,7 @@
                                 <ul>
                                     <li class="truncate">
                                         Author: <a
-                                            :href="base_url('admin/usuarios/ver/' + content.user_id)">@{{content.user.username}}</a>
+                                            :href="base_url('admin/users/ver/' + content.user_id)">@{{content.user.username}}</a>
                                     </li>
                                 </ul>
                             </div>

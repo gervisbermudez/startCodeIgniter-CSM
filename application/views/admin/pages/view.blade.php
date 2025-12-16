@@ -103,8 +103,8 @@
                 </div>
                 <div v-cloak v-show="!loader">
             <div class="input-field" id="buttons">
-                <a href="<?php echo base_url('admin/paginas/'); ?>" class="btn-flat">Cancelar</a>
-                <a href="<?php echo base_url('admin/paginas/editar/' . $page_id); ?>" class="waves-effect waves-light btn"><i class="material-icons left">create</i>Editar</a>
+                <a href="<?php echo base_url('admin/pages/'); ?>" class="btn-flat">Cancelar</a>
+                <a href="<?php echo base_url('admin/pages/editar/' . $page_id); ?>" class="waves-effect waves-light btn"><i class="material-icons left">create</i>Editar</a>
             </div>
         </div>
             </div>

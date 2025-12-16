@@ -216,7 +216,7 @@ class Files extends REST_Controller
             $folder->parent_name = $path;
             $folder->user_id = userdata('user_id');
             $folder->shared_user_group_id = userdata('usergroup_id');
-            $folder->share_link = "admin/archivos/shared_file/" . $file_key;
+            $folder->share_link = "admin/files/shared_file/" . $file_key;
             $folder->date_create = date("Y-m-d H:i:s");
             $folder->date_update = date("Y-m-d H:i:s");
             $folder->date_featured = 0;

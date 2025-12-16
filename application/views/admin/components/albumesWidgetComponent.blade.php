@@ -11,14 +11,14 @@
 			<div class="row">
 				<div class="col s12" v-for="(album, index) in albumes" :key="index">
                     <div class="card album">
-                        <a :href="base_url('admin/galeria/items/' + album.album_id)" class="card-image">
+                        <a :href="base_url('admin/gallery/items/' + album.album_id)" class="card-image">
                             <div class="card-image-container">
                                 <img :src="getPageImagePath(album, 0)" class="bottom"/>
                                 <img :src="getPageImagePath(album, 1)" class="top"/>
                             </div>
                         </a>
                         <div class="card-content">
-                            <span class="card-title"><a :href="base_url('admin/galeria/items/' + album.album_id)">@{{album.name}}</a></span>
+                            <span class="card-title"><a :href="base_url('admin/gallery/items/' + album.album_id)">@{{album.name}}</a></span>
                         </div>
                     </div>
 				</div>

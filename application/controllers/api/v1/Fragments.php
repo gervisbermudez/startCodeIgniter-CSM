@@ -21,7 +21,7 @@ class Fragments extends REST_Controller
         }
 
         $this->load->database();
-        $this->load->model('Admin/Fragmentos');
+        $this->load->model('Admin/Fragment');
 
     }
 
@@ -74,7 +74,7 @@ class Fragments extends REST_Controller
      */
     public function index_get($fragment_id = null)
     {
-        $fragmento = new Fragmentos();
+        $fragmento = new Fragment();
         if ($fragment_id) {
             $result = $fragmento->where(array('fragment_id' => $fragment_id));
             $result = $result ? $result->first() : [];
@@ -121,7 +121,7 @@ class Fragments extends REST_Controller
         $type = $this->input->post('type', TRUE);
         $status = (int)$this->input->post('status');
 
-        $fragmento = new Fragmentos();
+        $fragmento = new Fragment();
 
         if ($fragment_id) {
             $fragmento->find($fragment_id);
@@ -161,7 +161,7 @@ class Fragments extends REST_Controller
      */
     public function index_delete($fragment_id = null)
     {
-        $fragmento = new Fragmentos();
+        $fragmento = new Fragment();
         $result = $fragmento->find($fragment_id);
         if ($result) {
             $result = $fragmento->delete($fragment_id);

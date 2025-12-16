@@ -48,7 +48,7 @@
                         <tr v-for="(categorie, index) in filterCategories" :key="index">
                             <td>@{{categorie.name}}</td>
                             <td>@{{categorie.type}}</td>
-                            <td><a :href="base_url('admin/usuarios/ver/' + categorie.user_id)">@{{categorie.user.get_fullname()}}</a></td>
+                            <td><a :href="base_url('admin/users/ver/' + categorie.user_id)">@{{categorie.user.get_fullname()}}</a></td>
                             <td>
                                 @{{categorie.date_publish ? categorie.date_publish : categorie.date_create}}
                             </td>
@@ -59,9 +59,9 @@
                             <td>
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + categorie.categorie_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + categorie.categorie_id' class='dropdown-content'>
-                                    <li><a :href="base_url('admin/categorias/editar/' + categorie.categorie_id)">Editar</a></li>
+                                    <li><a :href="base_url('admin/categories/editar/' + categorie.categorie_id)">Editar</a></li>
                                     <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(categorie, index);">Borrar</a></li>
-                                    <li v-if="categorie.status == 2"><a :href="base_url('admin/categorias/preview?categorie_id=' + categorie.categorie_id)" target="_blank">Preview</a></li>
+                                    <li v-if="categorie.status == 2"><a :href="base_url('admin/categories/preview?categorie_id=' + categorie.categorie_id)" target="_blank">Preview</a></li>
                                     <li><a :href="base_url(categorie.path)" target="_blank">Archivar</a></li>
                                 </ul>
                             </td>
@@ -81,9 +81,9 @@
                         <a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href='#!' :data-target='"dropdown" + categorie.categorie_id'>
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown" + categorie.categorie_id' class='dropdown-content'>
-                            <li><a :href="base_url('admin/categorias/editar/' + categorie.categorie_id)">Editar</a></li>
+                            <li><a :href="base_url('admin/categories/editar/' + categorie.categorie_id)">Editar</a></li>
                             <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(categorie, index);">Borrar</a></li>
-                            <li v-if="categorie.status == 2"><a :href="base_url('admin/categorias/preview?categorie_id=' + categorie.categorie_id)" target="_blank">Preview</a></li>
+                            <li v-if="categorie.status == 2"><a :href="base_url('admin/categories/preview?categorie_id=' + categorie.categorie_id)" target="_blank">Preview</a></li>
                             <li><a :href="base_url(categorie.path)" target="_blank">Archivar</a></li>
                         </ul>
                     </div>
@@ -102,7 +102,7 @@
                                         Type: @{{categorie.type}}
                                     </li>
                                     <li class="truncate">
-                                        Author: <a :href="base_url('admin/usuarios/ver/' + categorie.user_id)">@{{categorie.user.user_data.nombre}} @{{categorie.user.user_data.apellido}}</a>
+                                        Author: <a :href="base_url('admin/users/ver/' + categorie.user_id)">@{{categorie.user.user_data.nombre}} @{{categorie.user.user_data.apellido}}</a>
                                     </li>
                                 </ul>
                             </div>
@@ -146,7 +146,7 @@
     </confirm-modal>
 </div>
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Crear categoria" href="<?php echo base_url('admin/categorias/nueva/') ?>">
+    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Crear categoria" href="<?php echo base_url('admin/categories/nueva/') ?>">
         <i class="large material-icons">add</i>
     </a>
 </div>

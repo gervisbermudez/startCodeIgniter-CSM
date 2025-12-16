@@ -48,7 +48,7 @@
                         <tr v-for="(fragment, index) in filterFragments" :key="index">
                             <td>@{{fragment.name}}</td>
                             <td>@{{fragment.type}}</td>
-                            <td><a :href="base_url('admin/usuarios/ver/' + fragment.user_id)">@{{fragment.user.get_fullname()}}</a></td>
+                            <td><a :href="base_url('admin/users/ver/' + fragment.user_id)">@{{fragment.user.get_fullname()}}</a></td>
                             <td>
                                 @{{fragment.date_publish ? fragment.date_publish : fragment.date_create}}
                             </td>
@@ -102,7 +102,7 @@
                                         Type: @{{fragment.type}}
                                     </li>
                                     <li class="truncate">
-                                        Author: <a :href="base_url('admin/usuarios/ver/' + fragment.user_id)">@{{fragment.user.user_data.nombre}} @{{fragment.user.user_data.apellido}}</a>
+                                        Author: <a :href="base_url('admin/users/ver/' + fragment.user_id)">@{{fragment.user.user_data.nombre}} @{{fragment.user.user_data.apellido}}</a>
                                     </li>
                                 </ul>
                             </div>

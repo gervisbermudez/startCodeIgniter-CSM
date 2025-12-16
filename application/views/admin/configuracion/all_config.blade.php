@@ -421,7 +421,7 @@
                                     </td>
                                     <td>@{{configuration.config_type}}</td>
                                     <td><a
-                                            :href="base_url('admin/usuarios/ver/' + configuration.user_id)">@{{configuration.user.get_fullname()}}</a>
+                                            :href="base_url('admin/users/ver/' + configuration.user_id)">@{{configuration.user.get_fullname()}}</a>
                                     </td>
                                     <td>
                                         @{{configuration.date_publish ? configuration.date_publish : configuration.date_create}}
@@ -519,7 +519,7 @@
                                     </td>
                                     <td>@{{configuration.config_type}}</td>
                                     <td><a
-                                            :href="base_url('admin/usuarios/ver/' + configuration.user_id)">@{{configuration.user.get_fullname()}}</a>
+                                            :href="base_url('admin/users/ver/' + configuration.user_id)">@{{configuration.user.get_fullname()}}</a>
                                     </td>
                                     <td>
                                         @{{configuration.date_publish ? configuration.date_publish : configuration.date_create}}
@@ -815,7 +815,7 @@
                                     </td>
                                     <td>@{{configuration.config_type}}</td>
                                     <td><a
-                                            :href="base_url('admin/usuarios/ver/' + configuration.user_id)">@{{configuration.user.get_fullname()}}</a>
+                                            :href="base_url('admin/users/ver/' + configuration.user_id)">@{{configuration.user.get_fullname()}}</a>
                                     </td>
                                     <td>
                                         @{{configuration.date_publish ? configuration.date_publish : configuration.date_create}}
@@ -857,7 +857,7 @@
     <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
         <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left"
             data-delay="50" data-tooltip="Agregar configuracion"
-            href="<?php echo base_url('admin/configuracion/new/') ?>">
+            href="<?php echo base_url('admin/configuration/new/') ?>">
             <i class="large material-icons">add</i>
         </a>
     </div>

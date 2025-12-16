@@ -110,7 +110,7 @@ var AlbumNewForm = new Vue({
       var self = this;
       var callBack = (response) => {
         var toastHTML = `<span>Album saved </span><a href="${
-          BASEURL + "admin/galeria/items/" + self.album_id
+          BASEURL + "admin/gallery/items/" + self.album_id
         }" class="btn-flat toast-action">View</a>`;
         M.toast({ html: toastHTML });
       };
@@ -193,7 +193,7 @@ var AlbumNewForm = new Vue({
     },
     serverValidation(field) {
       var self = this;
-      var url = BASEURL + "admin/usuarios/ajax_check_field";
+      var url = BASEURL + "admin/users/ajax_check_field";
       $.ajax({
         type: "POST",
         url: url,

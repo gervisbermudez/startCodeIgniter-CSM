@@ -21,7 +21,7 @@ class Config extends REST_Controller
         }
 
         $this->load->database();
-        $this->load->model('Admin/Site_config');
+        $this->load->model('Admin/SiteConfig');
     }
 
     /**
@@ -73,12 +73,12 @@ class Config extends REST_Controller
      */
     public function index_get($site_config_id = null)
     {
-        $Site_config = new Site_config();
+        $SiteConfig = new SiteConfig();
         if ($site_config_id) {
-            $result = $Site_config->where(["site_config_id" => $site_config_id]);
+            $result = $SiteConfig->where(["site_config_id" => $site_config_id]);
             $result = $result ? $result->first() : [];
         } else {
-            $result = $Site_config->all();
+            $result = $SiteConfig->all();
         }
 
         if ($result) {
@@ -97,7 +97,7 @@ class Config extends REST_Controller
     public function index_post()
     {
 
-        $configuration = new Site_config();
+        $configuration = new SiteConfig();
         $this->input->post('site_config_id') ? $configuration->find($this->input->post('site_config_id')) : false;
         $configuration->config_name = $this->input->post('config_name');
         $configuration->config_value = $this->input->post('config_value');
@@ -213,14 +213,14 @@ class Config extends REST_Controller
 
         if ($remote_info) {
 
-            $this->load->model('Admin/Site_config');
-            $config = new Site_config();
+            $this->load->model('Admin/SiteConfig');
+            $config = new SiteConfig();
 
             $config->find_with(['config_name' => 'UPDATER_LAST_CHECK_DATA']);
             $config->config_value = $data;
             $config->save();
 
-            $config = new Site_config();
+            $config = new SiteConfig();
             $config->find_with(['config_name' => 'UPDATER_LAST_CHECK_UPDATE']);
             $config->config_value = date("Y-m-d H:i:s");
             $config->save();
@@ -393,7 +393,7 @@ class Config extends REST_Controller
         $pages = new Page();
         $data['pages'] = $pages->all();
 
-        $config = new Site_config();
+        $config = new SiteConfig();
         $data['config'] = $config->all();
 
         $this->response_ok($data);
@@ -439,7 +439,7 @@ class Config extends REST_Controller
         }
 
         if (isset($exportData["config"])) {
-            $config = new Site_config();
+            $config = new SiteConfig();
             $data['config'] = $config->where($this->getWhereStringFrom($exportData["config"], "site_config_id"));
             $data['config'] = array_map("removeUser", $data['config']->toArray());
         }
@@ -505,16 +505,16 @@ class Config extends REST_Controller
             if (isset($file_content->config) && is_array($file_content->config)) {
 
                 $file_content->config = array_filter($file_content->config, function ($Site_config) use ($exportData) {
-                    return in_array($Site_config->site_config_id, $exportData->config);
+                    return in_array($SiteConfig->site_config_id, $exportData->config);
                 });
                 foreach ($file_content->config as $key => $value) {
-                    $Site_config = new Site_config();
+                    $SiteConfig = new SiteConfig();
                     //field already exist in database, so let's update it
-                    $Site_config->find($value->site_config_id);
+                    $SiteConfig->find($value->site_config_id);
                     foreach ($value as $index => $val) {
-                        $Site_config->{$index} = $val;
+                        $SiteConfig->{$index} = $val;
                     }
-                    $Site_config->save();
+                    $SiteConfig->save();
                 }
             }
 

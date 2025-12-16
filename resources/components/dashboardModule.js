@@ -40,7 +40,7 @@ var dashboardModule = new Vue({
         .map((page) => {
           return {
             ...page,
-            link: `${BASEURL}admin/paginas/editar/${page.page_id}`,
+            link: `${BASEURL}admin/pages/editar/${page.page_id}`,
           };
         });
     },
@@ -258,13 +258,13 @@ var dashboardModule = new Vue({
           if (response.code == 200) {
             switch (this.creator.mode) {
               case "page":
-                window.location.href = `${BASEURL}admin/paginas/editar/${response.data.page_id}`;
+                window.location.href = `${BASEURL}admin/pages/editar/${response.data.page_id}`;
                 break;
               case "album":
-                window.location.href = `${BASEURL}admin/galeria/editar/${response.data.album_id}`;
+                window.location.href = `${BASEURL}admin/gallery/editar/${response.data.album_id}`;
                 break;
               case "categorie":
-                window.location.href = `${BASEURL}admin/categorias/editar/${response.data.categorie_id}`;
+                window.location.href = `${BASEURL}admin/categories/editar/${response.data.categorie_id}`;
                 break;
               case "fragment":
                 window.location.href = `${BASEURL}admin/Fragments/editar/${response.data.fragment_id}`;
@@ -336,7 +336,7 @@ var dashboardModule = new Vue({
             return {
               title: el.title,
               content: this.getcontentText(el.content),
-              link: `${BASEURL}admin/paginas/view/${el.page_id}`,
+              link: `${BASEURL}admin/pages/view/${el.page_id}`,
               user: new User(el.user),
               date: this.timeAgo(el.date_create),
               imagen_file: el.imagen_file ? el.imagen_file : null,

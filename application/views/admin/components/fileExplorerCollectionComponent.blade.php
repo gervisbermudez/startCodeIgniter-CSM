@@ -1,7 +1,7 @@
 <script type="text/x-template" id="fileExplorerCollection-template">
 <div class="panel fileExplorerCollection-root">
     <div class="title">
-        <h5><a href="{{base_url('admin/archivos')}}">Latest Files</a></h5>
+        <h5><a href="{{base_url('admin/files')}}">Latest Files</a></h5>
         <div class="subtitle sub-header">
             @{{files.length}} Files
         </div>

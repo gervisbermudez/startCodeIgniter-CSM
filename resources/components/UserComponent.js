@@ -9,7 +9,7 @@ Vue.component("userCard", {
   mixins: [mixins],
   methods: {
     getUserUrl() {
-      return BASEURL + "admin/usuarios/ver/" + this.user.user_id;
+      return BASEURL + "admin/users/ver/" + this.user.user_id;
     },
   },
   mounted: function () {

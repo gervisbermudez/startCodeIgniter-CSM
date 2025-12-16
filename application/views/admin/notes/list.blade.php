@@ -48,7 +48,7 @@
                         <tr v-for="(note, index) in filterNotes" :key="index">
                             <td>@{{note.title}}</td>
                             <td>@{{note.type}}</td>
-                            <td><a :href="base_url('admin/usuarios/ver/' + note.user_id)">@{{note.user.get_fullname()}}</a></td>
+                            <td><a :href="base_url('admin/users/ver/' + note.user_id)">@{{note.user.get_fullname()}}</a></td>
                             <td>
                                 @{{note.date_publish ? note.date_publish : note.date_create}}
                             </td>
@@ -102,7 +102,7 @@
                                         Type: @{{note.type}}
                                     </li>
                                     <li class="truncate">
-                                        Author: <a :href="base_url('admin/usuarios/ver/' + note.user_id)">@{{note.user.user_data.nombre}} @{{note.user.user_data.apellido}}</a>
+                                        Author: <a :href="base_url('admin/users/ver/' + note.user_id)">@{{note.user.user_data.nombre}} @{{note.user.user_data.apellido}}</a>
                                     </li>
                                 </ul>
                             </div>

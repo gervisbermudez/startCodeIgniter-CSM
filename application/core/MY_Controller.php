@@ -344,7 +344,7 @@ class Base_Controller extends CI_Controller
     private function load_config()
     {
         // Cargar la configuración de la base de datos
-        $config = $this->Site_config->all();
+        $config = $this->SiteConfig->all();
         $config = $config ? $config : [];
         foreach ($config as $value) {
             $this->config->set_item($value->config_name, $value->config_value);

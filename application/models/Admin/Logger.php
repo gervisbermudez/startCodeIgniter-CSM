@@ -25,7 +25,7 @@ class Logger extends MY_model
                         $page = new Page();
                         $result = $page->where(['page_id' => $value->type_id]);
                         $value->{'type_object'} = $result ? $result->first() : null;
-                        $value->{'type_link'} = base_url('/admin/paginas/editar/' . $value->type_id);
+                        $value->{'type_link'} = base_url('/admin/pages/editar/' . $value->type_id);
                         $value->{'type_description'} = $result ? $result->first()->title : null;
                         break;
 

@@ -40,7 +40,7 @@ class File extends MY_Model
     {
         parent::__construct();
         $this->load->helper('directory');
-        $this->load->model('Admin/Site_config');
+        $this->load->model('Admin/SiteConfig');
     }
 
     public function map_files()
@@ -52,7 +52,7 @@ class File extends MY_Model
         $curdir = $this->current_dir . $this->current_folder;
         $this->save_dir($directorio, $curdir);
 
-        return $this->Site_config->update_data(array('config_name' => 'LAST_UPDATE_FILEMANAGER'), array('config_value' => date("Y-m-d H:i:s")), 'site_config');
+        return $this->SiteConfig->update_data(array('config_name' => 'LAST_UPDATE_FILEMANAGER'), array('config_value' => date("Y-m-d H:i:s")), 'site_config');
     }
 
     /**
@@ -122,7 +122,7 @@ class File extends MY_Model
             'parent_name' => $this->get_substr_file_parent_name($dir_name),
             'user_id' => userdata('user_id'),
             'shared_user_group_id' => userdata('usergroup_id'),
-            'share_link' => "admin/archivos/shared_file/" . $file_key,
+            'share_link' => "admin/files/shared_file/" . $file_key,
         );
 
         return $insert_array;
@@ -149,7 +149,7 @@ class File extends MY_Model
             'parent_name' => $this->get_substr_file_parent_name($dir_name),
             'user_id' => userdata('user_id'),
             'shared_user_group_id' => userdata('usergroup_id'),
-            'share_link' => "admin/archivos/shared_file/" . $file_key,
+            'share_link' => "admin/files/shared_file/" . $file_key,
         );
 
         return $insert_array;

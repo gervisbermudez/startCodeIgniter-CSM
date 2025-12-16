@@ -293,20 +293,20 @@ class PageController extends Base_Controller
 
     private function process_form_submit()
     {
-        $this->load->model('Admin/Siteform_submit');
-        $siteform_submit = new Siteform_submit();
-        $siteform_submit->siteform_id = $this->input->post('form_reference');
-        $siteform_submit->user_tracking_id = userdata('user_tracking_id');
-        $siteform_submit->date_create = date("Y-m-d H:i:s");
-        $siteform_submit->date_create = date("Y-m-d H:i:s");
+        $this->load->model('Admin/SiteFormSubmit');
+        $siteFormSubmit = new SiteFormSubmit();
+        $siteFormSubmit->siteform_id = $this->input->post('form_reference');
+        $siteFormSubmit->user_tracking_id = userdata('user_tracking_id');
+        $siteFormSubmit->date_create = date("Y-m-d H:i:s");
+        $siteFormSubmit->date_create = date("Y-m-d H:i:s");
 
         unset($_POST['form_reference']);
-        $siteform_submit->status = 1;
-        $siteform_submit->siteform_submit_data = $_POST;
+        $siteFormSubmit->status = 1;
+        $siteFormSubmit->siteform_submit_data = $_POST;
 
-        $result = $siteform_submit->save();
+        $result = $siteFormSubmit->save();
 
-        set_notification("Recibido mensaje formulario", "Se recibió un registro en el formulario " . $this->input->post('form_reference'), "form_submit", "/admin/SiteForms/submit/#/details/" . $siteform_submit->siteform_submit_id);
+        set_notification("Recibido mensaje formulario", "Se recibió un registro en el formulario " . $this->input->post('form_reference'), "form_submit", "/admin/SiteForms/submit/#/details/" . $siteFormSubmit->siteform_submit_id);
 
         return $result;
     }

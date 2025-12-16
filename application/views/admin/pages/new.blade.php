@@ -269,7 +269,7 @@
         </div>
         <div v-cloak v-show="!loader" class="col s12">
             <div class="input-field" id="buttons">
-                <a href="<?php echo base_url('admin/paginas/'); ?>" class="btn-flat">Cancelar</a>
+                <a href="<?php echo base_url('admin/pages/'); ?>" class="btn-flat">Cancelar</a>
                 <button type="submit" class="btn btn-primary" @click="save" :class="{disabled: !btnEnable}">
                     <span v-if="!status"><i class="material-icons right">edit</i> Guardar Borrador</span>
                     <span v-if="status && btnEnable"><i class="material-icons right">publish</i> Publicar</span>

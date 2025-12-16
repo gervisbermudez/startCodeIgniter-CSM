@@ -96,9 +96,9 @@ class Search extends REST_Controller
             $siteforms = new SiteForm();
             $data['siteforms'] = $siteforms->search($str_term);
 
-            $this->load->model('Admin/Siteform_submit');
-            $siteform_submit = new Siteform_submit();
-            $data['siteform_submits'] = $siteform_submit->search($str_term);
+            $this->load->model('Admin/SiteFormSubmit');
+            $siteFormSubmit = new SiteFormSubmit();
+            $data['siteform_submits'] = $siteFormSubmit->search($str_term);
 
             $this->load->model('Admin/Menu');
             $menu = new Menu();

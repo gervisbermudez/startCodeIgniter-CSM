@@ -2,7 +2,7 @@
     exit('No direct script access allowed');
 }
 
-class Calendario extends MY_Controller
+class Calendar extends MY_Controller
 {
 
     public function __construct()

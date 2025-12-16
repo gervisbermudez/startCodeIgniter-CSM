@@ -2,7 +2,7 @@
     exit('No direct script access allowed');
 }
 
-class Notas extends MY_Controller
+class Notes extends MY_Controller
 {
 
     public function __construct()

@@ -102,8 +102,8 @@ function fragment(string $fragment_name)
     }
     
     $ci = &get_instance();
-    $ci->load->model('Admin/Fragmentos');
-    $fragment = new Fragmentos();
+    $ci->load->model('Admin/Fragment');
+    $fragment = new Fragment();
     $result = $fragment->find_with(['name' => $fragment_name]);
     
     if (!$result) {
@@ -147,8 +147,8 @@ if (!function_exists("config")) {
             return $config;
         }
         
-        $ci->load->model('Admin/Site_config');
-        $config = $ci->Site_config->where(['config_name' => $config_name]);
+        $ci->load->model('Admin/SiteConfig');
+        $config = $ci->SiteConfig->where(['config_name' => $config_name]);
         $value = $config ? $config->first()->config_value : null;
         
         if ($value !== null) {
@@ -414,11 +414,11 @@ function system_logger($type, $type_id, $token, $comment = '')
 {
 
     $ci = &get_instance();
-    $ci->load->model('Admin/Site_config');
-    $Site_config = new Site_config();
-    $result = $Site_config->find_with(["config_name" => 'SYSTEM_LOGGER']);
+    $ci->load->model('Admin/SiteConfig');
+    $SiteConfig = new SiteConfig();
+    $result = $SiteConfig->find_with(["config_name" => 'SYSTEM_LOGGER']);
     $logger_active = false;
-    if ($result && $Site_config->config_value) {
+    if ($result && $SiteConfig->config_value) {
         $logger_active = true;
     }
     if ($logger_active) {

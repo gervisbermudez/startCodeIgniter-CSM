@@ -9,7 +9,7 @@ class Fragments extends MY_Controller
     {
         parent::__construct();
         $this->check_permisions();
-        $this->load->model('Admin/Fragmentos');
+        $this->load->model('Admin/Fragment');
     }
 
     public function index()

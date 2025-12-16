@@ -1,7 +1,7 @@
 <?php if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
-class Paginas extends MY_Controller
+class Pages extends MY_Controller
 {
 
     public $routes_permisions = [
@@ -29,7 +29,7 @@ class Paginas extends MY_Controller
     }
 
     /**
-     * Index page for admin/paginas
+     * Index page for admin/pages
      *
      * @return void
      */
@@ -48,7 +48,7 @@ class Paginas extends MY_Controller
         $data['title'] = ADMIN_TITLE . " | Nueva Pagina";
         $data['h1'] = "Nueva Pagina";
         $data['header'] = $this->load->view('admin/header', $data, true);
-        $data['action'] = base_url('admin/paginas/save/');
+        $data['action'] = base_url('admin/pages/save/');
         $data['templates'] = [];
         $data['page_id'] = '';
         $data['editMode'] = 'new';
@@ -66,7 +66,7 @@ class Paginas extends MY_Controller
             $data['editMode'] = 'edit';
 
             $data['header'] = $this->load->view('admin/header', $data, true);
-            $data['action'] = base_url('admin/paginas/save/');
+            $data['action'] = base_url('admin/pages/save/');
             $data['pagina'] = array();
             $data['templates'] = [];
             echo $this->blade->view("admin.pages.new", $data);
@@ -85,7 +85,7 @@ class Paginas extends MY_Controller
             $data['editMode'] = 'edit';
 
             $data['header'] = $this->load->view('admin/header', $data, true);
-            $data['action'] = base_url('admin/paginas/save/');
+            $data['action'] = base_url('admin/pages/save/');
             $data['pagina'] = array();
             $data['templates'] = [];
             echo $this->blade->view("admin.pages.view", $data);

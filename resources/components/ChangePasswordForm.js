@@ -65,7 +65,7 @@ var changePassword = new Vue({
           success: function (response) {
             self.debug ? console.log(url, response) : null;
             /*  window.location =
-              BASEURL + "admin/usuarios/ver/" + response.data.user_id; */
+              BASEURL + "admin/users/ver/" + response.data.user_id; */
             M.toast({ html: response.error_message });
             self.loader = false;
           },

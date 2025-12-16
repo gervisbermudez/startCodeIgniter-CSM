@@ -20,6 +20,19 @@ application/logs/*
 !application/logs/.htaccess
 /vendor/
 
+### Project specific - User uploads and temporary files ###
+# Ignorar contenido pero mantener carpetas con .gitkeep
+/uploads/*
+!/uploads/.gitkeep
+/trash/*
+!/trash/.gitkeep
+/application/cache/*
+!/application/cache/index.html
+!/application/cache/.gitkeep
+
+# Development notes
+/devnotes.txt
+
 ### CodeIgniter Patch ###
 
 ### Composer ###

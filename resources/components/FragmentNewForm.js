@@ -134,7 +134,7 @@ var FragmentNewForm = new Vue({
     },
     serverValidation(field) {
       var self = this;
-      var url = BASEURL + "admin/usuarios/ajax_check_field";
+      var url = BASEURL + "admin/users/ajax_check_field";
       $.ajax({
         type: "POST",
         url: url,

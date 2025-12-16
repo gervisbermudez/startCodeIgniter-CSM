@@ -2,10 +2,11 @@
     exit('No direct script access allowed');
 }
 
-class Site_config extends MY_model
+class Fragment extends MY_model
 {
 
-    public $primaryKey = 'site_config_id';
+    public $table = 'fragmentos';
+    public $primaryKey = 'fragment_id';
     public $softDelete = true;
 
     public $hasOne = [
@@ -15,20 +16,6 @@ class Site_config extends MY_model
     public function __construct()
     {
         parent::__construct();
-    }
-
-    /**
-     * Update all config data
-     */
-    public function update_config($data)
-    {
-        foreach ($data as $key => $config) {
-            $this->update_data(
-                array('config_name' => $config['config_name']),
-                array('config_value' => $config['config_value']),
-                $this->table
-            );
-        }
     }
 
     public function filter_results($collection = [])

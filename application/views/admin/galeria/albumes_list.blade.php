@@ -62,10 +62,10 @@
                             <td>
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + album.album_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + album.album_id' class='dropdown-content'>
-                                    <li><a :href="base_url('admin/paginas/editar/' + album.album_id)">Editar</a></li>
+                                    <li><a :href="base_url('admin/pages/editar/' + album.album_id)">Editar</a></li>
                                     <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(album, index);">Borrar</a></li>
-                                    <li v-if="album.status == 2"><a :href="base_url('admin/paginas/preview?album_id=' + album.album_id)" target="_blank">Preview</a></li>
-                                    <li><a :href="base_url('/admin/galeria/items/' + album.album_id)" target="_blank">Archivar</a></li>
+                                    <li v-if="album.status == 2"><a :href="base_url('admin/pages/preview?album_id=' + album.album_id)" target="_blank">Preview</a></li>
+                                    <li><a :href="base_url('/admin/gallery/items/' + album.album_id)" target="_blank">Archivar</a></li>
                                 </ul>
                             </td>
                         </tr>
@@ -85,15 +85,15 @@
                         <a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href='#!' :data-target='"dropdown" + album.album_id'>
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown" + album.album_id' class='dropdown-content'>
-                            <li><a :href="base_url('admin/galeria/editar/' + album.album_id)">Editar</a></li>
+                            <li><a :href="base_url('admin/gallery/editar/' + album.album_id)">Editar</a></li>
                             <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(album, index);">Borrar</a></li>
-                            <li v-if="album.status == 2"><a :href="base_url('admin/paginas/preview?album_id=' + album.album_id)" target="_blank">Preview</a></li>
-                            <li><a :href="base_url('/admin/galeria/items/' + album.album_id)" target="_blank">Archivar</a></li>
+                            <li v-if="album.status == 2"><a :href="base_url('admin/pages/preview?album_id=' + album.album_id)" target="_blank">Preview</a></li>
+                            <li><a :href="base_url('/admin/gallery/items/' + album.album_id)" target="_blank">Archivar</a></li>
                         </ul>
                     </div>
                     <div class="card-content">
                         <div>
-                            <span class="card-title"><a :href="base_url('/admin/galeria/items/' + album.album_id)">@{{album.name}}</a> <i v-if="album.status == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Publico">public</i>
+                            <span class="card-title"><a :href="base_url('/admin/gallery/items/' + album.album_id)">@{{album.name}}</a> <i v-if="album.status == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Publico">public</i>
                                 <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Privado">lock</i>
                             </span>
                             <div class="card-info">
@@ -143,7 +143,7 @@
     </confirm-modal>
 </div>
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Nuevo Album" href="{{base_url('admin/galeria/nuevo/')}}">
+    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Nuevo Album" href="{{base_url('admin/gallery/nuevo/')}}">
         <i class="large material-icons">add</i>
     </a>
 </div>

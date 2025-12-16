@@ -6,7 +6,7 @@
 <div id="root">
   <data-table
     :endpoint="endpoint"
-    :module="'admin/eventos'"
+    :module="'admin/events'"
     :colums="colums"
     :index_data="index_data"
     :pagination="true"

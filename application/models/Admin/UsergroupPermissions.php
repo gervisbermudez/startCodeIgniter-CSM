@@ -6,13 +6,14 @@ if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
-class Usergroup_permisions extends MY_model
+class UsergroupPermissions extends MY_model
 {
+    public $table = 'usergroup_permisions';
     public $primaryKey = 'usergroup_permisions_id';
     public $softDelete = true;
 
     public $hasOne = [
-        "permisions_name" => ['permision_id', 'Admin/Permisions', 'Permisions'],
+        "permisions_name" => ['permision_id', 'Admin/Permissions', 'Permissions'],
     ];
 
     public function __construct()
@@ -22,11 +23,11 @@ class Usergroup_permisions extends MY_model
 
     public function filter_results($collection = [])
     {
-        $this->load->model('Admin/Permisions');
+        $this->load->model('Admin/Permissions');
         $permission_array = [];
         foreach ($collection as $key => &$value) {
             if (isset($value->permision_id)) {
-                $permission = new Permisions();
+                $permission = new Permissions();
                 $permission->find($value->permision_id);
                 $permission_array[] = $permission->permision_name;
             }
@@ -37,7 +38,7 @@ class Usergroup_permisions extends MY_model
 
     public function get_permissions_info($where)
     {
-        $this->load->model('Admin/Permisions');
+        $this->load->model('Admin/Permissions');
 
         $this->db->where($where);
         $query = $this->db->get($this->table);
@@ -45,7 +46,7 @@ class Usergroup_permisions extends MY_model
             $collection = new Collection($query->result());
             foreach ($collection as $key => &$value) {
                 if (isset($value->permision_id)) {
-                    $permission = new Permisions();
+                    $permission = new Permissions();
                     $value->{'permission'} = $permission->find($value->permision_id);
                 }
             }

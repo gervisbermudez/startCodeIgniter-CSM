@@ -14,7 +14,7 @@
 						<label>
 							No publicado
 							<input type="checkbox" class="change_state" name="status"
-								data-url="admin/eventos/fn_ajax_change_state/"
+								data-url="admin/events/fn_ajax_change_state/"
 								data-action-param='{"id":"<?php echo $evento['id']; ?>", "table":"eventos"}'
 								<?php if ($evento['status']=="1"): ?>checked="checked" <?php endif ?>>
 							<span class="lever"></span>

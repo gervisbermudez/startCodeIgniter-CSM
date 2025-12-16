@@ -44,7 +44,7 @@ var CalendarList = new Vue({
               self.events.push({
                 id: "page_" + element.page_id,
                 title: element.title,
-                url: self.base_url("admin/paginas/view/" + element.page_id),
+                url: self.base_url("admin/pages/view/" + element.page_id),
                 start: self.parseDateTime(element.date_publish),
                 end: self.parseDateTime(element.date_publish),
               });
@@ -54,7 +54,7 @@ var CalendarList = new Vue({
               self.events.push({
                 id: "album_" + element.album_id,
                 title: element.name,
-                url: self.base_url("admin/galeria/items/" + element.album_id),
+                url: self.base_url("admin/gallery/items/" + element.album_id),
                 start: self.parseDateTime(element.date_create),
                 end: self.parseDateTime(element.date_create),
               });

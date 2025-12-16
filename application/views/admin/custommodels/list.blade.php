@@ -53,7 +53,7 @@
                             <td>@{{form.form_name}}</td>
                             <td>@{{getcontentText(form.form_description)}}</td>
                             <td><a
-                                    :href="base_url('admin/usuarios/ver/' + form.user_id)">@{{form.user.get_fullname()}}</a>
+                                    :href="base_url('admin/users/ver/' + form.user_id)">@{{form.user.get_fullname()}}</a>
                             </td>
                             <td>
                                 @{{form.date_publish ? form.date_publish : form.date_create}}
@@ -119,7 +119,7 @@
                                 <ul>
                                     <li class="truncate">
                                         Author: <a
-                                            :href="base_url('admin/usuarios/ver/' + form.user_id)">@{{form.user.get_fullname()}}</a>
+                                            :href="base_url('admin/users/ver/' + form.user_id)">@{{form.user.get_fullname()}}</a>
                                     </li>
                                 </ul>
                             </div>

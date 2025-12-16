@@ -262,15 +262,15 @@ class Users extends REST_Controller
         $usergroup->status = $this->input->post('status');
         $usergroup->date_create = date("Y-m-d H:i:s");
         if ($usergroup->save()) {
-            $this->load->model('Admin/Usergroup_permisions');
-            $Usergroup_permisions = new Usergroup_permisions();
-            $Usergroup_permisions->delete_data(['usergroup_id' => $usergroup->usergroup_id]);
+            $this->load->model('Admin/UsergroupPermissions');
+            $UsergroupPermissions = new UsergroupPermissions();
+            $UsergroupPermissions->delete_data(['usergroup_id' => $usergroup->usergroup_id]);
             foreach ($this->input->post('permissions') as $key => $value) {
-                $Usergroup_permisions = new Usergroup_permisions();
-                $Usergroup_permisions->permision_id = $value['permisions_id'];
-                $Usergroup_permisions->usergroup_id = $usergroup->usergroup_id;
-                $Usergroup_permisions->status = 1;
-                $Usergroup_permisions->save();
+                $UsergroupPermissions = new UsergroupPermissions();
+                $UsergroupPermissions->permision_id = $value['permisions_id'];
+                $UsergroupPermissions->usergroup_id = $usergroup->usergroup_id;
+                $UsergroupPermissions->status = 1;
+                $UsergroupPermissions->save();
             }
             $this->response_ok($usergroup);
         } else {
@@ -280,9 +280,9 @@ class Users extends REST_Controller
 
     public function permissions_get()
     {
-        $this->load->model('Admin/Usergroup_permisions');
-        $Usergroup_permisions = new Usergroup_permisions();
-        $result = $Usergroup_permisions->get_permissions_info(['usergroup_id' => userdata('usergroup_id')]);
+        $this->load->model('Admin/UsergroupPermissions');
+        $UsergroupPermissions = new UsergroupPermissions();
+        $result = $UsergroupPermissions->get_permissions_info(['usergroup_id' => userdata('usergroup_id')]);
 
         if ($result) {
             $this->response_ok($result);

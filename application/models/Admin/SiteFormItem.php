@@ -2,9 +2,10 @@
     exit('No direct script access allowed');
 }
 
-class siteform_items extends MY_model
+class SiteFormItem extends MY_model
 {
 
+    public $table = 'siteform_items';
     public $primaryKey = 'siteform_item_id';
 
     public function __construct()

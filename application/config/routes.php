@@ -56,7 +56,12 @@ $route['admin'] = 'admin/admin';
 $route['admin/offline'] = 'admin/admin/offline';
 $route['admin/search'] = 'admin/admin/search';
 //Pages system
-$route['admin/paginas/preview'] = 'PageController/preview';
+$route['admin/pages/preview'] = 'PageController/preview';
+$route['sw.js'] = function() {
+    header('Content-Type: application/javascript');
+    readfile(FCPATH . 'public/sw.js');
+    exit;
+};
 $route['sitemap\.xml'] = 'PageController/siteMap';
 $route['sitemap'] = 'PageController/siteMap';
 $route['form/submit'] = 'PageController/formsubmit';

@@ -5,7 +5,7 @@
 /**
  * Configuration Controller
  */
-class Configuracion extends MY_Controller
+class Configuration extends MY_Controller
 {
 
     public $routes_permisions = [

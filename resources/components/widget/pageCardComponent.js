@@ -20,7 +20,7 @@ Vue.component("pageCard", {
       }
     },
     getPageEditPath: function (page) {
-      return BASEURL + "admin/paginas/editar/" + page.page_id;
+      return BASEURL + "admin/pages/editar/" + page.page_id;
     },
   },
   mounted: function () {

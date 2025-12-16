@@ -147,7 +147,7 @@
             </div>
             <br><br>
             <div class="input-field" id="buttons">
-                <a href="<?php echo base_url('admin/configuracion/'); ?>" class="btn-flat">Cancelar</a>
+                <a href="<?php echo base_url('admin/configuration/'); ?>" class="btn-flat">Cancelar</a>
                 <button type="submit" class="btn btn-primary" @click="save()" :class="{disabled: !btnEnable}">
                     <span><i class="material-icons right">edit</i> Guardar</span>
                 </button>

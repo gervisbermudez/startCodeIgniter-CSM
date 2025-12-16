@@ -47,7 +47,7 @@
                         <tr v-for="(menu, index) in filterMenus" :key="index">
                             <td>@{{menu.name}}</td>
                             <td>@{{menu.template}}</td>
-                            <td><a :href="base_url('admin/usuarios/ver/' + menu.user_id)">@{{menu.user.get_fullname()}}</a></td>
+                            <td><a :href="base_url('admin/users/ver/' + menu.user_id)">@{{menu.user.get_fullname()}}</a></td>
                             <td>
                                 @{{menu.date_publish ? menu.date_publish : menu.date_create}}
                             </td>
@@ -100,7 +100,7 @@
                                         Type: @{{menu.template}}
                                     </li>
                                     <li class="truncate">
-                                        Author: <a :href="base_url('admin/usuarios/ver/' + menu.user_id)">@{{menu.user.user_data.nombre}} @{{menu.user.user_data.apellido}}</a>
+                                        Author: <a :href="base_url('admin/users/ver/' + menu.user_id)">@{{menu.user.user_data.nombre}} @{{menu.user.user_data.apellido}}</a>
                                     </li>
                                 </ul>
                             </div>

@@ -54,8 +54,8 @@
                                 <p>@{{getcontentText(page.content)}}</p>
                             </div>
                             <div class="card-action">
-                                <a :href="base_url('admin/paginas/view/' + page.page_id)">View</a>
-                                <a :href="base_url('admin/paginas/editar/' + page.page_id)">Edit</a>
+                                <a :href="base_url('admin/pages/view/' + page.page_id)">View</a>
+                                <a :href="base_url('admin/pages/editar/' + page.page_id)">Edit</a>
                             </div>
                         </div>
                     </div>
@@ -74,8 +74,8 @@
                                 <p>@{{getcontentText(album.description)}}</p>
                             </div>
                             <div class="card-action">
-                                <a :href="base_url('admin/galeria/items/' + album.album_id)">View</a>
-                                <a :href="base_url('admin/galeria/editar/' + album.album_id)">Edit</a>
+                                <a :href="base_url('admin/gallery/items/' + album.album_id)">View</a>
+                                <a :href="base_url('admin/gallery/editar/' + album.album_id)">Edit</a>
                             </div>
                         </div>
                     </div>

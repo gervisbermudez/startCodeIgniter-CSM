@@ -21,7 +21,7 @@ class Siteforms extends REST_Controller
 
         $this->load->database();
         $this->load->model('Admin/SiteForm');
-        $this->load->model('Admin/Siteform_submit');
+        $this->load->model('Admin/SiteFormSubmit');
 
     }
 
@@ -124,7 +124,7 @@ class Siteforms extends REST_Controller
 
             foreach ($siteform_items as $key => $item) {
                 $item = (object) $item;
-                $siteform_item = new siteform_items();
+                $siteform_item = new SiteFormItem();
                 isset($item->siteform_item_id) ? $siteform_item->find($item->siteform_item_id) : false;
                 $siteform_item->siteform_id = $siteform->siteform_id;
                 $siteform_item->order = isset($item->order) ? $item->order : '0';
@@ -355,14 +355,14 @@ class Siteforms extends REST_Controller
      *     "data": []
      * }
      */
-    public function submit_get($siteform_submit_id = null)
+    public function submit_get($siteFormSubmit_id = null)
     {
-        $Siteform_submit = new Siteform_submit();
-        if ($siteform_submit_id) {
-            $result = $Siteform_submit->find_with(array('siteform_submit_id' => $siteform_submit_id));
-            $result = $result ? $Siteform_submit->as_data() : [];
+        $SiteFormSubmit = new SiteFormSubmit();
+        if ($siteFormSubmit_id) {
+            $result = $SiteFormSubmit->find_with(array('siteform_submit_id' => $siteFormSubmit_id));
+            $result = $result ? $SiteFormSubmit->as_data() : [];
         } else {
-            $result = $Siteform_submit->all();
+            $result = $SiteFormSubmit->all();
         }
 
         if ($result) {
@@ -380,13 +380,13 @@ class Siteforms extends REST_Controller
      */
     public function submit_archive_post($id = null)
     {
-        $Siteform_submit = new Siteform_submit();
-        $Siteform_submit->find($id);
-        if ($Siteform_submit) {
-            $Siteform_submit->status = 2; //archive
-            $Siteform_submit->save();
-            system_logger('pages', $Siteform_submit->siteform_submit_id, ("archive"), ("A Siteform_submit has been archive"));
-            $this->response_ok($Siteform_submit);
+        $SiteFormSubmit = new SiteFormSubmit();
+        $SiteFormSubmit->find($id);
+        if ($SiteFormSubmit) {
+            $SiteFormSubmit->status = 2; //archive
+            $SiteFormSubmit->save();
+            system_logger('pages', $SiteFormSubmit->siteform_submit_id, ("archive"), ("A Siteform_submit has been archive"));
+            $this->response_ok($SiteFormSubmit);
         } else {
             $this->response_error(lang('not_found_error'));
         }

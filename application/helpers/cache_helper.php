@@ -115,8 +115,8 @@ if (!function_exists('get_site_config')) {
         $config_value = $ci->config->item($config_name);
         
         if (!$config_value) {
-            $ci->load->model('Admin/Site_config');
-            $config_obj = $ci->Site_config->where(['config_name' => $config_name]);
+            $ci->load->model('Admin/SiteConfig');
+            $config_obj = $ci->SiteConfig->where(['config_name' => $config_name]);
             $config_value = $config_obj ? $config_obj->first()->config_value : null;
         }
         
@@ -148,8 +148,8 @@ if (!function_exists('get_fragment_cached')) {
         
         // Si no está en cache, obtener de base de datos
         $ci = &get_instance();
-        $ci->load->model('Admin/Fragmentos');
-        $fragment = new Fragmentos();
+        $ci->load->model('Admin/Fragment');
+        $fragment = new Fragment();
         $result = $fragment->find_with(['name' => $fragment_name]);
         
         $fragment_content = '';

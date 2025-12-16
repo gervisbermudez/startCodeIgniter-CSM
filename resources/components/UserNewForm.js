@@ -81,7 +81,7 @@ var UserNewForm = new Vue({
             if (response.code == 200) {
               console.log(response);
               window.location =
-                BASEURL + "admin/usuarios/ver/" + response.data.user_id;
+                BASEURL + "admin/users/ver/" + response.data.user_id;
             } else {
               M.toast({ html: response.error_message });
               self.loader = false;
@@ -114,7 +114,7 @@ var UserNewForm = new Vue({
     },
     serverValidation(field) {
       var self = this;
-      var url = BASEURL + "admin/usuarios/ajax_check_field"
+      var url = BASEURL + "admin/users/ajax_check_field"
       $.ajax({
         type: "POST",
         url: url,

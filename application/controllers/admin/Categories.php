@@ -2,7 +2,7 @@
     exit('No direct script access allowed');
 }
 
-class Categorias extends MY_Controller
+class Categories extends MY_Controller
 {
 
     public $routes_permisions = [

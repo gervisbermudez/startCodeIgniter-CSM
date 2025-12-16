@@ -43,7 +43,7 @@ var userProfile = new Vue({
       if (page.status == 1) {
         return BASEURL + page.path;
       }
-      return BASEURL + "admin/paginas/editar/" + page.page_id;
+      return BASEURL + "admin/pages/editar/" + page.page_id;
     },
     getUser() {
       var self = this;

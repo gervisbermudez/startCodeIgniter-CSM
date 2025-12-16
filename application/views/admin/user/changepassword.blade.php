@@ -48,7 +48,7 @@
                 <br>
                 <div class="row userform">
                     <div class="col s12" id="buttons">
-                        <a href="<?php echo base_url('admin/usuarios/'); ?>" class="btn btn-default waves-effect waves-teal btn-flat">Cancelar</a>
+                        <a href="<?php echo base_url('admin/users/'); ?>" class="btn btn-default waves-effect waves-teal btn-flat">Cancelar</a>
                         <button type="submit" class="btn btn-primary waves-effect waves-teal" :class="{disabled: !btnEnable}"  @click="save();">Guardar</button>
                     </div>
                 </div>

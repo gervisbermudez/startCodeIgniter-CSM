@@ -2,10 +2,11 @@
     exit('No direct script access allowed');
 }
 
-class Fragmentos extends MY_model
+class SiteConfig extends MY_model
 {
 
-    public $primaryKey = 'fragment_id';
+    public $table = 'site_config';
+    public $primaryKey = 'site_config_id';
     public $softDelete = true;
 
     public $hasOne = [
@@ -15,6 +16,20 @@ class Fragmentos extends MY_model
     public function __construct()
     {
         parent::__construct();
+    }
+
+    /**
+     * Update all config data
+     */
+    public function update_config($data)
+    {
+        foreach ($data as $key => $config) {
+            $this->update_data(
+                array('config_name' => $config['config_name']),
+                array('config_value' => $config['config_value']),
+                $this->table
+            );
+        }
     }
 
     public function filter_results($collection = [])
