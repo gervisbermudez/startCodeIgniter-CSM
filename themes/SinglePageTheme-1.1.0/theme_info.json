@@ -1,11 +1,11 @@
 {
-  "name": "SinglePageTheme-1.1.0",
+  "name": "Single Page Theme",
   "version": "1.0.0",
-  "description": "A simple theme building for StartCMS",
-  "url": "git+https://github.com/gervisbermudez/startCodeIgniter-CSM.git",
+  "description": "A simple theme building with Page for StartCMS",
+  "url": "git+https://github.com/gervisbermudez/SinglePageTheme.git",
   "author": "Gervis Bermúdez",
   "license": "ISC",
   "preview": "theme_preview.jpg",
-  "updated": "2020-09-06 18:29:01",
-  "menus": ["menu_top", "footer"]
+  "updated": "2022-01-06 12:20:59",
+  "menus": ["menu_top"]
 }

@@ -36,6 +36,9 @@ p {
   line-height: 0;
   height: auto;
   color: rgba(255, 255, 255, 0.9);
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 .parallax-container .section {
   width: 100%;
