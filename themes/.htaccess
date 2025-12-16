@@ -1,6 +1,7 @@
+# Permitir acceso a todos los archivos en themes
 <IfModule authz_core_module>
-    Require all denied
+    Require all granted
 </IfModule>
 <IfModule !authz_core_module>
-    Deny from all
+    Allow from all
 </IfModule>

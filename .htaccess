@@ -8,8 +8,12 @@ Options -Indexes
 </Files>
 
 RewriteEngine On
+
+# No reescribir peticiones a archivos y directorios existentes
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+# No reescribir carpetas específicas
+RewriteCond %{REQUEST_URI} !^/(themes|public|uploads|vendor)/ [NC]
 RewriteRule ^(.*)$ index.php/$1 [L]
 
 <IfModule mod_expires.c>

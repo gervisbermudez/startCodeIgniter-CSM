@@ -2456,7 +2456,7 @@ INSERT INTO `site_config` (`site_config_id`, `user_id`, `config_name`, `config_v
 	(16, 1, 'ANALYTICS_CODE', '<script> window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date; ga(\'create\', \'UA-XXXXX-Y\', \'auto\'); ga(\'send\', \'pageview\'); </script> <script async src=\'https://www.google-analytics.com/analytics.js\'></script>', 'ANALYTICS_CODE', 'ANALYTICS_CODE', 'analytics', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "text",\r\n  "perm_values": null\r\n}', 0, '2020-10-13 01:28:18', '2022-11-29 01:31:41', 1),
 	(17, 1, 'PIXEL_ACTIVE', 'Off', 'PIXEL_ACTIVE', 'PIXEL_ACTIVE', 'pixel', '{\r\n  "type_value": "boolean",\r\n  "validate_as": "boolean",\r\n  "handle_as": "switch",\r\n  "input_type": "switch",\r\n  "perm_values": ["Off", "On"],\r\n  "true": "On"\r\n}\r\n', 0, '2020-12-04 01:37:32', '2022-11-29 01:30:18', 1),
 	(18, 1, 'PIXEL_CODE', '', 'PIXEL_CODE', 'PIXEL_CODE', 'analytics', '{\r\n  "type_value": "string",\r\n  "validate_as": "text",\r\n  "max_lenght": "",\r\n  "min_lenght": "5",\r\n  "handle_as": "input",\r\n  "input_type": "text",\r\n  "perm_values": null\r\n}', 0, '2020-10-13 01:28:18', '2022-11-29 01:31:49', 1),
-	(19, 1, 'THEME_PATH', 'iPortfolio', 'THEME_PATH', 'THEME_PATH', 'theme', '{"type_value":"string","validate_as":"text","max_lenght":"50","min_lenght":"5"}', 0, '2022-11-16 18:46:55', '2022-11-29 01:29:30', 1),
+	(19, 1, 'THEME_PATH', 'awesomeTheme', 'THEME_PATH', 'THEME_PATH', 'theme', '{"type_value":"string","validate_as":"text","max_lenght":"50","min_lenght":"5"}', 0, '2022-11-16 18:46:55', '2022-11-29 01:29:30', 1),
 	(20, 1, 'UPDATER_LAST_CHECK_UPDATE', '2022-12-28 05:17:33', 'UPDATER_LAST_CHECK_UPDATE', 'UPDATER_LAST_CHECK_UPDATE', 'updater', '{"type_value":"string","validate_as":"text","max_lenght":"50","min_lenght":"5"}', 0, '2020-11-11 22:49:23', '2022-11-29 01:29:21', 1),
 	(21, 1, 'UPDATER_MANUAL_CHECK', 'On', 'UPDATER_MANUAL_CHECK', 'UPDATER_MANUAL_CHECK', 'updater', '{\r\n  "type_value": "boolean",\r\n  "validate_as": "boolean",\r\n  "handle_as": "switch",\r\n  "input_type": "switch",\r\n  "perm_values": ["Off", "On"],\r\n  "true": "On"\r\n}\r\n', 0, '2020-10-13 01:33:36', '2022-11-29 01:29:23', 1),
 	(22, 1, 'UPDATER_LAST_CHECK_DATA', '{"name":"Start CMS","version":"1.6.4","description":"A simple theme building for StartCMS","url":"https://github.com/gervisbermudez/startCodeIgniter-CSM.git","updated":"12/4/2020 17:32:44"}', 'UPDATER_LAST_CHECK_DATA', 'UPDATER_LAST_CHECK_DATA', 'updater', '{"type_value":"string","validate_as":"text","max_lenght":"50","min_lenght":"5"}', 0, '2020-11-11 22:49:23', '2022-11-29 01:29:26', 1),
@@ -2506,11 +2506,9 @@ CREATE TABLE IF NOT EXISTS `user` (
   CONSTRAINT `FK_user_usergroup` FOREIGN KEY (`usergroup_id`) REFERENCES `usergroup` (`usergroup_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT='Usuarios del Sistema';
 
--- Volcando datos para la tabla gervisbermudez_db_prod.user: ~3 rows (aproximadamente)
+-- Volcando datos para la tabla gervisbermudez_db_prod.user: ~1 rows (aproximadamente)
 INSERT INTO `user` (`user_id`, `username`, `password`, `email`, `lastseen`, `usergroup_id`, `status`, `date_create`, `date_update`, `date_delete`) VALUES
-	(1, 'gerber', '$2y$10$Qqz3Uy0KGbgHq7WNP2wvsOYkCBFjsFgtbT2sYRx8nYN/9m7IKmQ5G', 'gerber@gmail.com', '2023-04-01 17:47:36', 1, 1, '2020-03-01 19:11:25', '2020-11-17 11:18:25', NULL),
-	(2, 'yduran', '$2y$10$.Rd9Ke7opDn2zvjc70DESuilWjm2mIMB9R2qyHyKTQbYQRYxGI6A2', 'yduran@gmail.com', '2020-11-22 21:52:36', 2, 1, '2020-02-01 19:11:25', '2020-11-17 11:41:49', NULL),
-	(3, 'aAlejandro', '$2y$10$todx7BAG8S1cSoKOYxtrPuF412C1FvKuuaJWU1jNb/28ahu0a30GW', 'ale@email.com', '2023-03-20 16:17:01', 4, 1, '2020-09-20 22:22:31', '2020-11-17 11:43:31', NULL);
+	(1, 'gerber', '$2y$10$uIX7ruLuQHku8F0vVkHcseBTGmFQjCYmCeyLtrNt5A3ByLIq6nC7C', 'gerber@gmail.com', '2025-12-16 18:00:00', 1, 1, '2020-03-01 19:11:25', '2020-11-17 11:18:25', NULL);
 
 -- Volcando estructura para tabla gervisbermudez_db_prod.usergroup
 DROP TABLE IF EXISTS `usergroup`;

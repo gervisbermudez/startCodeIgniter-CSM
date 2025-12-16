@@ -250,6 +250,7 @@ $config['sess_expiration'] = 7200;
 $config['sess_expire_on_close'] = false;
 $config['sess_encrypt_cookie'] = false;
 $config['sess_use_database'] = false;
+$config['sess_save_path'] = sys_get_temp_dir();
 $config['sess_table_name'] = 'ci_sessions';
 $config['sess_match_ip'] = false;
 $config['sess_match_useragent'] = true;

@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  web:
+    # IMPORTANTE: Reemplazamos 'image: php:5.6-apache' por 'build: .'
+    # Esto fuerza a Docker a usar tu Dockerfile personalizado con los módulos corregidos.
+    build: .
+    container_name: ci_php56
+    ports:
+      - "8081:80"
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.7
+    container_name: ci_mysql57
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: start_cms_db
+      MYSQL_USER: ci_user
+      MYSQL_PASSWORD: ci_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./application/database/start.sql:/docker-entrypoint-initdb.d/start.sql
+
+volumes:
+  mysql_data:

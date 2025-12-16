@@ -2,31 +2,185 @@
 
 # startCodeigneiter CSM
 
-startCodeIgniter CSM is a Lightweight Content Management System based on Codeigneiter Framework and Vuejs: cloud-enabled, mobile-ready, offline-storage and HTML5 editor.
+startCodeIgniter CSM is a Lightweight Content Management System based on CodeIgniter Framework: cloud-enabled, mobile-ready, offline-storage and HTML5 editor.
 
--   Create custom pages, blogs
--   Manage your files and folders
--   Manage events, videos and photos
--   Create User with levels access
--   Create categories/subcategories
+## Features
 
-# New Features in Version 2.0.0!
+- Create custom pages and blogs
+- Manage your files and folders
+- Manage events, videos and photos
+- Create users with different access levels
+- Create categories and subcategories
+- Dynamic form contents
+- Dashboard with widgets
+- People section to manage users and groups
+- Received forms to view and manage form submissions
+- Fragment section to create and manage reusable content
+- Albums section to manage photo albums
+- Videos section to manage video content
+- Models section to manage custom content types
+- REST API to consume the data
+- Import and export data easily
+- Theme and website configuration management
 
--   Dynamic Forms contents
--   New dashboard widgets added
--   Dashboard with quick access to features
--   People section to manage users and groups
--   Received Forms to view and manage form submissions
--   Fragment section to create and manage reusable content
--   Albums section to manage photo albums
--   Videos section to manage video content
--   Models section to manage custom content types
+## Quick Start with Docker
 
-You can also:
+### Prerequisites
 
--   Use the API to consume the data created in the interface
--   Import and export data easily
--   Change the configuration and theme of your website
+- Docker and Docker Compose installed on your system
+- Git (optional, for cloning the repository)
+
+### Installation Steps
+
+1. **Clone the repository** (or download the project)
+```bash
+git clone https://github.com/gervisbermudez/startCodeIgniter-CSM.git
+cd startCodeIgniter-CSM
+```
+
+2. **Start the application with Docker**
+```bash
+docker compose up -d
+```
+
+This command will:
+- Download and build the PHP 7.4 Apache image
+- Install all Composer dependencies
+- Create and configure the MySQL database
+- Import the initial database schema
+- Set up proper file permissions
+
+3. **Access the application**
+- **Frontend**: http://localhost:8081
+- **Admin Panel**: http://localhost:8081/admin/login
+
+### Default Admin Credentials
+
+After installation, you can login with:
+- **Username**: `gerber`
+- **Password**: `admin123`
+
+### Database Access (Optional)
+
+If you need to manage the database directly:
+
+**Connection Details**:
+- **Host**: `localhost`
+- **Port**: `3306`
+- **Username**: `ci_user`
+- **Password**: `ci_pass`
+- **Database**: `start_cms_db`
+
+You can use tools like DBeaver or MySQL Workbench to connect.
+
+### Useful Docker Commands
+
+```bash
+# Stop the application
+docker compose down
+
+# View logs
+docker logs ci_php56        # PHP/Apache logs
+docker logs ci_mysql57      # MySQL logs
+
+# Access the database via terminal
+mysql -h localhost -u ci_user -pci_pass start_cms_db
+
+# Restart containers
+docker compose restart
+```
+
+### Project Structure
+
+```
+startCodeIgniter-CSM/
+├── application/          # CodeIgniter application files
+│   ├── config/          # Configuration files
+│   ├── controllers/      # Application controllers
+│   ├── models/          # Database models
+│   ├── views/           # View templates
+│   ├── database/        # Database schema and dumps
+│   └── core/            # Core classes
+├── public/              # Static assets (CSS, JS, images)
+├── themes/              # Theme templates
+├── uploads/             # User uploaded files
+├── vendor/              # Composer dependencies
+├── Dockerfile           # Docker configuration
+├── docker-compose.yml   # Docker Compose configuration
+└── .env                 # Environment variables
+```
+
+### Environment Configuration
+
+The `.env` file contains important configuration:
+
+```
+APP_ENV=development
+APP_BASE_URL=http://localhost:8081/
+DATABASE_HOSTNAME=db
+DATABASE_DATABASE=start_cms_db
+DATABASE_USER=ci_user
+DATABASE_PASSWORD=ci_pass
+```
+
+### Troubleshooting
+
+**Issue**: Containers not starting
+```bash
+# Check for port conflicts
+docker ps
+# Remove and rebuild
+docker compose down -v
+docker compose up --build -d
+```
+
+**Issue**: Database connection error
+- Ensure MySQL container is running: `docker ps`
+- Verify `.env` file has correct database credentials
+- Check database is initialized: `docker logs ci_mysql57`
+
+**Issue**: Permission denied on uploads
+- The application automatically sets proper permissions on startup
+- If issues persist, rebuild with: `docker compose down -v && docker compose up --build -d`
+
+## Development
+
+### Running Commands in Container
+
+```bash
+# Access PHP container shell
+docker exec -it ci_php56 bash
+
+# Run Composer commands
+docker exec ci_php56 composer install
+
+# Generate password hash
+docker exec ci_php56 php -r "echo password_hash('your_password', PASSWORD_BCRYPT);"
+```
+
+### Database Backup/Restore
+
+```bash
+# Backup database
+docker exec ci_mysql57 mysqldump -u ci_user -pci_pass start_cms_db > backup.sql
+
+# Restore database
+docker exec -i ci_mysql57 mysql -u ci_user -pci_pass start_cms_db < backup.sql
+```
+
+## API Documentation
+
+The application includes a REST API. Check the API documentation at:
+- http://localhost:8081/api/v1 (API endpoints)
+- See `Start CMS API.postman_collection.json` for Postman collection
+
+## Support
+
+For issues, feature requests, or contributions, please visit the GitHub repository.
+
+## License
+
+This project is licensed under the GNU License - see the LICENSE.txt file for details.
 
 ### Tech
 
