@@ -24,5 +24,5 @@
 
 @section('footer_includes')
 <script src="{{base_url('public/js/fullcalendarjs/main.min.js')}}"></script>
-<script src="{{base_url('public/js/components/CalendarList.min.js')}}"></script>
+<script src="{{base_url('resources/components/CalendarList.js')}}"></script>
 @endsection

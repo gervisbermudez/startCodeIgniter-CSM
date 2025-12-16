@@ -4,7 +4,7 @@ if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
-class Notifications extends MY_model
+class Notifications extends MY_Model
 {
 
     public $primaryKey = 'notification_id';

@@ -234,7 +234,7 @@ var dashboardModule = new Vue({
           break;
         case "categorie":
           data = this.getCategorieObject();
-          url = `${BASEURL}api/v1/categorie/`;
+          url = `${BASEURL}api/v1/categories/`;
 
           break;
 

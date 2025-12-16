@@ -2,7 +2,7 @@
     exit('No direct script access allowed');
 }
 
-class Messages extends MY_model
+class Messages extends MY_Model
 {
 
 	public $primaryKey = 'messages_id';

@@ -207,6 +207,6 @@
 @endsection
 
 @section('footer_includes')
-<script src="{{base_url('public/js/components/SiteFormNewForm.min.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/SiteFormNewForm.js?v=' . ADMIN_VERSION)}}"></script>
 <script src="{{base_url('public/js/jquery-sortable.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

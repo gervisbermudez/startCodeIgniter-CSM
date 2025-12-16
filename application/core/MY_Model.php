@@ -2,9 +2,9 @@
 
 use Tightenco\Collect\Support\Collection;
 
-/**Clase MY_model que extiende de CI_Model e implementa JsonSerializable
+/**Clase MY_Model que extiende de CI_Model e implementa JsonSerializable
  */
-class MY_model extends CI_Model implements JsonSerializable
+class MY_Model extends CI_Model implements JsonSerializable
 {
     /** Nombre de la tabla en la base de datos
      */

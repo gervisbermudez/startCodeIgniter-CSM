@@ -12,7 +12,7 @@
 @section('footer_includes')
 @include('admin.components.dataTableComponent')
 @include('admin.components.FormSiteDetails')
-<script src="{{base_url('public/js/components/dataTable.component.min.js?v=' . ADMIN_VERSION)}}"></script>
-<script src="{{base_url('public/js/components/FormSiteDetails.component.min.js?v=' . ADMIN_VERSION)}}"></script>
-<script src="{{base_url('public/js/components/SiteFormSubmitList.min.js')}}"></script>
+<script src="{{base_url('resources/components/DataTableComponent.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/FormSiteDetails.component.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/SiteFormSubmitList.js')}}"></script>
 @endsection

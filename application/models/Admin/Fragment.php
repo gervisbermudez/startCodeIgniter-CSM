@@ -2,7 +2,7 @@
     exit('No direct script access allowed');
 }
 
-class Fragment extends MY_model
+class Fragment extends MY_Model
 {
 
     public $table = 'fragmentos';

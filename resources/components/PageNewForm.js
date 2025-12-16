@@ -562,7 +562,7 @@ var PageNewForm = new Vue({
     },
     getCategories() {
       var self = this;
-      var url = BASEURL + "api/v1/categorie/type/page";
+      var url = BASEURL + "api/v1/categories/type/page";
       $.ajax({
         type: "GET",
         url: url,
@@ -583,7 +583,7 @@ var PageNewForm = new Vue({
     },
     getSubCategories() {
       var self = this;
-      var url = BASEURL + "api/v1/categorie/subcategorie/" + self.categorie_id;
+      var url = BASEURL + "api/v1/categories/subcategorie/" + self.categorie_id;
       $.ajax({
         type: "GET",
         url: url,

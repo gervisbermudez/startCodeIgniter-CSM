@@ -41,7 +41,7 @@ class CustomModels extends MY_Controller
     {
         parent::__construct();
         $this->check_permisions();
-        $this->load->model('Admin/Custom_model');
+        $this->load->model('Admin/CustomModel');
     }
 
     public function index()

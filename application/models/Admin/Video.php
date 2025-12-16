@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
-class Video extends MY_model
+class Video extends MY_Model
 {
 
     public $primaryKey = 'video_id';

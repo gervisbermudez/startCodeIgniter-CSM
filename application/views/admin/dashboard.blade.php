@@ -213,7 +213,7 @@
                     </div>
                     <div class="creator-options">
                         <div class="options-icons">
-                            <i class="material-icons tooltipped" v-for="mode in creator.modes" key="mode"
+                            <i class="material-icons tooltipped" v-for="mode in creator.modes" :key="mode"
                                 :class="{'active': creator.mode == mode}" data-position="top" data-delay="500"
                                 :data-tooltip="mode" @click="setCreatorMode(mode)">@{{creator.icons[mode]}}</i>
                         </div>
@@ -295,9 +295,11 @@
 @endsection
 
 @section('footer_includes')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.2.1/helpers.min.js"
-    integrity="sha512-JG3S/EICkp8Lx9YhtIpzAVJ55WGnxT3T6bfiXYbjPRUoN9yu+ZM+wVLDsI/L2BWRiKjw/67d+/APw/CDn+Lm0Q=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="<?=base_url('public/js/components/dashboardBundle.min.js?v=' . ADMIN_VERSION)?>"></script>
+<script src="<?=base_url('resources/components/widget/albumesWidgetComponent.js?v=' . ADMIN_VERSION)?>"></script>
+<script src="<?=base_url('resources/components/widget/createContents.js?v=' . ADMIN_VERSION)?>"></script>
+<script src="<?=base_url('resources/components/widget/fileExplorerCollection.js?v=' . ADMIN_VERSION)?>"></script>
+<script src="<?=base_url('resources/components/widget/pageCardComponent.js?v=' . ADMIN_VERSION)?>"></script>
+<script src="<?=base_url('resources/components/widget/usersCollection.js?v=' . ADMIN_VERSION)?>"></script>
+<script src="<?=base_url('resources/components/dashboardModule.js?v=' . ADMIN_VERSION)?>"></script>
 @endsection

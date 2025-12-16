@@ -2,7 +2,7 @@
     exit('No direct script access allowed');
 }
 
-class LoginMod extends MY_model
+class LoginMod extends MY_Model
 {
 
     public function __construct()

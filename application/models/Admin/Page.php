@@ -4,14 +4,14 @@
 
 use Tightenco\Collect\Support\Collection;
 
-class Page extends MY_model
+class Page extends MY_Model
 {
     public $primaryKey = 'page_id';
     public $hasData = true;
     public $softDelete = true;
     public $hasOne = [
-        'user' => ['user_id', 'Admin/User', 'user'],
-        'pages_type' => ['page_type_id', 'Admin/Page_type', 'page_type'],
+        'user' => ['user_id', 'Admin/User', 'User'],
+        'pages_type' => ['page_type_id', 'Admin/PageType', 'PageType'],
         'main_image' => ['mainImage', 'Admin/File', 'File'],
         'thumbnail_image' => ['thumbnailImage', 'Admin/File', 'File'],
     ];

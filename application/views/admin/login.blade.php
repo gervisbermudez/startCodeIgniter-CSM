@@ -88,5 +88,5 @@
 @endsection
 
 @section('footer_includes')
-<script src="{{base_url('public/js/components/loginForm.min.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/loginForm.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

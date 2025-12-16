@@ -2,7 +2,7 @@
     exit('No direct script access allowed');
 }
 
-class Logger extends MY_model
+class Logger extends MY_Model
 {
 
     public $primaryKey = 'logger_id';

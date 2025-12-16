@@ -187,7 +187,7 @@ var EventNewForm = new Vue({
     getCategories() {
       this.debug ? console.log(`${getFuncName()} fired`) : null;
       var self = this;
-      var url = BASEURL + "api/v1/categorie/type/" + self.type;
+      var url = BASEURL + "api/v1/categories/type/" + self.type;
       fetch(url)
         .then((response) => response.json())
         .then((response) => {

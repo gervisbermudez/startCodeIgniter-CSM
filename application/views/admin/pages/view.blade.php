@@ -114,6 +114,6 @@
 @endsection
 
 @section('footer_includes')
-<script src="{{ base_url('public/js/validateForm.min.js') }}"></script>
-<script src="{{base_url('public/js/components/PageView.component.min.js')}}"></script>
+<script src="{{ base_url('resources/js/validateForm.js') }}"></script>
+<script src="{{base_url('resources/components/PageView.component.js')}}"></script>
 @endsection

@@ -9,7 +9,7 @@ class Files extends MY_Controller
     {
         parent::__construct();
         $this->load->model('Admin/File');
-        $this->load->model('Admin/File_activity');
+        $this->load->model('Admin/FileActivity');
     }
 
     public function index()
@@ -45,7 +45,7 @@ class Files extends MY_Controller
             if (!$find_result) {
                 $this->File->set_data($insert_array, $this->File->table);
                 $result['file_object'] = $this->File->get_data(array('file_id' => $this->db->insert_id()));
-                $file_activity = new File_activity();
+                $file_activity = new FileActivity();
                 $file_activity->file_id = $result['file_object'][0]->file_id;
                 $file_activity->user_id = userdata('user_id');
                 $file_activity->action = "upload";

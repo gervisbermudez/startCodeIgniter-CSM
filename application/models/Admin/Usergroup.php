@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
-class Usergroup extends MY_model
+class Usergroup extends MY_Model
 {
     public $primaryKey = 'usergroup_id';
     public $softDelete = true;

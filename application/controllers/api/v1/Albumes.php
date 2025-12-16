@@ -93,10 +93,10 @@ class Albumes extends REST_Controller
         if ($album->save()) {
 
             $album_items = $this->input->post("album_items");
-            $this->load->model('Admin/Album_items');
+            $this->load->model('Admin/AlbumItems');
             if ($album_items) {
                 foreach ($album_items as $value) {
-                    $item = new Album_items();
+                    $item = new AlbumItems();
                     $value['album_item_id'] ? $item->find($value['album_item_id']) : false;
                     $item->album_id = $album->album_id;
                     $item->file_id = $value['file_id'];
@@ -151,8 +151,8 @@ class Albumes extends REST_Controller
      */
     public function delete_album_item_get($item_album_id)
     {
-        $this->load->model('Admin/Album_items');
-        $album_items = new Album_items();
+        $this->load->model('Admin/AlbumItems');
+        $album_items = new AlbumItems();
         $album_items->find($item_album_id);
         if ($album_items->delete()) {
             $this->response_ok($album_items);

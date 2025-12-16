@@ -183,9 +183,9 @@ class Pages extends REST_Controller
 
     public function types_get()
     {
-        $this->load->model('Admin/Page_type');
+        $this->load->model('Admin/PageType');
 
-        $page_type = new Page_type();
+        $page_type = new PageType();
         $result = $page_type->all();
 
         if ($result) {
@@ -210,7 +210,7 @@ class Pages extends REST_Controller
 
     public function editpageinfo_get($page_id = false)
     {
-        $this->load->model('Admin/Page_type');
+        $this->load->model('Admin/PageType');
         $this->load->helper('directory');
 
         $page = new Page();
@@ -226,7 +226,7 @@ class Pages extends REST_Controller
         }
 
         //Types
-        $page_type = new Page_type();
+        $page_type = new PageType();
         $page_types = $page_type->all();
 
         if (!$page_types) {

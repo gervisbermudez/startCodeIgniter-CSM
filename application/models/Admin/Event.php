@@ -2,7 +2,7 @@
     exit('No direct script access allowed');
 }
 
-class Event extends MY_model
+class Event extends MY_Model
 {
 
     public $primaryKey = 'event_id';

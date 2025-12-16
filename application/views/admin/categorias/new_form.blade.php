@@ -109,6 +109,6 @@
 
 @section('footer_includes')
 <script src="{{base_url('public/js/tinymce/js/tinymce/tinymce.min.js')}}"></script>
-<script src="{{base_url('public/js/validateForm.min.js?v=' . ADMIN_VERSION)}}"></script>
-<script src="{{base_url('public/js/components/CategoriaNewForm.min.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/js/validateForm.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/CategoryNewForm.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

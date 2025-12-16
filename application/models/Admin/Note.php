@@ -4,7 +4,7 @@
 
 use Tightenco\Collect\Support\Collection;
 
-class Note extends MY_model
+class Note extends MY_Model
 {
     public $primaryKey = 'note_id';
     public $softDelete = true;

@@ -84,5 +84,5 @@
 @endsection
 
 @section('footer_includes')
-<script src="{{base_url('public/js/components/usergroupscomponent.min.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/UserGroupsComponent.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

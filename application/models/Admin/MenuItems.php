@@ -1,0 +1,47 @@
+<?php if (!defined('BASEPATH')) {
+    exit('No direct script access allowed');
+}
+
+class MenuItems extends MY_Model
+{
+    public $table = 'menu_items';
+    public $primaryKey = 'menu_item_id';
+
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    public function filter_results($collection = [])
+    {
+
+        foreach ($collection as $key => &$value) {
+
+            if ($value->model && $value->model_id) {
+                switch ($value->model) {
+                    case 'page':
+                        $this->load->model('Admin/Page');
+                        $page = new Page();
+                        $result = $page->find($value->model_id);
+                        if ($result) {
+                            $value->item_link = base_url($page->path);
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+            if (isset($value->menu_item_parent_id) && $value->menu_item_id) {
+                $this->load->model('Admin/MenuItems');
+                $menu_item = new MenuItems();
+                $subitems = $menu_item->where(['menu_item_parent_id' => $value->menu_item_id]);
+                $value->{'subitems'} = $subitems ? $subitems : [];
+            }
+        }
+
+        return $collection;
+    }
+
+}

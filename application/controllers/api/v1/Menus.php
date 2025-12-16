@@ -116,8 +116,8 @@ class Menus extends REST_Controller
         $menu->date_create = date("Y-m-d H:i:s");
         $menu->date_publish = date("Y-m-d H:i:s");
         if ($menu->save()) {
-            $this->load->model('Admin/Menu_items');
-            $menu_item = new Menu_items();
+            $this->load->model('Admin/MenuItems');
+            $menu_item = new MenuItems();
             $menu_item->delete_data(['menu_id' => $menu->menu_id]);
             $menu_items = $this->input->post('menu_items');
             $this->save_menu_items($menu_items, $menu);
@@ -132,7 +132,7 @@ class Menus extends REST_Controller
     {
         foreach ($menu_items as $key => $item) {
             $item = (object) $item;
-            $menu_item = new Menu_items();
+            $menu_item = new MenuItems();
             isset($item->menu_item_id) ? $menu_item->find($item->menu_item_id) : false;
             $menu_item->menu_id = $menu->menu_id;
             $menu_item->menu_item_parent_id = $parent_id;

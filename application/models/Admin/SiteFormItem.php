@@ -2,7 +2,7 @@
     exit('No direct script access allowed');
 }
 
-class SiteFormItem extends MY_model
+class SiteFormItem extends MY_Model
 {
 
     public $table = 'siteform_items';

@@ -52,7 +52,7 @@ class Users extends MY_Controller
         $data['h1'] = "Usuarios";
         $data['header'] = $this->load->view('admin/header', $data, true);
         $data['username'] = $this->session->userdata('username');
-        $data['footer_includes'] = array("<script src=" . base_url('public/js/components/userComponent.min.js?v=1') . "></script>");
+        $data['footer_includes'] = array("<script src=" . base_url('resources/components/UserComponent.js?v=' . ADMIN_VERSION) . "></script>");
 
         echo $this->blade->view("admin.user.users", $data);
     }
@@ -114,8 +114,8 @@ class Users extends MY_Controller
             $data['header'] = $this->load->view('admin/header', $data, true);
             $data['mode'] = 'new';
             $data['footer_includes'] = array(
-                script('public/js/validateForm.min.js'),
-                script('public/js/components/UserNewForm.min.js'),
+                script('resources/js/validateForm.js'),
+                script('resources/components/UserNewForm.js'),
             );
             echo $this->blade->view("admin.user.form", $data);
         } else {
@@ -149,8 +149,8 @@ class Users extends MY_Controller
         $data['userdata'] = false;
         $data['mode'] = 'new';
         $data['footer_includes'] = array(
-            script('public/js/validateForm.min.js'),
-            script('public/js/components/UserNewForm.min.js'),
+            script('resources/js/validateForm.js'),
+            script('resources/components/UserNewForm.js'),
         );
         echo $this->blade->view("admin.user.form", $data);
     }

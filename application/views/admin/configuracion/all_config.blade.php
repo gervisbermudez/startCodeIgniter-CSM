@@ -867,7 +867,7 @@
 @endsection
 
 @section('footer_includes')
-<script src="{{base_url('public/js/validateForm.min.js?v=' . ADMIN_VERSION)}}"></script>
-<script src="{{base_url('public/js/components/configurationComponent.min.js?v=' . ADMIN_VERSION)}}"></script>
-<script src="{{base_url('public/js/components/ConfiguracionList.min.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/js/validateForm.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/ConfigurationComponent.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/ConfiguracionList.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

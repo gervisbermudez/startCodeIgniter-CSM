@@ -114,6 +114,6 @@ const custom_model_id = <?php echo json_encode($custom_model_id); ?>;
 
 @section('footer_includes')
 <script src="{{base_url('public/js/tinymce/js/tinymce/tinymce.min.js')}}"></script>
-<script src="{{base_url('public/js/components/FileExplorerSelector.min.js')}}"></script>
-<script src="{{base_url('public/js/components/FormNewModuleBundle.min.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/FileExplorerSelector.js')}}"></script>
+<script src="{{base_url('resources/components/FormNewModule.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

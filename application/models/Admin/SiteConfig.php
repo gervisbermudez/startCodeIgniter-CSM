@@ -2,7 +2,7 @@
     exit('No direct script access allowed');
 }
 
-class SiteConfig extends MY_model
+class SiteConfig extends MY_Model
 {
 
     public $table = 'site_config';

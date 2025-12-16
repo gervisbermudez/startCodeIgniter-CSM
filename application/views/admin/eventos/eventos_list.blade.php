@@ -19,6 +19,6 @@
 
 @section('footer_includes')
 @include('admin.components.dataTableComponent')
-<script src="{{base_url('public/js/components/dataTable.component.min.js?v=' . ADMIN_VERSION)}}"></script>
-<script src="{{base_url('public/js/components/EventsList.min.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/DataTableComponent.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/EventsList.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

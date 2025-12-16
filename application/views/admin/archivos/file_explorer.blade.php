@@ -464,8 +464,8 @@
 
 
 @section('footer_includes')
-<script src="<?=base_url('public/js/components/FileExplorerSelector.min.js');?>"></script>
-<script src="<?=base_url('public/js/components/fileExplorerModule.min.js');?>"></script>
+<script src="<?=base_url('resources/components/FileExplorerSelector.js');?>"></script>
+<script src="<?=base_url('resources/components/fileExplorerModule.js');?>"></script>
 <script src="<?=base_url('public/js/lightbox2-master/dist/js/lightbox.min.js');?>"></script>
 <script src="<?=base_url('public/js/fileinput-master/js/fileinput.min.js');?>"></script>
 <script src="<?=base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js');?>"></script>

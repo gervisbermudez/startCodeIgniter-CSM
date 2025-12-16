@@ -33,7 +33,7 @@ class File extends MY_Model
     );
 
     public $hasMany = [
-        'history' => ['file_id', 'Admin/File_activity', 'File_activity'],
+        'history' => ['file_id', 'Admin/FileActivity', 'FileActivity'],
     ];
 
     public function __construct()

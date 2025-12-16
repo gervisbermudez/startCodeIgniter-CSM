@@ -50,23 +50,23 @@ class Dashboard extends REST_Controller
      */
     public function index_get()
     {
-        $this->load->model('Admin/Categories');
+        $this->load->model('Admin/Categorie');
         $this->load->model('Admin/User');
         $this->load->model('Admin/Page');
-        $this->load->model('Admin/Custom_model');
-        $this->load->model('Admin/Custom_model_content');
+        $this->load->model('Admin/CustomModel');
+        $this->load->model('Admin/CustomModelContent');
         $this->load->model('Admin/File');
         $this->load->model('Admin/Album');
 
         $result = array();
 
-        $Form_conten = new Custom_model_content();
+        $Form_conten = new CustomModelContent();
         $result['content'] = $Form_conten->all();
 
-        $form = new Custom_model();
+        $form = new CustomModel();
         $result['forms_types'] = $form->all();
 
-        $dashboard = new Categories();
+        $dashboard = new Categorie();
         $result['dashboards'] = $dashboard->where(array('parent_id' => '0'));
 
         $user = new User();
@@ -82,8 +82,8 @@ class Dashboard extends REST_Controller
         $album = new Album();
         $result['albumes'] = $album->all();
 
-        $this->load->model('Admin/User_tracking');
-        $User_tracking = new User_tracking();
+        $this->load->model('Admin/UserTracking');
+        $User_tracking = new UserTracking();
         $tempResult = $User_tracking->all();
         $tempData = $tempResult ? $tempResult->toArray() : [];
 
@@ -357,7 +357,7 @@ class Dashboard extends REST_Controller
     public function filter_get()
     {
 
-        $dashboard = new Categories();
+        $dashboard = new Categorie();
         $result = $dashboard->where(
             $_GET
         );

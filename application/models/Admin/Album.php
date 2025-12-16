@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
-class Album extends MY_model {
+class Album extends MY_Model {
 
     public $primaryKey = 'album_id';
     public $softDelete = true;
@@ -16,7 +16,7 @@ class Album extends MY_model {
     ];
 
 	public $hasMany = [
-        'items' => ['album_id', 'Admin/Album_items', 'Album_items'],
+        'items' => ['album_id', 'Admin/AlbumItems', 'AlbumItems'],
     ];
 
 	public function __construct()
@@ -35,10 +35,10 @@ class Album extends MY_model {
                 $value->{'model_type'} = "album";
             }
         }
-        $this->load->model('Admin/Album_items');
+        $this->load->model('Admin/AlbumItems');
         foreach ($collection as $key => &$value) {
             if (isset($value->album_id) && $value->album_id) {
-                $album_item = new Album_items();
+                $album_item = new AlbumItems();
                 $results =  $album_item->where(["album_id" => $value->album_id]);
                 $value->{'items'} = $results ? $results : new Collection();
             }

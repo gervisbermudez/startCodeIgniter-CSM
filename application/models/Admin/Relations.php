@@ -2,7 +2,7 @@
     exit('No direct script access allowed');
 }
 
-class Relations extends MY_model {
+class Relations extends MY_Model {
 	public $softDelete = true;
 
 	function __construct()

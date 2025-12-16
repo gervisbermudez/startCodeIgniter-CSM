@@ -20,7 +20,7 @@ class Files extends REST_Controller
         }
         $this->load->database();
         $this->load->model('Admin/File');
-        $this->load->model('Admin/File_activity');
+        $this->load->model('Admin/FileActivity');
 
     }
 
@@ -115,7 +115,7 @@ class Files extends REST_Controller
             $file->featured = $post_file["featured"];
             $result = $file->save();
 
-            $file_activity = new File_activity();
+            $file_activity = new FileActivity();
             $file_activity->file_id = $file->file_id;
             $file_activity->user_id = userdata('user_id');
             $file_activity->action = "featured";
@@ -160,7 +160,7 @@ class Files extends REST_Controller
             $file_name = $file['file_name'] . '.' . $file['file_type'];
             $rename = rename($file['file_path'] . $file_name, $newPath . $file_name);
 
-            $file_activity = new File_activity();
+            $file_activity = new FileActivity();
             $file_activity->file_id = $file_model->file_id;
             $file_activity->user_id = userdata('user_id');
             $file_activity->action = "move";
@@ -245,7 +245,7 @@ class Files extends REST_Controller
                 $file['file_path'] . $file['new_name'] . '.' . $file['file_type']
             );
 
-            $file_activity = new File_activity();
+            $file_activity = new FileActivity();
             $file_activity->file_id = $file_model->file_id;
             $file_activity->user_id = userdata('user_id');
             $file_activity->action = "rename";

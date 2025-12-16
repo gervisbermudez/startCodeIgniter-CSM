@@ -12,8 +12,8 @@ const DEBUGMODE = <?php echo json_encode($ci->config->item('debug_mode')) ?>;
 @endif
 <script src="{{base_url(JSPATH . 'materialize.min.js?v=' . ADMIN_VERSION)}}"></script>
 <script src="{{base_url(JSPATH . 'jquery.js?v=' . ADMIN_VERSION)}}"></script>
-<script src="{{base_url(JSPATH . 'start.min.js?v=' . ADMIN_VERSION)}}"></script>
-<script src="{{base_url('public/js/components/Notifications.component.min.js')}}"></script>
+<script src="{{base_url('resources/js/start.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/Notifications.component.js?v=' . ADMIN_VERSION)}}"></script>
 @isset($footer_includes)
 @foreach($footer_includes as $include)
 <?php echo $include ?>

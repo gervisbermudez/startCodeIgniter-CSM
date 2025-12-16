@@ -2,7 +2,7 @@
     exit('No direct script access allowed');
 }
 
-class Contacts extends MY_model {
+class Contacts extends MY_Model {
 
 	public $primaryKey = 'contacts_id';
     public $softDelete = true;

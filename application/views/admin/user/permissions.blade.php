@@ -16,7 +16,7 @@
 @section('footer_includes')
 @include('admin.components.dataTableComponent')
 @include('admin.components.dataEditComponent')
-<script src="{{base_url('public/js/components/dataTable.component.min.js?v=' . ADMIN_VERSION)}}"></script>
-<script src="{{base_url('public/js/components/dataEdit.component.min.js?v=' . ADMIN_VERSION)}}"></script>
-<script src="{{base_url('public/js/components/permissionsData.component.min.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/DataTableComponent.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/dataEdit.component.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/permissionsData.component.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

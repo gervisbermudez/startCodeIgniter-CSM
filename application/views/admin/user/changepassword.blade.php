@@ -63,6 +63,6 @@
 
 
 @section('footer_includes')
-<script src="<?= base_url('public/js/validateForm.min.js'); ?>"></script>
-<script src="<?= base_url('public/js/components/changePassword.component.min.js'); ?>"></script>
+<script src="<?= base_url('resources/js/validateForm.js'); ?>"></script>
+<script src="<?= base_url('resources/components/ChangePasswordForm.js'); ?>"></script>
 @endsection

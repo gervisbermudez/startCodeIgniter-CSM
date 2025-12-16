@@ -4,7 +4,7 @@
 
 use Tightenco\Collect\Support\Collection;
 
-class User extends MY_model
+class User extends MY_Model
 {
     public $primaryKey = 'user_id';
     public $user_data = null;
@@ -81,18 +81,18 @@ class User extends MY_model
         }
 
         $this->load->model('Admin/Page');
-        $this->load->model('Admin/Custom_model_content');
-        $this->load->model('Admin/Custom_model');
+        $this->load->model('Admin/CustomModelContent');
+        $this->load->model('Admin/CustomModel');
 
         $pages = new Page();
         $pages = $pages->where(["user_id" => $user_id]);
         $pages = $pages ? $pages->all() : [];
 
-        $Custom_model_content = new Custom_model_content();
+        $Custom_model_content = new CustomModelContent();
         $Custom_model_content = $Custom_model_content->where(["user_id" => $user_id]);
         $Custom_model_content = $Custom_model_content ? $Custom_model_content->all() : [];
 
-        $Custom_model = new Custom_model();
+        $Custom_model = new CustomModel();
         $Custom_model = $Custom_model->where(["user_id" => $user_id]);
         $Custom_model = $Custom_model ? $Custom_model->all() : [];
 

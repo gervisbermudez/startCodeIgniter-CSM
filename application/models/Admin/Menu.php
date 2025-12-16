@@ -2,7 +2,7 @@
     exit('No direct script access allowed');
 }
 
-class Menu extends MY_model
+class Menu extends MY_Model
 {
 
     public $softDelete = true;
@@ -11,7 +11,7 @@ class Menu extends MY_model
         'user' => ['user_id', 'Admin/User', 'user'],
     ];
     public $hasMany = [
-        'menu_items' => ['menu_id', 'Admin/Menu_items', 'Menu_items', [
+        'menu_items' => ['menu_id', 'Admin/MenuItems', 'MenuItems', [
             'menu_item_parent_id' => 0
         ]],
     ];

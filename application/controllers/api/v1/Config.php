@@ -346,9 +346,9 @@ class Config extends REST_Controller
 
     public function apilogger_get($api_log_id = null)
     {
-        $this->load->model('Admin/Api_logs');
+        $this->load->model('Admin/ApiLogs');
 
-        $Api_logs = new Api_logs();
+        $Api_logs = new ApiLogs();
         if ($api_log_id) {
             $result = $Api_logs->where(["site_config_id" => $api_log_id]);
             $result = $result ? $result->first() : [];
@@ -366,9 +366,9 @@ class Config extends REST_Controller
 
     public function usertrackinglogger_get($api_log_id = null)
     {
-        $this->load->model('Admin/User_tracking');
+        $this->load->model('Admin/UserTracking');
 
-        $User_tracking = new User_tracking();
+        $User_tracking = new UserTracking();
         if ($api_log_id) {
             $result = $User_tracking->where(["site_config_id" => $api_log_id]);
             $result = $result ? $result->first() : [];

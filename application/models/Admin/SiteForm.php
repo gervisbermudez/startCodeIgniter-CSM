@@ -2,7 +2,7 @@
     exit('No direct script access allowed');
 }
 
-class SiteForm extends MY_model
+class SiteForm extends MY_Model
 {
 
     public $softDelete = true;
@@ -12,7 +12,7 @@ class SiteForm extends MY_model
     ];
 
     public $hasMany = [
-        "siteform_items" => ["siteform_id", "Admin/SiteFormItem", 'siteform_items'],
+        "siteform_items" => ["siteform_id", "Admin/SiteFormItem", 'SiteFormItem'],
     ];
 
     public $computed = array("properties" => "properties_to_json");

@@ -26,7 +26,7 @@ class Menus extends MY_Controller
     {
         parent::__construct();
         $this->check_permisions();
-        $this->load->model('Admin/Categories');
+        $this->load->model('Admin/Categorie');
     }
 
     public function index()

@@ -208,7 +208,7 @@
 @endsection
 
 @section('footer_includes')
-<script src="<?=base_url('public/js/components/DataSelector.min.js');?>"></script>
-<script src="{{base_url('public/js/components/MenuNewForm.min.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="<?=base_url('resources/components/DataSelector.js');?>"></script>
+<script src="{{base_url('resources/components/MenuNewForm.js?v=' . ADMIN_VERSION)}}"></script>
 <script src="{{base_url('public/js/jquery-sortable.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

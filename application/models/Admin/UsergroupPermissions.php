@@ -6,7 +6,7 @@ if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
-class UsergroupPermissions extends MY_model
+class UsergroupPermissions extends MY_Model
 {
     public $table = 'usergroup_permisions';
     public $primaryKey = 'usergroup_permisions_id';

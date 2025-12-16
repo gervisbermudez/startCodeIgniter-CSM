@@ -154,13 +154,13 @@ class PageController extends Base_Controller
     {
         $this->check_blog_config();
 
-        $this->load->model('Admin/Categories');
+        $this->load->model('Admin/Categorie');
         
         // Sanitizar la categoría
         $categorie = urldecode($categorie);
         $categorie_name = ucwords(str_replace('-', ' ', $categorie));
         
-        $categorie_obj = new Categories();
+        $categorie_obj = new Categorie();
         $result = $categorie_obj->find_with(["name" => $categorie_name]);
 
         if (!$result) {

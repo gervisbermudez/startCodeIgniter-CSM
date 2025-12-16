@@ -153,5 +153,5 @@
 @endsection
 
 @section('footer_includes')
-<script src="{{base_url('public/js/components/NotesList.min.js')}}"></script>
+<script src="{{base_url('resources/components/NotesLists.js')}}"></script>
 @endsection

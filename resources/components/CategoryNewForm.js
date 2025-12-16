@@ -87,7 +87,7 @@ var CategoriaNewForm = new Vue({
     },
     runSaveData(callBack) {
       var self = this;
-      var url = BASEURL + "api/v1/categorie";
+      var url = BASEURL + "api/v1/categories";
       $.ajax({
         type: "POST",
         url: url,
@@ -162,7 +162,7 @@ var CategoriaNewForm = new Vue({
     },
     getCategories() {
       var self = this;
-      var url = BASEURL + "api/v1/categorie/type/" + self.type;
+      var url = BASEURL + "api/v1/categories/type/" + self.type;
       fetch(url)
         .then((response) => response.json())
         .then((response) => {
@@ -182,7 +182,7 @@ var CategoriaNewForm = new Vue({
       var self = this;
       if (categorie_id && editMode == "edit") {
         self.editMode = true;
-        var url = BASEURL + "api/v1/categorie/" + categorie_id;
+        var url = BASEURL + "api/v1/categories/" + categorie_id;
         fetch(url)
           .then((response) => response.json())
           .then((response) => {

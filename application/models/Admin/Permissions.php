@@ -2,7 +2,7 @@
     exit('No direct script access allowed');
 }
 
-class Permissions extends MY_model
+class Permissions extends MY_Model
 {
 
     public $table = "permisions";

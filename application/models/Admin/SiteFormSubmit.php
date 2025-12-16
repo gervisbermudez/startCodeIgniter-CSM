@@ -2,13 +2,13 @@
     exit('No direct script access allowed');
 }
 
-class SiteFormSubmit extends MY_model
+class SiteFormSubmit extends MY_Model
 {
     public $primaryKey = 'siteform_submit_id';
     public $table = 'siteform_submit';
     public $hasOne = [
         'siteform' => ['siteform_id', 'Admin/SiteForm', 'SiteForm'],
-        'user_tracking' => ['user_tracking_id', 'Admin/User_tracking', 'User_tracking'],
+        'user_tracking' => ['user_tracking_id', 'Admin/UserTracking', 'UserTracking'],
     ];
     public $hasData = true;
 

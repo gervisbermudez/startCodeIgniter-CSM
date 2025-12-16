@@ -151,6 +151,6 @@
 
 @section('footer_includes')
 @include('admin.components.dataTableComponent')
-<script src="{{base_url('public/js/components/dataTable.component.min.js?v=' . ADMIN_VERSION)}}"></script>
-<script src="{{base_url('public/js/components/searchComponent.min.js')}}"></script>
+<script src="{{base_url('resources/components/DataTableComponent.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/searchComponent.js')}}"></script>
 @endsection

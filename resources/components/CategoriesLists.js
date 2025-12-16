@@ -46,7 +46,7 @@ var CategoriesLists = new Vue({
       var self = this;
       $.ajax({
         type: "GET",
-        url: BASEURL + "api/v1/categorie/",
+        url: BASEURL + "api/v1/categories/",
         data: {},
         dataType: "json",
         success: function (response) {
@@ -74,7 +74,7 @@ var CategoriesLists = new Vue({
       self.loader = true;
       $.ajax({
         type: "DELETE",
-        url: BASEURL + "api/v1/categorie/" + categorie.categorie_id,
+        url: BASEURL + "api/v1/categories/" + categorie.categorie_id,
         data: {},
         dataType: "json",
         success: function (response) {

@@ -172,5 +172,5 @@
 @endsection
 
 @section('footer_includes')
-<script src="{{base_url('public/js/components/CustomFormLists.min.js')}}"></script>
+<script src="{{base_url('resources/components/CustomFormLists.js')}}"></script>
 @endsection
