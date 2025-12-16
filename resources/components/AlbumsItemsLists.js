@@ -48,7 +48,6 @@ var AlbumsLists = new Vue({
       return BASEURL + "public/img/default.jpg";
     },
     copyCallcack(selected) {
-      console.log(selected);
     },
     getPages: function () {
       var self = this;

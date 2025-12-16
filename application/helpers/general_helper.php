@@ -1,6 +1,6 @@
 <?php
 if (!function_exists('fnGetTitle')) {
-    function fnGetTitle($strUrlSegment)
+    function fnGetTitle(string $strUrlSegment): string
     {
         $porciones = explode("/", $strUrlSegment);
         array_key_exists(1, $porciones) ? $title = ucwords($porciones[0] . " | " . $porciones[1]) : $title = ucwords($porciones[0]);
@@ -10,13 +10,13 @@ if (!function_exists('fnGetTitle')) {
 }
 
 if (!function_exists('url')) {
-    function url($strUrlSegment)
+    function url(string $strUrlSegment): string
     {
         return base_url($strUrlSegment);
     }
 }
 
-function getTemplates()
+function getTemplates(): array
 {
     $ci = &get_instance();
     $ci->load->helper('directory');
@@ -46,7 +46,7 @@ function getTemplates()
 }
 
 if (!function_exists('getThemePath')) {
-    function getThemePath($theme = null)
+    function getThemePath(?string $theme = null): ?string
     {
         if ($theme) {
             return str_replace('\\', '/', FCPATH . 'themes' . '/' . $theme);
@@ -64,7 +64,7 @@ if (!function_exists('getThemePath')) {
     }
 }
 
-function init_form($siteform_name)
+function init_form(string $siteform_name): void
 {
     $ci = &get_instance();
     $siteforms = $ci->session->userdata('siteforms');
@@ -73,7 +73,7 @@ function init_form($siteform_name)
     }
 }
 
-function render_form($siteform_name)
+function render_form(string $siteform_name): string
 {
     $ci = &get_instance();
     $ci->load->model('Admin/SiteForm');
@@ -92,20 +92,32 @@ function render_form($siteform_name)
     return $ci->blade->view("site.templates.forms." . $siteform->template, ['siteform' => $siteform]);
 }
 
-function fragment($fragment_name)
+function fragment(string $fragment_name)
 {
+    // Obtener del cache si existe
+    $cache_key = 'fragment_' . $fragment_name;
+    $cached = get_cached($cache_key);
+    if ($cached !== null && $cached !== '') {
+        return $cached;
+    }
+    
     $ci = &get_instance();
     $ci->load->model('Admin/Fragmentos');
     $fragment = new Fragmentos();
     $result = $fragment->find_with(['name' => $fragment_name]);
+    
     if (!$result) {
         return '';
     }
 
-    return $fragment->description;
+    $content = $result->description;
+    // Cachear por 24 horas
+    set_cached($cache_key, $content, 86400);
+    
+    return $content;
 }
 
-function set_notification($title, $description, $type = 'info', $url = null)
+function set_notification(string $title, string $description, string $type = 'info', ?string $url = null): bool
 {
     $ci = &get_instance();
     $ci->load->model('Admin/Notifications');
@@ -120,20 +132,35 @@ function set_notification($title, $description, $type = 'info', $url = null)
 }
 
 if (!function_exists("config")) {
-    function config($config_name)
+    function config(string $config_name)
     {
+        // Intentar obtener del cache primero
+        $cached = get_cached('config_' . $config_name);
+        if ($cached !== null) {
+            return $cached;
+        }
+        
         $ci = &get_instance();
         $config = $ci->config->item($config_name);
         if ($config) {
+            set_cached('config_' . $config_name, $config, 86400);
             return $config;
         }
+        
+        $ci->load->model('Admin/Site_config');
         $config = $ci->Site_config->where(['config_name' => $config_name]);
-        return $config ? $config->first()->config_value : null;
+        $value = $config ? $config->first()->config_value : null;
+        
+        if ($value !== null) {
+            set_cached('config_' . $config_name, $value, 86400);
+        }
+        
+        return $value;
     }
 }
 
 if (!function_exists('getThemePublicPath')) {
-    function getThemePublicPath()
+    function getThemePublicPath(): string
     {
         $ci = &get_instance();
         $config = new stdClass();
@@ -146,7 +173,7 @@ if (!function_exists('getThemePublicPath')) {
 }
 
 if (!function_exists('isDir')) {
-    function isDir($dir)
+    function isDir(string $dir): bool
     {
         return is_dir($dir['relative_path'] . $dir['name']);
     }

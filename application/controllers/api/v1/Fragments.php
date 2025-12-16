@@ -114,14 +114,24 @@ class Fragments extends REST_Controller
             return;
         }
 
+        // Obtener datos validados
+        $fragment_id = $this->input->post('fragment_id', TRUE);
+        $name = $this->input->post('name', TRUE);
+        $description = $this->input->post('description', TRUE);
+        $type = $this->input->post('type', TRUE);
+        $status = (int)$this->input->post('status');
+
         $fragmento = new Fragmentos();
 
-        $this->input->post('fragment_id') ? $fragmento->find($this->input->post('fragment_id')) : false;
-        $fragmento->name = $this->input->post('name');
-        $fragmento->description = $this->input->post('description');
+        if ($fragment_id) {
+            $fragmento->find($fragment_id);
+        }
+
+        $fragmento->name = $name;
+        $fragmento->description = $description;
         $fragmento->user_id = userdata('user_id');
-        $fragmento->type = $this->input->post('type');
-        $fragmento->status = $this->input->post('status');
+        $fragmento->type = $type;
+        $fragmento->status = $status;
         $fragmento->date_create = date("Y-m-d H:i:s");
         $fragmento->date_publish = date("Y-m-d H:i:s");
         if ($fragmento->save()) {

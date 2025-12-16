@@ -152,7 +152,6 @@ var fileUploaderModule = new Vue({
       return false;
     },
     renameFile(item) {
-      console.log(item);
       this.editFile = item;
       this.editFile.new_name = this.editFile.file_name;
     },

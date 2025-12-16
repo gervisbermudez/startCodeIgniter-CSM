@@ -134,16 +134,26 @@ class Categorie extends REST_Controller
         // Si la validación ha sido exitosa, creamos una nueva instancia de la clase 'Categories' y asignamos los valores de entrada a sus propiedades
         $categorie = new Categories();
 
-        $this->input->post('categorie_id') ? $categorie->find($this->input->post('categorie_id')) : false;
-        $categorie->name = $this->input->post('name');
-        $categorie->description = $this->input->post('description');
-        $categorie->type = $this->input->post('type');
+        // Obtener datos validados
+        $categorie_id = $this->input->post('categorie_id', TRUE);
+        $name = $this->input->post('name', TRUE);
+        $description = $this->input->post('description', TRUE);
+        $type = $this->input->post('type', TRUE);
+        $status = (int)$this->input->post('status');
+        $parent_id = (int)$this->input->post('parent_id');
+
+        if ($categorie_id) {
+            $categorie->find($categorie_id);
+        }
+
+        $categorie->name = $name;
+        $categorie->description = $description;
+        $categorie->type = $type;
         $categorie->user_id = userdata('user_id');
-        $categorie->type = $this->input->post('type');
-        $categorie->status = $this->input->post('status');
+        $categorie->status = $status;
         $categorie->date_create = date("Y-m-d H:i:s");
         $categorie->date_publish = date("Y-m-d H:i:s");
-        $categorie->parent_id = $this->input->post('parent_id');
+        $categorie->parent_id = $parent_id;
 
         // Guardamos los datos en la base de datos. Si tiene éxito, la respuesta HTTP 200 (éxito) se devuelve junto con los datos guardados en forma de objeto 'Categories'.
         if ($categorie->save()) {

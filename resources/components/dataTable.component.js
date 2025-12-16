@@ -138,7 +138,6 @@ var dataTable = Vue.component("dataTable", {
             class: this.paginator.current_page == 1 ? "active" : "waves-effect",
           });
         }
-        console.log({ pages });
         for (let index = 1; index <= pages.length; index++) {
           if (pages[index - 1] == "...") {
             if (index === 2) {
@@ -344,7 +343,6 @@ var dataTable = Vue.component("dataTable", {
       return;
     },
     routerPush({ option, index, item }) {
-      console.log("routerPush", { option, item, index });
       let params = {};
 
       if (option.params) {
@@ -397,7 +395,6 @@ var dataTable = Vue.component("dataTable", {
       return;
     },
     confirmCallback(data) {
-      console.log("confirmCallback", data);
       if (data) {
         this.deleteItem(this.toDeleteItem.item, this.toDeleteItem.index);
       }

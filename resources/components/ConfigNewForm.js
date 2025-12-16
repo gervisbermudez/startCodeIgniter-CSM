@@ -219,7 +219,6 @@ var ConfigNewForm = new Vue({
       });
     },
     onChangeTypeValue() {
-      console.log(this.type_value);
       switch (this.type_value) {
         case "string":
           this.validate_as = "text";

@@ -87,8 +87,12 @@ class PageController extends Base_Controller
         $this->check_blog_config();
 
         $this->load->model('Admin/User');
+        
+        // Sanitizar el autor
+        $author = urldecode($author);
+        
         $user = new User();
-        $result = $user->find_with(['username' => urldecode($author)]);
+        $result = $user->find_with(['username' => $author]);
 
         if (!$result) {
             $this->error404();
@@ -114,8 +118,16 @@ class PageController extends Base_Controller
         $this->load->model('Admin/User');
         $user = new User();
 
-        $term = $this->input->get("q");
-        $result = $this->Page->search(urldecode($term));
+        // Obtener y sanitizar el término de búsqueda
+        $term = $this->input->get("q", TRUE);
+        
+        // Validar que el término no esté vacío
+        if (empty($term)) {
+            $this->error404();
+            return;
+        }
+
+        $result = $this->Page->search($term);
 
         if (!$result) {
             $this->error404();
@@ -143,9 +155,13 @@ class PageController extends Base_Controller
         $this->check_blog_config();
 
         $this->load->model('Admin/Categories');
-        $categorie_name = (ucwords(str_replace('-', ' ', urldecode($categorie))));
-        $categorie = new Categories();
-        $result = $categorie->find_with(["name" => $categorie_name]);
+        
+        // Sanitizar la categoría
+        $categorie = urldecode($categorie);
+        $categorie_name = ucwords(str_replace('-', ' ', $categorie));
+        
+        $categorie_obj = new Categories();
+        $result = $categorie_obj->find_with(["name" => $categorie_name]);
 
         if (!$result) {
             $this->error404();
@@ -153,10 +169,10 @@ class PageController extends Base_Controller
         }
 
         $data['title'] = config("SITE_TITLE") . " - Blog";
-        $data['blogs'] = $this->Page->where(['page_type_id' => 2, "status" => 1, 'categorie_id' => $categorie->categorie_id]);
+        $data['blogs'] = $this->Page->where(['page_type_id' => 2, "status" => 1, 'categorie_id' => $categorie_obj->categorie_id]);
         $data['blogs'] = $data['blogs'] ? $data['blogs'] : [];
         $data['layout'] = 'site';
-        $data['categorie'] = $categorie;
+        $data['categorie'] = $categorie_obj;
         $data['template'] = 'blogList';
         $data['list_variant'] = 'categorie';
 

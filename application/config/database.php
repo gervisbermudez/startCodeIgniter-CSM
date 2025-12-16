@@ -58,7 +58,7 @@ $db['default']['database'] = getenv('DATABASE_DATABASE');
 $db['default']['dbdriver'] = 'mysqli';
 $db['default']['dbprefix'] = '';
 $db['default']['pconnect'] = false;
-$db['default']['db_debug'] = true;
+$db['default']['db_debug'] = (ENVIRONMENT !== 'production');
 $db['default']['cache_on'] = false;
 $db['default']['cachedir'] = '';
 $db['default']['char_set'] = 'utf8';
