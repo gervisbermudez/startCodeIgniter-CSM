@@ -1,10 +1,10 @@
 @extends('admin.layouts.app') @section('title', $title)
 @section('head_includes')
-<link rel="stylesheet" href="<?=base_url('public/js/fileinput-master/css/fileinput.min.css')?>" />
-<link rel="stylesheet" href="<?=base_url('public/font-awesome/css/all.min.css')?>" />
+<link rel="stylesheet" href="<?=base_url('public/vendors/fileinput/css/fileinput.min.css')?>" />
+<link rel="stylesheet" href="<?=base_url('public/vendors/font-awesome/css/all.min.css')?>" />
 <link rel="stylesheet" href="<?=base_url('public/css/admin/form.min.css')?>" />
 <link rel="stylesheet" href="<?=base_url('public/css/admin/page-new.min.css')?>" />
-<link rel="stylesheet" href="<?=base_url('public/js/trumbowyg/ui/trumbowyg.min.css')?>" />
+<link rel="stylesheet" href="<?=base_url('public/vendors/trumbowyg/ui/trumbowyg.min.css')?>" />
 <script src="https://unpkg.com/moment@2.22.1/min/moment.min.js"></script>
 @endsection @section('content')
 <div class="container form" id="PageNewForm-root">
@@ -288,11 +288,11 @@
 
 @section('footer_includes')
 <script src="{{base_url('resources/js/validateForm.js')}}"></script>
-<script src="{{base_url('public/js/trumbowyg/trumbowyg.min.js')}}"></script>
-<script src="{{base_url('public/js/trumbowyg/plugins/uploadimage/trumbowyg.uploadimage.js')}}"></script>
+<script src="{{base_url('public/vendors/trumbowyg/trumbowyg.min.js')}}"></script>
+<script src="{{base_url('public/vendors/trumbowyg/plugins/uploadimage/trumbowyg.uploadimage.js')}}"></script>
 <script src="{{base_url('resources/components/FileExplorerSelector.js')}}"></script>
 <script src="{{base_url('resources/components/PageNewForm.js')}}"></script>
-<script src="{{base_url('public/js/fileinput-master/js/fileinput.min.js')}}"></script>
-<script src="{{base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js')}}"></script>
-<script src="{{base_url('public/js/fileinput-master/js/locales/es.js')}}"></script>
+<script src="{{base_url('public/vendors/fileinput/js/fileinput.min.js')}}"></script>
+<script src="{{base_url('public/vendors/fileinput/js/plugins/canvas-to-blob.min.js')}}"></script>
+<script src="{{base_url('public/vendors/fileinput/js/locales/es.js')}}"></script>
 @endsection

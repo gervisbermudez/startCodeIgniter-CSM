@@ -6,11 +6,11 @@
 @endsection
 
 @section('head_includes')
-<link rel="stylesheet" href="<?=base_url('public/js/lightbox2-master/dist/css/lightbox.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/vendors/lightbox2/dist/css/lightbox.min.css')?>">
 <link rel="stylesheet" href="<?=base_url('public/css/admin/file_explorer.min.css')?>">
-<link rel="stylesheet" href="<?=base_url('public/js/fileinput-master/css/fileinput.min.css')?>">
-<link rel="stylesheet" href="<?=base_url('public/font-awesome/css/all.min.css')?>">
-<link rel="stylesheet" href="<?=base_url('public/js/prism.js/prism.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/vendors/fileinput/css/fileinput.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/vendors/font-awesome/css/all.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/vendors/prism/prism.css')?>">
 @endsection
 
 @section('content')
@@ -466,11 +466,11 @@
 @section('footer_includes')
 <script src="<?=base_url('resources/components/FileExplorerSelector.js');?>"></script>
 <script src="<?=base_url('resources/components/fileExplorerModule.js');?>"></script>
-<script src="<?=base_url('public/js/lightbox2-master/dist/js/lightbox.min.js');?>"></script>
-<script src="<?=base_url('public/js/fileinput-master/js/fileinput.min.js');?>"></script>
-<script src="<?=base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js');?>"></script>
-<script src="<?=base_url('public/js/fileinput-master/js/locales/es.js');?>"></script>
-<script src="<?=base_url('public/js/prism.js/prism.js');?>"></script>
+<script src="<?=base_url('public/vendors/lightbox2/dist/js/lightbox.min.js');?>"></script>
+<script src="<?=base_url('public/vendors/fileinput/js/fileinput.min.js');?>"></script>
+<script src="<?=base_url('public/vendors/fileinput/js/plugins/canvas-to-blob.min.js');?>"></script>
+<script src="<?=base_url('public/vendors/fileinput/js/locales/es.js');?>"></script>
+<script src="<?=base_url('public/vendors/prism/prism.js');?>"></script>
 
 <script>
 $(document).on('ready', function() {

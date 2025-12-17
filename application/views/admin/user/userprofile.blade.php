@@ -3,7 +3,7 @@
 @section('title', $title)
 
 @section('head_includes')
-<link rel="stylesheet" href="<?=base_url('public/js/fileinput-master/css/fileinput.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/vendors/fileinput/css/fileinput.min.css')?>">
 <link rel="stylesheet" href="<?=base_url('public/css/admin/userprofile.min.css')?>">
 @endsection
 
@@ -157,8 +157,8 @@
 
 @section('footer_includes')
 <script src="{{base_url('resources/components/FileExplorerSelector.js')}}"></script>
-<script src="{{base_url('public/js/fileinput-master/js/fileinput.min.js')}}"></script>
-<script src="{{base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js')}}"></script>
-<script src="{{base_url('public/js/fileinput-master/js/locales/es.js')}}"></script>
+<script src="{{base_url('public/vendors/fileinput/js/fileinput.min.js')}}"></script>
+<script src="{{base_url('public/vendors/fileinput/js/plugins/canvas-to-blob.min.js')}}"></script>
+<script src="{{base_url('public/vendors/fileinput/js/locales/es.js')}}"></script>
 <script src="<?=base_url('resources/components/UserProfileComponent.js');?>"></script>
 @endsection

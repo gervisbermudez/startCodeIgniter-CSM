@@ -3,8 +3,8 @@
 @section('title', $title)
 
 @section('head_includes')
-<link rel="stylesheet" href="<?=base_url('public/js/fileinput-master/css/fileinput.min.css')?>">
-<link rel="stylesheet" href="<?=base_url('public/font-awesome/css/all.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/vendors/fileinput/css/fileinput.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/vendors/font-awesome/css/all.min.css')?>">
 <link rel="stylesheet" href="<?=base_url('public/css/admin/form.min.css')?>">
 @endsection
 
@@ -113,7 +113,7 @@ const custom_model_id = <?php echo json_encode($custom_model_id); ?>;
 @endsection
 
 @section('footer_includes')
-<script src="{{base_url('public/js/tinymce/js/tinymce/tinymce.min.js')}}"></script>
+<script src="{{base_url('public/vendors/tinymce/js/tinymce/tinymce.min.js')}}"></script>
 <script src="{{base_url('resources/components/FileExplorerSelector.js')}}"></script>
 <script src="{{base_url('resources/components/FormNewModule.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

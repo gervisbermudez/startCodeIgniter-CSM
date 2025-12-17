@@ -3,7 +3,7 @@
 @section('title', $title)
 
 @section('head_includes')
-<link rel="stylesheet" href="<?=base_url('public/font-awesome/css/all.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/vendors/font-awesome/css/all.min.css')?>">
 <link rel="stylesheet" href="<?=base_url('public/css/admin/form.min.css')?>">
 <style>
     .input-field.search-top {

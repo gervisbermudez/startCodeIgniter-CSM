@@ -4,7 +4,7 @@
 @endsection
 
 @section('head_includes')
-<link rel="stylesheet" href="<?=base_url('public/js/fullcalendarjs/main.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/vendors/fullcalendar/main.min.css')?>">
 @endsection
 
 @section('content')
@@ -23,6 +23,6 @@
 @endsection
 
 @section('footer_includes')
-<script src="{{base_url('public/js/fullcalendarjs/main.min.js')}}"></script>
+<script src="{{base_url('public/vendors/fullcalendar/main.min.js')}}"></script>
 <script src="{{base_url('resources/components/CalendarList.js')}}"></script>
 @endsection
