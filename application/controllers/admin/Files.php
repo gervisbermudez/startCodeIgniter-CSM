@@ -33,7 +33,7 @@ class Files extends MY_Controller
             $file = new File();
             $filenameParts = explode(".", $_POST['fileName']);
 
-            $insert_array = $file->get_array_save_file(slugify($filenameParts[0]) . '-' . date("Y-m-d-His") . '.' . $filenameParts[1], $_POST['curDir'] . date("Y-m-d/"));
+            $insert_array = $file->get_array_save_file(slugify($filenameParts[0]) . '-' . date("Y-m-d-His") . '.' . $filenameParts[1], rtrim($_POST['curDir'], '/') . '/' . date("Y-m-d"));
             $find_result = $file->find_with(
                 [
                     "file_path" => $insert_array['file_path'],

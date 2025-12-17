@@ -15,9 +15,13 @@ class FileUploader
     public function upload()
     {
         $preview = $config = $errors = [];
-        $targetDir = $_POST['curDir'] . date("Y-m-d/");
+        $targetDir = rtrim($_POST['curDir'], '/') . '/' . date("Y-m-d");
         if (!file_exists($targetDir)) {
-            @mkdir($targetDir);
+            if (!mkdir($targetDir, 0775, true) && !is_dir($targetDir)) {
+                return [
+                    'error' => 'Failed to create upload directory: ' . $targetDir,
+                ];
+            }
         }
         $fileBlob = 'fileBlob'; // the parameter name that stores the file blob
         if (isset($_FILES[$fileBlob]) && isset($_POST['uploadToken'])) {
@@ -29,20 +33,29 @@ class FileUploader
             $index = $_POST['chunkIndex']; // the current file chunk index
             $totalChunks = $_POST['chunkCount']; // the total number of chunks for this file
             $filenameParts = explode(".", $fileName);
-            $targetFile = $targetDir . '/' . slugify($filenameParts[0]) . '-' . date("Y-m-d-His") . '.' . $filenameParts[1]; // your target file path
+            $processedFileName = slugify($filenameParts[0]) . '-' . date("Y-m-d-His") . '.' . $filenameParts[1];
+            $targetFile = $targetDir . '/' . $processedFileName; // your target file path
+            $targetFileBase = $targetFile; // store the base filename without chunk suffix
             if ($totalChunks > 1) { // create chunk files only if chunks are greater than 1
                 $targetFile .= '_' . str_pad($index, 4, '0', STR_PAD_LEFT);
             }
             $thumbnail = 'unknown.jpg';
+            
+            // Verify directory is writable
+            if (!is_writable($targetDir)) {
+                return [
+                    'error' => 'Upload directory is not writable: ' . $targetDir,
+                ];
+            }
+            
             if (move_uploaded_file($file, $targetFile)) {
                 // get list of all chunks uploaded so far to server
-                $chunks = glob("{$targetDir}/{$fileName}_*");
+                $chunks = glob($targetFileBase . "_*");
                 // check uploaded chunks so far (do not combine files if only one chunk received)
                 $allChunksUploaded = $totalChunks > 1 && count($chunks) == $totalChunks;
                 if ($allChunksUploaded) { // all chunks were uploaded
-                    $outFile = $targetDir . '/' . $fileName;
                     // combines all file chunks to one file
-                    $this->combineChunks($chunks, $outFile);
+                    $this->combineChunks($chunks, $targetFileBase);
                 }
                 // if you wish to generate a thumbnail image for the file
                 $targetUrl = $this->getThumbnailUrl($targetFile, $fileName);
@@ -85,6 +98,9 @@ class FileUploader
 
         // close the file handle
         fclose($handle);
+        
+        // Set proper permissions for the combined file
+        @chmod($targetFile, 0644);
     }
 
     // generate and fetch thumbnail for the file
