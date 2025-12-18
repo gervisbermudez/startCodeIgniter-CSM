@@ -5,9 +5,11 @@ import { resolve } from 'path';
 // El JavaScript se maneja directamente sin procesar (legacy code compatible)
 export default defineConfig({
   publicDir: false,
+  base: '/public/', // Base URL para assets
   build: {
     outDir: 'public',
     emptyOutDir: false,
+    assetsInlineLimit: 0, // No inline assets
     rollupOptions: {
       input: {
         // Solo SCSS - todos los archivos principales
@@ -27,9 +29,17 @@ export default defineConfig({
           if (assetInfo.name && assetInfo.name.endsWith('.css')) {
             return '[name].css';
           }
+          // Fuentes a fonts/, resto a assets/
+          if (assetInfo.name && (assetInfo.name.endsWith('.woff') || 
+              assetInfo.name.endsWith('.woff2') || 
+              assetInfo.name.endsWith('.ttf') || 
+              assetInfo.name.endsWith('.eot'))) {
+            return 'fonts/[name].[ext]';
+          }
           return 'assets/[name].[ext]';
         },
       },
+      external: ['/public/fonts/*']
     },
   },
   css: {
