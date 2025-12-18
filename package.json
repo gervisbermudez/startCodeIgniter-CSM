@@ -8,7 +8,10 @@
     "dev": "vite",
     "build": "vite build",
     "watch": "vite build --watch",
+    "validate": "./bin/validate-env.sh",
     "backup-db": "./bin/backup-db.sh",
+    "serve": "./bin/server.sh",
+    "check": "./bin/check-diff.sh",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

@@ -110,6 +110,36 @@ startCodeIgniter-CSM/
 └── .env                 # Environment variables
 ```
 
+## Available Scripts
+
+The project includes several utility scripts to help with development:
+
+### NPM Scripts
+
+```bash
+# Build CSS from SCSS (production)
+npm run build
+
+# Development server with hot reload (if configured)
+npm run dev
+```
+
+### Shell Scripts
+
+```bash
+# Validate development environment
+./bin/validate-env.sh
+
+# Backup database
+./bin/backup-db.sh
+
+# Start development server
+./bin/server.sh
+
+# Check git diff status
+./bin/check-diff.sh
+```
+
 ### Environment Configuration
 
 The `.env` file contains important configuration:
