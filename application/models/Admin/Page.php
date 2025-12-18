@@ -66,46 +66,26 @@ class Page extends MY_Model
 
     public function filter_results($collection = [])
     {
-        $this->load->model('Admin/User');
-        foreach ($collection as $key => &$value) {
-            if (isset($value->user_id)) {
-                $user = new User();
-                $user->find($value->user_id);
-                $value->{'user'} = $user;
-                $value->{'model_type'} = "page";
-            }
+        // Load user relations (eliminates N+1 query)
+        $collection = $this->loadUsersRelation($collection);
+        
+        // Set model_type for all pages
+        foreach ($collection as &$value) {
+            $value->{'model_type'} = "page";
         }
 
-        foreach ($collection as $key => &$value) {
-            if (isset($value->json_content)) {
-                $value->{'json_content'} = json_decode($value->json_content);
-            }
-        }
+        // Decode JSON fields
+        $collection = $this->decodeJsonFields($collection, ['json_content']);
 
+        // Load main image relations (eliminates N+1 query)
         $this->load->model('Admin/File');
-        foreach ($collection as $key => &$value) {
-            if (isset($value->mainImage) && $value->mainImage) {
-                $file = new File();
-                $result = $file->find($value->mainImage);
-                if ($result) {
-                    $value->imagen_file = $file->as_data();
-                    $value->imagen_file->{'file_front_path'} = new stdClass();
-                    $value->imagen_file->{'file_front_path'} = $file->getFileFrontPath();
-                }
-            }
-        }
+        $collection = $this->loadFilesRelation($collection, 'mainImage', 'imagen_file');
 
-        foreach ($collection as $key => &$value) {
-            if (isset($value->thumbnailImage) && $value->thumbnailImage) {
-                $file = new File();
-                $file->find($value->thumbnailImage);
-                $value->thumbnail_image = $file->as_data();
-                $value->thumbnail_image->{'file_front_path'} = new stdClass();
-                $value->thumbnail_image->{'file_front_path'} = $file->getFileFrontPath();
-            }
-        }
+        // Load thumbnail image relations (eliminates N+1 query)
+        $collection = $this->loadFilesRelation($collection, 'thumbnailImage', 'thumbnail_image');
 
-        foreach ($collection as $key => &$value) {
+        // Load page_data for each page
+        foreach ($collection as &$value) {
             $value->{'page_data'} = $this->search_for_data($value->page_id, 'page_id');
         }
 

@@ -1037,6 +1037,30 @@ class MY_Model extends CI_Model implements JsonSerializable
     }
 
     /**
+     * Decodifica campos JSON en una colección de forma eficiente
+     * 
+     * @param Collection|array $collection Colección de objetos
+     * @param array $fields Array de nombres de campos a decodificar (ej: ['json_content', 'metadata'])
+     * @return Collection|array Colección con campos JSON decodificados
+     */
+    protected function decodeJsonFields($collection, $fields = [])
+    {
+        if (empty($collection) || empty($fields)) {
+            return $collection;
+        }
+
+        foreach ($collection as &$item) {
+            foreach ($fields as $field) {
+                if (isset($item->{$field}) && is_string($item->{$field})) {
+                    $item->{$field} = json_decode($item->{$field});
+                }
+            }
+        }
+
+        return $collection;
+    }
+
+    /**
      * Método helper para cargar múltiples relaciones de una vez
      * Simplifica el código en filter_results
      * 

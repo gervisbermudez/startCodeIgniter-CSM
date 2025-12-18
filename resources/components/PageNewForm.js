@@ -1,5 +1,17 @@
-var runningAutoSave = false;
 var trumbowygInstance = null;
+
+// Helper: debounce para optimizar autosave
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
 
 var PageNewForm = new Vue({
   el: "#PageNewForm-root",
@@ -198,6 +210,15 @@ var PageNewForm = new Vue({
       }
     },
   },
+  created() {
+    // Crear versión debounced del autosave (ejecuta 1 vez después de 2 segundos de inactividad)
+    this.debouncedAutoSave = debounce(() => {
+      if (!this.status) {
+        this.runSaveData();
+        this.debug ? console.log("Auto-save ejecutado") : null;
+      }
+    }, 2000);
+  },
   filters: {
     capitalize: function (value) {
       if (!value) return "";
@@ -286,16 +307,8 @@ var PageNewForm = new Vue({
       this.setMetaContent(title, "keywords");
     },
     autoSave() {
-      if (!this.status) {
-        if (!runningAutoSave) {
-          runningAutoSave = true;
-          setTimeout(() => {
-            this.runSaveData();
-            this.debug ? console.log("running autosave...") : null;
-            runningAutoSave = false;
-          }, 3000);
-        }
-      }
+      // Llama a la versión debounced (se ejecutará solo después de 2s sin cambios)
+      this.debouncedAutoSave();
     },
     removeImage(index) {
       if (this.mainImage.length > 0) {
@@ -409,7 +422,7 @@ var PageNewForm = new Vue({
         error: function (response) {
           self.loader = false;
           M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(error);
+          self.debug ? console.error(error) : null;
         },
       });
     },
@@ -635,7 +648,7 @@ var PageNewForm = new Vue({
               );
               response.data.page.page_data.tags
                 ? response.data.page.page_data.tags.forEach((element) => {
-                    console.log({ element });
+                    self.debug ? console.log({ element }) : null;
                     instance.addChip({
                       tag: element,
                     });
@@ -671,7 +684,7 @@ var PageNewForm = new Vue({
             this.initPlugins();
           })
           .catch((response) => {
-            console.log(response);
+            self.debug ? console.log(response) : null;
             M.toast({ html: response.error_message });
             self.loader = false;
           });
@@ -708,7 +721,7 @@ var PageNewForm = new Vue({
     },
     onSelectImageCallcack(files) {
       files = files.map((file) => new ExplorerFile(file));
-      console.log(files);
+      this.debug ? console.log(files) : null;
       let instance = M.Modal.getInstance($("#editorModal"));
       instance.close();
       files.forEach((file) => {
@@ -725,10 +738,10 @@ var PageNewForm = new Vue({
             range.setEnd(endNode, 1);
             trumbowygInstance.range = range;
           }
-          console.log({ trumbowygInstance });
+          this.debug ? console.log({ trumbowygInstance }) : null;
           trumbowygInstance.range.insertNode(node);
         } catch (error) {
-          console.error(error);
+          this.debug ? console.error(error) : null;
         }
       });
     },
