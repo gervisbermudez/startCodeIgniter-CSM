@@ -47,11 +47,7 @@ class Users extends MY_Controller
 
     public function index()
     {
-        $this->renderAdminView('admin.user.users', 'Usuarios', 'Usuarios', [
-            'footer_includes' => [
-                "<script src=" . base_url('resources/components/UserComponent.js?v=' . ADMIN_VERSION) . "></script>"
-            ]
-        ]);
+        $this->renderAdminView('admin.user.users', 'Usuarios', 'Usuarios');
     }
 
     public function ver($user_id = false)
