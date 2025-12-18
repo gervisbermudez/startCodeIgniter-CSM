@@ -48,7 +48,10 @@
                         <tr v-for="(fragment, index) in filterFragments" :key="index">
                             <td>@{{fragment.name}}</td>
                             <td>@{{fragment.type}}</td>
-                            <td><a :href="base_url('admin/users/ver/' + fragment.user_id)">@{{fragment.user.get_fullname()}}</a></td>
+                            <td>
+                                <a v-if="fragment.user" :href="base_url('admin/users/ver/' + fragment.user_id)">@{{fragment.user.get_fullname()}}</a>
+                                <span v-else>-</span>
+                            </td>
                             <td>
                                 @{{fragment.date_publish ? fragment.date_publish : fragment.date_create}}
                             </td>
@@ -150,8 +153,4 @@
         <i class="large material-icons">add</i>
     </a>
 </div>
-@endsection
-
-@section('footer_includes')
-<script src="{{base_url('resources/components/FragmentsLists.js')}}"></script>
 @endsection

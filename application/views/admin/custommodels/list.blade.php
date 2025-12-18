@@ -52,8 +52,9 @@
                         <tr v-for="(form, index) in filterForms" :key="index">
                             <td>@{{form.form_name}}</td>
                             <td>@{{getcontentText(form.form_description)}}</td>
-                            <td><a
-                                    :href="base_url('admin/users/ver/' + form.user_id)">@{{form.user.get_fullname()}}</a>
+                            <td>
+                                <a v-if="form.user" :href="base_url('admin/users/ver/' + form.user_id)">@{{form.user.get_fullname()}}</a>
+                                <span v-else>-</span>
                             </td>
                             <td>
                                 @{{form.date_publish ? form.date_publish : form.date_create}}
@@ -117,7 +118,7 @@
                                 </p>
                                 <span class="activator right"><i class="material-icons">more_vert</i></span>
                                 <ul>
-                                    <li class="truncate">
+                                    <li class="truncate" v-if="form.user">
                                         Author: <a
                                             :href="base_url('admin/users/ver/' + form.user_id)">@{{form.user.get_fullname()}}</a>
                                     </li>

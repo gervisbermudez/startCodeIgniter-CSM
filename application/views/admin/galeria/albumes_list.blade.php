@@ -51,7 +51,10 @@
                         <tr v-for="(album, index) in filterData" :key="index">
                             <td>@{{album.name}}</td>
                             <td>@{{getcontentText(album.description)}}</td>
-                            <td><a :href="album.user.get_profileurl()">@{{album.user.get_fullname()}}</a></td>
+                            <td>
+                                <a v-if="album.user" :href="album.user.get_profileurl()">@{{album.user.get_fullname()}}</a>
+                                <span v-else>-</span>
+                            </td>
                             <td>
                                 @{{album.date_publish ? album.date_publish : album.date_create}}
                             </td>
@@ -101,7 +104,7 @@
                                     @{{getcontentText(album.description)}}
                                 </p>
                                 <span class="activator right"><i class="material-icons">more_vert</i></span>
-                                <user-info :user="album.user" />
+                                <user-info v-if="album.user" :user="album.user" />
                             </div>
                         </div>
                     </div>
@@ -147,8 +150,4 @@
         <i class="large material-icons">add</i>
     </a>
 </div>
-@endsection
-
-@section('footer_includes')
-<script src="{{base_url('resources/components/AlbumsLists.js')}}"></script>
 @endsection

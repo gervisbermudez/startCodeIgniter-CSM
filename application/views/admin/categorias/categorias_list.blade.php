@@ -48,7 +48,10 @@
                         <tr v-for="(categorie, index) in filterCategories" :key="index">
                             <td>@{{categorie.name}}</td>
                             <td>@{{categorie.type}}</td>
-                            <td><a :href="base_url('admin/users/ver/' + categorie.user_id)">@{{categorie.user.get_fullname()}}</a></td>
+                            <td>
+                                <a v-if="categorie.user" :href="base_url('admin/users/ver/' + categorie.user_id)">@{{categorie.user.get_fullname()}}</a>
+                                <span v-else>-</span>
+                            </td>
                             <td>
                                 @{{categorie.date_publish ? categorie.date_publish : categorie.date_create}}
                             </td>
@@ -150,8 +153,4 @@
         <i class="large material-icons">add</i>
     </a>
 </div>
-@endsection
-
-@section('footer_includes')
-<script src="{{base_url('resources/components/CategoriesLists.js')}}"></script>
 @endsection

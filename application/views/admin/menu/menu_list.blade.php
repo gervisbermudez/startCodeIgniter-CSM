@@ -47,7 +47,10 @@
                         <tr v-for="(menu, index) in filterMenus" :key="index">
                             <td>@{{menu.name}}</td>
                             <td>@{{menu.template}}</td>
-                            <td><a :href="base_url('admin/users/ver/' + menu.user_id)">@{{menu.user.get_fullname()}}</a></td>
+                            <td>
+                                <a v-if="menu.user" :href="base_url('admin/users/ver/' + menu.user_id)">@{{menu.user.get_fullname()}}</a>
+                                <span v-else>-</span>
+                            </td>
                             <td>
                                 @{{menu.date_publish ? menu.date_publish : menu.date_create}}
                             </td>
@@ -148,8 +151,4 @@
         <i class="large material-icons">add</i>
     </a>
 </div>
-@endsection
-
-@section('footer_includes')
-<script src="{{base_url('resources/components/MenuLists.js')}}"></script>
 @endsection

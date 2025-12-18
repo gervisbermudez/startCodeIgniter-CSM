@@ -7,7 +7,7 @@
 
 @section('content')
 <div id="root">
-    <div class="col s12 center" v-bind:class="{ hide: !loader }">
+    <div class="col s12 center" v-show="loader">
         <br><br>
         <preloader />
     </div>
@@ -34,7 +34,7 @@
             </ul>
         </div>
     </nav>
-    <div class="pages" v-cloak v-if="!loader && pages.length > 0 && filterAll.length">
+    <div class="pages" v-cloak v-if="!loader && pages.length > 0">
         <div class="row">
             <div class="col s12">
                 <h4>Results</h4>
@@ -58,8 +58,9 @@
                         <tr v-for="(page, index) in filterAll" :key="index">
                             <td>@{{page.title}}</td>
                             <td><a :href="base_url('admin/pages/view/' + page.page_id)">@{{page.path}}</a></td>
-                            <td><a
-                                    :href="base_url('admin/users/ver/' + page.user_id)">@{{page.user.get_fullname()}}</a>
+                            <td>
+                                <a v-if="page.user" :href="base_url('admin/users/ver/' + page.user_id)">@{{page.user.get_fullname()}}</a>
+                                <span v-else>-</span>
                             </td>
                             <td>
                                 @{{page.date_publish ? page.date_publish : page.date_create}}
@@ -191,8 +192,9 @@
                         <tr v-for="(page, index) in filterPages" :key="index">
                             <td>@{{page.title}}</td>
                             <td><a :href="base_url('admin/pages/view/' + page.page_id)">@{{page.path}}</a></td>
-                            <td><a
-                                    :href="base_url('admin/users/ver/' + page.user_id)">@{{page.user.get_fullname()}}</a>
+                            <td>
+                                <a v-if="page.user" :href="base_url('admin/users/ver/' + page.user_id)">@{{page.user.get_fullname()}}</a>
+                                <span v-else>-</span>
                             </td>
                             <td>
                                 @{{page.date_publish ? page.date_publish : page.date_create}}
@@ -325,8 +327,9 @@
                             <td>@{{page.title}}</td>
                             <td class="truncate"><a
                                     :href="base_url('admin/pages/view/' + page.page_id)">@{{page.path}}</a></td>
-                            <td><a
-                                    :href="base_url('admin/users/ver/' + page.user_id)">@{{page.user.get_fullname()}}</a>
+                            <td>
+                                <a v-if="page.user" :href="base_url('admin/users/ver/' + page.user_id)">@{{page.user.get_fullname()}}</a>
+                                <span v-else>-</span>
                             </td>
                             <td>
                                 @{{page.date_publish ? page.date_publish : page.date_create}}
@@ -454,8 +457,4 @@
         <i class="large material-icons">add</i>
     </a>
 </div>
-@endsection
-
-@section('footer_includes')
-<script src="{{base_url('resources/components/PagesLists.js')}}"></script>
 @endsection

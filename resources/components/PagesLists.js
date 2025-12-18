@@ -28,7 +28,7 @@ var PagesLists = new Vue({
         });
       }
 
-      return [];
+      return this.pages;
     },
   },
   methods: {
@@ -65,13 +65,19 @@ var PagesLists = new Vue({
         data: {},
         dataType: "json",
         success: function (response) {
-          self.pages = response.data;
-          self.pages.map((element) => {
-            element.user = new User(element.user);
-            return element;
-          });
+          if (response && response.data) {
+            self.pages = response.data;
+            self.pages = self.pages.map((element) => {
+              if (element.user) {
+                element.user = new User(element.user);
+              }
+              return element;
+            });
+          }
           self.loader = false;
-          self.initPlugins();
+          self.$nextTick(() => {
+            self.initPlugins();
+          });
         },
         error: function (error) {
           self.loader = false;

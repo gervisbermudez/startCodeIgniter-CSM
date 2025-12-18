@@ -48,7 +48,10 @@
                         <tr v-for="(note, index) in filterNotes" :key="index">
                             <td>@{{note.title}}</td>
                             <td>@{{note.type}}</td>
-                            <td><a :href="base_url('admin/users/ver/' + note.user_id)">@{{note.user.get_fullname()}}</a></td>
+                            <td>
+                                <a v-if="note.user" :href="base_url('admin/users/ver/' + note.user_id)">@{{note.user.get_fullname()}}</a>
+                                <span v-else>-</span>
+                            </td>
                             <td>
                                 @{{note.date_publish ? note.date_publish : note.date_create}}
                             </td>
@@ -150,8 +153,4 @@
         <i class="large material-icons">add</i>
     </a>
 </div>
-@endsection
-
-@section('footer_includes')
-<script src="{{base_url('resources/components/NotesLists.js')}}"></script>
 @endsection

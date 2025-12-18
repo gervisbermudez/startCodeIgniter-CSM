@@ -44,8 +44,10 @@ var AlbumsLists = new Vue({
         dataType: "json",
         success: function (response) {
           self.albums = response.data;
-          self.albums.map((element) => {
-            element.user = new User(element.user);
+          self.albums = self.albums.map((element) => {
+            if (element.user) {
+              element.user = new User(element.user);
+            }
             return element;
           });
           setTimeout(() => {
