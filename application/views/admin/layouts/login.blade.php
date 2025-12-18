@@ -8,7 +8,7 @@
 </head>
 <body>
     @yield('content')
-    @include('admin.shared.footer')
+    @include('admin.shared.footer-login')
     @yield('footer_includes')
 </body>
 </html>
