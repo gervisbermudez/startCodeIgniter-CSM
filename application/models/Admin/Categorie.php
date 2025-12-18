@@ -32,31 +32,26 @@ class Categorie extends MY_Model
 
     public function filter_results($collection = [])
     {
-        $this->load->model('Admin/User');
-        foreach ($collection as $key => &$value) {
-            if (isset($value->user_id) && $value->user_id) {
-                $user = new User();
-                $user->find($value->user_id);
-                $value->{'user'} = $user->as_data();
-            }
-        }
+        // Cargar users de forma optimizada (1 query en lugar de N)
+        $collection = $this->loadUsersRelation($collection);
 
+        // Cargar categorías parent
         foreach ($collection as $key => &$value) {
             if (isset($value->parent_id) && $value->parent_id !== 0) {
                 $this->load->model('Admin/Categorie');
                 $categorie = new Categorie();
                 $categorie->find($value->parent_id);
-                $value->{'parent'} = $categorie->as_data();
+                $value->parent = $categorie->as_data();
             }
         }
 
+        // Cargar subcategorías
         foreach ($collection as $key => &$value) {
             if (isset($value->parent_id) && $value->categorie_id) {
                 $this->load->model('Admin/Categorie');
                 $categorie = new Categorie();
                 $subcategories = $categorie->where(['parent_id' => $value->categorie_id]);
-
-                $value->{'subcategories'} = $subcategories ? $subcategories : [];
+                $value->subcategories = $subcategories ? $subcategories : [];
             }
         }
 

@@ -931,6 +931,140 @@ class MY_Model extends CI_Model implements JsonSerializable
         return $result ? $result : new stdClass();
     }
 
+    /**
+     * Carga relaciones User de forma optimizada evitando N+1 queries
+     * En lugar de hacer 1 query por cada item, hace 1 query total
+     * 
+     * @param Collection|array $collection Colección de objetos
+     * @param string $userIdField Nombre del campo que contiene el user_id
+     * @return Collection|array Colección con usuarios cargados
+     */
+    protected function loadUsersRelation($collection, $userIdField = 'user_id')
+    {
+        if (empty($collection)) {
+            return $collection;
+        }
+
+        // Extraer todos los user_ids únicos
+        $userIds = [];
+        foreach ($collection as $item) {
+            if (isset($item->{$userIdField}) && $item->{$userIdField}) {
+                $userIds[] = $item->{$userIdField};
+            }
+        }
+
+        if (empty($userIds)) {
+            return $collection;
+        }
+
+        // Cargar todos los users en una sola query
+        $userIds = array_unique($userIds);
+        $this->load->model('Admin/User');
+        $this->db->where_in($userIdField, $userIds);
+        $usersQuery = $this->db->get('user');
+        
+        // Indexar users por ID para acceso rápido
+        $usersById = [];
+        if ($usersQuery->num_rows() > 0) {
+            foreach ($usersQuery->result() as $user) {
+                $usersById[$user->{$userIdField}] = $user;
+            }
+        }
+
+        // Asignar users a cada item
+        foreach ($collection as &$item) {
+            if (isset($item->{$userIdField}) && isset($usersById[$item->{$userIdField}])) {
+                $user = new User();
+                $user->mapfields((array)$usersById[$item->{$userIdField}]);
+                $item->user = $user->as_data();
+            }
+        }
+
+        return $collection;
+    }
+
+    /**
+     * Carga relaciones File de forma optimizada evitando N+1 queries
+     * 
+     * @param Collection|array $collection Colección de objetos
+     * @param string $fileIdField Nombre del campo que contiene el file_id
+     * @param string $targetField Nombre del campo donde se guardará el resultado
+     * @return Collection|array Colección con archivos cargados
+     */
+    protected function loadFilesRelation($collection, $fileIdField = 'mainImage', $targetField = 'imagen_file')
+    {
+        if (empty($collection)) {
+            return $collection;
+        }
+
+        // Extraer todos los file_ids únicos
+        $fileIds = [];
+        foreach ($collection as $item) {
+            if (isset($item->{$fileIdField}) && $item->{$fileIdField}) {
+                $fileIds[] = $item->{$fileIdField};
+            }
+        }
+
+        if (empty($fileIds)) {
+            return $collection;
+        }
+
+        // Cargar todos los files en una sola query
+        $fileIds = array_unique($fileIds);
+        $this->load->model('Admin/File');
+        $this->db->where_in('file_id', $fileIds);
+        $filesQuery = $this->db->get('file');
+        
+        // Indexar files por ID para acceso rápido
+        $filesById = [];
+        if ($filesQuery->num_rows() > 0) {
+            foreach ($filesQuery->result() as $file) {
+                $filesById[$file->file_id] = $file;
+            }
+        }
+
+        // Asignar files a cada item
+        foreach ($collection as &$item) {
+            if (isset($item->{$fileIdField}) && isset($filesById[$item->{$fileIdField}])) {
+                $file = new File();
+                $file->mapfields((array)$filesById[$item->{$fileIdField}]);
+                $fileData = $file->as_data();
+                $fileData->file_front_path = $file->getFileFrontPath();
+                $item->{$targetField} = $fileData;
+            }
+        }
+
+        return $collection;
+    }
+
+    /**
+     * Método helper para cargar múltiples relaciones de una vez
+     * Simplifica el código en filter_results
+     * 
+     * @param Collection|array $collection Colección de objetos
+     * @param array $relations Array de configuraciones de relaciones
+     * @return Collection|array Colección con relaciones cargadas
+     */
+    protected function loadRelations($collection, $relations = [])
+    {
+        foreach ($relations as $relationType => $config) {
+            switch ($relationType) {
+                case 'user':
+                    $userIdField = isset($config['field']) ? $config['field'] : 'user_id';
+                    $collection = $this->loadUsersRelation($collection, $userIdField);
+                    break;
+                
+                case 'file':
+                    $fileIdField = isset($config['field']) ? $config['field'] : 'mainImage';
+                    $targetField = isset($config['target']) ? $config['target'] : 'imagen_file';
+                    $collection = $this->loadFilesRelation($collection, $fileIdField, $targetField);
+                    break;
+            }
+        }
+
+        return $collection;
+    }
+
     public function filter_results($collection = [])
     {
         return $collection;

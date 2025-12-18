@@ -32,26 +32,11 @@ class Event extends MY_Model
 
     public function filter_results($collection = [])
     {
-        $this->load->model('Admin/User');
-        foreach ($collection as $key => &$value) {
-            if (isset($value->user_id)) {
-                $user = new User();
-                $user->find($value->user_id);
-                $value->{'user'} = $user;
-                $value->{'model_type'} = "page";
-            }
-        }
-        $this->load->model('Admin/File');
-        foreach ($collection as $key => &$value) {
-            if (isset($value->mainImage) && $value->mainImage) {
-                $file = new File();
-                $file->find($value->mainImage);
-                $value->imagen_file = $file->as_data();
-                $value->imagen_file->{'file_front_path'} = new stdClass();
-                $value->imagen_file->{'file_front_path'} = $file->getFileFrontPath();
-            }
-        }
-        return $collection;
+        // Cargar users y files de forma optimizada usando loadRelations
+        return $this->loadRelations($collection, [
+            'user' => ['field' => 'user_id'],
+            'file' => ['field' => 'mainImage', 'target' => 'imagen_file']
+        ]);
     }
 
 }

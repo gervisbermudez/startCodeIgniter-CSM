@@ -39,23 +39,22 @@ class Note extends MY_Model
 
     public function filter_results($collection = [])
     {
-        $this->load->model('Admin/User');
+        // Cargar users de forma optimizada (1 query en lugar de N)
+        $collection = $this->loadUsersRelation($collection);
+
+        // Agregar model_type a cada item
         foreach ($collection as $key => &$value) {
             if (isset($value->user_id)) {
-                $user = new User();
-                $user->find($value->user_id);
-                $value->{'user'} = $user;
-                $value->{'model_type'} = "note";
+                $value->model_type = "note";
             }
         }
 
+        // Procesar json_content y attachments
         foreach ($collection as $key => &$value) {
             if (isset($value->json_content)) {
-                $value->{'json_content'} = json_decode($value->json_content);
+                $value->json_content = json_decode($value->json_content);
             }
-
-            $value->{'attachments'} = [];
-
+            $value->attachments = [];
         }
         
         return $collection;

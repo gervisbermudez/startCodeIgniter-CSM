@@ -26,21 +26,23 @@ class Album extends MY_Model {
 
 	public function filter_results($collection = [])
     {
-		$this->load->model('Admin/User');
+		// Cargar users de forma optimizada (1 query en lugar de N)
+        $collection = $this->loadUsersRelation($collection);
+		
+		// Agregar model_type a cada item
         foreach ($collection as $key => &$value) {
             if (isset($value->user_id)) {
-                $user = new User();
-                $user->find($value->user_id);
-                $value->{'user'} = $user;
-                $value->{'model_type'} = "album";
+                $value->model_type = "album";
             }
         }
+		
+		// Cargar album items
         $this->load->model('Admin/AlbumItems');
         foreach ($collection as $key => &$value) {
             if (isset($value->album_id) && $value->album_id) {
                 $album_item = new AlbumItems();
                 $results =  $album_item->where(["album_id" => $value->album_id]);
-                $value->{'items'} = $results ? $results : new Collection();
+                $value->items = $results ? $results : new Collection();
             }
         }
         return $collection;
