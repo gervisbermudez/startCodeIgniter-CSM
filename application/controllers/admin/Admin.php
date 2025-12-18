@@ -12,31 +12,22 @@ class Admin extends MY_Controller
 
     public function index()
     {
-        $data['username'] = $this->session->userdata('username');
-        $data['title'] = ADMIN_TITLE . ' | Dashboard';
-        $data['h1'] = "";
-        $data['header'] = "";
-
+        $data = $this->prepareAdminData('Dashboard', '');
+        $data['header'] = '';
         echo $this->blade->view("admin.dashboard", $data);
     }
 
     public function offline()
     {
-        $data['username'] = $this->session->userdata('username');
-        $data['title'] = ADMIN_TITLE . ' | Dashboard';
-        $data['header'] = "";
-        $data['h1'] = 'You are offline <i class="material-icons small">network_check</i> ';
-
+        $data = $this->prepareAdminData('Dashboard', 'You are offline <i class="material-icons small">network_check</i> ');
+        $data['header'] = '';
         echo $this->blade->view("admin.blankpage", $data);
     }
 
     public function search()
     {
-        $data['username'] = $this->session->userdata('username');
-        $data['title'] = ADMIN_TITLE . ' | Search Result';
-        $data['header'] = "";
-        $data['h1'] = 'Search Result';
-        
+        $data = $this->prepareAdminData('Search Result', 'Search Result');
+        $data['header'] = '';
         echo $this->blade->view("admin.search_results", $data);
     }
 

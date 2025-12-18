@@ -63,6 +63,83 @@ class MY_Controller extends CI_Controller
         echo $this->blade->view("admin.blankpage", $data);
     }
 
+    /**
+     * Prepara los datos comunes para las vistas del panel de administración
+     * Reduce código duplicado en los controladores
+     * 
+     * @param string $title Título de la página (se agregará ADMIN_TITLE como prefijo)
+     * @param string $h1 Encabezado H1 de la página (opcional)
+     * @param array $additionalData Datos adicionales a incluir
+     * @return array Array con los datos preparados
+     */
+    protected function prepareAdminData($title, $h1 = '', $additionalData = [])
+    {
+        $data = [
+            'title' => ADMIN_TITLE . ' | ' . $title,
+            'h1' => $h1,
+            'username' => $this->session->userdata('username'),
+            'base_url' => $this->config->base_url(),
+        ];
+
+        return array_merge($data, $additionalData);
+    }
+
+    /**
+     * Renderiza una vista del panel de administración con datos preparados
+     * Incluye automáticamente el header
+     * 
+     * @param string $view Nombre de la vista (notación con puntos)
+     * @param string $title Título de la página
+     * @param string $h1 Encabezado H1
+     * @param array $additionalData Datos adicionales
+     * @return void
+     */
+    protected function renderAdminView($view, $title, $h1 = '', $additionalData = [])
+    {
+        $data = $this->prepareAdminData($title, $h1, $additionalData);
+        $data['header'] = $this->load->view('admin/header', $data, true);
+        echo $this->blade->view($view, $data);
+    }
+
+    /**
+     * Busca un modelo por ID o lanza un error si no existe
+     * Elimina código duplicado de validación de existencia de recursos
+     * 
+     * @param object $model Instancia del modelo a buscar
+     * @param mixed $id ID del recurso a buscar
+     * @param string $errorMessage Mensaje de error personalizado
+     * @return object Instancia del modelo encontrado
+     */
+    protected function findOrFail($model, $id, $errorMessage = 'Recurso no encontrado')
+    {
+        if (!$model->find($id)) {
+            $this->showError($errorMessage);
+            exit();
+        }
+        return $model;
+    }
+
+    /**
+     * Obtiene datos de sesión del usuario actual
+     * Acceso simplificado a datos comunes de sesión
+     * 
+     * @param string $key Clave específica de sesión (opcional)
+     * @return mixed Valor de sesión o array con datos del usuario
+     */
+    protected function getUserSession($key = null)
+    {
+        if ($key !== null) {
+            return $this->session->userdata($key);
+        }
+
+        return [
+            'user_id' => $this->session->userdata('user_id'),
+            'username' => $this->session->userdata('username'),
+            'email' => $this->session->userdata('email'),
+            'usergroup_id' => $this->session->userdata('usergroup_id'),
+        ];
+    }
+
     // Muestra la página de error 404
     public function error404()
     {

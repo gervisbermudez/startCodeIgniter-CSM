@@ -31,33 +31,23 @@ class Menus extends MY_Controller
 
     public function index()
     {
-        $data['h1'] = "Todas los Menus";
-        $data['title'] = ADMIN_TITLE . " | Menus";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        echo $this->blade->view("admin.menu.menu_list", $data);
-
+        $this->renderAdminView('admin.menu.menu_list', 'Menus', 'Todas los Menus');
     }
 
     public function nuevo()
     {
-        $data['title'] = ADMIN_TITLE . " | Menu";
-        $data['h1'] = "Nuevo Menu";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        $data['menu_id'] = '';
-        $data['editMode'] = 'new';
-
-        echo $this->blade->view("admin.menu.new_form", $data);
+        $this->renderAdminView('admin.menu.new_form', 'Menu', 'Nuevo Menu', [
+            'menu_id' => '',
+            'editMode' => 'new'
+        ]);
     }
 
     public function editar($menu_id)
     {
-        $data['title'] = ADMIN_TITLE . " | Menu";
-        $data['h1'] = "Editar Menu";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        $data['menu_id'] = $menu_id;
-        $data['editMode'] = 'edit';
-
-        echo $this->blade->view("admin.menu.new_form", $data);
+        $this->renderAdminView('admin.menu.new_form', 'Menu', 'Editar Menu', [
+            'menu_id' => $menu_id,
+            'editMode' => 'edit'
+        ]);
     }
 
 }

@@ -13,10 +13,7 @@ class Gallery extends MY_Controller
 
     public function index()
     {
-        $data['title'] = ADMIN_TITLE . " | Galería";
-        $data['h1'] = "Galería de Imagenes";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        echo $this->blade->view("admin.galeria.albumes_list", $data);
+        $this->renderAdminView('admin.galeria.albumes_list', 'Galería', 'Galería de Imagenes');
     }
 
     public function items($albumid = '')
@@ -26,38 +23,24 @@ class Gallery extends MY_Controller
             return;
         }
 
-        $album = new Album();
-        $album = $album->find($albumid);
-        if ($album) {
-            $data['title'] = ADMIN_TITLE . " | Galería";
-            $data['h1'] = "Galería de Imagenes";
-            $data['header'] = $this->load->view('admin/header', $data, true);
-            echo $this->blade->view("admin.galeria.albumes_items", $data);
-
-        } else {
-            $this->showError('Album no encontrado :(');
-        }
-
+        $album = $this->findOrFail(new Album(), $albumid, 'Album no encontrado :(');
+        $this->renderAdminView('admin.galeria.albumes_items', 'Galería', 'Galería de Imagenes');
     }
 
     public function nuevo()
     {
-        $data['title'] = ADMIN_TITLE . " | Nuevo Album";
-        $data['h1'] = "Agregar nuevo Album";
-        $data['album_id'] = null;
-        $data['editMode'] = null;
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        echo $this->blade->view("admin.galeria.new_form", $data);
+        $this->renderAdminView('admin.galeria.new_form', 'Nuevo Album', 'Agregar nuevo Album', [
+            'album_id' => null,
+            'editMode' => null
+        ]);
     }
 
     public function editar($album_id)
     {
-        $data['title'] = ADMIN_TITLE . " | Editar Album";
-        $data['h1'] = "Editar Album";
-        $data['album_id'] = $album_id;
-        $data['editMode'] = "edit";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        echo $this->blade->view("admin.galeria.new_form", $data);
+        $this->renderAdminView('admin.galeria.new_form', 'Editar Album', 'Editar Album', [
+            'album_id' => $album_id,
+            'editMode' => 'edit'
+        ]);
     }
 
 }

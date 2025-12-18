@@ -35,63 +35,46 @@ class Pages extends MY_Controller
      */
     public function index()
     {
-        $data['h1'] = "";
         $pages = new Page();
-        $data['paginas'] = $pages->all();
-        $data['title'] = ADMIN_TITLE . " | Paginas";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        echo $this->blade->view("admin.pages.pages_list", $data);
+        $this->renderAdminView('admin.pages.pages_list', 'Paginas', '', [
+            'paginas' => $pages->all()
+        ]);
     }
 
     public function nueva()
     {
-        $data['title'] = ADMIN_TITLE . " | Nueva Pagina";
-        $data['h1'] = "Nueva Pagina";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        $data['action'] = base_url('admin/pages/save/');
-        $data['templates'] = [];
-        $data['page_id'] = '';
-        $data['editMode'] = 'new';
-
-        echo $this->blade->view("admin.pages.new", $data);
+        $this->renderAdminView('admin.pages.new', 'Nueva Pagina', 'Nueva Pagina', [
+            'action' => base_url('admin/pages/save/'),
+            'templates' => [],
+            'page_id' => '',
+            'editMode' => 'new'
+        ]);
     }
 
     public function editar($page_id)
     {
-        $page = new Page();
-        if ($page->find($page_id)) {
-            $data['title'] = ADMIN_TITLE . " | Editar";
-            $data['h1'] = "Editar Pagina";
-            $data['page_id'] = $page_id;
-            $data['editMode'] = 'edit';
-
-            $data['header'] = $this->load->view('admin/header', $data, true);
-            $data['action'] = base_url('admin/pages/save/');
-            $data['pagina'] = array();
-            $data['templates'] = [];
-            echo $this->blade->view("admin.pages.new", $data);
-        } else {
-            $this->showError('Pagina no encontrada');
-        }
+        $page = $this->findOrFail(new Page(), $page_id, 'Pagina no encontrada');
+        
+        $this->renderAdminView('admin.pages.new', 'Editar', 'Editar Pagina', [
+            'page_id' => $page_id,
+            'editMode' => 'edit',
+            'action' => base_url('admin/pages/save/'),
+            'pagina' => [],
+            'templates' => []
+        ]);
     }
 
     public function view($page_id)
     {
-        $page = new Page();
-        if ($page->find($page_id)) {
-            $data['title'] = ADMIN_TITLE . " | View";
-            $data['h1'] = "View Page";
-            $data['page_id'] = $page_id;
-            $data['editMode'] = 'edit';
-
-            $data['header'] = $this->load->view('admin/header', $data, true);
-            $data['action'] = base_url('admin/pages/save/');
-            $data['pagina'] = array();
-            $data['templates'] = [];
-            echo $this->blade->view("admin.pages.view", $data);
-        } else {
-            $this->showError('Pagina no encontrada');
-        }
+        $page = $this->findOrFail(new Page(), $page_id, 'Pagina no encontrada');
+        
+        $this->renderAdminView('admin.pages.view', 'View', 'View Page', [
+            'page_id' => $page_id,
+            'editMode' => 'edit',
+            'action' => base_url('admin/pages/save/'),
+            'pagina' => [],
+            'templates' => []
+        ]);
     }
 
 }

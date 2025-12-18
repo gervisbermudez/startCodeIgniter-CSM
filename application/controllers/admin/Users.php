@@ -47,14 +47,11 @@ class Users extends MY_Controller
 
     public function index()
     {
-        $data['base_url'] = $this->config->base_url();
-        $data['title'] = ADMIN_TITLE . " | Usuarios";
-        $data['h1'] = "Usuarios";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        $data['username'] = $this->session->userdata('username');
-        $data['footer_includes'] = array("<script src=" . base_url('resources/components/UserComponent.js?v=' . ADMIN_VERSION) . "></script>");
-
-        echo $this->blade->view("admin.user.users", $data);
+        $this->renderAdminView('admin.user.users', 'Usuarios', 'Usuarios', [
+            'footer_includes' => [
+                "<script src=" . base_url('resources/components/UserComponent.js?v=' . ADMIN_VERSION) . "></script>"
+            ]
+        ]);
     }
 
     public function ver($user_id = false)
@@ -106,53 +103,43 @@ class Users extends MY_Controller
 
     public function edit($id)
     {
-        $data['userdata'] = $this->User->find($id);
-        if ($data['userdata']) {
-            $data['action'] = 'Admin/User/save/';
-            $data['title'] = ADMIN_TITLE . " | Editar Usuario";
-            $data['h1'] = "Editar Usuario";
-            $data['header'] = $this->load->view('admin/header', $data, true);
-            $data['mode'] = 'new';
-            $data['footer_includes'] = array(
+        $user = $this->findOrFail(new User(), $id, 'Usuario no encontrado');
+        
+        $this->renderAdminView('admin.user.form', 'Editar Usuario', 'Editar Usuario', [
+            'userdata' => $user,
+            'action' => 'Admin/User/save/',
+            'mode' => 'new',
+            'footer_includes' => [
                 script('resources/js/validateForm.js'),
                 script('resources/components/UserNewForm.js'),
-            );
-            echo $this->blade->view("admin.user.form", $data);
-        } else {
-            $this->showError('Usuario no encontrado');
-        }
+            ]
+        ]);
     }
 
     public function changePassword($id)
     {
-        $data['userdata'] = $this->User->find($id);
-        if ($data['userdata']) {
-            $data['action'] = 'Admin/User/save/';
-            $data['title'] = ADMIN_TITLE . " | Cambiar Password";
-            $data['h1'] = "Cambiar Password";
-            $data['header'] = $this->load->view('admin/header', $data, true);
-            $data['mode'] = 'new';
-            echo $this->blade->view("admin.user.changepassword", $data);
-        } else {
-            $this->showError('Usuario no encontrado');
-        }
+        $user = $this->findOrFail(new User(), $id, 'Usuario no encontrado');
+        
+        $this->renderAdminView('admin.user.changepassword', 'Cambiar Password', 'Cambiar Password', [
+            'userdata' => $user,
+            'action' => 'Admin/User/save/',
+            'mode' => 'new'
+        ]);
     }
 
     public function agregar()
     {
         $this->load->model('Admin/Usergroup');
-        // set the url base
-        $data['action'] = 'Admin/User/save/';
-        $data['title'] = ADMIN_TITLE . " | Nuevo Usuario";
-        $data['h1'] = "Nuevo Usuario";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        $data['userdata'] = false;
-        $data['mode'] = 'new';
-        $data['footer_includes'] = array(
-            script('resources/js/validateForm.js'),
-            script('resources/components/UserNewForm.js'),
-        );
-        echo $this->blade->view("admin.user.form", $data);
+        
+        $this->renderAdminView('admin.user.form', 'Nuevo Usuario', 'Nuevo Usuario', [
+            'action' => 'Admin/User/save/',
+            'userdata' => false,
+            'mode' => 'new',
+            'footer_includes' => [
+                script('resources/js/validateForm.js'),
+                script('resources/components/UserNewForm.js'),
+            ]
+        ]);
     }
 
     public function ajax_check_field()

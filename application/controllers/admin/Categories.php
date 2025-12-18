@@ -32,31 +32,23 @@ class Categories extends MY_Controller
 
     public function index()
     {
-        $data['h1'] = "Todas las Categorias";
-        $data['title'] = ADMIN_TITLE . " | Categorias";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        echo $this->blade->view("admin.categorias.categorias_list", $data);
-
+        $this->renderAdminView('admin.categorias.categorias_list', 'Categorias', 'Todas las Categorias');
     }
 
     public function nueva()
     {
-        $data['title'] = ADMIN_TITLE . " | Categorias";
-        $data['h1'] = "Nueva Categoria";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        $data['categorie_id'] = '';
-        $data['editMode'] = 'new';
-        echo $this->blade->view("admin.categorias.new_form", $data);
+        $this->renderAdminView('admin.categorias.new_form', 'Categorias', 'Nueva Categoria', [
+            'categorie_id' => '',
+            'editMode' => 'new'
+        ]);
     }
 
     public function editar($categorie_id)
     {
-        $data['title'] = ADMIN_TITLE . " | Categorias";
-        $data['h1'] = "Editar Categoria";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        $data['categorie_id'] = $categorie_id;
-        $data['editMode'] = 'edit';
-        echo $this->blade->view("admin.categorias.new_form", $data);
+        $this->renderAdminView('admin.categorias.new_form', 'Categorias', 'Editar Categoria', [
+            'categorie_id' => $categorie_id,
+            'editMode' => 'edit'
+        ]);
     }
 
 }
