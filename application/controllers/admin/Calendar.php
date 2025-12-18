@@ -12,10 +12,7 @@ class Calendar extends MY_Controller
 
     public function index()
     {
-        $data['h1'] = "Calendario";
-        $data['title'] = ADMIN_TITLE . " | Calendario";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        echo $this->blade->view("admin.calendario.calendar", $data);
+        $this->renderAdminView('admin.calendario.calendar', 'Calendario', 'Calendario');
     }
 
 }

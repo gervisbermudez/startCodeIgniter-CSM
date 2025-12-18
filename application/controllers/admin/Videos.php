@@ -13,24 +13,16 @@ class Videos extends MY_Controller
 
     public function index()
     {
-        $data['title'] = ADMIN_TITLE . " | Videos";
-        $data['h1'] = "Videos";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        $data['videos'] = $this->Video->all();
-
-        echo $this->blade->view("admin.videos.videos_listado", $data);
-
+        $this->renderAdminView('admin.videos.videos_listado', 'Videos', 'Videos', [
+            'videos' => $this->Video->all()
+        ]);
     }
 
     public function categorias($categoria = 'all')
     {
-        $data['title'] = ADMIN_TITLE . " | Videos";
-        $data['h1'] = "Categorias de Videos";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        $data['categorias'] = $this->Video->get_categoria(array('tipo' => 'video'));
-
-        echo $this->blade->view("admin.videos.videos_listado", $data);
-
+        $this->renderAdminView('admin.videos.videos_listado', 'Videos', 'Categorias de Videos', [
+            'categorias' => $this->Video->get_categoria(['tipo' => 'video'])
+        ]);
     }
 
     public function ver($id = 'all')
@@ -77,18 +69,16 @@ class Videos extends MY_Controller
     {
         $this->load->helper('array');
 
-        $data['title'] = ADMIN_TITLE . " | Nuevo";
-        $data['h1'] = "Videos";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        $data['video'] = array();
-        $data['action'] = 'admin/videos/save';
-        $data['footer_includes'] = array(
-            'tinymce' => '<script src="' . base_url('public/js/tinymce/js/tinymce/tinymce.min.js') . '"></script>',
-            'tinymceinit' => "<script>tinymce.init({ selector:'textarea',  plugins : ['link table'] });</script>");
-        $data['videocategoria'] = array();
-        $data['categorias'] = $this->Video->get_categoria(array('tipo' => 'video'));
-        echo $this->blade->view("admin.videos.crear", $data);
-
+        $this->renderAdminView('admin.videos.crear', 'Nuevo', 'Videos', [
+            'video' => [],
+            'action' => 'admin/videos/save',
+            'footer_includes' => [
+                'tinymce' => '<script src="' . base_url('public/js/tinymce/js/tinymce/tinymce.min.js') . '"></script>',
+                'tinymceinit' => "<script>tinymce.init({ selector:'textarea',  plugins : ['link table'] });</script>"
+            ],
+            'videocategoria' => [],
+            'categorias' => $this->Video->get_categoria(['tipo' => 'video'])
+        ]);
     }
     public function save()
     {

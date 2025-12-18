@@ -12,42 +12,26 @@ class Events extends MY_Controller
 
     public function index()
     {
-        $data['title'] = ADMIN_TITLE . " | Eventos";
-        $data['h1'] = "Eventos";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        echo $this->blade->view("admin.eventos.eventos_list", $data);
-
+        $this->renderAdminView('admin.eventos.eventos_list', 'Eventos', 'Eventos');
     }
 
     public function agregar()
     {
-        $data['title'] = ADMIN_TITLE . " | Nuevo Evento";
-        $data['h1'] = "Agregar nuevo Evento";
-        $data['editMode'] = "new";
-        $data['event_id'] = null;
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        echo $this->blade->view("admin.eventos.crear_evento", $data);
-
+        $this->renderAdminView('admin.eventos.crear_evento', 'Nuevo Evento', 'Agregar nuevo Evento', [
+            'editMode' => 'new',
+            'event_id' => null
+        ]);
     }
 
     public function editar($event_id = "")
     {
-
         $this->load->model('Admin/Event');
-        $event = new Event();
-        $result = $event->find($event_id);
-
-        if ($result) {
-            $data['title'] = ADMIN_TITLE . " | Nuevo Evento";
-            $data['h1'] = "Agregar nuevo Evento";
-            $data['editMode'] = "edit";
-            $data['event_id'] = $event_id;
-            $data['header'] = $this->load->view('admin/header', $data, true);
-            echo $this->blade->view("admin.eventos.crear_evento", $data);
-        } else {
-            $this->error404();
-        }
-
+        $event = $this->findOrFail(new Event(), $event_id, 'Evento no encontrado');
+        
+        $this->renderAdminView('admin.eventos.crear_evento', 'Nuevo Evento', 'Agregar nuevo Evento', [
+            'editMode' => 'edit',
+            'event_id' => $event_id
+        ]);
     }
 
 }

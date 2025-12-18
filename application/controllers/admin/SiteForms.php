@@ -12,38 +12,28 @@ class Siteforms extends MY_Controller
 
     public function index()
     {
-        $data['h1'] = "Todas los Formularios del Sitio";
-        $data['title'] = ADMIN_TITLE . " | Formularios del Sitio";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        echo $this->blade->view("admin.siteforms.siteforms_list", $data);
+        $this->renderAdminView('admin.siteforms.siteforms_list', 'Formularios del Sitio', 'Todas los Formularios del Sitio');
     }
 
     public function nuevo()
     {
-        $data['title'] = ADMIN_TITLE . " | Formularios del Sitio";
-        $data['h1'] = "Nuevo Formulario";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        $data['siteform_id'] = '';
-        $data['editMode'] = 'new';
-        echo $this->blade->view("admin.siteforms.new_form", $data);
+        $this->renderAdminView('admin.siteforms.new_form', 'Formularios del Sitio', 'Nuevo Formulario', [
+            'siteform_id' => '',
+            'editMode' => 'new'
+        ]);
     }
 
     public function editar($siteform_id)
     {
-        $data['title'] = ADMIN_TITLE . " | Formularios del Sitio";
-        $data['h1'] = "Editar SiteForm";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        $data['siteform_id'] = $siteform_id;
-        $data['editMode'] = 'edit';
-        echo $this->blade->view("admin.siteforms.new_form", $data);
+        $this->renderAdminView('admin.siteforms.new_form', 'Formularios del Sitio', 'Editar SiteForm', [
+            'siteform_id' => $siteform_id,
+            'editMode' => 'edit'
+        ]);
     }
 
     public function submit()
     {
-        $data['h1'] = "Todas los Formularios del Sitio";
-        $data['title'] = ADMIN_TITLE . " | Formularios recibidos del Sitio";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        echo $this->blade->view("admin.siteforms.siteform_submit_list", $data);
+        $this->renderAdminView('admin.siteforms.siteform_submit_list', 'Formularios recibidos del Sitio', 'Todas los Formularios del Sitio');
     }
 
 }

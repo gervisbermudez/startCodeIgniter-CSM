@@ -14,31 +14,23 @@ class Fragments extends MY_Controller
 
     public function index()
     {
-        $data['h1'] = "Todos los Fragmentos";
-        $data['title'] = ADMIN_TITLE . " | Fragmentos";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        echo $this->blade->view("admin.fragmentos.fragments_list", $data);
-
+        $this->renderAdminView('admin.fragmentos.fragments_list', 'Fragmentos', 'Todos los Fragmentos');
     }
 
     public function nueva()
     {
-        $data['title'] = ADMIN_TITLE . " | Fragmentos";
-        $data['h1'] = "Nuevo Fragmento";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        $data['fragment_id'] = '';
-        $data['editMode'] = 'new';
-        echo $this->blade->view("admin.fragmentos.new_form", $data);
+        $this->renderAdminView('admin.fragmentos.new_form', 'Fragmentos', 'Nuevo Fragmento', [
+            'fragment_id' => '',
+            'editMode' => 'new'
+        ]);
     }
 
     public function editar($fragment_id)
     {
-        $data['title'] = ADMIN_TITLE . " | Fragments";
-        $data['h1'] = "Editar Fragmento";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        $data['fragment_id'] = $fragment_id;
-        $data['editMode'] = 'edit';
-        echo $this->blade->view("admin.fragmentos.new_form", $data);
+        $this->renderAdminView('admin.fragmentos.new_form', 'Fragments', 'Editar Fragmento', [
+            'fragment_id' => $fragment_id,
+            'editMode' => 'edit'
+        ]);
     }
 
 }

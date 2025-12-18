@@ -30,62 +30,38 @@ class Configuration extends MY_Controller
 
     public function index()
     {
-        $data['title'] = ADMIN_TITLE . " | Configuracion";
-        $data['h1'] = "Configuracion";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-
-        echo $this->blade->view("admin.configuracion.all_config", $data);
+        $this->renderAdminView('admin.configuracion.all_config', 'Configuracion', 'Configuracion');
     }
 
     function new () {
-        $data['title'] = ADMIN_TITLE . " | Configuracion";
-        $data['h1'] = "Configuracion";
-        $data['site_config_id'] = '';
-        $data['editMode'] = 'new';
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        echo $this->blade->view("admin.configuracion.new_form", $data);
+        $this->renderAdminView('admin.configuracion.new_form', 'Configuracion', 'Configuracion', [
+            'site_config_id' => '',
+            'editMode' => 'new'
+        ]);
     }
 
     public function logger()
     {
-        $data['title'] = ADMIN_TITLE . " | System Log";
-        $data['h1'] = "Logger";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-
-        echo $this->blade->view("admin.configuracion.all_logger", $data);
+        $this->renderAdminView('admin.configuracion.all_logger', 'System Log', 'Logger');
     }
 
     public function apilogger()
     {
-        $data['title'] = ADMIN_TITLE . " | API Log";
-        $data['h1'] = "API Log";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-
-        echo $this->blade->view("admin.configuracion.all_apilogger", $data);
+        $this->renderAdminView('admin.configuracion.all_apilogger', 'API Log', 'API Log');
     }
 
     public function usertrackinglogger()
     {
-        $data['title'] = ADMIN_TITLE . " | User Tracking Log";
-        $data['h1'] = "User Tracking Log";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-
-        echo $this->blade->view("admin.configuracion.all_usertrackinglogger", $data);
+        $this->renderAdminView('admin.configuracion.all_usertrackinglogger', 'User Tracking Log', 'User Tracking Log');
     }
 
     public function export()
     {
-        $data['title'] = ADMIN_TITLE . " | Export";
-        $data['h1'] = "Export Data";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        echo $this->blade->view("admin.configuracion.export", $data);
+        $this->renderAdminView('admin.configuracion.export', 'Export', 'Export Data');
     }
 
     public function import()
     {
-        $data['title'] = ADMIN_TITLE . " | Import";
-        $data['h1'] = "Import Data";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        echo $this->blade->view("admin.configuracion.import", $data);
+        $this->renderAdminView('admin.configuracion.import', 'Import', 'Import Data');
     }
 }
