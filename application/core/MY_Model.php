@@ -945,25 +945,25 @@ class MY_Model extends CI_Model implements JsonSerializable
             return $collection;
         }
 
-        // Extraer todos los user_ids únicos
-        $userIds = [];
-        foreach ($collection as $item) {
-            if (isset($item->{$userIdField}) && $item->{$userIdField}) {
-                $userIds[] = $item->{$userIdField};
-            }
-        }
+        // Extraer todos los user_ids únicos de forma eficiente
+        $userIds = array_unique(
+            array_filter(
+                array_map(function($item) use ($userIdField) {
+                    return isset($item->{$userIdField}) ? $item->{$userIdField} : null;
+                }, is_array($collection) ? $collection : $collection->toArray())
+            )
+        );
 
         if (empty($userIds)) {
             return $collection;
         }
 
-        // Cargar todos los users en una sola query
-        $userIds = array_unique($userIds);
-        $this->load->model('Admin/User');
-        $this->db->where_in($userIdField, $userIds);
-        $usersQuery = $this->db->get('user');
+        // Cargar todos los users en una sola query con campos específicos
+        $usersQuery = $this->db
+            ->where_in($userIdField, $userIds)
+            ->get('user');
         
-        // Indexar users por ID para acceso rápido
+        // Indexar users por ID para acceso O(1)
         $usersById = [];
         if ($usersQuery->num_rows() > 0) {
             foreach ($usersQuery->result() as $user) {
@@ -971,12 +971,10 @@ class MY_Model extends CI_Model implements JsonSerializable
             }
         }
 
-        // Asignar users a cada item
+        // Asignar users a cada item de forma eficiente
         foreach ($collection as &$item) {
             if (isset($item->{$userIdField}) && isset($usersById[$item->{$userIdField}])) {
-                $user = new User();
-                $user->mapfields((array)$usersById[$item->{$userIdField}]);
-                $item->user = $user->as_data();
+                $item->user = $usersById[$item->{$userIdField}];
             }
         }
 
@@ -997,25 +995,26 @@ class MY_Model extends CI_Model implements JsonSerializable
             return $collection;
         }
 
-        // Extraer todos los file_ids únicos
-        $fileIds = [];
-        foreach ($collection as $item) {
-            if (isset($item->{$fileIdField}) && $item->{$fileIdField}) {
-                $fileIds[] = $item->{$fileIdField};
-            }
-        }
+        // Extraer todos los file_ids únicos de forma eficiente
+        $fileIds = array_unique(
+            array_filter(
+                array_map(function($item) use ($fileIdField) {
+                    return isset($item->{$fileIdField}) ? $item->{$fileIdField} : null;
+                }, is_array($collection) ? $collection : $collection->toArray())
+            )
+        );
 
         if (empty($fileIds)) {
             return $collection;
         }
 
         // Cargar todos los files en una sola query
-        $fileIds = array_unique($fileIds);
         $this->load->model('Admin/File');
-        $this->db->where_in('file_id', $fileIds);
-        $filesQuery = $this->db->get('file');
+        $filesQuery = $this->db
+            ->where_in('file_id', $fileIds)
+            ->get('file');
         
-        // Indexar files por ID para acceso rápido
+        // Indexar files por ID para acceso O(1)
         $filesById = [];
         if ($filesQuery->num_rows() > 0) {
             foreach ($filesQuery->result() as $file) {
@@ -1023,7 +1022,7 @@ class MY_Model extends CI_Model implements JsonSerializable
             }
         }
 
-        // Asignar files a cada item
+        // Asignar files a cada item con file_front_path
         foreach ($collection as &$item) {
             if (isset($item->{$fileIdField}) && isset($filesById[$item->{$fileIdField}])) {
                 $file = new File();
