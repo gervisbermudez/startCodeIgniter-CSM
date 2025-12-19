@@ -57,7 +57,7 @@
             </div>
             <br>
             <div class="col s12 text-center form-group" class="" id="buttons">
-                <a href="<?php echo base_url('admin/CustomModels/'); ?>" class="btn waves-effect waves-teal btn-flat">Cancelar</a>
+                <a href="<?php echo base_url('admin/custommodels/'); ?>" class="btn waves-effect waves-teal btn-flat">Cancelar</a>
                 <a class="waves-effect waves-light btn waves-effect waves-teal" @click="saveData()"><i class="material-icons left">cloud</i> Guardar</a>
             </div>
         </div>

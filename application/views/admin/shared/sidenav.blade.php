@@ -57,13 +57,13 @@
             <div class="collapsible-body">
                 <ul>
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/siteForms') }}">Todos</a>
+                        <a class="waves-effect" href="{{ base_url('admin/siteforms') }}">Todos</a>
                     </li>
                     <li>
-                        <a href="{{ base_url('admin/siteForms/nuevo/') }}">Nuevo</a>
+                        <a href="{{ base_url('admin/siteforms/nuevo/') }}">Nuevo</a>
                     </li>
                     <li>
-                        <a href="{{ base_url('admin/siteForms/submit/') }}">Recibidos</a>
+                        <a href="{{ base_url('admin/siteforms/submit/') }}">Recibidos</a>
                     </li>
                 </ul>
             </div>
@@ -184,17 +184,17 @@
                 <ul>
                     @if(has_permisions('SELECT_FORM_CUSTOMS'))
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/customModels/') }}">Todos</a>
+                        <a class="waves-effect" href="{{ base_url('admin/custommodels/') }}">Todos</a>
                     </li>
                     @endif
                     @if(has_permisions('CREATE_FORM_CUSTOM'))
                     <li>
-                        <a href="{{ base_url('admin/customModels/nuevo') }}">Nuevo</a>
+                        <a href="{{ base_url('admin/custommodels/nuevo') }}">Nuevo</a>
                     </li>
                     @endif
                     @if(has_permisions('SELECT_CONTENT_DATA'))
                     <li class="{{isSectionActive('admin/custommodels', 'match')}}">
-                        <a class="waves-effect" href="{{ base_url('admin/customModels/content') }}">
+                        <a class="waves-effect" href="{{ base_url('admin/custommodels/content') }}">
                             Contenidos</a>
                     </li>
                     @endif

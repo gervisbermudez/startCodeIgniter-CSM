@@ -267,7 +267,7 @@ var dashboardModule = new Vue({
                 window.location.href = `${BASEURL}admin/categories/editar/${response.data.categorie_id}`;
                 break;
               case "fragment":
-                window.location.href = `${BASEURL}admin/Fragments/editar/${response.data.fragment_id}`;
+                window.location.href = `${BASEURL}admin/fragments/editar/${response.data.fragment_id}`;
               default:
                 break;
             }

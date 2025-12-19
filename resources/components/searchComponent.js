@@ -87,7 +87,7 @@ var searchComponent = new Vue({
         label: "Options",
         format: (item, colum) => {
           return `<a href="${
-            BASEURL + "admin/CustomModels/editForm/" + item.custom_model_id
+            BASEURL + "admin/custommodels/editForm/" + item.custom_model_id
           }">Edit</a>`;
         },
       },
@@ -116,7 +116,7 @@ var searchComponent = new Vue({
         format: (item, colum) => {
           return `<a href="${
             BASEURL +
-            "admin/CustomModels/editData/" +
+            "admin/custommodels/editData/" +
             item.custom_model_id +
             "/" +
             item.custom_model_content_id
@@ -151,7 +151,7 @@ var searchComponent = new Vue({
         label: "Options",
         format: (item, colum) => {
           return `<a href="${
-            BASEURL + "admin/SiteForms/editar/" + item.siteform_id
+            BASEURL + "admin/siteforms/editar/" + item.siteform_id
           }">Edit</a>`;
         },
       },
@@ -187,7 +187,7 @@ var searchComponent = new Vue({
         label: "Options",
         format: (item, colum) => {
           return `<a href="${
-            BASEURL + "admin/SiteForms/editar/" + item.menu_id
+            BASEURL + "admin/siteforms/editar/" + item.siteform_id
           }">Edit</a>`;
         },
       },

@@ -45,11 +45,11 @@ var SiteFormList = new Vue({
   computed: {},
   methods: {
     newItem() {
-      window.location = `${BASEURL}admin/SiteForms/nuevo/`;
+      window.location = `${BASEURL}admin/siteforms/nuevo/`;
       return;
     },
     editItem(data) {
-      window.location = `${BASEURL}admin/SiteForms/editar/${data.item.siteform_id}`;
+      window.location = `${BASEURL}admin/siteforms/editar/${data.item.siteform_id}`;
       return;
     },
     deleteItem({ item }) {

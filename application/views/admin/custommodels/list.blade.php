@@ -70,9 +70,9 @@
                                     :data-target='"dropdown_" + form.custom_model_id'><i
                                         class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown_" + form.custom_model_id' class='dropdown-content'>
-                                    <li><a :href="base_url('admin/CustomModels/addData/' + form.custom_model_id)">
+                                    <li><a :href="base_url('admin/custommodels/addData/' + form.custom_model_id)">
                                             Agregar data</a></li>
-                                    <li><a :href="base_url('admin/CustomModels/editForm/' + form.custom_model_id)">
+                                    <li><a :href="base_url('admin/custommodels/editForm/' + form.custom_model_id)">
                                             Editar</a></li>
                                     <li><a class="modal-trigger" href="#deleteModal"
                                             v-on:click="tempDelete(form, index);">Borrar</a></li>
@@ -95,9 +95,9 @@
                             :data-target='"dropdown" + form.custom_model_id'>
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown" + form.custom_model_id' class='dropdown-content'>
-                            <li><a :href="base_url('admin/CustomModels/addData/' + form.custom_model_id)"> Agregar
+                            <li><a :href="base_url('admin/custommodels/addData/' + form.custom_model_id)"> Agregar
                                     data</a></li>
-                            <li><a :href="base_url('admin/CustomModels/editForm/' + form.custom_model_id)"> Editar</a>
+                            <li><a :href="base_url('admin/custommodels/editForm/' + form.custom_model_id)"> Editar</a>
                             </li>
                             <li><a class="modal-trigger" href="#deleteModal"
                                     v-on:click="tempDelete(form, index);">Borrar</a></li>
@@ -166,8 +166,8 @@
 </div>
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
     <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left"
-        data-delay="50" data-tooltip="Nuevo Modelo" href="{{base_url('admin/CustomModels/nuevo/')}}">
-        <i class="large material-icons">add</i>
+        data-delay="50" data-tooltip="Nuevo Modelo" href="{{base_url('admin/custommodels/nuevo/')}}">
+        <i class="material-icons">add</i>
     </a>
 </div>
 @endsection
