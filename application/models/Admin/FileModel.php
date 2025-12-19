@@ -242,7 +242,9 @@ class FileModel extends MY_Model
     public function getFileFrontPath()
     {
         try {
-            return substr($this->file_path . $this->getFileFullName(), 2);
+            // Quitar ./ y agregar / inicial para ruta absoluta desde document root
+            $path = substr($this->file_path . $this->getFileFullName(), 2);
+            return '/' . $path;
         } catch (\Throwable $th) {
             return "";
         }

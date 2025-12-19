@@ -59,6 +59,12 @@ function cacheFallingBackNetwork(request) {
     })
     .catch((error) => console.error(error));
 }
+
+function respondWithFallbackImage() {
+  return caches.match(FALLBACK_IMAGE).then((cached) => {
+    return cached || fetch(FALLBACK_IMAGE);
+  });
+}
 // Postear mensajes a la API
 function postearMensajes() {}
 
@@ -163,10 +169,11 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(respuesta);
     return;
   } else if (checkURL(event.request.url)) {
-    respuesta = cacheFallingBackNetwork(event.request);
-  } else {
     respuesta = fetch(event.request)
-      .then((newRes) => {
+      .then((res) => {
+        if ((res.status >= 200 && res.status < 300) || (res.status >= 300 && res.status < 400)) {
+          return actualizaCacheDinamico(DYNAMIC_CACHE, event.request, res);
+        }
         return actualizaCacheDinamico(DYNAMIC_CACHE, event.request, newRes);
       })
       .catch(() => {
@@ -175,14 +182,7 @@ self.addEventListener("fetch", (event) => {
         });
       });
   }
-  event.respondWith(respuesta);
-});
-
-self.addEventListener("sync", (e) => {
-  if (e.tag === "nuevo-post") {
-    const respuesta = postearMensajes();
-    e.waitUntil(respuesta);
-  }
+            respuesta = cacheFallingBackNetwork(event.request);
 });
 
 self.addEventListener("message", function (event) {

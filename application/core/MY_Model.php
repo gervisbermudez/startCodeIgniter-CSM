@@ -1034,7 +1034,23 @@ class MY_Model extends CI_Model implements JsonSerializable
                 $file = new FileModel();
                 $file->mapfields((array)$filesById[$item->{$fileIdField}]);
                 $fileData = $file->as_data();
-                $fileData->file_front_path = $file->getFileFrontPath();
+
+                // Si el archivo físico no existe, asignamos la imagen por defecto
+                $fullPath = $file->file_path . $file->getFileFullName();
+                $defaultPath = './public/img/';
+                $defaultName = 'default';
+                $defaultType = 'jpg';
+                $fileExists = $fullPath && file_exists($fullPath);
+
+                if (!$fileExists) {
+                    $fileData->file_path = $defaultPath;
+                    $fileData->file_name = $defaultName;
+                    $fileData->file_type = $defaultType;
+                }
+
+                $fileData->file_front_path = $fileExists
+                    ? $file->getFileFrontPath()
+                    : '/public/img/default.jpg'; // Con / inicial para ruta absoluta
                 $item->{$targetField} = $fileData;
             }
         }
