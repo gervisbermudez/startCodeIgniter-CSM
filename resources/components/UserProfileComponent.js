@@ -52,7 +52,7 @@ var userProfile = new Vue({
       var user_id = window.location.pathname.split("/")[4];
       if (user_id) {
         var url = BASEURL + "api/v1/users/" + user_id;
-        fetch(url)
+        fetch(url, { credentials: 'same-origin' })
           .then((response) => response.json())
           .then((response) => {
             self.debug ? console.log(url, response) : null;
@@ -72,7 +72,7 @@ var userProfile = new Vue({
       var user_id = window.location.pathname.split("/")[4];
       if (user_id) {
         var url = BASEURL + "/api/v1/users/timeline/" + user_id;
-        fetch(url)
+        fetch(url, { credentials: 'same-origin' })
           .then((response) => response.json())
           .then((response) => {
             self.debug ? console.log(url, response) : null;

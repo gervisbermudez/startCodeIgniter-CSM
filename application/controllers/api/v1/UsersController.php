@@ -71,7 +71,8 @@ class UsersController extends REST_Controller
         if ($user_id) {
             $result = $this->User->get_full_info($user_id);
             if ($result) {
-                $this->response_ok($result);
+                // Return the first user object, not an array
+                $this->response_ok(isset($result[0]) ? $result[0] : $result);
                 return;
             }
             $this->response_error(lang('not_found_error'));

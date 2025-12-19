@@ -19,7 +19,7 @@ class FilesController extends REST_Controller
             exit();
         }
         $this->load->database();
-        $this->load->model('Admin/FileModel');
+        $this->load->model('Admin/FileModel', 'File');
         $this->load->model('Admin/FileActivityModel');
 
     }

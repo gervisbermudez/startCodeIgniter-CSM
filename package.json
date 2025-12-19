@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "bash copy-js.sh && vite build",
     "watch": "vite build --watch",
     "validate": "./bin/validate-env.sh",
     "backup-db": "./bin/backup-db.sh",

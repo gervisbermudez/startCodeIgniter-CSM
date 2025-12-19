@@ -961,8 +961,9 @@ class MY_Model extends CI_Model implements JsonSerializable
         // Obtener instancia de CI
         $CI =& get_instance();
         
-        // Cargar todos los users en una sola query con campos específicos
+        // Cargar todos los users en una sola query con campos específicos (SIN password por seguridad)
         $usersQuery = $CI->db
+            ->select('user_id, username, email, status, usergroup_id, lastseen, date_create, date_update, date_delete')
             ->where_in('user_id', $userIds)
             ->get('user');
         
@@ -970,6 +971,30 @@ class MY_Model extends CI_Model implements JsonSerializable
         $usersById = [];
         if ($usersQuery->num_rows() > 0) {
             foreach ($usersQuery->result() as $user) {
+                // Cargar user_data para cada usuario
+                $userData = $CI->db
+                    ->where('user_id', $user->user_id)
+                    ->get('user_data')
+                    ->result();
+                
+                // Convertir user_data a objeto asociativo
+                $user->user_data = new stdClass();
+                foreach ($userData as $data) {
+                    $user->user_data->{$data->_key} = $data->_value;
+                }
+                
+                // Cargar usergroup si existe
+                if ($user->usergroup_id) {
+                    $usergroup = $CI->db
+                        ->select('usergroup_id, name, level')
+                        ->where('usergroup_id', $user->usergroup_id)
+                        ->get('usergroup')
+                        ->row();
+                    if ($usergroup) {
+                        $user->usergroup = $usergroup;
+                    }
+                }
+                
                 $usersById[$user->user_id] = $user;
             }
         }

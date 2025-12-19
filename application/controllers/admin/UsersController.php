@@ -7,32 +7,32 @@ class UsersController extends MY_Controller
 
     public $routes_permisions = [
         "index" => [ 
-            "patern" => '/admin\/usuarios/',
+            "patern" => '/admin\/users/',
             "required_permissions" => ["SELECT_USERS"],
             "conditions" => [],
         ],
         "ver" => [ 
-            "patern" => '/admin\/usuarios\/ver\/(\d+)/',
+            "patern" => '/admin\/users\/ver\/(\d+)/',
             "required_permissions" => ["SELECT_USERS"],
             "conditions" => ["check_self_permissions"],
         ],
         "edit" => [ 
-            "patern" => '/admin\/usuarios\/edit\/(\d+)/',
+            "patern" => '/admin\/users\/edit\/(\d+)/',
             "required_permissions" => ["UPDATE_USER"],
             "conditions" => ["check_self_permissions"],
         ],
         "changePassword" => [ 
-            "patern" => '/admin\/usuarios\/changePassword\/(\d+)/',
+            "patern" => '/admin\/users\/changePassword\/(\d+)/',
             "required_permissions" => ["UPDATE_USER"],
             "conditions" => ["check_self_permissions"],
         ],
         "agregar" => [ 
-            "patern" => '/admin\/usuarios\/agregar/',
+            "patern" => '/admin\/users\/agregar/',
             "required_permissions" => ["CREATE_USER"],
             "conditions" => [],
         ],
         "usergroups" => [ 
-            "patern" => '/admin\/usuarios\/usergroups/',
+            "patern" => '/admin\/users\/usergroups/',
             "required_permissions" => ["SELECT_USERS"],
             "conditions" => [],
         ],
@@ -42,7 +42,7 @@ class UsersController extends MY_Controller
     {
         parent::__construct();
         $this->check_permisions();
-        $this->load->model('Admin/UserModel');
+        $this->load->model('Admin/UserModel', 'User');
     }
 
     public function index()
