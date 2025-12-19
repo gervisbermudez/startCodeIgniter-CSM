@@ -41,7 +41,7 @@ var CategoriesLists = new Vue({
           categorie.imagen_file.file_type
         );
       }
-      return BASEURL + "public/img/default.jpg";
+      return BASEURL + "/public/img/default.jpg";
     },
     getCategories: function () {
       var self = this;

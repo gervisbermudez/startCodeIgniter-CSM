@@ -28,7 +28,7 @@ Vue.component("formImageSelector", {
       if (file.get_full_file_path()) {
         return file.get_full_file_path();
       }
-      return BASEURL + "public/img/default.jpg";
+      return BASEURL + "/public/img/default.jpg";
     },
     removeItemImage(index) {
       this.preselected.splice(index, 1);

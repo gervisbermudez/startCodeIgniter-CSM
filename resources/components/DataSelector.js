@@ -109,7 +109,7 @@ Vue.component("DataSelector", {
           page.imagen_file.file_type
         );
       }
-      return BASEURL + "public/img/default.jpg";
+      return BASEURL + "/public/img/default.jpg";
     },
     makeNewFolder() {
       this.create_folder_process = true;

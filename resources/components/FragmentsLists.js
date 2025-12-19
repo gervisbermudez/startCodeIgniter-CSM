@@ -41,7 +41,7 @@ var FragmentsLists = new Vue({
           fragment.imagen_file.file_type
         );
       }
-      return BASEURL + "public/img/default.jpg";
+      return BASEURL + "/public/img/default.jpg";
     },
     getFragments: function () {
       var self = this;

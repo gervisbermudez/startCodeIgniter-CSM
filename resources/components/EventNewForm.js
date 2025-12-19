@@ -275,6 +275,7 @@ var EventNewForm = new Vue({
         },
       });
       tinymce.init({
+        base_url: BASEURL + '/public/vendors/tinymce/js/tinymce',
         selector: "textarea",
         plugins: ["link table code"],
         setup: (editor) => {

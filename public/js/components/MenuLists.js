@@ -31,7 +31,7 @@ var MenuLists = new Vue({
       this.filter = "";
     },
     getPageImagePath(menu) {
-      return BASEURL + "public/img/default.jpg";
+      return BASEURL + "/public/img/default.jpg";
     },
     getMenus: function () {
       var self = this;

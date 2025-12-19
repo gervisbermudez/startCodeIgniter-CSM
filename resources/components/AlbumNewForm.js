@@ -46,7 +46,7 @@ var AlbumNewForm = new Vue({
       if (item.file.get_full_file_path()) {
         return item.file.get_full_file_path();
       }
-      return BASEURL + "public/img/default.jpg";
+      return BASEURL + "/public/img/default.jpg";
     },
     copyCallcack(selectedFiles) {
       let instance = M.Modal.getInstance($(".modal"));
@@ -265,6 +265,7 @@ var AlbumNewForm = new Vue({
     },
     initPlugins() {
       tinymce.init({
+        base_url: BASEURL + '/public/vendors/tinymce/js/tinymce',
         selector: "textarea",
         plugins: ["link table code"],
         setup: (editor) => {

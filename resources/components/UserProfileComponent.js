@@ -37,13 +37,13 @@ var userProfile = new Vue({
           page.imagen_file.file_type
         );
       }
-      return BASEURL + "public/img/default.jpg";
+      return BASEURL + "/public/img/default.jpg";
     },
     getPageFullPath: function (page) {
       if (page.status == 1) {
         return BASEURL + page.path;
       }
-      return BASEURL + "admin/pages/editar/" + page.page_id;
+      return BASEURL + "/admin/pages/editar/" + page.page_id;
     },
     getUser() {
       var self = this;
@@ -51,7 +51,7 @@ var userProfile = new Vue({
       self.users = [];
       var user_id = window.location.pathname.split("/")[4];
       if (user_id) {
-        var url = BASEURL + "api/v1/users/" + user_id;
+        var url = BASEURL + "/api/v1/users/" + user_id;
         fetch(url, { credentials: 'same-origin' })
           .then((response) => response.json())
           .then((response) => {
@@ -108,7 +108,7 @@ var userProfile = new Vue({
       self.loader = true;
       $.ajax({
         type: "POST",
-        url: BASEURL + "api/v1/users/avatar",
+        url: BASEURL + "/api/v1/users/avatar",
         data: {
           avatar: self.user.user_data.avatar,
           user_id: self.user.user_id,

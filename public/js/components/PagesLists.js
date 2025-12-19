@@ -61,7 +61,7 @@ var PagesLists = new Vue({
           page.imagen_file.file_type
         );
       }
-      return BASEURL + "public/img/default.jpg";
+      return BASEURL + "/public/img/default.jpg";
     },
     getPages: function () {
       var self = this;

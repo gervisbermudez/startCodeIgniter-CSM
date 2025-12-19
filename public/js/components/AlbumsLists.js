@@ -6,6 +6,10 @@ var AlbumsLists = new Vue({
     tableView: false,
     loader: true,
     filter: "",
+    toDeleteItem: {
+      item: {},
+      index: null,
+    },
   },
   mixins: [mixins],
   computed: {
@@ -21,6 +25,13 @@ var AlbumsLists = new Vue({
     },
   },
   methods: {
+    getcontentText: function (content) {
+      if (!content) return "";
+      var span = document.createElement("span");
+      span.innerHTML = content;
+      let text = span.textContent || span.innerText;
+      return text.substring(0, 120) + "...";
+    },
     toggleView: function () {
       this.tableView = !this.tableView;
       this.initPlugins();
@@ -33,7 +44,7 @@ var AlbumsLists = new Vue({
       if (item.file.file_front_path) {
         return BASEURL + item.file.file_front_path;
       }
-      return BASEURL + "public/img/default.jpg";
+      return BASEURL + "/public/img/default.jpg";
     },
     getAlbums: function () {
       var self = this;

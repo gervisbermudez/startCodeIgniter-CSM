@@ -221,6 +221,7 @@ var FragmentNewForm = new Vue({
     },
     initPlugins() {
       tinymce.init({
+        base_url: BASEURL + '/public/vendors/tinymce/js/tinymce',
         selector: "textarea",
         plugins: ["link table code"],
         setup: (editor) => {

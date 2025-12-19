@@ -43,7 +43,7 @@ var FormContentList = new Vue({
           content.imagen_file.file_type
         );
       }
-      return BASEURL + "public/img/default.jpg";
+      return BASEURL + "/public/img/default.jpg";
     },
     getContents: function () {
       var self = this;

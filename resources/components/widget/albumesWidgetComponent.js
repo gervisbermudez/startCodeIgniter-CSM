@@ -13,7 +13,7 @@ Vue.component("albumesWidget", {
       if (item.file.file_front_path) {
         return BASEURL + item.file.file_front_path;
       }
-      return BASEURL + "public/img/default.jpg";
+      return BASEURL + "/public/img/default.jpg";
     },
   },
   mounted: function () {

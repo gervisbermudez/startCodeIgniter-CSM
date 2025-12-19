@@ -8,7 +8,7 @@ class GalleryController extends MY_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('Admin/AlbumModel');
+        $this->load->model('Admin/AlbumModel', 'Album');
     }
 
     public function index()

@@ -54,6 +54,7 @@ Vue.component("formTextFormat", {
     init() {
       setTimeout(() => {
         tinymce.init({
+          base_url: BASEURL + '/public/vendors/tinymce/js/tinymce',
           selector: "#" + this.fieldID,
           plugins: ["link table code"],
           setup: (editor) => {

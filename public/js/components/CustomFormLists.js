@@ -37,7 +37,7 @@ var CustomFormLists = new Vue({
           form.imagen_file.file_type
         );
       }
-      return BASEURL + "public/img/default.jpg";
+      return BASEURL + "/public/img/default.jpg";
     },
     getForms: function () {
       var self = this;

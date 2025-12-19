@@ -22,7 +22,7 @@
             </form>
             <ul class="right hide-on-med-and-down">
                 <li><a href="#!" v-on:click="toggleView();"><i class="material-icons">view_module</i></a></li>
-                <li><a href="#!" v-on:click="getPages();"><i class="material-icons">refresh</i></a></li>
+                <li><a href="#!" v-on:click="getAlbums();"><i class="material-icons">refresh</i></a></li>
                 <li>
                     <a href="#!" class='dropdown-trigger' data-target='dropdown-options'><i class="material-icons">more_vert</i></a>
                     <!-- Dropdown Structure -->
@@ -150,4 +150,8 @@
         <i class="large material-icons">add</i>
     </a>
 </div>
+@endsection
+
+@section('footer_includes')
+<script src="{{base_url('resources/components/AlbumsLists.js')}}"></script>
 @endsection

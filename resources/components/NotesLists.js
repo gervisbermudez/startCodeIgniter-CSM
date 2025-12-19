@@ -40,7 +40,7 @@ var NotesLists = new Vue({
           fragment.imagen_file.file_type
         );
       }
-      return BASEURL + "public/img/default.jpg";
+      return BASEURL + "/public/img/default.jpg";
     },
     getNotes: function () {
       var self = this;

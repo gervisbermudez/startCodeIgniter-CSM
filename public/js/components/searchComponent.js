@@ -232,7 +232,7 @@ var searchComponent = new Vue({
       if (item.imagen_file) {
         return BASEURL + item.imagen_file.file_front_path;
       }
-      return BASEURL + "public/img/default.jpg";
+      return BASEURL + "/public/img/default.jpg";
     },
     getFullFilePath(file) {
       return BASEURL + file.file_path + this.getFullFileName(file);
@@ -312,7 +312,7 @@ var searchComponent = new Vue({
       if (album.items.length) {
         return BASEURL + album.items[0].file.file_front_path;
       }
-      return BASEURL + "public/img/default.jpg";
+      return BASEURL + "/public/img/default.jpg";
     },
     performSearch: function () {
       var self = this;
