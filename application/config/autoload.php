@@ -107,7 +107,7 @@ $autoload['language'] = array();
 |
  */
 
-$autoload['model'] = array('Admin/SiteConfig');
+$autoload['model'] = array('Admin/SiteConfigModel');
 
 /* End of file autoload.php */
 /* Location: ./application/config/autoload.php */

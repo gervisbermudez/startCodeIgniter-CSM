@@ -3,7 +3,7 @@ var FormContentList = new Vue({
   data: {
     debug: DEBUGMODE,
     contents: [],
-    tableView: true,
+    tableView: false,
     loader: true,
     filter: "",
   },

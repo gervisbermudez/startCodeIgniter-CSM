@@ -958,16 +958,19 @@ class MY_Model extends CI_Model implements JsonSerializable
             return $collection;
         }
 
+        // Obtener instancia de CI
+        $CI =& get_instance();
+        
         // Cargar todos los users en una sola query con campos específicos
-        $usersQuery = $this->db
-            ->where_in($userIdField, $userIds)
+        $usersQuery = $CI->db
+            ->where_in('user_id', $userIds)
             ->get('user');
         
         // Indexar users por ID para acceso O(1)
         $usersById = [];
         if ($usersQuery->num_rows() > 0) {
             foreach ($usersQuery->result() as $user) {
-                $usersById[$user->{$userIdField}] = $user;
+                $usersById[$user->user_id] = $user;
             }
         }
 
@@ -1008,9 +1011,12 @@ class MY_Model extends CI_Model implements JsonSerializable
             return $collection;
         }
 
+        // Obtener instancia de CI
+        $CI =& get_instance();
+        
         // Cargar todos los files en una sola query
-        $this->load->model('Admin/File');
-        $filesQuery = $this->db
+        $CI->load->model('Admin/FileModel');
+        $filesQuery = $CI->db
             ->where_in('file_id', $fileIds)
             ->get('file');
         
@@ -1025,7 +1031,7 @@ class MY_Model extends CI_Model implements JsonSerializable
         // Asignar files a cada item con file_front_path
         foreach ($collection as &$item) {
             if (isset($item->{$fileIdField}) && isset($filesById[$item->{$fileIdField}])) {
-                $file = new File();
+                $file = new FileModel();
                 $file->mapfields((array)$filesById[$item->{$fileIdField}]);
                 $fileData = $file->as_data();
                 $fileData->file_front_path = $file->getFileFrontPath();

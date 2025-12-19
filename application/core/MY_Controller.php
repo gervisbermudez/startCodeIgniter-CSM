@@ -15,7 +15,8 @@ class MY_Controller extends CI_Controller
         $this->lang->load('admin/admin', 'english');
 
         // Si el usuario no ha iniciado sesión, redirige a la página de inicio de sesión
-        if (!$this->session->userdata('logged_in')) {
+        // Excepto si ya está en la página de login
+        if (!$this->session->userdata('logged_in') && get_class($this) !== 'LoginController') {
             $uri = urlencode(uri_string());
             redirect('admin/login/?redirect=' . $uri);
         }
@@ -133,7 +134,7 @@ class MY_Controller extends CI_Controller
             'admin.eventos.eventos_list' => ['DataTableComponent.js', 'EventsList.js'],
             'admin.fragmentos.fragments_list' => 'FragmentsLists.js',
             'admin.categorias.categorias_list' => 'CategoriesLists.js',
-            'admin.videos.videos_listado' => 'VideosLists.js',
+            // 'admin.videos.videos_listado' => 'VideosLists.js', // Vista usa PHP tradicional, no Vue
             'admin.configuracion.all_logger' => ['DataTableComponent.js', 'dataEdit.component.js'],
             'admin.configuracion.all_apilogger' => ['DataTableComponent.js', 'dataEdit.component.js', 'ApiLoggerDataComponent.js'],
         ];
@@ -201,10 +202,10 @@ class MY_Controller extends CI_Controller
             // Si el usuario no ha iniciado sesión, redirige a la página de inicio de sesión
             // Check if the user is logged in, if not redirect to login page
             if (!$this->session->userdata('logged_in')) {
-                // Replace forward slashes with underscores in the current URI
-                $uri = str_replace('/', '_', uri_string());
+                // Get the current URI
+                $uri = urlencode(uri_string());
                 // Redirect to the login page with the current URI as a parameter
-                redirect('login/index/' . $uri);
+                redirect('admin/login/?redirect=' . $uri);
             } else {
                 // If the user is logged in, display a 404 error page
                 $data['h1'] = "404 Page not found :(";
@@ -392,8 +393,8 @@ class Base_Controller extends CI_Controller
 
             // Si el usuario no ha iniciado sesión, se redirecciona a la página de inicio de sesión con la URI actual como parámetro
             if (!$this->session->userdata('logged_in')) {
-                $uri = str_replace('/', '_', uri_string());
-                redirect('login/index/' . $uri);
+                $uri = urlencode(uri_string());
+                redirect('admin/login/?redirect=' . $uri);
             }
 
             // Si el usuario ha iniciado sesión, se carga la vista de página en blanco para el área de administración
@@ -409,8 +410,8 @@ class Base_Controller extends CI_Controller
     // Esta función recibe como parámetro una condición para buscar información de la página
     public function get_page_info($where)
     {
-        // Se crea una instancia de la clase Page para buscar la información de la página
-        $pageInfo = new Page();
+        // Se crea una instancia de la clase PageModel para buscar la información de la página
+        $pageInfo = new PageModel();
         // Se guarda en un array la información obtenida de la página
         $data['result'] = $pageInfo->find_with($where);
         // Si la página no existe, se devuelve null
@@ -468,7 +469,7 @@ class Base_Controller extends CI_Controller
     private function load_config()
     {
         // Cargar la configuración de la base de datos
-        $config = $this->SiteConfig->all();
+        $config = $this->SiteConfigModel->all();
         $config = $config ? $config : [];
         foreach ($config as $value) {
             $this->config->set_item($value->config_name, $value->config_value);

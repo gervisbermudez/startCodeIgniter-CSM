@@ -8,7 +8,7 @@ class PageController extends Base_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('Admin/Page');
+        $this->load->model('Admin/PageModel');
         $config['enable_profiler'] = false;
     }
 
@@ -86,12 +86,12 @@ class PageController extends Base_Controller
     {
         $this->check_blog_config();
 
-        $this->load->model('Admin/User');
+        $this->load->model('Admin/UserModel');
         
         // Sanitizar el autor
         $author = urldecode($author);
         
-        $user = new User();
+        $user = new UserModel();
         $result = $user->find_with(['username' => $author]);
 
         if (!$result) {
@@ -115,8 +115,8 @@ class PageController extends Base_Controller
     {
         $this->check_blog_config();
 
-        $this->load->model('Admin/User');
-        $user = new User();
+        $this->load->model('Admin/UserModel');
+        $user = new UserModel();
 
         // Obtener y sanitizar el término de búsqueda
         $term = $this->input->get("q", TRUE);
@@ -154,13 +154,13 @@ class PageController extends Base_Controller
     {
         $this->check_blog_config();
 
-        $this->load->model('Admin/Categorie');
+        $this->load->model('Admin/CategorieModel');
         
         // Sanitizar la categoría
         $categorie = urldecode($categorie);
         $categorie_name = ucwords(str_replace('-', ' ', $categorie));
         
-        $categorie_obj = new Categorie();
+        $categorie_obj = new CategorieModel();
         $result = $categorie_obj->find_with(["name" => $categorie_name]);
 
         if (!$result) {
@@ -207,8 +207,8 @@ class PageController extends Base_Controller
     public function formsubmit()
     {
         $siteform_id = $this->input->post('form_reference');
-        $this->load->model('Admin/SiteForm');
-        $siteform = new SiteForm();
+        $this->load->model('Admin/SiteFormModel');
+        $siteform = new SiteFormModel();
         $result = $siteform->where(['siteform_id' => $siteform_id]);
         if ($result) {
             $siteforms = $this->session->userdata('siteforms');
@@ -244,8 +244,8 @@ class PageController extends Base_Controller
         header('Content-Type: application/json');
 
         $siteform_id = $this->input->post('form_reference');
-        $this->load->model('Admin/SiteForm');
-        $siteform = new SiteForm();
+        $this->load->model('Admin/SiteFormModel');
+        $siteform = new SiteFormModel();
         $result = $siteform->where(['siteform_id' => $siteform_id]);
         if ($result) {
             $siteforms = $this->session->userdata('siteforms');
@@ -293,8 +293,8 @@ class PageController extends Base_Controller
 
     private function process_form_submit()
     {
-        $this->load->model('Admin/SiteFormSubmit');
-        $siteFormSubmit = new SiteFormSubmit();
+        $this->load->model('Admin/SiteFormSubmitModel');
+        $siteFormSubmit = new SiteFormSubmitModel();
         $siteFormSubmit->siteform_id = $this->input->post('form_reference');
         $siteFormSubmit->user_tracking_id = userdata('user_tracking_id');
         $siteFormSubmit->date_create = date("Y-m-d H:i:s");

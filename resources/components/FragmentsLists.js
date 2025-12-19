@@ -2,9 +2,10 @@ var FragmentsLists = new Vue({
   el: "#root",
   data: {
     fragments: [],
-    tableView: true,
+    tableView: false,
     loader: true,
     filter: "",
+    toDeleteItem: {},
   },
   mixins: [mixins],
   computed: {
@@ -108,16 +109,19 @@ var FragmentsLists = new Vue({
     initPlugins: function () {
       setTimeout(() => {
         var elems = document.querySelectorAll(".tooltipped");
-        M.Tooltip.init(elems, {});
+        if (elems.length > 0) {
+          M.Tooltip.init(elems, {});
+        }
         var elems = document.querySelectorAll(".dropdown-trigger");
-        M.Dropdown.init(elems, {});
+        if (elems.length > 0) {
+          M.Dropdown.init(elems, {});
+        }
       }, 3000);
     },
   },
   mounted: function () {
     this.$nextTick(function () {
       this.getFragments();
-      this.initPlugins();
     });
   },
 });

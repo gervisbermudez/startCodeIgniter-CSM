@@ -13,7 +13,7 @@ class Gallery extends MY_Controller
 
     public function index()
     {
-        $this->renderAdminView('admin.galeria.albumes_list', 'Galería', 'Galería de Imagenes');
+        $this->renderAdminView('admin.gallery.albumes_list', 'Galería', 'Galería de Imagenes');
     }
 
     public function items($albumid = '')
@@ -24,12 +24,12 @@ class Gallery extends MY_Controller
         }
 
         $album = $this->findOrFail(new Album(), $albumid, 'Album no encontrado :(');
-        $this->renderAdminView('admin.galeria.albumes_items', 'Galería', 'Galería de Imagenes');
+        $this->renderAdminView('admin.gallery.albumes_items', 'Galería', 'Galería de Imagenes');
     }
 
     public function nuevo()
     {
-        $this->renderAdminView('admin.galeria.new_form', 'Nuevo Album', 'Agregar nuevo Album', [
+        $this->renderAdminView('admin.gallery.new_form', 'Nuevo Album', 'Agregar nuevo Album', [
             'album_id' => null,
             'editMode' => null
         ]);
@@ -37,7 +37,7 @@ class Gallery extends MY_Controller
 
     public function editar($album_id)
     {
-        $this->renderAdminView('admin.galeria.new_form', 'Editar Album', 'Editar Album', [
+        $this->renderAdminView('admin.gallery.new_form', 'Editar Album', 'Editar Album', [
             'album_id' => $album_id,
             'editMode' => 'edit'
         ]);

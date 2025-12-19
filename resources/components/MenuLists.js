@@ -2,7 +2,7 @@ var MenuLists = new Vue({
   el: "#root",
   data: {
     menus: [],
-    tableView: true,
+    tableView: false,
     loader: true,
     filter: "",
     toDeleteItem: {},

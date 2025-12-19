@@ -14,7 +14,7 @@ class Files extends MY_Controller
 
     public function index()
     {
-        $this->renderAdminView('admin.archivos.file_explorer', 'Archivos', '');
+        $this->renderAdminView('admin.files.file_explorer', 'Archivos', '');
     }
 
     public function ajax_upload_file()

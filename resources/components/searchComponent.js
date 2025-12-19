@@ -2,7 +2,7 @@ var searchComponent = new Vue({
   el: "#root",
   data: {
     items: [],
-    tableView: true,
+    tableView: false,
     loader: true,
     filter: "",
     toDeleteItem: {},

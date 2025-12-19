@@ -30,11 +30,11 @@ class Configuration extends MY_Controller
 
     public function index()
     {
-        $this->renderAdminView('admin.configuracion.all_config', 'Configuracion', 'Configuracion');
+        $this->renderAdminView('admin.configuration.all_config', 'Configuracion', 'Configuracion');
     }
 
     function new () {
-        $this->renderAdminView('admin.configuracion.new_form', 'Configuracion', 'Configuracion', [
+        $this->renderAdminView('admin.configuration.new_form', 'Configuracion', 'Configuracion', [
             'site_config_id' => '',
             'editMode' => 'new'
         ]);
@@ -42,26 +42,26 @@ class Configuration extends MY_Controller
 
     public function logger()
     {
-        $this->renderAdminView('admin.configuracion.all_logger', 'System Log', 'Logger');
+        $this->renderAdminView('admin.configuration.all_logger', 'System Log', 'Logger');
     }
 
     public function apilogger()
     {
-        $this->renderAdminView('admin.configuracion.all_apilogger', 'API Log', 'API Log');
+        $this->renderAdminView('admin.configuration.all_apilogger', 'API Log', 'API Log');
     }
 
     public function usertrackinglogger()
     {
-        $this->renderAdminView('admin.configuracion.all_usertrackinglogger', 'User Tracking Log', 'User Tracking Log');
+        $this->renderAdminView('admin.configuration.all_usertrackinglogger', 'User Tracking Log', 'User Tracking Log');
     }
 
     public function export()
     {
-        $this->renderAdminView('admin.configuracion.export', 'Export', 'Export Data');
+        $this->renderAdminView('admin.configuration.export', 'Export', 'Export Data');
     }
 
     public function import()
     {
-        $this->renderAdminView('admin.configuracion.import', 'Import', 'Import Data');
+        $this->renderAdminView('admin.configuration.import', 'Import', 'Import Data');
     }
 }

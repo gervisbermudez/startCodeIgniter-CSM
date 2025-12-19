@@ -9,17 +9,17 @@ class Fragments extends MY_Controller
     {
         parent::__construct();
         $this->check_permisions();
-        $this->load->model('Admin/Fragment');
+        $this->load->model('Admin/FragmentModel', 'Fragment');
     }
 
     public function index()
     {
-        $this->renderAdminView('admin.fragmentos.fragments_list', 'Fragmentos', 'Todos los Fragmentos');
+        $this->renderAdminView('admin.fragments.fragments_list', 'Fragmentos', 'Todos los Fragmentos');
     }
 
     public function nueva()
     {
-        $this->renderAdminView('admin.fragmentos.new_form', 'Fragmentos', 'Nuevo Fragmento', [
+        $this->renderAdminView('admin.fragments.new_form', 'Fragmentos', 'Nuevo Fragmento', [
             'fragment_id' => '',
             'editMode' => 'new'
         ]);
@@ -27,7 +27,7 @@ class Fragments extends MY_Controller
 
     public function editar($fragment_id)
     {
-        $this->renderAdminView('admin.fragmentos.new_form', 'Fragments', 'Editar Fragmento', [
+        $this->renderAdminView('admin.fragments.new_form', 'Fragments', 'Editar Fragmento', [
             'fragment_id' => $fragment_id,
             'editMode' => 'edit'
         ]);

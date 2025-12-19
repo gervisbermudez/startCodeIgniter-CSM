@@ -57,13 +57,13 @@
             <div class="collapsible-body">
                 <ul>
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/SiteForms') }}">Todos</a>
+                        <a class="waves-effect" href="{{ base_url('admin/siteForms') }}">Todos</a>
                     </li>
                     <li>
-                        <a href="{{ base_url('admin/SiteForms/nuevo/') }}">Nuevo</a>
+                        <a href="{{ base_url('admin/siteForms/nuevo/') }}">Nuevo</a>
                     </li>
                     <li>
-                        <a href="{{ base_url('admin/SiteForms/submit/') }}">Recibidos</a>
+                        <a href="{{ base_url('admin/siteForms/submit/') }}">Recibidos</a>
                     </li>
                 </ul>
             </div>
@@ -72,8 +72,8 @@
             <a class="waves-effect" href="{{ base_url('admin/calendar') }}"><i class="material-icons">event_note</i>
                 Calendario</a>
         </li>
-        <li class="{{isSectionActive('Fragments')}}">
-            <a class="waves-effect" href="{{ base_url('admin/Fragments/') }}"><i
+        <li class="{{isSectionActive('fragments')}}">
+            <a class="waves-effect" href="{{ base_url('admin/fragments/') }}"><i
                     class="material-icons">bookmark_border</i>
                 Fragmentos</a>
         </li>
@@ -184,17 +184,17 @@
                 <ul>
                     @if(has_permisions('SELECT_FORM_CUSTOMS'))
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/CustomModels/') }}">Todos</a>
+                        <a class="waves-effect" href="{{ base_url('admin/customModels/') }}">Todos</a>
                     </li>
                     @endif
                     @if(has_permisions('CREATE_FORM_CUSTOM'))
                     <li>
-                        <a href="{{ base_url('admin/CustomModels/nuevo') }}">Nuevo</a>
+                        <a href="{{ base_url('admin/customModels/nuevo') }}">Nuevo</a>
                     </li>
                     @endif
                     @if(has_permisions('SELECT_CONTENT_DATA'))
                     <li class="{{isSectionActive('admin/custommodels', 'match')}}">
-                        <a class="waves-effect" href="{{ base_url('admin/CustomModels/content') }}">
+                        <a class="waves-effect" href="{{ base_url('admin/customModels/content') }}">
                             Contenidos</a>
                     </li>
                     @endif

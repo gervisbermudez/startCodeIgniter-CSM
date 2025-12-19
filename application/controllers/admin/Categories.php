@@ -32,12 +32,12 @@ class Categories extends MY_Controller
 
     public function index()
     {
-        $this->renderAdminView('admin.categorias.categorias_list', 'Categorias', 'Todas las Categorias');
+        $this->renderAdminView('admin.categories.categorias_list', 'Categorias', 'Todas las Categorias');
     }
 
     public function nueva()
     {
-        $this->renderAdminView('admin.categorias.new_form', 'Categorias', 'Nueva Categoria', [
+        $this->renderAdminView('admin.categories.new_form', 'Categorias', 'Nueva Categoria', [
             'categorie_id' => '',
             'editMode' => 'new'
         ]);
@@ -45,7 +45,7 @@ class Categories extends MY_Controller
 
     public function editar($categorie_id)
     {
-        $this->renderAdminView('admin.categorias.new_form', 'Categorias', 'Editar Categoria', [
+        $this->renderAdminView('admin.categories.new_form', 'Categorias', 'Editar Categoria', [
             'categorie_id' => $categorie_id,
             'editMode' => 'edit'
         ]);

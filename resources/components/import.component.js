@@ -5,7 +5,7 @@ var Import = new Vue({
       pages: [],
       config: [],
     },
-    tableView: true,
+    tableView: false,
     loader: true,
     filter: "",
     selectedFile: false,

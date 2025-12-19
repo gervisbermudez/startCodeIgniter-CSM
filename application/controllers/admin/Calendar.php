@@ -12,7 +12,7 @@ class Calendar extends MY_Controller
 
     public function index()
     {
-        $this->renderAdminView('admin.calendario.calendar', 'Calendario', 'Calendario');
+        $this->renderAdminView('admin.calendar.calendar', 'Calendario', 'Calendario');
     }
 
 }

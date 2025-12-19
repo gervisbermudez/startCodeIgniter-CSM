@@ -2,7 +2,7 @@ var CustomFormLists = new Vue({
   el: "#root",
   data: {
     forms: [],
-    tableView: true,
+    tableView: false,
     loader: true,
     filter: "",
   },

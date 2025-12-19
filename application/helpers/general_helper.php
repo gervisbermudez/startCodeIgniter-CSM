@@ -76,8 +76,8 @@ function init_form(string $siteform_name): void
 function render_form(string $siteform_name): string
 {
     $ci = &get_instance();
-    $ci->load->model('Admin/SiteForm');
-    $siteform = new SiteForm();
+    $ci->load->model('Admin/SiteFormModel');
+    $siteform = new SiteFormModel();
     $result = $siteform->find_with(['name' => $siteform_name]);
     if (!$result) {
         return '';
@@ -102,8 +102,8 @@ function fragment(string $fragment_name)
     }
     
     $ci = &get_instance();
-    $ci->load->model('Admin/Fragment');
-    $fragment = new Fragment();
+    $ci->load->model('Admin/FragmentModel');
+    $fragment = new FragmentModel();
     $result = $fragment->find_with(['name' => $fragment_name]);
     
     if (!$result) {
@@ -120,8 +120,8 @@ function fragment(string $fragment_name)
 function set_notification(string $title, string $description, string $type = 'info', ?string $url = null): bool
 {
     $ci = &get_instance();
-    $ci->load->model('Admin/Notifications');
-    $notification = new Notifications();
+    $ci->load->model('Admin/NotificationsModel');
+    $notification = new NotificationsModel();
     $notification->title = $title;
     $notification->description = $description;
     $notification->type = $type;
@@ -147,8 +147,8 @@ if (!function_exists("config")) {
             return $config;
         }
         
-        $ci->load->model('Admin/SiteConfig');
-        $config = $ci->SiteConfig->where(['config_name' => $config_name]);
+        $ci->load->model('Admin/SiteConfigModel');
+        $config = $ci->SiteConfigModel->where(['config_name' => $config_name]);
         $value = $config ? $config->first()->config_value : null;
         
         if ($value !== null) {
@@ -369,8 +369,8 @@ function recurse_copy($src, $dst, $ignorefiles = [])
 function get_menu($name)
 {
     $ci = &get_instance();
-    $ci->load->model('Admin/Menu');
-    $menu = new Menu();
+    $ci->load->model('Admin/MenuModel');
+    $menu = new MenuModel();
     $result = $menu->find_with(['name' => $name]);
     return $result ? $menu->as_data() : null;
 }
@@ -414,16 +414,16 @@ function system_logger($type, $type_id, $token, $comment = '')
 {
 
     $ci = &get_instance();
-    $ci->load->model('Admin/SiteConfig');
-    $SiteConfig = new SiteConfig();
+    $ci->load->model('Admin/SiteConfigModel');
+    $SiteConfig = new SiteConfigModel();
     $result = $SiteConfig->find_with(["config_name" => 'SYSTEM_LOGGER']);
     $logger_active = false;
     if ($result && $SiteConfig->config_value) {
         $logger_active = true;
     }
     if ($logger_active) {
-        $ci->load->model('Admin/Logger');
-        $Logger = new Logger();
+        $ci->load->model('Admin/LoggerModel');
+        $Logger = new LoggerModel();
         $Logger->logger_id = null;
         $Logger->user_id = userdata('user_id');
         $Logger->type_id = $type_id;

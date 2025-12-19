@@ -1,5 +1,18 @@
 jQuery(document).ready(function ($) {
-  M.AutoInit();
+  // Disable AutoInit to prevent errors with dynamic Vue content
+  // Each Vue component will handle its own Materialize initialization
+  // M.AutoInit();
+
+  // Initialize only static elements present in the layout
+  var sidenavElems = document.querySelectorAll('.sidenav');
+  if (sidenavElems.length > 0) {
+    M.Sidenav.init(sidenavElems, {});
+  }
+
+  var collapsibleElems = document.querySelectorAll('.collapsible');
+  if (collapsibleElems.length > 0) {
+    M.Collapsible.init(collapsibleElems, {});
+  }
 
   $("a.sidenav-trigger-lg").click(function (e) {
     $("body").toggleClass("sidenav-open");

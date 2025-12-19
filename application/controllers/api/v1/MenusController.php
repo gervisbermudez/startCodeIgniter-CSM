@@ -1,0 +1,425 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed'); 
+
+require APPPATH . 'libraries/REST_Controller.php';
+
+class MenusController extends REST_Controller
+{
+    public function __construct()
+    {
+        parent::__construct();
+        $this->output->enable_profiler(false);
+        $this->lang->load('rest_lang', 'english');
+
+        if (!$this->verify_request()) {
+            $this->response([
+                'code' => REST_Controller::HTTP_UNAUTHORIZED,
+            ], REST_Controller::HTTP_UNAUTHORIZED);
+            exit();
+        }
+
+        $this->load->database();
+        $this->load->model('Admin/MenuModel');
+    }
+
+    /**
+     * @api {get} /api/v1/categorie/:menu_id Request Categorie information
+     * @apiName GetCategorie
+     * @apiGroup Categorie
+     *
+     * @apiParam {Number} menu_id Categorie unique ID.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *   {
+     *       "code": 200,
+     *       "data": [
+     *           {
+     *               "menu_id": "4",
+     *               "name": "Manu 1",
+     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
+     *               "type": "page",
+     *               "menu_item_parent_id": "0",
+     *               "date_publish": "2020-04-19 10:36:10",
+     *               "date_create": "2020-04-19 10:36:14",
+     *               "date_update": "2020-04-19 10:40:20",
+     *               "status": "1"
+     *           },
+     *           {
+     *               "menu_id": "5",
+     *               "name": "Manu 2",
+     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
+     *               "type": "page",
+     *               "menu_item_parent_id": "0",
+     *               "date_publish": "2020-04-19 10:36:10",
+     *               "date_create": "2020-04-19 10:36:14",
+     *               "date_update": "2020-04-19 10:40:28",
+     *               "status": "1"
+     *           },
+     *       ]
+     *   }
+     *
+     * @apiError ManuNotFound The id of the User was not found.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 404 Not Found
+     * {
+     *     "code": 404,
+     *     "error_message": "Resource not found",
+     *     "data": []
+     * }
+     */
+    public function index_get($menu_id = null)
+    {
+        $menu = new MenuModel();
+        if ($menu_id) {
+            $result = $menu->find_with(array('menu_id' => $menu_id));
+            $result = $result ? $menu->as_data() : [];
+        } else {
+            $result = $menu->all();
+        }
+
+        if ($result) {
+            $this->response_ok($result);
+            return;
+        }
+
+        $this->response_error(lang('not_found_error'));
+
+    }
+
+    /**
+     * Get All Data from this method.
+     *
+     * @return Response
+     */
+    public function index_post()
+    {
+        $this->load->library('FormValidator');
+        $form = new FormValidator();
+        $config = array(
+            array('field' => 'name', 'label' => 'name', 'rules' => 'required|min_length[1]'),
+            array('field' => 'template', 'label' => 'description', 'rules' => 'required|min_length[1]'),
+            array('field' => 'status', 'label' => 'status', 'rules' => 'required|integer'),
+        );
+        $form->set_rules($config);
+        if (!$form->run()) {
+            $this->response_error(lang('validations_error'), ['errors' => $form->_error_array], REST_Controller::HTTP_BAD_REQUEST);
+            return;
+        }
+        $menu = new MenuModel();
+        $this->input->post('menu_id') ? $menu->find($this->input->post('menu_id')) : false;
+        $menu->name = $this->input->post('name');
+        $menu->template = $this->input->post('template');
+        $menu->position = $this->input->post('position');
+        $menu->user_id = userdata('user_id');
+        $menu->status = $this->input->post('status');
+        $menu->date_create = date("Y-m-d H:i:s");
+        $menu->date_publish = date("Y-m-d H:i:s");
+        if ($menu->save()) {
+            $this->load->model('Admin/MenuItemsModel');
+            $menu_item = new MenuItemsModel();
+            $menu_item->delete_data(['menu_id' => $menu->menu_id]);
+            $menu_items = $this->input->post('menu_items');
+            $this->save_menu_items($menu_items, $menu);
+            $menu->find($menu->menu_id);
+            $this->response_ok($menu);
+            return;
+        }
+        $this->response_error(lang('unexpected_error'), [], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
+    }
+
+    private function save_menu_items($menu_items, $menu, $parent_id = 0)
+    {
+        foreach ($menu_items as $key => $item) {
+            $item = (object) $item;
+            $menu_item = new MenuItemsModel();
+            isset($item->menu_item_id) ? $menu_item->find($item->menu_item_id) : false;
+            $menu_item->menu_id = $menu->menu_id;
+            $menu_item->menu_item_parent_id = $parent_id;
+            $menu_item->item_type = $item->item_type;
+            $menu_item->order = $item->order;
+            $menu_item->model_id = isset($item->model_id) ? $item->model_id : null;
+            $menu_item->model = isset($item->model) ? $item->model : null;
+            $menu_item->item_name = $item->item_name;
+            $menu_item->item_label = $item->item_label;
+            $menu_item->item_link = $item->item_link;
+            $menu_item->item_title = $item->item_title;
+            $menu_item->item_target = $item->item_target;
+            $menu_item->status = $item->status;
+            $menu_item->date_create = $item->date_create;
+            $menu_item->date_publish = $item->date_publish;
+            $menu_item->save();
+
+            if (isset($item->subitems) && count($item->subitems) > 0) {
+                $this->save_menu_items($item->subitems, $menu, $menu_item->menu_item_id);
+            }
+        }
+    }
+
+    /**
+     * Get All Data from this method.
+     *
+     * @return Response
+     */
+    public function index_put($id)
+    {
+        $data = array();
+        $this->response($data, REST_Controller::HTTP_NOT_FOUND);
+
+    }
+
+    /**
+     * Get All Data from this method.
+     *
+     * @return Response
+     */
+    public function index_delete($menu_id = null)
+    {
+        if ($menu_id) {
+            $menu = new MenuModel();
+            $result = $menu->find($menu_id);
+            if ($result) {
+                $this->response_ok(["result" => $menu->delete()]);
+                return;
+            } else {
+                $this->response_error(lang('not_found_error'));
+                return;
+            }
+        }
+        $this->response_error(lang('not_found_error'));
+        return;
+    }
+
+    /**
+     * @api {get} /api/v1/categorie/subcategorie/:menu_id/:submenu_id Request SubCategorie information
+     * @apiName GetSubCategorie
+     * @apiGroup Categorie
+     *
+     * @apiParam {Number} menu_id Categorie unique ID.
+     * @apiParam {Number} submenu_id SubCategorie unique ID.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *   {
+     *       "code": 200,
+     *       "data": [
+     *           {
+     *               "menu_id": "4",
+     *               "name": "SubMenu 1",
+     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
+     *               "type": "page",
+     *               "menu_item_parent_id": "0",
+     *               "date_publish": "2020-04-19 10:36:10",
+     *               "date_create": "2020-04-19 10:36:14",
+     *               "date_update": "2020-04-19 10:40:20",
+     *               "status": "1"
+     *           },
+     *           {
+     *               "menu_id": "5",
+     *               "name": "SubMenu 2",
+     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
+     *               "type": "page",
+     *               "menu_item_parent_id": "0",
+     *               "date_publish": "2020-04-19 10:36:10",
+     *               "date_create": "2020-04-19 10:36:14",
+     *               "date_update": "2020-04-19 10:40:28",
+     *               "status": "1"
+     *           },
+     *       ]
+     *   }
+     *
+     * @apiError CategorieNotFound The id of the User was not found.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 404 Not Found
+     * {
+     *     "code": 404,
+     *     "error_message": "Resource not found",
+     *     "data": []
+     * }
+     */
+    public function subcategorie_get($menu_id, $submenu_id = null)
+    {
+        $menu = new MenuModel();
+        if ($submenu_id) {
+            $result = $menu->where(array('menu_item_parent_id' => $menu_id, 'menu_id' => $submenu_id));
+            $result = $result ? $result->first() : [];
+        } else {
+            $result = $menu->where(array('menu_item_parent_id' => $menu_id));
+        }
+
+        if ($result) {
+            $this->response_ok($result);
+            return;
+        }
+
+        if ($menu_id) {
+            $this->response_error(lang('not_found_error'));
+            return;
+        }
+
+        $this->response_error(lang('not_found_error'));
+    }
+
+    /**
+     * Get All Data from this method.
+     *
+     * @return Response
+     */
+    public function subcategorie_post()
+    {
+        $data = array();
+        $this->response($data, REST_Controller::HTTP_NOT_FOUND);
+    }
+
+    /**
+     * Get All Data from this method.
+     *
+     * @return Response
+     */
+    public function subcategorie_put($id)
+    {
+        $data = array();
+        $this->response($data, REST_Controller::HTTP_NOT_FOUND);
+
+    }
+
+    /**
+     * Get All Data from this method.
+     *
+     * @return Response
+     */
+    public function subcategorie_delete($id = null)
+    {
+        $data = array();
+        $this->response($data, REST_Controller::HTTP_NOT_FOUND);
+    }
+
+    /**
+     * @api {get} /api/v1/categorie/type/:type/ Request Categorie information
+     * @apiName GetCategorieType
+     * @apiGroup Categorie
+     *
+     * @apiParam {String} type Categorie Categorie type name.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *   {
+     *       "code": 200,
+     *       "data": [
+     *           {
+     *               "menu_id": "4",
+     *               "name": "Menu 1",
+     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
+     *               "type": "page",
+     *               "menu_item_parent_id": "0",
+     *               "date_publish": "2020-04-19 10:36:10",
+     *               "date_create": "2020-04-19 10:36:14",
+     *               "date_update": "2020-04-19 10:40:20",
+     *               "status": "1"
+     *           },
+     *           {
+     *               "menu_id": "5",
+     *               "name": "Menu 2",
+     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
+     *               "type": "page",
+     *               "menu_item_parent_id": "0",
+     *               "date_publish": "2020-04-19 10:36:10",
+     *               "date_create": "2020-04-19 10:36:14",
+     *               "date_update": "2020-04-19 10:40:28",
+     *               "status": "1"
+     *           },
+     *       ]
+     *   }
+     *
+     * @apiError CategorieNotFound The id of the User was not found.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 404 Not Found
+     * {
+     *     "code": 404,
+     *     "error_message": "Resource not found",
+     *     "data": []
+     * }
+     */
+    public function type_get($type = 0)
+    {
+        $menu = new MenuModel();
+        $result = $menu->where(array('menu_item_parent_id' => '0', 'type' => $type));
+        if ($result) {;
+            $this->response_ok($result);
+            return;
+        }
+        $this->response_error(lang('not_found_error'));
+    }
+
+    /**
+     * @api {get} /api/v1/categorie/type/:type/ Request Categorie information
+     * @apiName GetCategorieType
+     * @apiGroup Categorie
+     *
+     * @apiParam {String} type Categorie Categorie type name.
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *   {
+     *       "code": 200,
+     *       "data": [
+     *           {
+     *               "menu_id": "4",
+     *               "name": "Menu 1",
+     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
+     *               "type": "page",
+     *               "menu_item_parent_id": "0",
+     *               "date_publish": "2020-04-19 10:36:10",
+     *               "date_create": "2020-04-19 10:36:14",
+     *               "date_update": "2020-04-19 10:40:20",
+     *               "status": "1"
+     *           },
+     *           {
+     *               "menu_id": "5",
+     *               "name": "Menu 2",
+     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
+     *               "type": "page",
+     *               "menu_item_parent_id": "0",
+     *               "date_publish": "2020-04-19 10:36:10",
+     *               "date_create": "2020-04-19 10:36:14",
+     *               "date_update": "2020-04-19 10:40:28",
+     *               "status": "1"
+     *           },
+     *       ]
+     *   }
+     *
+     * @apiError CategorieNotFound The id of the User was not found.
+     *
+     * @apiErrorExample Error-Response:
+     *     HTTP/1.1 404 Not Found
+     * {
+     *     "code": 404,
+     *     "error_message": "Resource not found",
+     *     "data": []
+     * }
+     */
+    public function filter_get()
+    {
+        $menu = new MenuModel();
+        $result = $menu->where($_GET);
+        if ($result) {
+
+            $this->response_ok($result);
+        }
+        $this->response_error(lang('not_found_error'), ['filters' => $_GET]);
+    }
+
+    public function templates_get()
+    {
+        $this->load->helper('directory');
+        $directory = APPPATH . '/views/site/templates/menu';
+        if (getThemePath()) {
+            $directory = getThemePath() . '/views/site/templates/menu';
+        }
+        $map = directory_map($directory);
+        $this->response_ok($map);
+    }
+
+}

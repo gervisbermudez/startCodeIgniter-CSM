@@ -2,7 +2,7 @@ var NotesLists = new Vue({
   el: "#root",
   data: {
     notes: [],
-    tableView: true,
+    tableView: false,
     loader: true,
     filter: "",
   },

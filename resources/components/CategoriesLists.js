@@ -2,9 +2,10 @@ var CategoriesLists = new Vue({
   el: "#root",
   data: {
     categories: [],
-    tableView: true,
+    tableView: false,
     loader: true,
     filter: "",
+    toDeleteItem: {},
   },
   mixins: [mixins],
   computed: {
@@ -108,16 +109,19 @@ var CategoriesLists = new Vue({
     initPlugins: function () {
       setTimeout(() => {
         var elems = document.querySelectorAll(".tooltipped");
-        var instances = M.Tooltip.init(elems, {});
+        if (elems.length > 0) {
+          var instances = M.Tooltip.init(elems, {});
+        }
         var elems = document.querySelectorAll(".dropdown-trigger");
-        var instances = M.Dropdown.init(elems, {});
+        if (elems.length > 0) {
+          var instances = M.Dropdown.init(elems, {});
+        }
       }, 3000);
     },
   },
   mounted: function () {
     this.$nextTick(function () {
       this.getCategories();
-      this.initPlugins();
     });
   },
 });
