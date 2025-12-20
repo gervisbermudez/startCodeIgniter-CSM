@@ -115,5 +115,14 @@ const custom_model_id = <?php echo json_encode($custom_model_id); ?>;
 @section('footer_includes')
 <script src="{{base_url('public/vendors/tinymce/js/tinymce/tinymce.min.js')}}"></script>
 <script src="{{base_url('resources/components/FileExplorerSelector.js')}}"></script>
+<script src="{{base_url('resources/components/formComponents/formFieldTitle.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/formComponents/formFieldBoolean.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/formComponents/formFieldNumber.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/formComponents/formFieldDate.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/formComponents/formFieldTime.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/formComponents/formFieldSelect.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/formComponents/formFieldTextArea.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/formComponents/formTextFormat.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/formComponents/formImageSelector.js?v=' . ADMIN_VERSION)}}"></script>
 <script src="{{base_url('resources/components/FormNewModule.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection
