@@ -55,6 +55,11 @@ class ConfigurationController extends MY_Controller
         $this->renderAdminView('admin.configuration.all_usertrackinglogger', 'User Tracking Log', 'User Tracking Log');
     }
 
+    public function analytics()
+    {
+        $this->renderAdminView('admin.analytics.dashboard', 'Analytics Dashboard', 'Analytics');
+    }
+
     public function export()
     {
         $this->renderAdminView('admin.configuration.export', 'Export', 'Export Data');

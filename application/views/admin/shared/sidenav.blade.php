@@ -72,6 +72,10 @@
             <a class="waves-effect" href="{{ base_url('admin/calendar') }}"><i class="material-icons">event_note</i>
                 Calendario</a>
         </li>
+        <li class="{{isSectionActive('analytics')}}">
+            <a class="waves-effect" href="{{ base_url('admin/configuration/analytics') }}"><i class="material-icons">assessment</i>
+                Analytics</a>
+        </li>
         <li class="{{isSectionActive('fragments')}}">
             <a class="waves-effect" href="{{ base_url('admin/fragments/') }}"><i
                     class="material-icons">bookmark_border</i>

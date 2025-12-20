@@ -102,6 +102,8 @@ $route['admin/configuration/(.+)'] = 'admin/ConfigurationController/$1';
 $route['admin/configuration'] = 'admin/ConfigurationController';
 
 // API v1 routes
+$route['api/v1/analytics/(.+)'] = 'api/v1/AnalyticsController/$1';
+$route['api/v1/analytics'] = 'api/v1/AnalyticsController';
 $route['api/v1/dashboard/(.+)'] = 'api/v1/DashboardController/$1';
 $route['api/v1/dashboard'] = 'api/v1/DashboardController';
 $route['api/v1/users/(.+)'] = 'api/v1/UsersController/$1';

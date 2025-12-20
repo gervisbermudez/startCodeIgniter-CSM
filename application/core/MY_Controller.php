@@ -137,6 +137,7 @@ class MY_Controller extends CI_Controller
             // 'admin.videos.videos_listado' => 'VideosLists.js', // Vista usa PHP tradicional, no Vue
             'admin.configuracion.all_logger' => ['DataTableComponent.js', 'dataEdit.component.js'],
             'admin.configuracion.all_apilogger' => ['DataTableComponent.js', 'dataEdit.component.js', 'ApiLoggerDataComponent.js'],
+            'admin.analytics.dashboard' => 'AnalyticsDashboard.js',
         ];
         
         if (isset($viewComponentMap[$view])) {
@@ -245,8 +246,8 @@ class Base_Controller extends CI_Controller
         // Carga el lenguaje del sitio
         $this->lang->load('site', 'english');
 
-        // Carga la biblioteca Track_Visitor y rastrea los visitantes si la configuración lo permite
-        $this->load->library('Track_Visitor');
+        // Carga la biblioteca Track_Visitor mejorada y rastrea los visitantes si la configuración lo permite
+        $this->load->library('Track_Visitor_Enhanced', null, 'track_visitor');
         if (config('SITEM_TRACK_VISITORS') == 'Si') {
             $this->track_visitor->visitor_track();
         }

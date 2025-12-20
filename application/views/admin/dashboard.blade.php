@@ -104,6 +104,17 @@
                             <div class="text-st-gray">Events</div>
                         </div>
                     </div>
+                    <div class="colum st-blue">
+                        <a href="{{base_url('admin/configuration/analytics')}}" style="color: inherit; display: flex; align-items: center; width: 100%;">
+                            <div class="colum__icon">
+                                <i class="material-icons text-st-white">analytics</i>
+                            </div>
+                            <div class="colum__description">
+                                <div class="text-st-white"><b>Analytics</b></div>
+                                <div class="text-st-white" style="font-size: 0.8rem;">Ver Dashboard</div>
+                            </div>
+                        </a>
+                    </div>
                 </div>
                 <div class="img">
                     <img src="{{url('public/img/admin/dashboard/undraw_charts.png')}}" alt="undraw_charts">
