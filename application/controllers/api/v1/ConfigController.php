@@ -112,6 +112,7 @@ class ConfigController extends REST_Controller
         $configuration->date_create = date("Y-m-d H:i:s");
 
         if ($configuration->save()) {
+            system_logger('config', $configuration->site_config_id, ($this->input->post('site_config_id') ? "updated" : "created"), "Configuración " . $configuration->config_name . " fue " . ($this->input->post('site_config_id') ? "actualizada" : "creada"));
             $this->response_ok($configuration);
             return;
         }
@@ -398,6 +399,81 @@ class ConfigController extends REST_Controller
         $data['config'] = $config->all();
 
         $this->response_ok($data);
+    }
+
+    public function system_info_get()
+    {
+        $this->load->helper('number');
+        
+        $info = [
+            'php_version' => PHP_VERSION,
+            'db_driver' => $this->db->platform(),
+            'db_version' => $this->db->version(),
+            'server_os' => PHP_OS,
+            'max_upload' => ini_get('upload_max_filesize'),
+            'max_post' => ini_get('post_max_size'),
+            'memory_limit' => ini_get('memory_limit'),
+            'disk_free' => byte_format(disk_free_space(".")),
+            'disk_total' => byte_format(disk_total_space(".")),
+            'disk_usage_pct' => round((1 - (disk_free_space(".") / disk_total_space("."))) * 100, 2),
+            'server_time' => date('Y-m-d H:i:s'),
+        ];
+
+        $this->response_ok($info);
+    }
+
+    /**
+     * Run maintenance tasks: Cleanup old logs
+     */
+    public function cleanup_logs_post()
+    {
+        // Check if auto cleanup is enabled
+        $auto_cleanup = config('AUTO_CLEANUP_ENABLED');
+        if ($auto_cleanup != '1' && $auto_cleanup != 'Si' && $auto_cleanup != 'On') {
+            return $this->response([
+                'code' => 400,
+                'error_message' => 'La limpieza automática está desactivada.'
+            ], 400);
+        }
+
+        $this->load->model('Admin/LoggerModel');
+        $this->load->model('Admin/ApiLogsModel');
+        $this->load->model('Admin/UserTrackingModel');
+
+        $results = [
+            'system_logs' => 0,
+            'api_logs' => 0,
+            'user_tracking' => 0
+        ];
+
+        // 1. System Logs
+        $retention_logger = (int)config('LOGGER_RETENTION_DAYS');
+        if ($retention_logger > 0) {
+            $date = date('Y-m-d H:i:s', strtotime("-$retention_logger days"));
+            $this->db->where('date_create <', $date);
+            $this->db->delete('logger');
+            $results['system_logs'] = $this->db->affected_rows();
+        }
+
+        // 2. API Logs
+        $retention_api = (int)config('API_LOGS_RETENTION_DAYS');
+        if ($retention_api > 0) {
+            $date = date('Y-m-d H:i:s', strtotime("-$retention_api days"));
+            $this->db->where('date_create <', $date);
+            $this->db->delete('api_logs');
+            $results['api_logs'] = $this->db->affected_rows();
+        }
+
+        // 3. User Tracking (SEO)
+        $retention_tracking = (int)config('USER_TRACKING_RETENTION_DAYS');
+        if ($retention_tracking > 0) {
+            $date = date('Y-m-d H:i:s', strtotime("-$retention_tracking days"));
+            $this->db->where('date_create <', $date);
+            $this->db->delete('user_tracking');
+            $results['user_tracking'] = $this->db->affected_rows();
+        }
+
+        $this->response_ok($results);
     }
 
     private function getWhereStringFrom($arrayData, $id)

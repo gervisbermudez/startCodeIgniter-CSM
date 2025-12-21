@@ -412,27 +412,28 @@ function get_string_between($string, $start, $end)
 
 function system_logger($type, $type_id, $token, $comment = '')
 {
-
     $ci = &get_instance();
-    $ci->load->model('Admin/SiteConfigModel');
-    $SiteConfig = new SiteConfigModel();
-    $result = $SiteConfig->find_with(["config_name" => 'SYSTEM_LOGGER']);
-    $logger_active = false;
-    if ($result && $SiteConfig->config_value) {
-        $logger_active = true;
+    // Cachear el estado del logger para evitar múltiples consultas a la DB en el mismo request
+    static $logger_active = null;
+
+    if ($logger_active === null) {
+        $ci->load->model('Admin/SiteConfigModel');
+        $result = $ci->SiteConfigModel->find_with(["config_name" => 'SYSTEM_LOGGER']);
+        $logger_active = ($result && $result->config_value == '1');
     }
+
     if ($logger_active) {
         $ci->load->model('Admin/LoggerModel');
-        $Logger = new LoggerModel();
-        $Logger->logger_id = null;
-        $Logger->user_id = userdata('user_id');
-        $Logger->type_id = $type_id;
-        $Logger->type = $type;
-        $Logger->token = $token;
-        $Logger->comment = $comment;
-        $Logger->status = 1;
-        $Logger->date_create = date("Y-m-d H:i:s");
-        return $Logger->save();
+        $data = [
+            'user_id' => userdata('user_id'),
+            'type_id' => $type_id,
+            'type' => $type,
+            'token' => $token,
+            'comment' => $comment,
+            'status' => 1,
+            'date_create' => date("Y-m-d H:i:s")
+        ];
+        return $ci->db->insert('logger', $data);
     }
     return false;
 }

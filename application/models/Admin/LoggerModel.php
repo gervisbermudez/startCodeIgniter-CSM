@@ -28,6 +28,15 @@ class LoggerModel extends MY_Model
                         $value->{'type_link'} = base_url('/admin/pages/editar/' . $value->type_id);
                         $value->{'type_description'} = $result ? $result->first()->title : null;
                         break;
+                    
+                    case 'config':
+                        $this->load->model('Admin/SiteConfigModel');
+                        $config = new SiteConfigModel();
+                        $result = $config->where(['site_config_id' => $value->type_id]);
+                        $value->{'type_object'} = $result ? $result->first() : null;
+                        $value->{'type_link'} = base_url('/admin/configuracion/');
+                        $value->{'type_description'} = $result ? ($result->first()->config_label ?: $result->first()->config_name) : null;
+                        break;
 
                     default:
                         # code...
