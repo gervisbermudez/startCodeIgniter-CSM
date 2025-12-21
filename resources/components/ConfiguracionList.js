@@ -18,6 +18,9 @@ var ConfiguracionList = new Vue({
       "addConfig",
     ],
     files: [],
+    searchQuery: '',
+    creatingBackup: false,
+    fileToDelete: null,
     themes: [],
     updaterloader: false,
     updaterInfo: null,
@@ -145,6 +148,26 @@ var ConfiguracionList = new Vue({
         .filter(c => c.date_update)
         .sort((a, b) => new Date(b.date_update) - new Date(a.date_update))
         .slice(0, 5);
+    },
+    filteredFiles: function () {
+      if (!this.searchQuery) return this.files;
+      const query = this.searchQuery.toLowerCase();
+      return this.files.filter(file =>
+        file.get_filename().toLowerCase().includes(query) ||
+        file.file_path.toLowerCase().includes(query)
+      );
+    },
+    lastBackupDate: function () {
+      if (!this.files.length) return 'N/A';
+      const latest = this.files.reduce((prev, current) =>
+        new Date(prev.date_create) > new Date(current.date_create) ? prev : current
+      );
+      return this.formatDate(latest.date_create);
+    },
+    totalSize: function () {
+      if (!this.files.length) return '0 MB';
+      const total = this.files.reduce((sum, file) => sum + (file.file_size || 0), 0);
+      return this.formatFileSize(total);
     }
   },
   methods: {
@@ -551,33 +574,70 @@ var ConfiguracionList = new Vue({
         dataType: "json",
         success: function (e) {
           if (200 == e.code) {
-            (html = "<span>Done! </span>"),
-              M.toast({
-                html: html,
-              }),
-              t.getDatabaseBackups();
-            var a = document.querySelectorAll(".collapsible");
-            M.Collapsible.init(a, {});
+            M.toast({
+              html: '<i class="material-icons left">check_circle</i>Backup eliminado correctamente',
+              classes: 'green'
+            });
+            t.getDatabaseBackups();
+            // Close modal
+            var modal = M.Modal.getInstance(document.getElementById('deleteBackupModal'));
+            if (modal) modal.close();
           }
         },
       });
     },
+    confirmDelete(file) {
+      this.fileToDelete = file;
+      var modal = M.Modal.getInstance(document.getElementById('deleteBackupModal'));
+      if (!modal) {
+        var elem = document.getElementById('deleteBackupModal');
+        modal = M.Modal.init(elem, {});
+      }
+      modal.open();
+    },
+    formatDate(dateString) {
+      if (!dateString) return 'N/A';
+      const date = new Date(dateString);
+      const options = {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      };
+      return date.toLocaleDateString('es-ES', options);
+    },
+    formatFileSize(bytes) {
+      if (!bytes || bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+    },
     createDatabaseBackup() {
+      this.creatingBackup = true;
       fetch(BASEURL + "api/v1/config/backup_database")
         .then((e) => e.json())
         .then((e) => {
-          "200" == e.code
-            ? (M.toast({
-              html: e.result,
-            }),
-              this.reloadFileExplorer())
-            : M.toast({
-              html: e.result,
+          this.creatingBackup = false;
+          if ("200" == e.code) {
+            M.toast({
+              html: '<i class="material-icons left">check_circle</i>' + e.result,
+              classes: 'green'
             });
+            this.reloadFileExplorer();
+          } else {
+            M.toast({
+              html: '<i class="material-icons left">error</i>' + e.result,
+              classes: 'red'
+            });
+          }
         })
         .catch((e) => {
+          this.creatingBackup = false;
           M.toast({
-            html: "Error code: 001",
+            html: '<i class="material-icons left">error</i>Error al crear backup',
+            classes: 'red'
           });
         });
     },

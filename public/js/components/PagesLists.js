@@ -39,7 +39,12 @@ var PagesLists = new Vue({
       var contentWithoutImages = page.content.replace(/<img[^>]*>/gi, '');
       span.innerHTML = contentWithoutImages;
       let text = span.textContent || span.innerText;
-      return text.substring(0, 120) + "...";
+      return this.truncate(text, 120);
+    },
+    truncate: function (text, length) {
+      if (!text) return "";
+      if (text.length <= length) return text;
+      return text.substring(0, length) + "...";
     },
     toggleView: function () {
       this.tableView = !this.tableView;

@@ -3,8 +3,15 @@
 @section('head_includes')
 <link rel="stylesheet" href="<?=base_url('public/css/admin/form.min.css')?>" />
 @endsection
+
+@section('footer_includes')
+<script src="{{base_url('resources/components/FileExplorerSelector.js')}}"></script>
+<script src="{{base_url('public/vendors/tinymce/js/tinymce/tinymce.min.js')}}"></script>
+<script src="{{base_url('resources/js/validateForm.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/VideosNewForm.js')}}"></script>
+@endsection
 @section('content')
-<div class="container form">
+<div class="container form" id="root">
     <div class="row">
         <div class="col s12">
             <h3 class="page-header">{{ $h1 }}</h3>
@@ -23,9 +30,7 @@
             <div id="introduction" class="section scrollspy">
                 <label for="id_cazary"><?= lang('videos_description') ?>:</label>
                 <div class="input-field">
-                    <textarea id="id_cazary" name="description">
-							<?php echo element('description', $video, ''); ?>
-						</textarea>
+                    <textarea id="id_cazary" name="description"></textarea>
                 </div>
                 <br>
             </div>
@@ -47,8 +52,23 @@
                 <span id="preview" class="header grey-text text-darken-2 scrollspy"><?= lang('videos_preview') ?> <i
                     class="material-icons left">perm_media</i></span>
             <div class="input-field">
-                <input type="text" id="imagen" class="modal-trigger" name="preview" placeholder="<?= lang('videos_main_image') ?>"
-                    data-expected="inactive" data-target="modal1" value="<?php echo element('preview', $video, ''); ?>">
+                <a type="button" class="waves-effect waves-light btn modal-trigger" href="#fileUploader">
+                    <i class="material-icons left">add_a_photo</i> <?= lang('videos_main_image') ?>
+                </a>
+            </div>
+            <div class="row" v-cloak>
+                <div class="col s12" v-if="preview">
+                    <div class="card">
+                        <div class="card-image">
+                            <div class="card-image-container">
+                                <img class="materialboxed" :src="preview" />
+                            </div>
+                            <a @click="removePreview" class="btn-floating halfway-fab waves-effect waves-light" href='#!'>
+                                <i class="material-icons">delete</i></a>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="imagen" name="preview" :value="preview" />
             </div>
             <br>
             <div class="input-field">
@@ -87,6 +107,15 @@
                 <button type="submit" class="btn btn-primary"><i class="material-icons right">done</i> <?= lang('videos_save') ?></button>
 
             </div>
+            <file-explorer-selector 
+                :uploader="'single'"
+                :preselected="[]"
+                :modal="'fileUploader'"
+                :mode="'files'"
+                :filter="'images'"
+                :multiple="false"
+                v-on:notify="onSelectImageCallcack"
+            ></file-explorer-selector>
         </form>
         <div class="col hide-on-small-only m2 l2">
             <ul class="section table-of-contents tabs-wrapper">
@@ -96,11 +125,5 @@
         </div>
     </div>
 </div>
-<div id="modal1" class="modal bottom-sheet" data-navigatefiles="active">
-    <div class="modal-content">
-        <h4><?= lang('videos_select_image') ?></h4>
-        <div class="row gallery" data-active-dir="./img">
-        </div>
-    </div>
-</div>
+@include('admin.components.FileExplorerSelector')
 @endsection

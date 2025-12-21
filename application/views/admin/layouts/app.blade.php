@@ -4,6 +4,7 @@
         @include('admin.shared.head')
         <link href="{{base_url('public/css/materialize.min.css?v=' . ADMIN_VERSION)}}" rel="stylesheet">
         <link href="{{base_url('public/css/admin/start.min.css?v=' . ADMIN_VERSION)}}" rel="stylesheet">
+        <script>window.BASEURL = "{{base_url('')}}";</script>
         @yield('head_includes')
     </head>
     <body>

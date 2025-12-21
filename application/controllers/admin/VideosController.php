@@ -13,9 +13,52 @@ class VideosController extends MY_Controller
 
     public function index()
     {
+        $all = $this->Video->all();
+        $videos = [];
+        if ($all) {
+            // Normalize each item into the array shape expected by the blade templates
+            foreach ($all as $item) {
+                $videos[] = $this->normalizeVideo($item);
+            }
+        }
+
         $this->renderAdminView('admin.videos.videos_listado', 'Videos', 'Videos', [
-            'videos' => $this->Video->all()
+            'videos' => $videos
         ]);
+    }
+
+    /**
+     * Normalize a video model/row into the legacy array shape used by views
+     * @param mixed $item object or array
+     * @return array
+     */
+    protected function normalizeVideo($item)
+    {
+        // convert to object for easier property access
+        $obj = is_array($item) ? (object) $item : $item;
+
+        $video_id = isset($obj->video_id) ? $obj->video_id : (isset($obj->id) ? $obj->id : null);
+        $nam = isset($obj->nam) ? $obj->nam : (isset($obj->nombre) ? $obj->nombre : '');
+        $preview = isset($obj->preview) ? $obj->preview : (isset($obj->imagen) ? $obj->imagen : '');
+        $status = isset($obj->status) ? (string) $obj->status : '0';
+        $fecha = isset($obj->date_publish) ? $obj->date_publish : (isset($obj->fecha) ? $obj->fecha : (isset($obj->date_create) ? $obj->date_create : ''));
+        $youtube = isset($obj->youtube_id) ? $obj->youtube_id : (isset($obj->youtubeid) ? $obj->youtubeid : '');
+
+        return [
+            'id' => $video_id,
+            'video_id' => $video_id,
+            'nombre' => $nam,
+            'nam' => $nam,
+            'preview' => $preview,
+            'status' => $status,
+            'fecha' => $fecha,
+            'date_publish' => $fecha,
+            'description' => isset($obj->description) ? $obj->description : '',
+            'duration' => isset($obj->duration) ? $obj->duration : '',
+            'payinfo' => isset($obj->payinfo) ? $obj->payinfo : '',
+            'youtubeid' => $youtube,
+            'youtube_id' => $youtube,
+        ];
     }
 
     public function categorias($categoria = 'all')
@@ -31,7 +74,8 @@ class VideosController extends MY_Controller
             $this->index();
         } else {
 
-            $data['video'] = $this->Video->get_video(array('id' => $id))[0];
+            $this->Video->find($id);
+            $data['video'] = $this->normalizeVideo($this->Video);
 
             if ($data['video']) {
 
@@ -72,10 +116,6 @@ class VideosController extends MY_Controller
         $this->renderAdminView('admin.videos.crear', 'Nuevo', 'Videos', [
             'video' => [],
             'action' => 'admin/videos/save',
-            'footer_includes' => [
-                'tinymce' => '<script src="' . base_url('public/js/tinymce/js/tinymce/tinymce.min.js') . '"></script>',
-                'tinymceinit' => "<script>tinymce.init({ selector:'textarea',  plugins : ['link table'] });</script>"
-            ],
             'videocategoria' => [],
             'categorias' => $this->Video->get_categoria(['tipo' => 'video'])
         ]);
@@ -98,20 +138,34 @@ class VideosController extends MY_Controller
             'fecha' => $fecha->format('Y-m-d H:i:s'),
             'status' => $status,
         );
-        if ($this->Video->set_video($data)) {
-            unset($data['id']);
-            $video = $this->Video->get_video($data);
+        $inserted_id = $this->Video->set_video($data);
+        if ($inserted_id) {
             if ($this->input->post('categorias')) {
                 foreach ($this->input->post('categorias') as $key => $value) {
-                    $this->Video->set_video_categoria(array('id' => 'NULL', 'id_video' => $video[0]['id'], 'id_categoria' => $value));
+                    $this->Video->set_video_categoria(array('id' => 'NULL', 'id_video' => $inserted_id, 'id_categoria' => $value));
                 }
             }
             $this->load->model('ModRelations');
-            $relations = array('user_id' => $this->session->userdata('id'), 'tablename' => 'video', 'id_row' => $video[0]['id'], 'action' => 'crear');
+            $relations = array('user_id' => $this->session->userdata('id'), 'tablename' => 'video', 'id_row' => $inserted_id, 'action' => 'crear');
             $this->ModRelations->set_relation($relations);
 
-            redirect('admin/videos/ver/' . $video[0]['id']);
+            if ($this->input->is_ajax_request()) {
+                // respond with JSON for AJAX saves
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'code' => 200,
+                    'data' => ['id' => $inserted_id, 'redirect' => base_url('admin/videos/ver/' . $inserted_id)],
+                ]);
+                return;
+            }
+
+            redirect('admin/videos/ver/' . $inserted_id);
         } else {
+            if ($this->input->is_ajax_request()) {
+                header('Content-Type: application/json');
+                echo json_encode(['code' => 500, 'error' => 'save_failed']);
+                return;
+            }
             $this->showError();
         }
     }
@@ -119,7 +173,8 @@ class VideosController extends MY_Controller
     public function editar($id)
     {
 
-        $data['video'] = $this->Video->get_video(array('id' => $id))[0];
+        $this->Video->find($id);
+        $data['video'] = $this->normalizeVideo($this->Video);
         if ($data['video']) {
             $this->load->helper('array');
 
@@ -127,7 +182,8 @@ class VideosController extends MY_Controller
             $data['h1'] = "Videos";
             $data['header'] = $this->load->view('admin/header', $data, true);
             $data['action'] = 'admin/videos/update';
-            $data['video'] = $this->Video->get_video(array('id' => $id))[0];
+            // already loaded above
+            $data['video'] = $this->normalizeVideo($this->Video);
             $data['categorias'] = $this->StModel->get_data(array('tipo' => 'Video'), 'categorias');
 
             $videocategoria = $this->Video->get_video_categoria(array('`id_video`' => $id));
@@ -137,9 +193,7 @@ class VideosController extends MY_Controller
                     $data['videocategoria'][$value['id_categoria']] = true;
                 }
             }
-            $data['footer_includes'] = array(
-                'tinymce' => '<script src="' . base_url('public/js/tinymce/js/tinymce/tinymce.min.js') . '"></script>',
-                'tinymceinit' => "<script>tinymce.init({ selector:'textarea',  plugins : ['link table'] });</script>");
+            $data['footer_includes'] = array();
             echo $this->blade->view("admin.videos.crear", $data);
 
         } else {

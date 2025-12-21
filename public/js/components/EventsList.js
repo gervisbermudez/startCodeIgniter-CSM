@@ -4,7 +4,7 @@ var EventsList = new Vue({
     colums: [
       {
         colum: "name",
-        label: "name",
+        label: "Name",
       },
       {
         colum: "user",
@@ -12,7 +12,7 @@ var EventsList = new Vue({
       },
       {
         colum: "date_create",
-        label: "Creado",
+        label: "Created",
       },
       {
         colum: "status",
@@ -31,7 +31,7 @@ var EventsList = new Vue({
   computed: {},
   methods: {
     editEvent(data) {
-      window.location = `${BASEURL}admin/events/editar/${data.item.event_id}`;
+      window.location = `${BASEURL}admin/events/edit/${data.item.event_id}`;
       return;
     },
     deleteItem(data) {
@@ -43,11 +43,11 @@ var EventsList = new Vue({
       return;
     },
     newEvent() {
-      window.location = `${BASEURL}admin/events/agregar/`;
+      window.location = `${BASEURL}admin/events/add/`;
       return;
     },
   },
   mounted: function () {
-    this.$nextTick(function () {});
+    this.$nextTick(function () { });
   },
 });

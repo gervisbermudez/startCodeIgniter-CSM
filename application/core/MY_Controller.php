@@ -134,7 +134,7 @@ class MY_Controller extends CI_Controller
             'admin.eventos.eventos_list' => ['DataTableComponent.js', 'EventsList.js'],
             'admin.fragmentos.fragments_list' => 'FragmentsLists.js',
             'admin.categorias.categorias_list' => 'CategoriesLists.js',
-            // 'admin.videos.videos_listado' => 'VideosLists.js', // Vista usa PHP tradicional, no Vue
+            'admin.videos.videos_listado' => 'VideosLists.js',
             'admin.configuracion.all_logger' => ['DataTableComponent.js', 'dataEdit.component.js'],
             'admin.configuracion.all_apilogger' => ['DataTableComponent.js', 'dataEdit.component.js', 'ApiLoggerDataComponent.js'],
             'admin.analytics.dashboard' => 'AnalyticsDashboard.js',

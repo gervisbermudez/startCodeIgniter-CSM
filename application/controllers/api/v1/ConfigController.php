@@ -148,28 +148,72 @@ class ConfigController extends REST_Controller
      */
     public function backup_database_get()
     {
-        // Load the DB utility class
-        $this->load->dbutil();
-        // Backup your entire database and assign it to a variable
-        $backup = $this->dbutil->backup();
-        // Load the file helper and write the file to your server
-        $this->load->helper('file');
-        if (!file_exists('./backups/database/')) {
-            mkdir('./backups/database/', 0777, true);
+        try {
+            // Load the DB utility class
+            $this->load->dbutil();
+            
+            // Define backup directory
+            $backup_dir = './backups/database/';
+            
+            // Check if directory exists, if not create it
+            if (!file_exists($backup_dir)) {
+                if (!@mkdir($backup_dir, 0777, true)) {
+                    $this->response([
+                        'result' => 'No se pudo crear el directorio de backups. Verifica los permisos.',
+                        'code' => REST_Controller::HTTP_INTERNAL_SERVER_ERROR,
+                        'path' => realpath('./backups')
+                    ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+                    return;
+                }
+                @chmod($backup_dir, 0777);
+            }
+            
+            // Check if directory is writable
+            if (!is_writable($backup_dir)) {
+                $this->response([
+                    'result' => 'El directorio de backups no tiene permisos de escritura.',
+                    'code' => REST_Controller::HTTP_INTERNAL_SERVER_ERROR,
+                    'path' => realpath($backup_dir)
+                ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+                return;
+            }
+            
+            // Backup your entire database
+            $backup = $this->dbutil->backup();
+            
+            // Load the file helper and write the file
+            $this->load->helper('file');
+            $filename = $backup_dir . date('YmdHis') . '.gz';
+            
+            if (write_file($filename, $backup)) {
+                // Log the successful backup
+                system_logger('config', 'Backup de base de datos creado exitosamente', [
+                    'filename' => basename($filename),
+                    'size' => filesize($filename)
+                ]);
+                
+                $this->response([
+                    'result' => 'Backup creado exitosamente',
+                    'code' => REST_Controller::HTTP_OK,
+                    'filename' => basename($filename),
+                    'size' => filesize($filename)
+                ], REST_Controller::HTTP_OK);
+            } else {
+                $this->response([
+                    'result' => 'No se pudo escribir el archivo de backup',
+                    'code' => REST_Controller::HTTP_BAD_REQUEST
+                ], REST_Controller::HTTP_BAD_REQUEST);
+            }
+        } catch (Exception $e) {
+            system_logger('error', 'Error al crear backup de base de datos', [
+                'error' => $e->getMessage()
+            ]);
+            
+            $this->response([
+                'result' => 'Error al crear el backup: ' . $e->getMessage(),
+                'code' => REST_Controller::HTTP_INTERNAL_SERVER_ERROR
+            ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
         }
-        $data = array();
-        if (write_file('./backups/database/' . date('YmdHis') . '.gz', $backup)) {
-            $data = array(
-                'result' => "backup created",
-                "code" => REST_Controller::HTTP_OK,
-            );
-        } else {
-            $data = array(
-                'result' => "unnable to created a backup",
-                "code" => REST_Controller::HTTP_BAD_REQUEST,
-            );
-        }
-        $this->response($data, REST_Controller::HTTP_OK);
     }
 
     public function themes_get()

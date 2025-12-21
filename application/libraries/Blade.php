@@ -24,6 +24,11 @@ class Blade
     {
         $ci = &get_instance();
         $params['ci'] = $ci;
+        // expose common CI objects to the BladeOne instance so compiled templates
+        // can access them via $this->session, $this->config, etc.
+        $this->BladeOne->session = isset($ci->session) ? $ci->session : null;
+        $this->BladeOne->config = isset($ci->config) ? $ci->config : null;
+        $this->BladeOne->input = isset($ci->input) ? $ci->input : null;
         return $this->BladeOne->run($view_name, $params);
     }
 

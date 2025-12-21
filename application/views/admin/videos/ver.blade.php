@@ -29,7 +29,20 @@
 					<?php echo $options; ?>
 				</div>
 				<div class="card-image">
-					<img src="<?php echo base_url($video['preview']); ?>" alt="" class="materialboxed">
+					<?php
+					$rawPreview = isset($video['preview']) ? trim($video['preview']) : '';
+					$rawPreview = str_replace(['?>', "?&gt;"], '', $rawPreview);
+					if ($rawPreview && (strpos($rawPreview, 'http://') === 0 || strpos($rawPreview, 'https://') === 0)) {
+						$imgSrc = $rawPreview;
+					} elseif ($rawPreview && strpos($rawPreview, '/') === 0) {
+						$imgSrc = base_url(ltrim($rawPreview, '/'));
+					} elseif ($rawPreview) {
+						$imgSrc = base_url($rawPreview);
+					} else {
+						$imgSrc = base_url('public/img/default.jpg');
+					}
+					?>
+					<img src="<?php echo $imgSrc; ?>" alt="" class="materialboxed">
 				</div>
 				<div class="card-content">
 					<p><?php echo $video['description']; ?> <br></p>

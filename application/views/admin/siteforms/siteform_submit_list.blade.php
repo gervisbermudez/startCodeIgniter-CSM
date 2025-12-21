@@ -11,7 +11,7 @@
 
 @section('footer_includes')
 @include('admin.components.dataTableComponent')
-@include('admin.components.FormSiteDetails')
+@include('admin.components.formSiteDetails')
 <script src="{{base_url('resources/components/DataTableComponent.js?v=' . ADMIN_VERSION)}}"></script>
 <script src="{{base_url('resources/components/FormSiteDetails.component.js?v=' . ADMIN_VERSION)}}"></script>
 <script src="{{base_url('resources/components/SiteFormSubmitList.js')}}"></script>

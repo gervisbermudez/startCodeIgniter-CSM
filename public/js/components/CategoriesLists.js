@@ -65,7 +65,7 @@ var CategoriesLists = new Vue({
         },
         error: function (error) {
           self.loader = false;
-          M.toast({ html: "Ocurrió un error inesperado" });
+          M.toast({ html: "An unexpected error occurred" });
           console.error(error);
         },
       });
@@ -89,7 +89,7 @@ var CategoriesLists = new Vue({
         },
         error: function (error) {
           self.loader = false;
-          M.toast({ html: "Ocurrió un error inesperado" });
+          M.toast({ html: "An unexpected error occurred" });
           console.error(error);
         },
       });
