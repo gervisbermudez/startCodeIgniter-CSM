@@ -23,13 +23,13 @@
             <ul class="tabs" id="formTabs">
                 <li class="tab col s3">
                     <a class="active grey-text text-darken-2" href="#test1">
-                        <i class="material-icons">assignment</i><span>Datos básicos </span>
+                        <i class="material-icons">assignment</i><span>{{ lang('pages_basic_data') }} </span>
                     </a>
                 </li>
                 <li class="tab col s3">
                     <a href="#test2" class="active grey-text text-darken-2">
                         <i class="material-icons">build</i>
-                        <span>Adicional</span>
+                        <span>{{ lang('pages_additional') }}</span>
                     </a>
                 </li>
             </ul>
@@ -37,32 +37,31 @@
         <div class="col s12" id="test1">
             <div v-cloak v-show="!loader" class="col s12 m8 l9">
                 <div class="input-field">
-                    <label for="title">Title:</label>
+                    <label for="title">{{ lang('pages_title') }}</label>
                     <input type="text" id="title" name="title" required="required" value=""
                         v-model="form.fields.title.value" v-on:blur="onChangeTitle(form.fields.title.value);" />
                 </div>
                 <div class="input-field">
-                    <label for="subtitle">SubTitle:</label>
+                    <label for="subtitle">{{ lang('pages_subtitle') }}</label>
                     <input type="text" id="subtitle" name="subtitle" required="required" value=""
                         v-model="form.fields.subtitle.value" />
                 </div>
                 <div class="input-field">
-                    <label for="path">Path:</label>
+                    <label for="path">{{ lang('pages_path') }}</label>
                     <input type="text" id="path" name="path" required="required" value="" v-model="path" />
                     <br />
                 </div>
                 <p>
-                    <span><b>Full path:</b> @{{ getPagePath }}</span>
+                    <span><b>{{ lang('pages_full_path') }}</b> @{{ getPagePath }}</span>
                 </p>
                 <a href="#fileUploader" class="waves-effect waves-light btn modal-trigger"
-                    @click="setModalMode('copyCallcack')"><i class="material-icons left">add_a_photo</i>Agregar
-                    Imagen</a>
+                    @click="setModalMode('copyCallcack')"><i class="material-icons left">add_a_photo</i>{{ lang('pages_add_image') }}</a>
                 <div class="row" v-if="mainImage">
                     <div class="col s6" v-for="(image, index) in mainImage" :key="index">
                         <div class="card mainPageImage">
                             <div class="card-image">
                                 <i class="material-icons right close tooltipped" data-position="left" data-delay="50"
-                                    data-tooltip="Quitar" v-on:click="removeImage(index);">close</i>
+                                    :data-tooltip="lang('pages_remove_image')" v-on:click="removeImage(index);">close</i>
                                 <img class="materialboxed" :src="getFileImagenPath(image)" />
                             </div>
                             <span class="card-title truncate"><span>@{{ getFileImagenName(image) }}</span></span>
@@ -70,7 +69,7 @@
                     </div>
                 </div>
                 <div id="introduction" class="section scrollspy">
-                    <span class="header grey-text text-darken-2">Contenido <i
+                    <span class="header grey-text text-darken-2">{{ lang('pages_content') }} <i
                             class="material-icons left">description</i></span>
                     <br />
                     <textarea v-model="content" id="editor"></textarea>
@@ -79,57 +78,56 @@
                 <br />
             </div>
             <div v-cloak v-show="!loader" class="col s12 m4 l3">
-                <span class="header grey-text text-darken-2">Publicar Pagina
+                <span class="header grey-text text-darken-2">{{ lang('pages_publish') }}
                     <i class="material-icons left">assignment_turned_in</i></span>
                 <div class="input-field">
                     <div class="switch">
                         <label>
-                            No publicado
+                            {{ lang('pages_not_published') }}
                             <input type="checkbox" name="status_form" value="0" v-model="status" />
                             <span class="lever"></span>
-                            Publicado
+                            {{ lang('pages_published') }}
                         </label>
                     </div>
                 </div>
                 <div v-show="status">
-                    <b class="grey-text text-darken-2"><i class="material-icons left">remove_red_eye</i> Visibilidad</b>
+                    <b class="grey-text text-darken-2"><i class="material-icons left">remove_red_eye</i> {{ lang('pages_visibility') }}</b>
                     <p>
                         <label>
                             <input name="visibility" v-model="visibility" value="1" type="radio" checked />
-                            <span>Publico</span>
+                            <span>{{ lang('pages_visibility_public') }}</span>
                         </label>
                     </p>
                     <p>
                         <label>
                             <input class="red" name="visibility" v-model="visibility" value="2" type="radio" />
-                            <span>Privada</span>
+                            <span>{{ lang('pages_visibility_private') }}</span>
                         </label>
                     </p>
-                    <b class="grey-text text-darken-2"><i class="material-icons left">date_range</i> Fecha de
-                        Publicación</b>
+                    <b class="grey-text text-darken-2"><i class="material-icons left">date_range</i> {{ lang('pages_publish_date') }}</b>
                     <p>
                         <label>
                             <input type="checkbox" checked v-model="publishondate" />
-                            <span>Publicar inmediatamente</span>
+                            <span>{{ lang('pages_publish_immediately') }}</span>
                         </label>
                     </p>
                     <div v-show="!publishondate">
-                        <b class="grey-text text-darken-2">Seleccionar fecha y hora:</b>
+                        <b class="grey-text text-darken-2">{{ lang('pages_select_date_time') }}</b>
                         <br />
                         <div class="input-field">
-                            <label for="datepublish">Fecha:</label>
+                            <label for="datepublish">{{ lang('pages_date') }}</label>
                             <input type="text" class="datepicker" id="datepublish" name="datepublish"
                                 required="required" value="" v-model="datepublish" />
                         </div>
                         <div class="input-field">
-                            <label for="timepublish">Hora:</label>
+                            <label for="timepublish">{{ lang('pages_time') }}</label>
                             <input type="text" class="timepicker" id="timepublish" name="timepublish"
                                 required="required" value="" v-model="timepublish" />
                         </div>
                     </div>
                 </div>
                 <br />
-                <span class="header grey-text text-darken-2"><i class="material-icons left">list</i> Tipo</span>
+                <span class="header grey-text text-darken-2"><i class="material-icons left">list</i> {{ lang('pages_type') }}</span>
                 <br />
                 <div class="input-field">
                     <select v-model="page_type_id" name="template" @blur="setPath();">
@@ -137,29 +135,29 @@
                             @{{ item.page_type_name | capitalize }}
                         </option>
                     </select>
-                    <label>Tipo</label>
+                    <label>{{ lang('pages_type') }}</label>
                 </div>
                 <br />
-                <span class="header grey-text text-darken-2"><i class="material-icons left">toc</i> Categoria</span>
+                <span class="header grey-text text-darken-2"><i class="material-icons left">toc</i> {{ lang('events_category') }}</span>
                 <br />
                 <div class="input-field">
                     <select v-model="categorie_id" id="categorie" name="template" v-on:change="getSubCategories">
-                        <option value="0">Ninguna</option>
+                        <option value="0">{{ lang('categories_none') }}</option>
                         <option v-for="(item, index) in categories" :key="index" :value="item.categorie_id">
                             @{{ item.name | capitalize }}
                         </option>
                     </select>
-                    <label>Categoria</label>
+                    <label>{{ lang('events_category') }}</label>
                 </div>
                 <br />
                 <div class="input-field">
                     <select v-model="subcategorie_id" id="subcategories" name="subcategories">
-                        <option value="0">Ninguna</option>
+                        <option value="0">{{ lang('categories_none') }}</option>
                         <option v-for="(item, index) in subcategories" :key="index" :value="item.categorie_id">
                             @{{ item.name | capitalize }}
                         </option>
                     </select>
-                    <label>Sub Categoria</label>
+                    <label>{{ lang('pages_subcategory') }}</label>
                 </div>
                 <br />
                 <span class="header grey-text text-darken-2"><i class="material-icons left">layers</i> Template</span>
@@ -170,7 +168,7 @@
                             @{{ template }}
                         </option>
                     </select>
-                    <label>Internal Template</label>
+                    <label>{{ lang('pages_template') }}</label>
                 </div>
                 <br />
                 <div class="input-field">
@@ -182,7 +180,7 @@
                     <label>Layout</label>
                 </div>
                 <div v-if="user">
-                    <p><b>Creado por</b>:</p>
+                    <p><b>{{ lang('categories_created_by') }}</b>:</p>
                     <ul class="collection form-user-component">
                         <li class="collection-item avatar">
                             <a :href="user.get_profileurl()">
@@ -199,7 +197,7 @@
                         <span><i class="material-icons right">launch</i> Preview</span>
                     </a>
                     <a v-else class="btn bg-color3" target="_blank" :href="full_path" :class="{disabled: !btnEnable}">
-                        <span><i class="material-icons right">launch</i> View en site</span>
+                        <span><i class="material-icons right">launch</i> {{ lang('pages_view_in_site') }}</span>
                     </a>
                 </div>
             </div>
@@ -207,30 +205,30 @@
         <div id="test2" class="col s12">
             <div class="col s12 m8 l9" v-cloak v-show="!loader">
                 <br />
-                <span class="header grey-text text-darken-2">Agregar Etiquetas</span>
+                <span class="header grey-text text-darken-2">{{ lang('pages_add_tags') }}</span>
                 <div class="chips chips-autocomplete" id="pageTags"></div>
             </div>
             <br />
             <div class="row" v-cloak v-show="!loader">
                 <div class="input-field col s12">
                     <textarea id="title" v-model="page_data.title" class="materialize-textarea"></textarea>
-                    <label for="title">Page title</label>
+                    <label for="title">{{ lang('pages_page_title') }}</label>
                 </div>
                 <div class="input-field col s12">
                     <textarea id="headers_includes" v-model="page_data.headers_includes"
                         class="materialize-textarea"></textarea>
-                    <label for="headers_includes">headers includes</label>
+                    <label for="headers_includes">{{ lang('pages_headers_includes') }}</label>
                 </div>
                 <div class="input-field col s12">
                     <textarea id="footer_includes" v-model="page_data.footer_includes"
                         class="materialize-textarea"></textarea>
-                    <label for="footer_includes">Footer includes</label>
+                    <label for="footer_includes">{{ lang('pages_footer_includes') }}</label>
                 </div>
             </div>
             <div class="row" v-cloak v-show="!loader">
                 <div class="col s12">
-                    <span class="header grey-text text-darken-2"><i class="material-icons left">layers</i> Page Metas <a
-                            class="waves-effect waves-light btn right" href="#!" @click="addCustomMeta();">Agregar meta
+                    <span class="header grey-text text-darken-2"><i class="material-icons left">layers</i> {{ lang('pages_metas') }} <a
+                            class="waves-effect waves-light btn right" href="#!" @click="addCustomMeta();">{{ lang('pages_add_meta') }}
                             +</a></span>
                     <br />
                     <ul class="collapsible" id="pageMetas">

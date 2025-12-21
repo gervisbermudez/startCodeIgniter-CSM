@@ -8,7 +8,7 @@
 <div class="container form" id="root">
 	<div class="row">
 		<div class="col s12">
-			<h3 class="page-header">{{$h1}}</h3>
+			<h3 class="page-header"><?= lang('menu_new_menu') ?></h3>
 		</div>
 	</div>
 	<div class="row">
@@ -17,11 +17,11 @@
 		</div>
 		<div id="form" class="col s12" v-bind:class="{'m10': user_id}" v-cloak v-show="!loader">
 			<input type="hidden" name="id_form" value="">
-			<span class="header grey-text text-darken-2">Datos básicos <i
+			<span class="header grey-text text-darken-2"><?= lang('menu_basic_data') ?> <i
 					class="material-icons left">description</i></span>
 			<br>
 			<div class="input-field">
-				<label for="nombre">Nombre:</label>
+				<label for="nombre"><?= lang('menu_name') ?>:</label>
 				<input type="text" v-model="name" id="nombre" name="nombre_form" required="required" value="">
 			</div>
 			<br/>
@@ -44,11 +44,11 @@
 				<label>Position</label>
 			</div>
 			<br />
-			Items del Menu:
+			<?= lang('menu_items') ?>:
 			<br />
 			<br />
 			<div>
-				<a href="#!" class="btn" v-on:click="addItem()">Agregar Menu Item <i
+				<a href="#" class="btn" v-on:click="addItem()">{{ lang('menu_add_item') }} <i
 						class="material-icons right">add_box</i></a>
 			</div>
 			<br />
@@ -62,17 +62,11 @@
 							<i class="material-icons right icon-move">reorder</i>
 						</div>
 						<div class="collapsible-body">
-							<a
-							class="waves-effect waves-light btn"
-							href="#!"
-							@click="openPageSelector(item)"
-							>
-								<i class="material-icons left">add_to_photos</i> Seleccionar pagina
-							</a>
+							<a class="waves-effect waves-light btn" href="#" @click="openPageSelector(item)"><i class="material-icons left">add_to_photos</i> {{ lang('menu_select_page') }}</a>
 							<br />
 							<br />
 							<div class="input-field">
-								<label class="active" for="'nombre-' + index">Nombre:</label>
+								<label class="active" for="'nombre-' + index">{{ lang('menu_name') }}:</label>
 								<input type="text" v-model="item.item_name" :id="'nombre-' + index" required="required"
 									value="">
 							</div>
@@ -111,12 +105,7 @@
 									<i class="material-icons right icon-move">reorder</i>
 								</div>
 								<div class="collapsible-body">
-								<a 
-								class="waves-effect waves-light btn" 
-								href="#!"
-								@click="openPageSelector(item)"
-								>
-												<i class="material-icons left" >add_to_photos</i> Seleccionar pagina</a>
+								<a class="waves-effect waves-light btn" href="#" @click="openPageSelector(item)"><i class="material-icons left">add_to_photos</i> {{ lang('menu_select_page') }}</a>
 												<br>
 												<br>
 									<div class="input-field">
@@ -159,18 +148,18 @@
 			<div class="input-field">
 				<div class="switch">
 					<label>
-						No Activo
+						{{ lang('menu_not_active') }}
 						<input type="checkbox" name="status_form" value="1" v-model="status">
 						<span class="lever"></span>
-						Activo
+						{{ lang('menu_active') }}
 					</label>
 				</div>
 			</div>
 			<br><br>
 			<div class="input-field" id="buttons">
-				<a href="<?php echo base_url('admin/categories/'); ?>" class="btn-flat">Cancelar</a>
+				<a href="<?php echo base_url('admin/categories/'); ?>" class="btn-flat">{{ lang('cancel') }}</a>
 				<button type="submit" class="btn btn-primary" @click="save()" :class="{disabled: !btnEnable}">
-					<span><i class="material-icons right">edit</i> Guardar</span>
+					<span><i class="material-icons right">edit</i> {{ lang('save') }}</span>
 				</button>
 			</div>
 		</div>

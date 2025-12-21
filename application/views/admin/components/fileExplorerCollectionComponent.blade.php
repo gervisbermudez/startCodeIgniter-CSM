@@ -19,7 +19,7 @@
             <a href="#!" class="secondary-content" :class="{'yellow-text': file.featured == '1'}" v-on:click="featuredFileServe(file);"><i class="material-icons">grade</i></a>
         </li>
         <li v-else class="collection-item">
-            No hay archivos
+            No files found
         </li>
     </ul>
 </div>

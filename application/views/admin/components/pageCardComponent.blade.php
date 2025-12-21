@@ -45,15 +45,15 @@
 											<div class="m-widget19__stats">
 												<span class="m-widget19__number m--font-brand">
 												<i v-if="page.status == 1" class="material-icons tooltipped" data-position="left"
-													data-delay="50" data-tooltip="Publicado">publish</i>
+													data-delay="50" data-tooltip="Published">publish</i>
 												<i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
-													data-tooltip="Borrador">edit</i>
+													data-tooltip="Draft">edit</i>
 												</span>
 												<span v-if="page.status == 1" class="m-widget19__comment">
-												Publicado
+												Published
 												</span>
 												<span v-else class="m-widget19__comment">
-												Borrador
+												Draft
 												</span>
 											</div>
 										</div>

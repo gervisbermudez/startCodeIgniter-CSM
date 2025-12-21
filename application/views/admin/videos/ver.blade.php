@@ -12,14 +12,14 @@
 					<?php if (5 > $this->session->userdata('level')): ?>
 					<div class="switch left">
 						<label>
-							No publicado
+							{{ lang('video_not_published') }}
 							<input type="checkbox" class="change_state" name="status"
 								<?php if ($video['status']=="1"): ?> checked="checked"
 								data-url="admin/videos/fn_ajax_change_state/"
 								data-action-param='{"id":"<?php echo $video['id']; ?>", "table":"video"}'
 								<?php endif ?>>
 							<span class="lever"></span>
-							Publicado
+							{{ lang('video_published') }}
 						</label>
 
 					</div>
@@ -43,11 +43,11 @@
 					<p><?php echo $video['fecha']; ?></p>
 				</div>
 				<div class="card-action">
-					Duracion: <?php echo $video['duration']; ?> <br>
-					Informacion de pago: <?php echo $video['payinfo']; ?> <br>
-					URL Youtube: <?php echo $video['youtubeid']; ?> <br>
+					{{ lang('video_duration') }}: <?php echo $video['duration']; ?> <br>
+					{{ lang('video_payinfo') }}: <?php echo $video['payinfo']; ?> <br>
+					{{ lang('video_youtube_url') }}: <?php echo $video['youtubeid']; ?> <br>
 					<?php if ($categorias): ?>
-					<b>Categorias:</b>
+					<b>{{ lang('video_categories') }}:</b>
 					<ul>
 						<?php foreach ($categorias as $key => $value): ?>
 						<li><a href="#"><?php echo $value['categoria']; ?></a></li>
@@ -63,12 +63,12 @@
 </div>
 <div id="<?php echo $modalid; ?>" class="modal">
 	<div class="modal-content">
-		<h4>Eliminar video</h4>
-		<p>¿Desea eliminar éste video? Esta accion no podrá deshacerse</p>
+		<h4>{{ lang('video_delete_title') }}</h4>
+		<p>{{ lang('video_delete_confirm') }}</p>
 	</div>
 	<div class="modal-footer">
-		<a href="#!" data-action="acept" class=" modal-action modal-close waves-effect waves-green btn-flat">Aceptar</a>
-		<a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
+		<a href="#" data-action="acept" class=" modal-action modal-close waves-effect waves-green btn-flat">{{ lang('accept') }}</a>
+		<a href="#" class=" modal-action modal-close waves-effect waves-green btn-flat">{{ lang('cancel') }}</a>
 	</div>
 </div>
 @endsection

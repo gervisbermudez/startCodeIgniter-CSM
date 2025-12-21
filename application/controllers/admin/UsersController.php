@@ -47,7 +47,7 @@ class UsersController extends MY_Controller
 
     public function index()
     {
-        $this->renderAdminView('admin.user.users', 'Usuarios', 'Usuarios');
+        $this->renderAdminView('admin.user.users', lang('menu_users'), lang('menu_users'));
     }
 
     public function ver($user_id = false)
@@ -71,17 +71,17 @@ class UsersController extends MY_Controller
             );
 
             $links = array(
-                'Editar' => array('href' => base_url('admin/users/edit/' . $user_id)),
-                'Cambiar avatar' => array('href' => '#folderSelector', 'class' => 'modal-trigger'),
-                'Eliminar' => array('href' => '#!'),
-                'Bloquear' => array('href' => '#!'),
+                lang('btn_edit') => array('href' => base_url('admin/users/edit/' . $user_id)),
+                'Change avatar' => array('href' => '#folderSelector', 'class' => 'modal-trigger'),
+                lang('btn_delete') => array('href' => '#!'),
+                'Block' => array('href' => '#!'),
             );
 
             if ($user_id == userdata('user_id')) {
                 $links = array(
-                    'Editar' => array('href' => base_url('admin/users/edit/' . $user_id)),
-                    'Cambiar Contraseña' => array('href' => base_url('admin/users/changePassword/' . $user_id)),
-                    'Cambiar avatar' => array('href' => '#folderSelector', 'class' => 'modal-trigger'),
+                    lang('btn_edit') => array('href' => base_url('admin/users/edit/' . $user_id)),
+                    'Change Password' => array('href' => base_url('admin/users/changePassword/' . $user_id)),
+                    'Change avatar' => array('href' => '#folderSelector', 'class' => 'modal-trigger'),
                 );
             }
 
@@ -99,9 +99,9 @@ class UsersController extends MY_Controller
 
     public function edit($id)
     {
-        $user = $this->findOrFail(new UserModel(), $id, 'Usuario no encontrado');
+        $user = $this->findOrFail(new UserModel(), $id, 'User not found');
         
-        $this->renderAdminView('admin.user.form', 'Editar Usuario', 'Editar Usuario', [
+        $this->renderAdminView('admin.user.form', 'Edit User', 'Edit User', [
             'userdata' => $user,
             'action' => 'Admin/User/save/',
             'mode' => 'new',
@@ -114,9 +114,9 @@ class UsersController extends MY_Controller
 
     public function changePassword($id)
     {
-        $user = $this->findOrFail(new UserModel(), $id, 'Usuario no encontrado');
+        $user = $this->findOrFail(new UserModel(), $id, 'User not found');
         
-        $this->renderAdminView('admin.user.changepassword', 'Cambiar Password', 'Cambiar Password', [
+        $this->renderAdminView('admin.user.changepassword', 'Change Password', 'Change Password', [
             'userdata' => $user,
             'action' => 'Admin/User/save/',
             'mode' => 'new'
@@ -127,7 +127,7 @@ class UsersController extends MY_Controller
     {
         $this->load->model('Admin/UsergroupModel');
         
-        $this->renderAdminView('admin.user.form', 'Nuevo Usuario', 'Nuevo Usuario', [
+        $this->renderAdminView('admin.user.form', 'New User', 'New User', [
             'action' => 'Admin/User/save/',
             'userdata' => false,
             'mode' => 'new',

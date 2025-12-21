@@ -267,7 +267,7 @@ var dashboardModule = new Vue({
                 window.location.href = `${BASEURL}admin/categories/editar/${response.data.categorie_id}`;
                 break;
               case "fragment":
-                window.location.href = `${BASEURL}admin/fragments/editar/${response.data.fragment_id}`;
+                window.location.href = `${BASEURL}admin/Fragments/editar/${response.data.fragment_id}`;
               default:
                 break;
             }
@@ -275,7 +275,7 @@ var dashboardModule = new Vue({
         },
         error: function (response) {
           self.loader = false;
-          M.toast({ html: "Ocurrió un error inesperado" });
+          M.toast({ html: "An unexpected error occurred" });
           console.error(error);
         },
       });
@@ -286,6 +286,8 @@ var dashboardModule = new Vue({
         M.Dropdown.init(elems, {});
         var elems = document.querySelectorAll(".collapsible");
         M.Collapsible.init(elems, {});
+        var elems = document.querySelectorAll(".tooltipped");
+        M.Tooltip.init(elems, {});
       }, 3000);
     },
     createChart: (id, chartData) => {
@@ -356,28 +358,28 @@ var dashboardModule = new Vue({
             : [];
           this.pages = data.pages
             ? data.pages.map((page) => {
-                page.user = new User(page.user);
-                return page;
-              })
+              page.user = new User(page.user);
+              return page;
+            })
             : [];
           this.forms_types = data.forms_types ? data.forms_types : [];
           this.content = data.content
             ? data.content.map((element) => {
-                element.user = new User(element.user);
-                element.status = element.status == "1";
-                return element;
-              })
+              element.user = new User(element.user);
+              element.status = element.status == "1";
+              return element;
+            })
             : [];
           this.files = data.files
             ? data.files.map((file) => {
-                return new ExplorerFile(file);
-              })
+              return new ExplorerFile(file);
+            })
             : [];
           this.albumes = data.albumes
             ? data.albumes.map((album) => {
-                album.user = new User(album.user);
-                return album;
-              })
+              album.user = new User(album.user);
+              return album;
+            })
             : [];
           this.loader = false;
 

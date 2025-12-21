@@ -95,7 +95,7 @@ $autoload['config'] = array('jwt');
 |
  */
 
-$autoload['language'] = array();
+$autoload['language'] = array('site');
 
 /*
 | -------------------------------------------------------------------

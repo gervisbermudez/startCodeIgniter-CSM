@@ -29,9 +29,9 @@ $ddmid = random_string('alnum', 16);
                                 <?php endif?>
                                 <?php if (3 > $this->session->userdata('level')): ?>
                                 <li><a href="#<?php echo $modalid; ?>" class="modal-trigger"
-                                        data-action-param='{"id":"<?php echo $video['id'] ?>", "table":"video"}'
-                                        data-url="admin/videos/fn_ajax_delete_data" data-ajax-action="inactive"
-                                        data-target-selector="<?php echo "#$itemid"; ?>">Eliminar</a></li>
+                                    data-action-param='{"id":"<?php echo $video['id'] ?>", "table":"video"}'
+                                    data-url="admin/videos/fn_ajax_delete_data" data-ajax-action="inactive"
+                                    data-target-selector="<?php echo "#$itemid"; ?>"><?= lang('delete') ?></a></li>
                                 <?php endif?>
                                 <li><a href="<?php echo base_url('admin/videos/ver/' . $video['id']) ?>"
                                         title="Ver">Ver</a>
@@ -81,12 +81,12 @@ $ddmid = random_string('alnum', 16);
 
 <div id="<?php echo $modalid; ?>" class="modal">
     <div class="modal-content">
-        <h4><i class="material-icons">warning</i> Eliminar video</h4>
-        <p>¿Desea eliminar ésta video?</p>
+        <h4><i class="material-icons">warning</i> <?= lang('delete_video_title') ?></h4>
+        <p><?= lang('delete_video_confirm') ?></p>
     </div>
     <div class="modal-footer">
-        <a href="#!" data-action="acept" class="modal-action modal-close waves-effect waves-green btn-flat">Aceptar</a>
-        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
+        <a href="#!" data-action="acept" class="modal-action modal-close waves-effect waves-green btn-flat"><?= lang('accept') ?></a>
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat"><?= lang('cancel') ?></a>
     </div>
 </div>
 @endsection

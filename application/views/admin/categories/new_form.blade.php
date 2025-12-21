@@ -19,15 +19,15 @@
 			</div>
 			<div id="form" class="col s12" v-bind:class="{'m10': user_id}" v-cloak v-show="!loader">
 				<input type="hidden" name="id_form" value="">
-				<span class="header grey-text text-darken-2">Datos básicos <i
+				<span class="header grey-text text-darken-2">{{ lang('categories_basic_data') }} <i
 						class="material-icons left">description</i></span>
 				<div class="input-field">
-					<label for="nombre">Nombre:</label>
+					<label for="nombre">{{ lang('categories_name') }}</label>
 					<input type="text" v-model="form.fields.name.value" id="nombre" name="nombre_form" required="required"
 						value="">
 				</div>
 				<div id="introduction" class="section scrollspy">
-					<label for="id_cazary">Descripcion de la categoria:</label>
+					<label for="id_cazary">{{ lang('categories_description') }}</label>
 					<div class="input-field">
 						<textarea id="id_cazary" v-model="description" name="descripcion_form"></textarea>
 					</div>
@@ -35,65 +35,65 @@
 				</div>
 				<div class="input-field">
 					<select name="tipo_form" v-model="type"  v-on:change="getCategories">
-						<option value="0" disabled>Selecciona</option>
+						<option value="0" disabled>{{ lang('categories_select') }}</option>
 						<option v-for="categorie_type in categories_type" :key="categorie_type" :value="categorie_type">
 							@{{ categorie_type | capitalize }}
 						</option>
 					</select>
-					<label>Tipo de Categoria</label>
+					<label>{{ lang('categories_type') }}</label>
 				</div>
 				<div class="input-field" v-if="subcategories.length == 0">
 					<br>
 					<select v-model="parent_id" id="subcategories" name="subcategories">
-						<option value="0">Ninguna</option>
+						<option value="0">{{ lang('categories_none') }}</option>
 						<option v-for="(item, index) in categories" :key="index" :value="item.categorie_id">
 							@{{item.name | capitalize}}</option>
 					</select>
-					<label>Categoria padre: </label>
+					<label>{{ lang('categories_parent') }}</label>
 					<br>
 				</div>
 
 				<br>
-				Publicar categoria
+				{{ lang('categories_publish') }}
 				<br>
 				<div class="input-field">
 					<div class="switch">
 						<label>
-							No publicado
+							{{ lang('categories_not_published') }}
 							<input type="checkbox" name="status_form" value="1" v-model="status">
 							<span class="lever"></span>
-							Publicado
+							{{ lang('categories_published') }}
 						</label>
 					</div>
 				</div>
 				<br><br>
 				<div class="input-field" id="buttons">
-					<a href="<?php echo base_url('admin/categories/'); ?>" class="btn-flat">Cancelar</a>
+					<a href="<?php echo base_url('admin/categories/'); ?>" class="btn-flat">{{ lang('categories_cancel') }}</a>
 					<button type="submit" class="btn btn-primary" @click="save()" :class="{disabled: !btnEnable}">
-						<span><i class="material-icons right">edit</i> Guardar</span>
+						<span><i class="material-icons right">edit</i> {{ lang('categories_save') }}</span>
 					</button>
 				</div>
 			</div>
 			<div class="col s12" v-bind:class="{'m2': user_id}" v-cloak v-if="user_id"  v-show="!loader">
-			<span class="header grey-text text-darken-2">Adicional <i class="material-icons left">description</i></span>
+			<span class="header grey-text text-darken-2">{{ lang('categories_additional') }} <i class="material-icons left">description</i></span>
 				<p>
-					<b>Creado por</b>:
+					<b>{{ lang('categories_created_by') }}</b>:
 					<user-info :user="user" />
 				</p>
 				<p>
-					<b>Creado</b>: <br>
+					<b>{{ lang('categories_created') }}</b>: <br>
 					<span>@{{date_create}}</span> <br><br>
-					<b>Modificado</b>: <br>
+					<b>{{ lang('categories_modified') }}</b>: <br>
 					<span>@{{date_update}}</span> <br><br>
-					<b>Publicado</b>: <br>
+					<b>{{ lang('categories_published') }}</b>: <br>
 					<span>@{{date_publish}}</span>
 				</p>
 				<p v-if="parent">
-					<b>Categoria Padre:</b>: <br>
+					<b>{{ lang('categories_parent') }}</b>: <br>
 					<span>@{{parent.name}}</span> <br><br>
 				</p>
 				<p v-if="subcategories.length">
-					<b>Subcategorias:</b> <br>
+					<b>{{ lang('categories_subcategories') }}</b> <br>
 					<div v-for="categorie in subcategories" :key="categorie.id">
 						<span>• @{{ categorie.name }}</span>
 					</div>

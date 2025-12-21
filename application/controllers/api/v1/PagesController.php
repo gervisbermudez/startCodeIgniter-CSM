@@ -39,35 +39,33 @@ class PagesController extends REST_Controller
         if ($page_id) {
             $result = $page->find($page_id);
             $result = $result ? $page : [];
-        } else if ($this->input->get('filters')) {
-            $result = $page->where($this->input->get('filters'));
-            $result = $result ? $result->toArray() : [];
         } else {
-            $result = $page->where(['status' => '1']);
-            $archived = $page->where(['status' => '2']);
-            $result = $result ? $result->toArray() : [];
-            $archived = $archived ? $archived->toArray() : [];
-            $result = array_merge($result, $archived);
+            $status = $this->input->get('status');
+            
+            if ($status !== null) {
+                // If status is provided, filter by it
+                $result = $page->where(['status' => $status]);
+            } else if ($this->input->get('filters')) {
+                // Compatibility with existing frontend filters
+                $result = $page->where($this->input->get('filters'));
+            } else {
+                // Default: return Published (1) and Draft (2)
+                $result = $page->where(['status' => '1']);
+                $drafts = $page->where(['status' => '2']);
+                $result = $result ? $result->toArray() : [];
+                $drafts = $drafts ? $drafts->toArray() : [];
+                $result = array_merge($result, $drafts);
+            }
+            
+            $result = $result ? (is_array($result) ? $result : $result->toArray()) : [];
         }
 
-        if ($result) {
+        if ($result || (is_array($result) && count($result) === 0)) {
             $this->response_ok($result);
             return;
         }
 
-        if ($page_id) {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
-        } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => [],
-            );
-        }
-        $this->response($response, REST_Controller::HTTP_OK);
+        $this->response_error(lang('not_found_error'));
     }
 
     /**
@@ -171,12 +169,30 @@ class PagesController extends REST_Controller
     public function archive_post($id = null)
     {
         $page = new PageModel();
-        $page->find($id);
-        if ($page) {
+        if ($page->find($id)) {
             $page->status = 3;
-            $page->save();
-            system_logger('pages', $page->page_id, ("archive"), ("A page has been archive"));
-            $this->response_ok($page);
+            if ($page->save()) {
+                system_logger('pages', $page->page_id, ("archive"), ("A page has been archived"));
+                $this->response_ok($page);
+            } else {
+                $this->response_error(lang('unexpected_error'));
+            }
+        } else {
+            $this->response_error(lang('not_found_error'));
+        }
+    }
+
+    public function restore_post($id = null)
+    {
+        $page = new PageModel();
+        if ($page->find($id)) {
+            $page->status = 2; // Restore as draft
+            if ($page->save()) {
+                system_logger('pages', $page->page_id, ("restore"), ("A page has been restored"));
+                $this->response_ok($page);
+            } else {
+                $this->response_error(lang('unexpected_error'));
+            }
         } else {
             $this->response_error(lang('not_found_error'));
         }
@@ -285,6 +301,34 @@ class PagesController extends REST_Controller
         );
 
         $this->response($response, REST_Controller::HTTP_OK);
+    }
+
+    /**
+     * Duplicate a page.
+     *
+     * @return Response
+     */
+    public function duplicate_post($id = null)
+    {
+        $page = new PageModel();
+        if ($page->find($id)) {
+            $page->page_id = null;
+            $page->title = "Copy of " . $page->title;
+            $page->status = 2; // Draft
+            $page->path = $page->path . "-" . time(); // Avoid collision
+            $page->date_create = date('Y-m-d H:i:s');
+            $page->date_publish = null;
+            $page->map = false; // Force insert
+
+            if ($page->save()) {
+                system_logger('pages', $page->page_id, ("duplicate"), ("A page has been duplicated"));
+                $this->response_ok($page);
+            } else {
+                $this->response_error(lang('unexpected_error'));
+            }
+        } else {
+            $this->response_error(lang('not_found_error'));
+        }
     }
 
 }

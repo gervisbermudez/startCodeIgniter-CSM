@@ -4,11 +4,14 @@
  * Comprehensive analytics dashboard with charts and metrics
  * Uses Chart.js for visualizations
  */
+if (document.getElementById('analytics-dashboard') && !window.AnalyticsDashboardMounted) {
+  console.log('Creating Vue instance for Analytics Dashboard');
+  window.AnalyticsDashboardMounted = true;
 var AnalyticsDashboard = new Vue({
   el: "#analytics-dashboard",
   data: {
     // API endpoint
-    baseEndpoint: "api/v1/analytics/",
+    baseEndpoint: "/api/v1/analytics/",
     
     // Loading states
     loading: {
@@ -86,7 +89,9 @@ var AnalyticsDashboard = new Vue({
      * Initialize dashboard
      */
     async init() {
+      console.log('Loading all data...');
       await this.loadAllData();
+      console.log('All data loaded, setting up realtime refresh');
       this.setupRealtimeRefresh();
     },
     
@@ -102,6 +107,8 @@ var AnalyticsDashboard = new Vue({
         this.loadTrafficSources(),
         this.loadRealtimeVisitors()
       ]);
+      
+      console.log('Loading states:', this.loading);
     },
     
     /**
@@ -116,10 +123,14 @@ var AnalyticsDashboard = new Vue({
           end_date: this.dateRange.end
         });
         
-        const response = await fetch(`${this.baseEndpoint}overview?${params}`);
+        const url = `${this.baseEndpoint}overview?${params}`;
+        console.log('Loading overview from:', url);
+        const response = await fetch(url);
         const data = await response.json();
         
-        if (data.status) {
+        console.log('Overview response:', data);
+        
+        if (data.code === 200 && data.data) {
           this.overview = data.data;
         }
       } catch (error) {
@@ -132,21 +143,24 @@ var AnalyticsDashboard = new Vue({
     /**
      * Load trend data and render chart
      */
-    async loadTrend() {
+    async loadTrend(days = 30) {
       this.loading.trend = true;
       
       try {
-        const response = await fetch(`${this.baseEndpoint}trend?days=30`);
+        const response = await fetch(`${this.baseEndpoint}trend?days=${days}`);
         const data = await response.json();
         
-        if (data.status) {
-          this.trendData = data.data;
+        if (data.code === 200 && data.data) {
+          this.trendData = Array.isArray(data.data) ? data.data : [];
           this.renderTrendChart();
+        } else {
+          this.trendData = [];
         }
       } catch (error) {
         console.error('Error loading trend:', error);
       } finally {
         this.loading.trend = false;
+        console.log('Trend loading set to false');
       }
     },
     
@@ -166,14 +180,17 @@ var AnalyticsDashboard = new Vue({
         const response = await fetch(`${this.baseEndpoint}popular-pages?${params}`);
         const data = await response.json();
         
-        if (data.status) {
-          this.popularPages = data.data;
+        if (data.code === 200 && data.data) {
+          this.popularPages = Array.isArray(data.data) ? data.data : [];
           this.renderPopularPagesChart();
+        } else {
+          this.popularPages = [];
         }
       } catch (error) {
         console.error('Error loading popular pages:', error);
       } finally {
         this.loading.pages = false;
+        console.log('Pages loading set to false');
       }
     },
     
@@ -192,14 +209,17 @@ var AnalyticsDashboard = new Vue({
         const response = await fetch(`${this.baseEndpoint}devices?${params}`);
         const data = await response.json();
         
-        if (data.status) {
-          this.deviceStats = data.data;
+        if (data.code === 200 && data.data) {
+          this.deviceStats = Array.isArray(data.data) ? data.data : [];
           this.renderDeviceChart();
+        } else {
+          this.deviceStats = [];
         }
       } catch (error) {
         console.error('Error loading device stats:', error);
       } finally {
         this.loading.devices = false;
+        console.log('Devices loading set to false');
       }
     },
     
@@ -216,8 +236,10 @@ var AnalyticsDashboard = new Vue({
         const response = await fetch(`${this.baseEndpoint}traffic-sources?${params}`);
         const data = await response.json();
         
-        if (data.status) {
-          this.trafficSources = data.data;
+        if (data.code === 200 && data.data) {
+          this.trafficSources = Array.isArray(data.data) ? data.data : [];
+        } else {
+          this.trafficSources = [];
         }
       } catch (error) {
         console.error('Error loading traffic sources:', error);
@@ -234,7 +256,7 @@ var AnalyticsDashboard = new Vue({
         const response = await fetch(`${this.baseEndpoint}realtime`);
         const data = await response.json();
         
-        if (data.status) {
+        if (data.code === 200 && data.data) {
           this.realtimeVisitors = data.data;
         }
       } catch (error) {
@@ -248,13 +270,25 @@ var AnalyticsDashboard = new Vue({
      * Render trend chart (line chart)
      */
     renderTrendChart() {
-      const ctx = document.getElementById('trendChart');
-      if (!ctx) return;
+      const canvas = document.getElementById('trendChart');
+      if (!canvas) return;
       
-      // Destroy existing chart
-      if (this.charts.trend) {
-        this.charts.trend.destroy();
+      // Destroy existing chart using Chart.js registry
+      const existingChart = Chart.getChart('trendChart');
+      if (existingChart) {
+        existingChart.destroy();
       }
+      
+      if (this.charts.trend) {
+        this.charts.trend = null;
+      }
+      
+      if (!this.trendData || this.trendData.length === 0) {
+        console.warn('No trend data to display');
+        return;
+      }
+      
+      const ctx = canvas.getContext('2d');
       
       const labels = this.trendData.map(d => d.date);
       const sessions = this.trendData.map(d => d.sessions);
@@ -307,13 +341,25 @@ var AnalyticsDashboard = new Vue({
      * Render device chart (doughnut chart)
      */
     renderDeviceChart() {
-      const ctx = document.getElementById('deviceChart');
-      if (!ctx) return;
+      const canvas = document.getElementById('deviceChart');
+      if (!canvas) return;
       
-      // Destroy existing chart
-      if (this.charts.devices) {
-        this.charts.devices.destroy();
+      // Destroy existing chart using Chart.js registry
+      const existingChart = Chart.getChart('deviceChart');
+      if (existingChart) {
+        existingChart.destroy();
       }
+      
+      if (this.charts.devices) {
+        this.charts.devices = null;
+      }
+      
+      if (!this.deviceStats || this.deviceStats.length === 0) {
+        console.warn('No device stats to display');
+        return;
+      }
+      
+      const ctx = canvas.getContext('2d');
       
       const labels = this.deviceStats.map(d => d.device_type);
       const data = this.deviceStats.map(d => d.sessions);
@@ -353,13 +399,25 @@ var AnalyticsDashboard = new Vue({
      * Render popular pages chart (horizontal bar)
      */
     renderPopularPagesChart() {
-      const ctx = document.getElementById('popularPagesChart');
-      if (!ctx) return;
+      const canvas = document.getElementById('popularPagesChart');
+      if (!canvas) return;
       
-      // Destroy existing chart
-      if (this.charts.pages) {
-        this.charts.pages.destroy();
+      // Destroy existing chart using Chart.js registry
+      const existingChart = Chart.getChart('popularPagesChart');
+      if (existingChart) {
+        existingChart.destroy();
       }
+      
+      if (this.charts.pages) {
+        this.charts.pages = null;
+      }
+      
+      if (!this.popularPages || this.popularPages.length === 0) {
+        console.warn('No popular pages to display');
+        return;
+      }
+      
+      const ctx = canvas.getContext('2d');
       
       const labels = this.popularPages.slice(0, 10).map(p => p.page_name);
       const data = this.popularPages.slice(0, 10).map(p => p.visits);
@@ -460,7 +518,9 @@ var AnalyticsDashboard = new Vue({
   },
   
   mounted() {
+    console.log('AnalyticsDashboard mounted');
     this.$nextTick(function() {
+      console.log('Initializing analytics dashboard...');
       this.init();
     });
   },
@@ -477,3 +537,4 @@ var AnalyticsDashboard = new Vue({
     });
   }
 });
+}

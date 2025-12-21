@@ -102,7 +102,7 @@ var EventNewForm = new Vue({
         this.loader = true;
         this.runSaveData(callBack);
       } else {
-        M.toast({ html: "Verifique todos los campos del formulario" });
+        M.toast({ html: "Check all form fields" });
       }
     },
     runSaveData(callBack) {
@@ -132,7 +132,7 @@ var EventNewForm = new Vue({
         },
         error: function (error) {
           self.loader = false;
-          M.toast({ html: "Ocurrió un error inesperado" });
+          M.toast({ html: "An unexpected error occurred" });
           console.error(error);
         },
       });
@@ -259,7 +259,6 @@ var EventNewForm = new Vue({
       M.Datepicker.init(elems, {
         format: "yyyy-mm-dd",
         onClose: function () {
-          alert("Datepicker");
           EventNewForm.datepublish =
             document.getElementById("datepublish").value;
         },
@@ -269,7 +268,6 @@ var EventNewForm = new Vue({
         twelveHour: false,
         defaultTime: "now",
         onCloseEnd: function () {
-          alert("Timepicker");
           EventNewForm.timepublish =
             document.getElementById("timepublish").value;
         },

@@ -59,12 +59,12 @@
     </div>
     <div class="col-left" v-show="!loader">
         <div class="overview">
-            <span>Overview</span>
+            <span>{{ lang('dashboard_overview') }}</span>
         </div>
         <div class="welcome">
             <div class="welcome_container">
                 <div class="welcome_message">
-                    <span class="welcome_big">Welcome back,</span> <br />
+                    <span class="welcome_big">{{ lang('dashboard_welcome_back') }}</span> <br />
                     <span>{{userdata('nombre') }} {{userdata('apellido') }}</span>
                 </div>
                 <div class="columns">
@@ -74,7 +74,7 @@
                         </div>
                         <div class="colum__description">
                             <div class="text-st-white"><b>@{{users.length}}</b></div>
-                            <div class="text-st-white">Usuarios</div>
+                            <div class="text-st-white">{{ lang('menu_users') }}</div>
                         </div>
                     </div>
                     <div class="colum st-pink">
@@ -111,7 +111,7 @@
                             </div>
                             <div class="colum__description">
                                 <div class="text-st-white"><b>Analytics</b></div>
-                                <div class="text-st-white" style="font-size: 0.8rem;">Ver Dashboard</div>
+                                <div class="text-st-white" style="font-size: 0.8rem;">{{ lang('dashboard_view_dashboard') }}</div>
                             </div>
                         </a>
                     </div>
@@ -127,12 +127,12 @@
                     <div class="col s12">
                         <div class="panel">
                             <div class="title">
-                                <h5>Stadistics</h5>
+                                <h5>{{ lang('dashboard_statistics') }}</h5>
                             </div>
                             <div class="charts">
                                 <div class="chart chart-1">
                                     <div class="chart-header">
-                                        Visitas por dia
+                                        {{ lang('dashboard_visits_per_day') }}
                                     </div>
                                     <div class="chart-body">
                                         <div class="col1 ">
@@ -147,7 +147,7 @@
                                 </div>
                                 <div class="chart chart-2">
                                     <div class="chart-header">
-                                        Cantidad de Requets
+                                        {{ lang('dashboard_requests_count') }}
                                     </div>
                                     <div class="chart-body">
                                         <div class="col2">
@@ -162,7 +162,7 @@
                                 </div>
                                 <div class="chart chart-3">
                                     <div class="chart-header">
-                                        Dispositivos
+                                        {{ lang('dashboard_devices') }}
                                         <div class="chart-description">@{{graphs.devices.labelMayor}}
                                             @{{graphs.devices.porcentajeMayor}}%</div>
                                     </div>
@@ -174,7 +174,7 @@
                                 </div>
                                 <div class="chart chart-4">
                                     <div class="chart-header">
-                                        URL Frecuentes
+                                        {{ lang('dashboard_frequent_urls') }}
                                     </div>
                                     <div class="chart-body">
                                         <div class="col1 ">
@@ -216,7 +216,7 @@
                 <div class="creator-container">
                     <div class="user-avatar">
                         <img class="circle responsive-img" src="{{userdata('avatar')}}" />
-                        <span class="truncate">Let’s create something, {{userdata('nombre')}}</span>
+                        <span class="truncate">{{ lang('dashboard_create_something') }} {{userdata('nombre')}}</span>
                     </div>
                     <div class="creator-input-field">
                         <textarea id="creator-input" placeholder="Type here..." class="materialize-textarea"
@@ -238,7 +238,7 @@
         <div class="row drafts">
             <div class="col s12">
                 <div class="title">
-                    <span>Lastes Drafts</span>
+                    <span>{{ lang('dashboard_latest_drafts') }}</span>
                 </div>
                 <div class="collection">
                     <a v-for="(draf, index) in pages_draf" :key="index" :href="draf.link" class="collection-item"><span
@@ -249,7 +249,7 @@
         <div class="row timeline">
             <div class="col s12">
                 <div class="title">
-                    <span>Timeline</span>
+                    <span>{{ lang('dashboard_timeline') }}</span>
                 </div>
                 <div class="timeline-container">
                     <div class="card horizontal" v-for="(card, index) in timeline" :key="index">
@@ -279,21 +279,21 @@
     </div>
 </div>
 <div class="fixed-action-btn">
-    <a data-position="left" data-delay="50" data-tooltip="Formulario nuevo"
+    <a data-position="left" data-delay="50" :data-tooltip="'{{ lang('tooltip_new_form') }}'"
         class="btn-floating btn-large tooltipped red" href="{{base_url('admin/custommodels/nuevo')}}">
         <i class="large material-icons">add</i>
     </a>
     <ul>
         @if(has_permisions('CREATE_USER'))
-        <li><a data-position="left" data-delay="50" data-tooltip="Usuario nuevo" class="btn-floating tooltipped red"
+        <li><a data-position="left" data-delay="50" :data-tooltip="'{{ lang('tooltip_new_user') }}'" class="btn-floating tooltipped red"
                 href="{{base_url('admin/users/agregar')}}"><i class="material-icons">perm_identity</i></a></li>
         @endif
-        <li><a data-position="left" data-delay="50" data-tooltip="Pagina nueva"
+        <li><a data-position="left" data-delay="50" :data-tooltip="'{{ lang('tooltip_new_page') }}'"
                 class="btn-floating tooltipped yellow darken-1" href="{{base_url('admin/pages/nueva/')}}"><i
                     class="material-icons">web</i></a></li>
-        <li><a data-position="left" data-delay="50" data-tooltip="Album nuevo" class="btn-floating tooltipped green"
+        <li><a data-position="left" data-delay="50" :data-tooltip="'{{ lang('tooltip_new_album') }}'" class="btn-floating tooltipped green"
                 href="{{base_url('admin/gallery/nuevo/')}}"><i class="material-icons">publish</i></a></li>
-        <li><a data-position="left" data-delay="50" data-tooltip="Evento nuevo" class="btn-floating tooltipped blue"
+        <li><a data-position="left" data-delay="50" :data-tooltip="'{{ lang('tooltip_new_event') }}'" class="btn-floating tooltipped blue"
                 href="{{ base_url('admin/events/agregar/') }}"><i class="material-icons">assistant</i></a></li>
     </ul>
 </div>

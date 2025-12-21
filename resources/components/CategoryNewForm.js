@@ -75,14 +75,14 @@ var CategoriaNewForm = new Vue({
     save() {
       var self = this;
       var callBack = (response) => {
-        var toastHTML = "<span>Categorie saved </span>";
+        var toastHTML = "<span>Category saved </span>";
         M.toast({ html: toastHTML });
       };
       if (self.validateForm()) {
         this.loader = true;
         this.runSaveData(callBack);
       } else {
-        M.toast({ html: "Verifique todos los campos del formulario" });
+        M.toast({ html: "Check all form fields" });
       }
     },
     runSaveData(callBack) {
@@ -111,7 +111,7 @@ var CategoriaNewForm = new Vue({
         },
         error: function (response) {
           self.loader = false;
-          M.toast({ html: "Ocurrió un error inesperado" });
+          M.toast({ html: "An unexpected error occurred" });
           console.error(error);
         },
       });

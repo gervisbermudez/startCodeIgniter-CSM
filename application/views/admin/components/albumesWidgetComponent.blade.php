@@ -1,9 +1,9 @@
 <script type="text/x-template" id="albumes-widget-template">
     <div class="panel albumes">
 		<div class="title">
-			<h5>Your Albumes</h5>
+			<h5>Your Albums</h5>
 			<div class="subtitle sub-header">
-				@{{albumes.length}} Albumes
+				@{{albumes.length}} Albums
 			</div>
 			<img src="{{base_url()}}public/img/admin/dashboard/undraw_Photo_re_5blb.png" />
 		</div>

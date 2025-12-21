@@ -329,6 +329,11 @@ class MY_Model extends CI_Model implements JsonSerializable
                 $this->updated();
             }
         } else {
+            foreach ($data as $key => $value) {
+                if (gettype($value) == "object" || gettype($value) == "array") {
+                    $data[$key] = json_encode($value);
+                }
+            }
             $this->creating();
             $result = $this->db->insert($this->table, $data);
             $insert_id = $this->db->insert_id();

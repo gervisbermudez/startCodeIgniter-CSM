@@ -11,7 +11,7 @@
         <div class="nav-wrapper">
             <form>
                 <div class="input-field">
-                    <input class="input-search" type="search" placeholder="Buscar..." v-model="filter">
+                    <input class="input-search" type="search" placeholder="Search..." v-model="filter">
                     <label class="label-icon" for="search"><i class="material-icons">search</i></label>
                     <i class="material-icons" v-on:click="resetSearch();">close</i>
                 </div>
@@ -23,7 +23,7 @@
                     <a href="#!" class='dropdown-trigger' data-target='dropdown-options'><i class="material-icons">more_vert</i></a>
                     <!-- Dropdown Structure -->
                     <ul id='dropdown-options' class='dropdown-content'>
-                        <li><a href="#!">Archivados</a></li>
+                        <li><a href="#!">Archived</a></li>
                     </ul>
                 </li>
             </ul>
@@ -57,17 +57,17 @@
                                     <td>@{{user.lastseen}}</td>
                                     <td>@{{user.date_create}}</td>
                                     <td>
-                                        <i v-if="user.status == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Publico">public</i>
-                                        <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Privado">lock</i>
+                                        <i v-if="user.status == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Public">public</i>
+                                        <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Private">lock</i>
                                     </td>
                                     <td>
                                         <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + user.user_id'><i class="material-icons">more_vert</i></a>
                                         <ul :id='"dropdown" + user.user_id' class='dropdown-content'>
                                             @if(has_permisions('UPDATE_USER'))
-                                            <li><a :href="base_url('admin/users/edit/' + user.user_id)">Editar</a></li>
+                                            <li><a :href="base_url('admin/users/edit/' + user.user_id)">{{ lang('btn_edit') }}</a></li>
                                             @endif
                                             @if(has_permisions('DELETE_USER'))
-                                            <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(user, index);">Borrar</a></li>
+                                            <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(user, index);">{{ lang('btn_delete') }}</a></li>
                                             @endif
                                         </ul>
                                     </td>
@@ -89,16 +89,16 @@
     </div>
     <confirm-modal
         id="deleteModal"
-        title="Confirmar Borrar"
+        title="Confirm Delete"
         v-on:notify="confirmCallback"
     >
         <p>
-            ¿Desea borrar el Usuario?
+            Do you want to delete this user?
         </p>
     </confirm-modal>
 </div>
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Crear Usuario" href="{{base_url('admin/users/agregar/')}} ">
+    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Create User" href="{{base_url('admin/users/add/')}} ">
         <i class="large material-icons">add</i>
     </a>
 </div>
@@ -113,10 +113,10 @@
 					<i class="material-icons">more_vert</i></a>
 				<ul :id='"dropdown" + user.user_id' class='dropdown-content'>
                     @if(has_permisions('UPDATE_USER'))
-					<li><a :href="base_url('admin/users/edit/' + user.user_id)">Editar</a></li>
+					<li><a :href="base_url('admin/users/edit/' + user.user_id)">{{ lang('btn_edit') }}</a></li>
                     @endif
                     @if(has_permisions('DELETE_USER'))
-                    <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(user, index);">Borrar</a></li>
+                    <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(user, index);">{{ lang('btn_delete') }}</a></li>
                     @endif
 				</ul>
 			</a>

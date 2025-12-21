@@ -65,10 +65,10 @@
                             <td>
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + album.album_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + album.album_id' class='dropdown-content'>
-                                    <li><a :href="base_url('admin/pages/editar/' + album.album_id)">Editar</a></li>
-                                    <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(album, index);">Borrar</a></li>
+                                    <li><a :href="base_url('admin/pages/editar/' + album.album_id)">{{ lang('edit') }}</a></li>
+                                    <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(album, index);">{{ lang('delete') }}</a></li>
                                     <li v-if="album.status == 2"><a :href="base_url('admin/pages/preview?album_id=' + album.album_id)" target="_blank">Preview</a></li>
-                                    <li><a :href="base_url('/admin/gallery/items/' + album.album_id)" target="_blank">Archivar</a></li>
+                                    <li><a :href="base_url('/admin/gallery/items/' + album.album_id)" target="_blank">{{ lang('archive') }}</a></li>
                                 </ul>
                             </td>
                         </tr>
@@ -88,10 +88,10 @@
                         <a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href='#!' :data-target='"dropdown" + album.album_id'>
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown" + album.album_id' class='dropdown-content'>
-                            <li><a :href="base_url('admin/gallery/editar/' + album.album_id)">Editar</a></li>
-                            <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(album, index);">Borrar</a></li>
+                            <li><a :href="base_url('admin/gallery/editar/' + album.album_id)">{{ lang('edit') }}</a></li>
+                            <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(album, index);">{{ lang('delete') }}</a></li>
                             <li v-if="album.status == 2"><a :href="base_url('admin/pages/preview?album_id=' + album.album_id)" target="_blank">Preview</a></li>
-                            <li><a :href="base_url('/admin/gallery/items/' + album.album_id)" target="_blank">Archivar</a></li>
+                            <li><a :href="base_url('/admin/gallery/items/' + album.album_id)" target="_blank">{{ lang('archive') }}</a></li>
                         </ul>
                     </div>
                     <div class="card-content">

@@ -12,7 +12,7 @@
         <div class="nav-wrapper">
             <form>
                 <div class="input-field">
-                    <input class="input-search" type="search" placeholder="Buscar..." v-model="filter">
+                    <input class="input-search" type="search" placeholder="Search..." v-model="filter">
                     <label class="label-icon" for="search"><i class="material-icons">search</i></label>
                     <i class="material-icons" v-on:click="resetFilter();">close</i>
                 </div>
@@ -24,7 +24,7 @@
                     <a href="#!" class='dropdown-trigger' data-target='dropdown-options'><i class="material-icons">more_vert</i></a>
                     <!-- Dropdown Structure -->
                     <ul id='dropdown-options' class='dropdown-content'>
-                        <li><a href="#!">Archivo</a></li>
+                        <li><a href="#">{{ lang('archive') }}</a></li>
                     </ul>
                 </li>
             </ul>
@@ -56,16 +56,16 @@
                                 @{{categorie.date_publish ? categorie.date_publish : categorie.date_create}}
                             </td>
                             <td>
-                                <i v-if="categorie.status == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Publicado">publish</i>
-                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Borrador">edit</i>
+                                <i v-if="categorie.status == 1" class="material-icons tooltipped" data-position="left" data-delay="50" :data-tooltip="lang('categories_published')">publish</i>
+                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" :data-tooltip="lang('categories_not_published')">edit</i>
                             </td>
                             <td>
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + categorie.categorie_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + categorie.categorie_id' class='dropdown-content'>
-                                    <li><a :href="base_url('admin/categories/editar/' + categorie.categorie_id)">Editar</a></li>
-                                    <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(categorie, index);">Borrar</a></li>
+                                    <li><a :href="base_url('admin/categories/editar/' + categorie.categorie_id)">{{ lang('edit') }}</a></li>
+                                    <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(categorie, index);">{{ lang('delete') }}</a></li>
                                     <li v-if="categorie.status == 2"><a :href="base_url('admin/categories/preview?categorie_id=' + categorie.categorie_id)" target="_blank">Preview</a></li>
-                                    <li><a :href="base_url(categorie.path)" target="_blank">Archivar</a></li>
+                                    <li><a :href="base_url(categorie.path)" target="_blank">{{ lang('archive') }}</a></li>
                                 </ul>
                             </td>
                         </tr>
@@ -84,16 +84,16 @@
                         <a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href='#!' :data-target='"dropdown" + categorie.categorie_id'>
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown" + categorie.categorie_id' class='dropdown-content'>
-                            <li><a :href="base_url('admin/categories/editar/' + categorie.categorie_id)">Editar</a></li>
-                            <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(categorie, index);">Borrar</a></li>
+                            <li><a :href="base_url('admin/categories/editar/' + categorie.categorie_id)">{{ lang('edit') }}</a></li>
+                            <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(categorie, index);">{{ lang('delete') }}</a></li>
                             <li v-if="categorie.status == 2"><a :href="base_url('admin/categories/preview?categorie_id=' + categorie.categorie_id)" target="_blank">Preview</a></li>
-                            <li><a :href="base_url(categorie.path)" target="_blank">Archivar</a></li>
+                            <li><a :href="base_url(categorie.path)" target="_blank">{{ lang('archive') }}</a></li>
                         </ul>
                     </div>
                     <div class="card-content">
                         <div>
-                            <span class="card-title"><a :href="base_url(categorie.name)" target="_blank">@{{categorie.name}}</a> <i v-if="categorie.visibility == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Publico">public</i>
-                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Privado">lock</i>
+                            <span class="card-title"><a :href="base_url(categorie.name)" target="_blank">@{{categorie.name}}</a> <i v-if="categorie.visibility == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Public">public</i>
+                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Private">lock</i>
                             </span>
                             <div class="card-info">
                                 <p>
@@ -120,13 +120,13 @@
                             @{{categorie.subtitle}}
                         </span>
                         <ul>
-                            <li><b>Fecha de publicacion:</b> <br> @{{categorie.date_publish ? categorie.date_publish : categorie.date_create}}</li>
-                            <li><b>Estado:</b>
+                            <li><b>Publish date:</b> <br> @{{categorie.date_publish ? categorie.date_publish : categorie.date_create}}</li>
+                            <li><b>Status:</b>
                                 <span v-if="categorie.status == 1">
-                                    Publicado
+                                    {{ lang('categories_published') }}
                                 </span>
                                 <span v-else>
-                                    Borrador
+                                    {{ lang('categories_not_published') }}
                                 </span>
                             </li>
                         </ul>
@@ -136,20 +136,20 @@
         </div>
     </div>
     <div class="container" v-if="!loader && categories.length == 0" v-cloak>
-        <h4>No hay Categorias</h4>
+        <h4>No categories found</h4>
     </div>
     <confirm-modal
         id="deleteModal"
-        title="Confirmar Borrar"
+        title="{{ lang('delete_category_title') }}"
         v-on:notify="confirmCallback"
     >
         <p>
-            ¿Desea borrar Categoria?
+            {{ lang('delete_category_confirm') }}
         </p>
     </confirm-modal>
 </div>
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Crear categoria" href="<?php echo base_url('admin/categories/nueva/') ?>">
+    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" :data-tooltip="lang('tooltip_new_category')" href="<?php echo base_url('admin/categories/nueva/') ?>">
         <i class="large material-icons">add</i>
     </a>
 </div>

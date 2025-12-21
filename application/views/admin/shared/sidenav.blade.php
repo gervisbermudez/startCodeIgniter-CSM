@@ -4,45 +4,45 @@
     <ul id="slide-out" class="sidenav collapsible">
         <li class="show-on-medium-and-down">
             <a class="waves-effect" href="{{ base_url('admin') }}"><i class="material-icons">dashboard</i>
-                Dashboard</a>
+                {{ lang('menu_dashboard') }}</a>
         </li>
-        <li class="{{isSectionActive('usuarios')}}">
+        <li class="{{isSectionActive('users')}}">
             <div class="collapsible-header">
-                <i class="material-icons">people</i> <span>Usuarios</span>
+                <i class="material-icons">people</i> <span>{{ lang('menu_users') }}</span>
             </div>
             <div class="collapsible-body">
                 <ul>
                     @if(has_permisions('SELECT_USERS'))
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/users/') }}">Todos</a>
+                        <a class="waves-effect" href="{{ base_url('admin/users/') }}">{{ lang('menu_all') }}</a>
                     </li>
                     @endif
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/users/usergroups') }}">Grupos</a>
+                        <a class="waves-effect" href="{{ base_url('admin/users/usergroups') }}">{{ lang('menu_usergroups') }}</a>
                     </li>
                     @if(has_permisions('CREATE_USER'))
                     <li>
-                        <a href="{{ base_url('admin/users/agregar/') }}">Nuevo</a>
+                        <a href="{{ base_url('admin/users/add/') }}">{{ lang('menu_new') }}</a>
                     </li>
                     @endif
                 </ul>
             </div>
         </li>
-        <li class="{{isSectionActive('paginas')}}">
+        <li class="{{isSectionActive('pages')}}">
             <div class="collapsible-header">
                 <i class="material-icons">web</i>
-                <span>Paginas</span>
+                <span>{{ lang('menu_pages') }}</span>
             </div>
             <div class="collapsible-body">
                 <ul>
                     @if(has_permisions('SELECT_PAGES'))
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/pages/') }}">Todas</a>
+                        <a class="waves-effect" href="{{ base_url('admin/pages/') }}">{{ lang('menu_all') }}</a>
                     </li>
                     @endif
                     @if(has_permisions('CREATE_PAGE'))
                     <li>
-                        <a href="{{ base_url('admin/pages/nueva/') }}">Nueva</a>
+                        <a href="{{ base_url('admin/pages/new/') }}">{{ lang('menu_new') }}</a>
                     </li>
                     @endif
 
@@ -52,111 +52,123 @@
         <li class="{{isSectionActive('siteforms')}}">
             <div class="collapsible-header">
                 <i class="material-icons">assistant</i>
-                <span>Formularios</span>
+                <span>{{ lang('menu_siteforms') }}</span>
             </div>
             <div class="collapsible-body">
                 <ul>
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/siteforms') }}">Todos</a>
+                        <a class="waves-effect" href="{{ base_url('admin/siteforms') }}">{{ lang('menu_all') }}</a>
                     </li>
                     <li>
-                        <a href="{{ base_url('admin/siteforms/nuevo/') }}">Nuevo</a>
+                        <a href="{{ base_url('admin/siteforms/new/') }}">{{ lang('menu_new') }}</a>
                     </li>
                     <li>
-                        <a href="{{ base_url('admin/siteforms/submit/') }}">Recibidos</a>
+                        <a href="{{ base_url('admin/siteforms/submit/') }}">{{ lang('menu_submissions') }}</a>
                     </li>
                 </ul>
             </div>
         </li>
-        <li class="{{isSectionActive('calendario')}}">
+        <li class="{{isSectionActive('calendar')}}">
             <a class="waves-effect" href="{{ base_url('admin/calendar') }}"><i class="material-icons">event_note</i>
-                Calendario</a>
+                {{ lang('menu_calendar') }}</a>
         </li>
         <li class="{{isSectionActive('analytics')}}">
             <a class="waves-effect" href="{{ base_url('admin/configuration/analytics') }}"><i class="material-icons">assessment</i>
-                Analytics</a>
+                {{ lang('menu_analytics') }}</a>
         </li>
         <li class="{{isSectionActive('fragments')}}">
-            <a class="waves-effect" href="{{ base_url('admin/fragments/') }}"><i
-                    class="material-icons">bookmark_border</i>
-                Fragmentos</a>
+        <li class="{{isSectionActive('fragments')}}">
+            <div class="collapsible-header">
+                <i class="material-icons">bookmark_border</i>
+                <span>{{ lang('menu_fragments') }}</span>
+            </div>
+            <div class="collapsible-body">
+                <ul>
+                    <li>
+                        <a href="{{ base_url('admin/fragments/') }}">{{ lang('menu_all') }}</a>
+                    </li>
+                    <li>
+                        <a href="{{ base_url('admin/fragments/new/') }}">{{ lang('menu_new') }}</a>
+                    </li>
+                </ul>
+            </div>
         </li>
         @if(has_permisions('SELECT_FILES'))
-        <li class="{{isSectionActive('archivos')}}">
+        <li class="{{isSectionActive('files')}}">
             <a class="waves-effect" href="{{ base_url('admin/files') }}"><i
                     class="material-icons">markunread_mailbox</i>
-                Archivos</a>
+                {{ lang('menu_files') }}</a>
         </li>
         @endif
         @if(has_permisions('SELECT_MENUS'))
-        <li class="{{isSectionActive('menu')}}">
+        <li class="{{isSectionActive('menus')}}">
             <div class="collapsible-header">
                 <i class="material-icons">menu</i>
-                <span>Menús </span>
+                <span>{{ lang('menu_menus') }}</span>
             </div>
             <div class="collapsible-body">
                 <ul>
 
                     <li>
-                        <a href="{{ base_url('admin/menus/') }}">Todos</a>
+                        <a href="{{ base_url('admin/menus/') }}">{{ lang('menu_all') }}</a>
                     </li>
                     @if(has_permisions('CREATE_MENU'))
                     <li>
-                        <a href="{{ base_url('admin/menus/nuevo/') }}">Nuevo</a>
+                        <a href="{{ base_url('admin/menus/new/') }}">{{ lang('menu_new') }}</a>
                     </li>
                     @endif
                 </ul>
             </div>
         </li>
         @endif
-        <li class="{{isSectionActive('categorias')}}">
+        <li class="{{isSectionActive('categories')}}">
             <div class="collapsible-header">
                 <i class="material-icons">receipt</i>
-                <span>Categorias</span>
+                <span>{{ lang('menu_categories') }}</span>
             </div>
             <div class="collapsible-body">
                 <ul>
                     @if(has_permisions('SELECT_CATEGORIES'))
                     <li>
-                        <a href="{{ base_url('admin/categories/') }}">Todas</a>
+                        <a href="{{ base_url('admin/categories/') }}">{{ lang('menu_all') }}</a>
                     </li>
                     @endif
                     @if(has_permisions('CREATE_CATEGORIE'))
                     <li>
-                        <a href="{{ base_url('admin/categories/nueva/') }}">Nueva</a>
+                        <a href="{{ base_url('admin/categories/new/') }}">{{ lang('menu_new') }}</a>
                     </li>
                     @endif
                 </ul>
             </div>
         </li>
-        <li class="{{isSectionActive('eventos')}}">
+        <li class="{{isSectionActive('events')}}">
             <div class="collapsible-header">
                 <i class="material-icons">assistant</i>
-                <span>Eventos</span>
+                <span>{{ lang('menu_events') }}</span>
             </div>
             <div class="collapsible-body">
                 <ul>
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/events/') }}">Todos</a>
+                        <a class="waves-effect" href="{{ base_url('admin/events/') }}">{{ lang('menu_all') }}</a>
                     </li>
                     <li>
-                        <a href="{{ base_url('admin/events/agregar/') }}">Nuevo</a>
+                        <a href="{{ base_url('admin/events/add/') }}">{{ lang('menu_new') }}</a>
                     </li>
                 </ul>
             </div>
         </li>
-        <li class="{{isSectionActive('galeria')}}">
+        <li class="{{isSectionActive('gallery')}}">
             <div class="collapsible-header">
                 <i class="material-icons">perm_media</i>
-                <span>Albumes</span>
+                <span>{{ lang('menu_albums') }}</span>
             </div>
             <div class="collapsible-body">
                 <ul>
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/gallery') }}"> Todos</a>
+                        <a class="waves-effect" href="{{ base_url('admin/gallery') }}">{{ lang('menu_all') }}</a>
                     </li>
                     <li>
-                        <a href="{{ base_url('admin/gallery/nuevo/') }}">Nuevo Album</a>
+                        <a href="{{ base_url('admin/gallery/new/') }}">{{ lang('menu_new_album') }}</a>
                     </li>
                 </ul>
             </div>
@@ -165,15 +177,15 @@
         <li class="{{isSectionActive('videos')}}">
             <div class="collapsible-header">
                 <i class="material-icons">video_library</i>
-                <span>Videos</span>
+                <span>{{ lang('menu_videos') }}</span>
             </div>
             <div class="collapsible-body">
                 <ul>
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/videos') }}"> Todos</a>
+                        <a class="waves-effect" href="{{ base_url('admin/videos') }}">{{ lang('menu_all') }}</a>
                     </li>
                     <li>
-                        <a href="{{ base_url('admin/videos/nuevo/') }}">Crear Video</a>
+                        <a href="{{ base_url('admin/videos/new/') }}">{{ lang('menu_create_video') }}</a>
                     </li>
                 </ul>
             </div>
@@ -182,54 +194,53 @@
         <li class="{{isSectionActive('admin/custommodels', 'match')}}">
             <div class="collapsible-header">
                 <i class="material-icons">assessment</i>
-                <span>Modelos</span>
+                <span>{{ lang('menu_models') }}</span>
             </div>
             <div class="collapsible-body">
                 <ul>
                     @if(has_permisions('SELECT_FORM_CUSTOMS'))
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/custommodels/') }}">Todos</a>
+                        <a class="waves-effect" href="{{ base_url('admin/custommodels/') }}">{{ lang('menu_all') }}</a>
                     </li>
                     @endif
                     @if(has_permisions('CREATE_FORM_CUSTOM'))
                     <li>
-                        <a href="{{ base_url('admin/custommodels/nuevo') }}">Nuevo</a>
+                        <a href="{{ base_url('admin/custommodels/new') }}">{{ lang('menu_new') }}</a>
                     </li>
                     @endif
                     @if(has_permisions('SELECT_CONTENT_DATA'))
                     <li class="{{isSectionActive('admin/custommodels', 'match')}}">
                         <a class="waves-effect" href="{{ base_url('admin/custommodels/content') }}">
-                            Contenidos</a>
+                            {{ lang('menu_contents') }}</a>
                     </li>
                     @endif
                 </ul>
             </div>
         </li>
-        <li class="{{isSectionActive('configuracion')}}">
+        <li class="{{isSectionActive('configuration')}}">
             <div class="collapsible-header">
                 <i class="material-icons">settings</i>
-                <span>Configuración</span>
+                <span>{{ lang('menu_settings') }}</span>
             </div>
             <div class="collapsible-body">
                 <ul>
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/configuration') }}"> Configuración</a>
+                        <a class="waves-effect" href="{{ base_url('admin/configuration') }}">{{ lang('menu_configuration') }}</a>
                     </li>
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/configuration/import') }}"> Importar</a>
+                        <a class="waves-effect" href="{{ base_url('admin/configuration/import') }}">{{ lang('menu_import') }}</a>
                     </li>
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/configuration/export') }}"> Exportar</a>
+                        <a class="waves-effect" href="{{ base_url('admin/configuration/export') }}">{{ lang('menu_export') }}</a>
                     </li>
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/configuration/apilogger') }}"> API Log</a>
+                        <a class="waves-effect" href="{{ base_url('admin/configuration/apilogger') }}">{{ lang('menu_api_log') }}</a>
                     </li>
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/configuration/logger') }}"> System Log</a>
+                        <a class="waves-effect" href="{{ base_url('admin/configuration/logger') }}">{{ lang('menu_system_log') }}</a>
                     </li>
                     <li>
-                        <a class="waves-effect" href="{{ base_url('admin/configuration/usertrackinglogger') }}"> User
-                            Tracking</a>
+                        <a class="waves-effect" href="{{ base_url('admin/configuration/usertrackinglogger') }}">{{ lang('menu_user_tracking') }}</a>
                     </li>
                 </ul>
             </div>

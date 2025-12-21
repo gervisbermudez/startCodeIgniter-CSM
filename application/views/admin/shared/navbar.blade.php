@@ -46,12 +46,12 @@
                     <i @click="setArchive(notification, index)" class="material-icons">check</i>
                 </li>
                 <li v-if="!notifications.length">
-                    <a href="#!" title="No hay notificaiones">
+                    <a href="#!" title="No notifications">
                         <div>
-                            <span class="title"><b>No hay notificaiones</b></span>
+                            <span class="title"><b>No notifications</b></span>
                         </div>
                         <div>
-                            <span class="message">Disfruta tu dia :)</span>
+                            <span class="message">Enjoy your day :)</span>
                         </div>
                     </a>
                     <i class="material-icons">beach_access</i>
@@ -86,9 +86,9 @@
             <ul class="menu">
                 <li class="divider" tabindex="-1"></li>
                 <li><a href="{{ base_url('admin/configuration') }}"><i class="material-icons">settings</i>
-                        Configuración</a></li>
-                <li><a target="_blank" href="{{ base_url() }}"><i class="material-icons">launch</i> Ir al sitio</a></li>
-                <li><a href="{{ base_url('admin/login/') }}"> Cerrar sesion</a></li>
+                        Settings</a></li>
+                <li><a target="_blank" href="{{ base_url() }}"><i class="material-icons">launch</i> View site</a></li>
+                <li><a href="{{ base_url('admin/login/') }}"> Logout</a></li>
             </ul>
         </div>
     </div>

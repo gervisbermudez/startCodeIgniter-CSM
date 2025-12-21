@@ -140,8 +140,8 @@ var mixins = {
         this.orderDataConf.strPropertyName == null
           ? strPropertyName
           : this.orderDataConf.strPropertyName == strPropertyName
-          ? "-" + strPropertyName
-          : strPropertyName;
+            ? "-" + strPropertyName
+            : strPropertyName;
       let sorted = array.sort(this.dynamicSort(strPropertyName));
       this.orderDataConf.strPropertyName = strPropertyName;
       array = sorted;
@@ -284,7 +284,7 @@ var mixins = {
 
       return this.getFormattedDate(date); // 10. January 2017. at 10:20
     },
-    getPageImagePath: function(page) {
+    getPageImagePath: function (page) {
       if (page.imagen_file && page.imagen_file.file_front_path) {
         // Si file_front_path ya viene procesado desde el backend con /
         return page.imagen_file.file_front_path;
@@ -306,7 +306,7 @@ var mixins = {
 formsElements = [
   {
     field_name: "title",
-    displayName: "Titulo",
+    displayName: "Title",
     icon: "format_color_text",
     component: "formFieldTitle",
     status: "1",
@@ -314,7 +314,7 @@ formsElements = [
   },
   {
     field_name: "text",
-    displayName: "Texto",
+    displayName: "Text",
     icon: "short_text",
     component: "formFieldTextArea",
     status: "1",
@@ -322,7 +322,7 @@ formsElements = [
   },
   {
     field_name: "formatText",
-    displayName: "Texto con formato",
+    displayName: "Formatted Text",
     component: "formTextFormat",
     icon: "format_size",
     status: "1",
@@ -330,7 +330,7 @@ formsElements = [
   },
   {
     field_name: "image",
-    displayName: "Imagen",
+    displayName: "Image",
     component: "formImageSelector",
     icon: "image",
     status: "1",
@@ -338,7 +338,7 @@ formsElements = [
   },
   {
     field_name: "date",
-    displayName: "Fecha",
+    displayName: "Date",
     component: "formFieldDate",
     icon: "date_range",
     status: "1",
@@ -346,7 +346,7 @@ formsElements = [
   },
   {
     field_name: "time",
-    displayName: "Hora",
+    displayName: "Time",
     component: "formFieldTime",
     icon: "access_time",
     status: "1",
@@ -354,7 +354,7 @@ formsElements = [
   },
   {
     field_name: "number",
-    displayName: "Numero",
+    displayName: "Number",
     component: "formFieldNumber",
     icon: "looks_one",
     status: "1",
@@ -370,7 +370,7 @@ formsElements = [
   },
   {
     field_name: "bolean",
-    displayName: "Bolean",
+    displayName: "Boolean",
     component: "formFieldBoolean",
     status: "1",
     icon: "check_circle",
@@ -646,10 +646,10 @@ function showRefreshUI(registration) {
     `<div id = "update-app-zone" >
        <div class="card blue-grey darken-1">
         <div class="card-content white-text">
-          <p><span>Hay una nueva version de la aplicacion, haz click aquí para actualizar</span></p>
+          <p><span>A new version is available, click here to update</span></p>
         </div>
         <div class="card-action">
-          <a href="#"><i class="fas fa-redo"></i> Actualizar</a>
+          <a href="#"><i class="fas fa-redo"></i> Update</a>
         </div>
       </div>
       </div>`
@@ -785,8 +785,8 @@ Vue.component("confirmModal", {
           </div>
       </div>
       <div class="modal-footer">
-          <button type="button" class="modal-action modal-close waves-effect waves-red btn red" @click="onClickButton(false);">Cancelar</button>
-          <button type="button" class="modal-close waves-effect waves-green btn" @click="onClickButton(true);">Aceptar</button>
+          <button type="button" class="modal-action modal-close waves-effect waves-red btn red" @click="onClickButton(false);">Cancel</button>
+          <button type="button" class="modal-close waves-effect waves-green btn" @click="onClickButton(true);">Accept</button>
       </div>
   </div>
   `,

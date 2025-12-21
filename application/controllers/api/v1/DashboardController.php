@@ -238,7 +238,7 @@ class DashboardController extends REST_Controller
             'smartphone' => 0,
             'tablet' => 0,
             'desktop' => 0,
-            'otros' => 0,
+            'others' => 0,
             'robot' => 0,
         );
 

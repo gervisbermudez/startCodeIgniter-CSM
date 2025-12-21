@@ -2,9 +2,9 @@
 <script type="text/x-template" id="create-contents-template">
     <div class="panel">
 	<div class="title">
-		<h5>Contenidos Creados</h5>
+		<h5>Latest Contents</h5>
 		<div class="subtitle">
-			@{{content.length}} Contenidos creados
+			@{{content.length}} Total contents
 		</div>
 		<img src="{{base_url()}}public/img/admin/dashboard/undraw_browsing_online_sr8c.png" />
 	</div>
@@ -24,10 +24,10 @@
 				<td>
 				<div class="switch">
 					<label>
-					Inactivo
+					Inactive
 					<input type="checkbox" v-model="item.status" @change="toggleStatus(item);">
 					<span class="lever"></span>
-					Activo
+					Active
 					</label>
 				</div>
 				</td>

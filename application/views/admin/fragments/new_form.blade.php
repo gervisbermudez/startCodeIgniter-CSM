@@ -19,15 +19,15 @@
 			</div>
 			<div id="form" class="col s12" v-bind:class="{'m10': user_id}" v-cloak v-show="!loader">
 				<input type="hidden" name="id_form" value="">
-				<span class="header grey-text text-darken-2">Datos básicos <i
+				<span class="header grey-text text-darken-2">{{ lang('fragments_basic_data') }} <i
 						class="material-icons left">description</i></span>
 				<div class="input-field">
-					<label for="nombre">Nombre:</label>
+					<label for="nombre">{{ lang('fragments_name') }}</label>
 					<input type="text" v-model="form.fields.name.value" id="nombre" name="nombre_form" required="required"
 						value="">
 				</div>
 				<div id="introduction" class="section scrollspy">
-					<label for="id_cazary">Contenido:</label>
+					<label for="id_cazary">{{ lang('fragments_content') }}</label>
 					<div class="input-field">
 						<textarea id="id_cazary" v-model="description" name="descripcion_form"></textarea>
 					</div>
@@ -35,46 +35,44 @@
 				</div>
 				<div class="input-field">
 					<select name="tipo_form" v-model="type">
-						<option value="0" disabled>Selecciona</option>
+						<option value="0" disabled>{{ lang('fragments_select') }}</option>
 						<option v-for="fragment_type in fragment_types" :key="fragment_type" :value="fragment_type">
 							@{{ fragment_type }}
 						</option>
 					</select>
-					<label>Tipo de Fragmento</label>
+					<label>{{ lang('fragments_type') }}</label>
 				</div>
 				<br>
-				Publicar Fragmento
+				{{ lang('fragments_publish') }}
 				<br>
 				<div class="input-field">
-					<div class="switch">
 						<label>
-							No publicado
+							{{ lang('categories_not_published') }}
 							<input type="checkbox" name="status_form" value="1" v-model="status">
 							<span class="lever"></span>
-							Publicado
+							{{ lang('categories_published') }}
 						</label>
-					</div>
 				</div>
 				<br><br>
 				<div class="input-field" id="buttons">
-					<a href="<?php echo base_url('admin/fragments/'); ?>" class="btn-flat">Cancelar</a>
+					<a href="<?php echo base_url('admin/fragments/'); ?>" class="btn-flat">{{ lang('btn_cancel') }}</a>
 					<button type="submit" class="btn btn-primary" @click="save()" :class="{disabled: !btnEnable}">
-						<span><i class="material-icons right">edit</i> Guardar</span>
+						<span><i class="material-icons right">edit</i> {{ lang('btn_save') }}</span>
 					</button>
 				</div>
 			</div>
 			<div class="col s12" v-bind:class="{'m2': user_id}" v-cloak v-if="user_id"  v-show="!loader">
-			<span class="header grey-text text-darken-2">Adicional <i class="material-icons left">description</i></span>
+			<span class="header grey-text text-darken-2">{{ lang('fragments_additional') }} <i class="material-icons left">description</i></span>
 				<p>
-					<b>Creado por</b>:
+					<b>{{ lang('categories_created_by') }}</b>:
 					<user-info :user="user" />
 				</p>
 				<p>
-					<b>Creado</b>: <br>
+					<b>{{ lang('categories_created') }}</b>: <br>
 					<span>@{{date_create}}</span> <br><br>
-					<b>Modificado</b>: <br>
+					<b>{{ lang('categories_modified') }}</b>: <br>
 					<span>@{{date_update}}</span> <br><br>
-					<b>Publicado</b>: <br>
+					<b>{{ lang('categories_published') }}</b>: <br>
 					<span>@{{date_publish}}</span>
 				</p>
 			</div>

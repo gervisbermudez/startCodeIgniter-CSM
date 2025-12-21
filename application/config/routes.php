@@ -72,6 +72,28 @@ $route['form/success'] = 'PageController/formsuccess';
 $route['form/error'] = 'PageController/formerror';
 
 // Admin routes - English aliases
+$route['admin/users/add(/?|)'] = 'admin/UsersController/agregar';
+$route['admin/users/edit/(:num)(/?|)'] = 'admin/UsersController/editar/$1';
+$route['admin/pages/new(/?|)'] = 'admin/PagesController/nueva';
+$route['admin/pages/edit/(:num)(/?|)'] = 'admin/PagesController/editar/$1';
+$route['admin/siteforms/new(/?|)'] = 'admin/SiteFormsController/nuevo';
+$route['admin/siteforms/edit/(:num)(/?|)'] = 'admin/SiteFormsController/editar/$1';
+$route['admin/menus/new(/?|)'] = 'admin/MenusController/nuevo';
+$route['admin/menus/edit/(:num)(/?|)'] = 'admin/MenusController/editar/$1';
+$route['admin/categories/new(/?|)'] = 'admin/CategoriesController/nueva';
+$route['admin/categories/edit/(:num)(/?|)'] = 'admin/CategoriesController/editar/$1';
+$route['admin/events/add(/?|)'] = 'admin/EventsController/agregar';
+$route['admin/events/edit/(:num)(/?|)'] = 'admin/EventsController/editar/$1';
+$route['admin/gallery/new(/?|)'] = 'admin/GalleryController/nuevo';
+$route['admin/gallery/edit/(:num)(/?|)'] = 'admin/GalleryController/editar/$1';
+$route['admin/videos/new(/?|)'] = 'admin/VideosController/nuevo';
+$route['admin/videos/edit/(:num)(/?|)'] = 'admin/VideosController/editar/$1';
+$route['admin/custommodels/new(/?|)'] = 'admin/CustomModelsController/nuevo';
+$route['admin/custommodels/edit/(:num)(/?|)'] = 'admin/CustomModelsController/editar/$1';
+$route['admin/fragments/new(/?|)'] = 'admin/FragmentsController/nueva';
+$route['admin/fragments/edit/(:num)(/?|)'] = 'admin/FragmentsController/editar/$1';
+
+
 $route['admin/pages/(.+)'] = 'admin/PagesController/$1';
 $route['admin/pages'] = 'admin/PagesController';
 $route['admin/users/(.+)'] = 'admin/UsersController/$1';
@@ -98,7 +120,10 @@ $route['admin/events/(.+)'] = 'admin/EventsController/$1';
 $route['admin/events'] = 'admin/EventsController';
 $route['admin/categories/(.+)'] = 'admin/CategoriesController/$1';
 $route['admin/categories'] = 'admin/CategoriesController';
+
+
 $route['admin/configuration/(.+)'] = 'admin/ConfigurationController/$1';
+
 $route['admin/configuration'] = 'admin/ConfigurationController';
 
 // API v1 routes

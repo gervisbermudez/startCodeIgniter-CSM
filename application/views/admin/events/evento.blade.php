@@ -51,10 +51,14 @@
 </div>
 <div id="<?php echo $modalid; ?>" class="modal">
 	<div class="modal-content">
+		<h4><?= lang('delete_event_title') ?></h4>
+		<p><?= lang('delete_event_confirm') ?></p>
 		<h4>Eliminar Evento</h4>
 		<p>¿Desea eliminar éste evento? Esta accion no podrá deshacerse</p>
 	</div>
 	<div class="modal-footer">
+		<a href="#!" data-action="acept" class=" modal-action modal-close waves-effect waves-green btn-flat"><?= lang('accept') ?></a>
+		<a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat"><?= lang('cancel') ?></a>
 		<a href="#!" data-action="acept" class=" modal-action modal-close waves-effect waves-green btn-flat">Aceptar</a>
 		<a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
 	</div>

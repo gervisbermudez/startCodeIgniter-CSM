@@ -12,12 +12,12 @@ class EventsController extends MY_Controller
 
     public function index()
     {
-        $this->renderAdminView('admin.events.eventos_list', 'Eventos', 'Eventos');
+        $this->renderAdminView('admin.events.eventos_list', lang('menu_events'), lang('events_all'));
     }
 
     public function agregar()
     {
-        $this->renderAdminView('admin.events.crear_evento', 'Nuevo Evento', 'Agregar nuevo Evento', [
+        $this->renderAdminView('admin.events.crear_evento', lang('events_new'), lang('events_add'), [
             'editMode' => 'new',
             'event_id' => null
         ]);
@@ -26,9 +26,9 @@ class EventsController extends MY_Controller
     public function editar($event_id = "")
     {
         $this->load->model('Admin/EventModel');
-        $event = $this->findOrFail(new EventModel(), $event_id, 'Evento no encontrado');
+        $event = $this->findOrFail(new EventModel(), $event_id, lang('events_not_found'));
         
-        $this->renderAdminView('admin.events.crear_evento', 'Nuevo Evento', 'Agregar nuevo Evento', [
+        $this->renderAdminView('admin.events.crear_evento', lang('events_edit'), lang('events_add'), [
             'editMode' => 'edit',
             'event_id' => $event_id
         ]);

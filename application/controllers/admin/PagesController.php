@@ -36,14 +36,14 @@ class PagesController extends MY_Controller
     public function index()
     {
         $pages = new PageModel();
-        $this->renderAdminView('admin.pages.pages_list', 'Paginas', '', [
+        $this->renderAdminView('admin.pages.pages_list', lang('menu_pages'), lang('pages_all'), [
             'paginas' => $pages->all()
         ]);
     }
 
     public function nueva()
     {
-        $this->renderAdminView('admin.pages.new', 'Nueva Pagina', 'Nueva Pagina', [
+        $this->renderAdminView('admin.pages.new', lang('pages_new'), lang('pages_new'), [
             'action' => base_url('admin/pages/save/'),
             'templates' => [],
             'page_id' => '',
@@ -53,9 +53,9 @@ class PagesController extends MY_Controller
 
     public function editar($page_id)
     {
-        $page = $this->findOrFail(new PageModel(), $page_id, 'Pagina no encontrada');
+        $page = $this->findOrFail(new PageModel(), $page_id, lang('pages_not_found'));
         
-        $this->renderAdminView('admin.pages.new', 'Editar', 'Editar Pagina', [
+        $this->renderAdminView('admin.pages.new', lang('pages_edit'), lang('pages_edit'), [
             'page_id' => $page_id,
             'editMode' => 'edit',
             'action' => base_url('admin/pages/save/'),
@@ -66,9 +66,9 @@ class PagesController extends MY_Controller
 
     public function view($page_id)
     {
-        $page = $this->findOrFail(new PageModel(), $page_id, 'Pagina no encontrada');
+        $page = $this->findOrFail(new PageModel(), $page_id, lang('pages_not_found'));
         
-        $this->renderAdminView('admin.pages.view', 'View', 'View Page', [
+        $this->renderAdminView('admin.pages.view', lang('btn_preview'), lang('btn_preview'), [
             'page_id' => $page_id,
             'editMode' => 'edit',
             'action' => base_url('admin/pages/save/'),

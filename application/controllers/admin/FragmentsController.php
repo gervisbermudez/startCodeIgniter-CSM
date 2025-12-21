@@ -14,12 +14,12 @@ class FragmentsController extends MY_Controller
 
     public function index()
     {
-        $this->renderAdminView('admin.fragments.fragments_list', 'Fragmentos', 'Todos los Fragmentos');
+        $this->renderAdminView('admin.fragments.fragments_list', lang('menu_fragments'), lang('fragments_all'));
     }
 
     public function nueva()
     {
-        $this->renderAdminView('admin.fragments.new_form', 'Fragmentos', 'Nuevo Fragmento', [
+        $this->renderAdminView('admin.fragments.new_form', lang('menu_fragments'), lang('fragments_new'), [
             'fragment_id' => '',
             'editMode' => 'new'
         ]);
@@ -27,7 +27,7 @@ class FragmentsController extends MY_Controller
 
     public function editar($fragment_id)
     {
-        $this->renderAdminView('admin.fragments.new_form', 'Fragments', 'Editar Fragmento', [
+        $this->renderAdminView('admin.fragments.new_form', lang('menu_fragments'), lang('fragments_edit'), [
             'fragment_id' => $fragment_id,
             'editMode' => 'edit'
         ]);

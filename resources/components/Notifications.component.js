@@ -34,7 +34,7 @@ var Notifications = new Vue({
         })
         .catch((error) => {
           self.loader = false;
-          M.toast({ html: "Ocurrió un error inesperado" });
+          M.toast({ html: "An unexpected error occurred" });
           console.error(error);
         });
     },

@@ -18,15 +18,16 @@
                             <div class="div">
                                 <i class="material-icons medium white-text">build</i>
                             </div>
-                            <div class="white-text">
-                                General
+                            <div class="white-text"
+                                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">
+                                <?= lang('config_general') ?>
                             </div>
                         </div>
-                        <div class="col s7 tooltipped" data-position="bottom" data-tooltip="Ver más">
+                        <div class="col s7 tooltipped" data-position="bottom" data-tooltip="{{ lang('see_more') }}">
                             <div class="info white-text right-align">
                                 @{{generalConfigurations.length}}
                                 <br />
-                                Configuraciones
+                                {{ lang('configurations') }}
                             </div>
                         </div>
                     </div>
@@ -39,8 +40,9 @@
                             <div class="div">
                                 <i class="material-icons medium white-text">brush</i>
                             </div>
-                            <div class="white-text">
-                                Theme
+                            <div class="white-text"
+                                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">
+                                <?= lang('config_theme') ?>
                             </div>
                         </div>
                         <div class="col s7 tooltipped" data-position="bottom" data-tooltip="Ver más">
@@ -60,20 +62,21 @@
                             <div class="div">
                                 <i class="material-icons medium white-text">insert_chart</i>
                             </div>
-                            <div class="white-text">
-                                Analytics
+                            <div class="white-text"
+                                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">
+                                <?= lang('config_analytics') ?>
                             </div>
                         </div>
                         <div class="col s7 tooltipped" data-position="bottom" data-tooltip="Ver más">
                             <div class="info white-text right-align">
-                                Seguimiento <br />
+                                <?= lang('tracking') ?> <br />
                                 <div class="switch">
                                     <label>
-                                        Off
+                                        <?= lang('off') ?>
                                         <input type="checkbox" :checked="getConfigValueBoolean('ANALYTICS_ACTIVE')"
                                             v-on:change="updateConfigCheckbox($event, 'ANALYTICS_ACTIVE')">
                                         <span class="lever"></span>
-                                        On
+                                        <?= lang('on') ?>
                                     </label>
                                 </div>
                             </div>
@@ -88,8 +91,9 @@
                             <div class="div">
                                 <i class="material-icons medium white-text">trending_up</i>
                             </div>
-                            <div class="white-text">
-                                SEO
+                            <div class="white-text"
+                                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">
+                                <?= lang('config_seo') ?>
                             </div>
                         </div>
                         <div class="col s7 tooltipped" data-position="bottom" data-tooltip="Ver más">
@@ -109,8 +113,9 @@
                             <div class="div">
                                 <i class="material-icons medium white-text">insert_chart</i>
                             </div>
-                            <div class="white-text">
-                                Pixel Facebook
+                            <div class="white-text"
+                                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">
+                                <?= lang('config_pixel_facebook') ?>
                             </div>
                         </div>
                         <div class="col s7 tooltipped" data-position="bottom" data-tooltip="Ver más">
@@ -137,15 +142,16 @@
                             <div class="div">
                                 <i class="material-icons medium white-text">sd_card</i>
                             </div>
-                            <div class="white-text">
-                                Database
+                            <div class="white-text"
+                                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">
+                                <?= lang('config_database') ?>
                             </div>
                         </div>
                         <div class="col s7 tooltipped" data-position="bottom" data-tooltip="Ver más">
                             <div class="info white-text right-align">
                                 @{{files.length}}
                                 <br />
-                                Create Backup
+                                <?= lang('create_backup') ?>
                             </div>
                         </div>
                     </div>
@@ -158,20 +164,21 @@
                             <div class="div">
                                 <i class="material-icons medium white-text">system_update_alt</i>
                             </div>
-                            <div class="white-text">
-                                Updater
+                            <div class="white-text"
+                                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">
+                                <?= lang('config_updater') ?>
                             </div>
                         </div>
                         <div class="col s7 tooltipped" data-position="bottom" data-tooltip="Ver más">
                             <div class="info white-text right-align">
-                                Manual Check <br />
+                                <?= lang('manual_check') ?> <br />
                                 <div class="switch">
                                     <label>
-                                        Off
+                                        <?= lang('off') ?>
                                         <input type="checkbox" :checked="getConfigValueBoolean('UPDATER_MANUAL_CHECK')"
                                             v-on:change="updateConfigCheckbox($event, 'UPDATER_MANUAL_CHECK')">
                                         <span class="lever"></span>
-                                        On
+                                        <?= lang('on') ?>
                                     </label>
                                 </div>
                             </div>
@@ -186,20 +193,21 @@
                             <div class="div">
                                 <i class="material-icons medium white-text">list</i>
                             </div>
-                            <div class="white-text">
-                                Logger
+                            <div class="white-text"
+                                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">
+                                <?= lang('config_logger') ?>
                             </div>
                         </div>
                         <div class="col s7 tooltipped" data-position="bottom" data-tooltip="Ver más">
                             <div class="info white-text right-align">
-                                System logger <br />
+                                <?= lang('system_logger') ?> <br />
                                 <div class="switch">
                                     <label>
-                                        Off
+                                        <?= lang('off') ?>
                                         <input type="checkbox" :checked="getConfigValueBoolean('SYSTEM_LOGGER')"
                                             v-on:change="updateConfigCheckbox($event, 'SYSTEM_LOGGER')">
                                         <span class="lever"></span>
-                                        On
+                                        <?= lang('on') ?>
                                     </label>
                                 </div>
                             </div>
@@ -213,14 +221,14 @@
         <div v-show="sectionActive == 'analytics'" class="container form">
             <div class="row">
                 <div class="col s12">
-                    <h4>Google Analytics</h4>
+                    <h4><?= lang('google_analytics') ?></h4>
                 </div>
             </div>
             <div class="row">
                 <div class="col s12">
                     <p>
                         <label>
-                            <span>Activar seguimiento</span>
+                            <span><?= lang('activate_tracking') ?></span>
                         </label>
                     <div class="switch">
                         <label>
@@ -237,7 +245,7 @@
                         <div class="input-field col s6">
                             <input :value="getConfigValue('ANALYTICS_ID')" placeholder="UA-XXXXX-Y" type="text"
                                 class="validate" v-on:change="updateConfig($event, 'ANALYTICS_ID')">
-                            <label class="active">ID de seguimiento de GA</label>
+                            <label class="active"><?= lang('ga_tracking_id') ?></label>
                         </div>
                     </div>
                     <div class="row">
@@ -404,20 +412,14 @@
                                     <th>Publish Date</th>
                                     <th>Status</th>
                                     <th>Options</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="(configuration, index) in seoConfigurations" :key="index">
-                                    <td>@{{configuration.config_name}}</td>
-                                    <td>
-                                        <div class="input-field" v-if="configuration.editable">
-                                            <input id="last_name" type="text" class="validate"
-                                                v-model="configuration.config_value"
-                                                v-on:blur="saveConfig(configuration);">
-                                        </div>
-                                        <div v-else>
-                                            @{{configuration.config_value}}
-                                        </div>
+                                        <td>
+                                            <div v-if="configuration.editable">
+                                                <input v-model="configuration.config_value" v-on:blur="saveConfig(configuration);" />
+                                            </div>
+                                            <div v-else>
+                                                @{{configuration.config_value}}
+                                            </div>
+                                        </td>
                                     </td>
                                     <td>@{{configuration.config_type}}</td>
                                     <td><a

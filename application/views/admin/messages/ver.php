@@ -28,11 +28,13 @@
 </div>
 <div id="modal1" class="modal">
 <div class="modal-content">
-	<h4>Eliminar Mensaje</h4>
+	<h4><?= lang('delete_message_title') ?></h4>
+	<p><?= lang('delete_message_confirm') ?></p>
 	<p>¿Desea eliminar éste Mensaje? Esta accion no podrá deshacerse</p>
 </div>
 <div class="modal-footer">
-	<a href="<?php echo $base_url ?>index.php/Admin/Mensajes/eliminar/<?php echo $array['id']; ?>" class=" modal-action modal-close waves-effect waves-green btn-flat">Aceptar</a>
+	<a href="<?php echo $base_url ?>index.php/Admin/Mensajes/eliminar/<?php echo $array['id']; ?>" class=" modal-action modal-close waves-effect waves-green btn-flat"><?= lang('accept') ?></a>
+	<a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat"><?= lang('cancel') ?></a>
 	<a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
 </div>
 </div>
