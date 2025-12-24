@@ -30,7 +30,7 @@
             <div id="introduction" class="section scrollspy">
                 <label for="id_cazary"><?= lang('videos_description') ?>:</label>
                 <div class="input-field">
-                    <textarea id="id_cazary" name="description"></textarea>
+                    <textarea id="id_cazary" name="description"><?php echo element('description', $video, ''); ?></textarea>
                 </div>
                 <br>
             </div>

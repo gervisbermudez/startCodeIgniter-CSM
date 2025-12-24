@@ -26,10 +26,12 @@
 					<img src="<?php echo $imgSrc; ?>" alt="" class="materialboxed">
 				</div>
 				<div class="card-content">
+					<strong style="margin-top:0; margin-bottom:0.5em; color:#333; font-weight:bold;">
+						<?php echo element('nombre', $video, element('nam', $video, '')); ?>
+					</strong>
 					<p><?php echo element('description', $video, ''); ?> <br></p>
 				</div>
 				<div class="card-action">
-					
 					<a href="#!" data-activates='options' class="dropdown-button right"><i
 							class="material-icons">more_vert</i></a>
 					<?php echo $options; ?>
@@ -49,7 +51,9 @@
 					<?php if (isset($video['user']) && is_array($video['user'])): ?>
 						<p style="margin-bottom:0.5em;"><b><?= lang('videos_author') ?>:</b> <?php echo element('nombre', $video['user'], '') . ' ' . element('apellido', $video['user'], ''); ?></p>
 					<?php endif; ?>
-					<p><?php echo element('fecha', $video, ''); ?></p>
+					<?php if (element('video_id', $video, '') || element('id', $video, '')): ?>
+						<p style="margin-bottom:0.5em;"><b>ID:</b> <?php echo element('video_id', $video, element('id', $video, '')); ?></p>
+					<?php endif; ?>
 				</div>
 				<div class="card-action">
 					   <?= lang('video_duration') ?>: <?php echo element('duration', $video, ''); ?> <br>
@@ -80,6 +84,8 @@
 							   <?= lang('video_published') ?>
 						</label>
 					</div>
+					<br>
+					<br>
 					</div>
 						<div>
 							<a href="<?= base_url('admin/videos/editar/' . element('id', $video, element('video_id', $video, ''))) ?>" class="waves-effect waves-light btn">

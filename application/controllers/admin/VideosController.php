@@ -36,11 +36,19 @@ class VideosController extends MY_Controller
     {
         $this->load->helper('array');
         $this->Video->find($video_id);
-        $video = is_object($this->Video) ? (array) $this->Video : [];
-        // Si hay método normalizeVideo, usarlo
-        if (method_exists($this, 'normalizeVideo')) {
-            $video = $this->normalizeVideo($this->Video);
-        }
+        $videoRaw = is_object($this->Video) ? (array) $this->Video : [];
+        // Mapear claves del modelo/DB a las usadas en el formulario
+        $video = [
+            'id' => element('video_id', $videoRaw, ''),
+            'nombre' => element('nam', $videoRaw, ''),
+            'description' => element('description', $videoRaw, ''),
+            'duration' => element('duration', $videoRaw, ''),
+            'youtubeid' => element('youtube_id', $videoRaw, ''),
+            'payinfo' => element('payinfo', $videoRaw, ''),
+            'preview' => element('preview', $videoRaw, ''),
+            'status' => element('status', $videoRaw, ''),
+            'fecha' => element('date_publish', $videoRaw, ''),
+        ];
         $categorias = [];
         if (method_exists($this->Video, 'get_categoria')) {
             $categorias = $this->Video->get_categoria(['tipo' => 'video']);
