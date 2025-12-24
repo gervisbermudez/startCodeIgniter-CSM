@@ -6,22 +6,38 @@ var VideosLists = new Vue({
     loader: true,
     filter: "",
     tempVideo: {},
+    tableView: false,
     currentStatus: null,
     modalid: 'deleteModal'
   },
   mixins: [mixins],
   computed: {
     filterAll: function () {
+      console.log('[VideosLists] computed filterAll, videos:', this.videos, 'filter:', this.filter);
       if (!!this.filter) {
         let filterTerm = this.filter.toLowerCase();
-        return this.videos.filter((value, index) => {
-          return this.searchInObject(value, filterTerm);
+        let filtered = this.videos.filter((value, index) => {
+          let found = this.searchInObject(value, filterTerm);
+          console.log('[VideosLists] searchInObject:', value, 'term:', filterTerm, 'found:', found);
+          return found;
         });
+        console.log('[VideosLists] filtered videos:', filtered);
+        return filtered;
       }
       return this.videos;
     },
   },
   methods: {
+    getcontentText: function (content) {
+      if (!content) return "";
+      var span = document.createElement("span");
+      span.innerHTML = content;
+      let text = span.textContent || span.innerText;
+      return text.substring(0, 120) + "...";
+    },
+    base_url: function(path) {
+      return BASEURL + path;
+    },
     getVideoImagePath: function (video) {
       if (video.imagen_file && video.imagen_file.file_front_path) {
         return video.imagen_file.file_front_path;
@@ -43,26 +59,35 @@ var VideosLists = new Vue({
         data.status = status;
       }
 
+      console.log('[VideosLists] getVideos: sending AJAX', BASEURL + "api/v1/videos/", data);
       $.ajax({
         type: "GET",
         url: BASEURL + "api/v1/videos/",
         data: data,
         dataType: "json",
         success: function (response) {
+          console.log('[VideosLists] AJAX success', response);
           if (response && response.data) {
-            self.videos = response.data;
+            var arr = Array.isArray(response.data) ? response.data : Object.values(response.data);
+            self.videos = [].concat(arr);
+            if (self.videos.length && typeof Vue !== 'undefined') {
+              Vue.set(self, 'videos', self.videos);
+            }
+            console.log('[VideosLists] videos set:', self.videos, 'type:', Object.prototype.toString.call(self.videos), 'isArray:', Array.isArray(self.videos));
           } else {
             self.videos = [];
+            console.log('[VideosLists] videos set to empty array');
           }
-          self.loader = false;
-          self.$nextTick(() => {
+          setTimeout(() => {
+            self.loader = false;
             self.initPlugins();
-          });
+            console.log('[VideosLists] after nextTick, videos:', self.videos, 'typeof:', typeof self.videos, 'isArray:', Array.isArray(self.videos));
+          }, 1000);
         },
         error: function (error) {
           self.loader = false;
           M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(error);
+          console.error('[VideosLists] AJAX error', error);
         },
       });
     },
@@ -94,6 +119,15 @@ var VideosLists = new Vue({
       this.tempVideo.video = video;
       this.tempVideo.index = index;
     },
+    tempDelete: function (item, index) {
+      this.tempVideo.video = item;
+      this.tempVideo.index = index;
+    },
+    confirmCallback: function (data) {
+      if (data) {
+        this.deleteVideo(this.tempVideo.video);
+      }
+    },
     confirmDelete(data) {
       if (data) {
         this.deleteVideo(this.tempVideo.video);
@@ -101,6 +135,10 @@ var VideosLists = new Vue({
     },
     resetFilter: function () {
       this.filter = "";
+    },
+    toggleView: function () {
+      this.tableView = !this.tableView;
+      this.initPlugins();
     },
     initPlugins: function () {
       setTimeout(() => {
@@ -123,8 +161,9 @@ var VideosLists = new Vue({
   },
   mounted: function () {
     this.$nextTick(function () {
+      console.log('[VideosLists] mounted, this.videos:', this.videos, 'typeof:', typeof this.videos, 'isArray:', Array.isArray(this.videos));
       this.getVideos();
       this.initPlugins();
     });
   },
-});
+  });

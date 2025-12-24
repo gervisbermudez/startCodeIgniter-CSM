@@ -1,3 +1,5 @@
+<?php defined('BASEPATH') or exit('No direct script access allowed');
+
 $lang['delete_category_title'] = 'Eliminar categoría';
 $lang['delete_category_confirm'] = '¿Desea eliminar esta categoría?';
 $lang['edit'] = 'Editar';
@@ -27,7 +29,18 @@ $lang['videos_save'] = 'Guardar';
 $lang['videos_info'] = 'Información';
 $lang['videos_image'] = 'Imagen';
 $lang['videos_select_image'] = 'Seleccionar imagen';
-<?php defined('BASEPATH') or exit('No direct script access allowed');
+$lang['videos_none_yet'] = 'No hay videos todavía';
+$lang['videos_title'] = 'Título';
+$lang['videos_author'] = 'Autor';
+$lang['videos_date'] = 'Fecha';
+$lang['videos_status'] = 'Estado';
+$lang['videos_options'] = 'Opciones';
+$lang['videos_draft'] = 'Borrador';
+$lang['videos_view'] = 'Ver';
+$lang['videos_public'] = 'Público';
+$lang['videos_private'] = 'Privado';
+$lang['videos_publish_date'] = 'Fecha de publicación';
+$lang['videos_create'] = 'Crear video';
 
 $lang['form_submited_title'] = '¡Gracias por completar nuestro formulario!';
 $lang['form_submited_message'] = '<p>

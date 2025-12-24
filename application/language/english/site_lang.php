@@ -31,6 +31,18 @@ $lang['videos_save'] = 'Save';
 $lang['videos_info'] = 'Information';
 $lang['videos_image'] = 'Image';
 $lang['videos_select_image'] = 'Select image';
+$lang['videos_status'] = 'Status';
+$lang['videos_none_yet'] = 'No videos yet';
+$lang['videos_title'] = 'Title';
+$lang['videos_author'] = 'Author';
+$lang['videos_date'] = 'Date';
+$lang['videos_options'] = 'Options';
+$lang['videos_draft'] = 'Draft';
+$lang['videos_view'] = 'View';
+$lang['videos_public'] = 'Public';
+$lang['videos_private'] = 'Private';
+$lang['videos_publish_date'] = 'Publish date';
+$lang['videos_create'] = 'Create video';
 
 
 $lang['form_submited_title'] = 'Thanks for filling out our form!';
