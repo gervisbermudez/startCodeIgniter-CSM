@@ -50,6 +50,7 @@ class VideosController extends REST_Controller
             return;
         }
 
+        $id = $this->input->post('id');
         $data = [
             'nombre' => $nombre,
             'description' => $this->input->post('description'),
@@ -62,13 +63,25 @@ class VideosController extends REST_Controller
         ];
 
         $video = new VideoModel();
-        $inserted = $video->set_video($data);
-        if ($inserted) {
-            // fetch the created video and return the mapped model (PagesController pattern)
-            $video->find($inserted);
-            system_logger('videos', $video->video_id, ($this->input->post('video_id') ? "updated" : "created"), ($this->input->post('video_id') ? "A video has been updated" : "A video has been created"));
-            $this->response_ok($video);
-            return;
+        if ($id) {
+            // Update existente
+            $video->find($id);
+            $ok = $video->update_video(['id' => $id], $data);
+            if ($ok) {
+                $video->find($id);
+                system_logger('videos', $video->video_id, "updated", "A video has been updated");
+                $this->response_ok($video);
+                return;
+            }
+        } else {
+            // Crear nuevo
+            $inserted = $video->set_video($data);
+            if ($inserted) {
+                $video->find($inserted);
+                system_logger('videos', $video->video_id, "created", "A video has been created");
+                $this->response_ok($video);
+                return;
+            }
         }
 
         $this->response_error(lang('unexpected_error'), [], REST_Controller::HTTP_BAD_REQUEST);

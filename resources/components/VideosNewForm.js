@@ -61,6 +61,7 @@ var VideosNewForm = new Vue({
     },
     getData() {
       return {
+        id: document.querySelector('input[name="id"]') ? document.querySelector('input[name="id"]').value : '',
         nombre: document.getElementById('nombre') ? document.getElementById('nombre').value : '',
         description: this.description || '',
         duration: document.getElementById('duracion') ? document.getElementById('duracion').value : '',

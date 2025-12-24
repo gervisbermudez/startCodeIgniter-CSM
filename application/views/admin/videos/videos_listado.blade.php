@@ -106,22 +106,22 @@
                         <div class="card-content">
                             <div>
                                 <span class="card-title"><a
-                                        :href="base_url('/admin/videos/ver/' + (video.id || video.video_id))">@{{video.nam}}</a>
+                                        :href="base_url('/admin/videos/ver/' + (video.id || video.video_id))">@{{ video.nam || video.nombre || video.video_id }}</a>
                                     <i v-if="video.status == 1" class="material-icons tooltipped" data-position="left"
                                         data-delay="50" data-tooltip="<?= lang('videos_public') ?>">public</i>
                                     <i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
                                         data-tooltip="<?= lang('videos_private') ?>">lock</i>
                                 </span>
                                 <div class="card-info">
-                                    <p>@{{getcontentText(video.description)}}</p>
+                                    <p>@{{ getcontentText(video.description || video.descripcion) }}</p>
                                     <span class="activator right"><i class="material-icons">more_vert</i></span>
                                 </div>
                             </div>
                         </div>
                         <div class="card-reveal">
-                            <span class="card-title grey-text text-darken-4"><i
-                                    class="material-icons right">close</i>@{{video.nombre}}</span>
-                            <span class="subtitle">@{{getcontentText(video.descripcion)}}</span>
+                                <span class="card-title grey-text text-darken-4"><i
+                                    class="material-icons right">close</i>@{{ video.nam || video.nombre || video.video_id }}</span>
+                                <span class="subtitle">@{{ getcontentText(video.description || video.descripcion) }}</span>
                             <ul>
                                 <li><b><?= lang('videos_publish_date') ?>:</b> <br> @{{video.date_publish ?
                                     video.date_publish :
