@@ -12,7 +12,7 @@
         <div class="nav-wrapper">
             <form>
                 <div class="input-field">
-                    <input class="input-search" type="search" placeholder="Buscar..." v-model="filter">
+                    <input class="input-search" type="search" placeholder="<?php echo lang('search_placeholder'); ?>" v-model="filter">
                     <label class="label-icon" for="search"><i class="material-icons">search</i></label>
                     <i class="material-icons" v-on:click="resetFilter();">close</i>
                 </div>
@@ -24,7 +24,7 @@
                     <a href="#!" class='dropdown-trigger' data-target='dropdown-options'><i class="material-icons">more_vert</i></a>
                     <!-- Dropdown Structure -->
                     <ul id='dropdown-options' class='dropdown-content'>
-                        <li><a href="#!">Archivo</a></li>
+                        <li><a href="#!"><?php echo lang('file'); ?></a></li>
                     </ul>
                 </li>
             </ul>
@@ -36,12 +36,12 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Type</th>
-                            <th>Author</th>
-                            <th>Publish Date</th>
-                            <th>Status</th>
-                            <th>Options</th>
+                            <th><?php echo lang('name'); ?></th>
+                            <th><?php echo lang('type'); ?></th>
+                            <th><?php echo lang('author'); ?></th>
+                            <th><?php echo lang('publish_date'); ?></th>
+                            <th><?php echo lang('status'); ?></th>
+                            <th><?php echo lang('options'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -56,16 +56,16 @@
                                 @{{fragment.date_publish ? fragment.date_publish : fragment.date_create}}
                             </td>
                             <td>
-                                <i v-if="fragment.status == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Publicado">publish</i>
-                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Borrador">edit</i>
+                                <i v-if="fragment.status == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('published'); ?>">publish</i>
+                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('draft'); ?>">edit</i>
                             </td>
                             <td>
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + fragment.fragment_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + fragment.fragment_id' class='dropdown-content'>
-                                    <li><a :href="base_url('admin/Fragments/editar/' + fragment.fragment_id)">Editar</a></li>
-                                    <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(fragment, index);">Borrar</a></li>
-                                    <li v-if="fragment.status == 2"><a :href="base_url('admin/Fragments/preview?fragment_id=' + fragment.fragment_id)" target="_blank">Preview</a></li>
-                                    <li><a :href="base_url(fragment.path)" target="_blank">Archivar</a></li>
+                                    <li><a :href="base_url('admin/Fragments/editar/' + fragment.fragment_id)">{{ lang('edit') }}</a></li>
+                                    <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(fragment, index);">{{ lang('delete') }}</a></li>
+                                    <li v-if="fragment.status == 2"><a :href="base_url('admin/Fragments/preview?fragment_id=' + fragment.fragment_id)" target="_blank">{{ lang('preview') }}</a></li>
+                                    <li><a :href="base_url(fragment.path)" target="_blank">{{ lang('archive') }}</a></li>
                                 </ul>
                             </td>
                         </tr>
@@ -84,16 +84,16 @@
                         <a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href='#!' :data-target='"dropdown" + fragment.fragment_id'>
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown" + fragment.fragment_id' class='dropdown-content'>
-                            <li><a :href="base_url('admin/Fragments/editar/' + fragment.fragment_id)">Editar</a></li>
-                            <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(fragment, index);">Borrar</a></li>
-                            <li v-if="fragment.status == 2"><a :href="base_url('admin/Fragments/preview?fragment_id=' + fragment.fragment_id)" target="_blank">Preview</a></li>
-                            <li><a :href="base_url(fragment.path)" target="_blank">Archivar</a></li>
+                            <li><a :href="base_url('admin/Fragments/editar/' + fragment.fragment_id)"><?php echo lang('edit'); ?></a></li>
+                            <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(fragment, index);"><?php echo lang('delete'); ?></a></li>
+                            <li v-if="fragment.status == 2"><a :href="base_url('admin/Fragments/preview?fragment_id=' + fragment.fragment_id)" target="_blank"><?php echo lang('preview'); ?></a></li>
+                            <li><a :href="base_url(fragment.path)" target="_blank"><?php echo lang('archive'); ?></a></li>
                         </ul>
                     </div>
                     <div class="card-content">
                         <div>
-                            <span class="card-title"><a :href="base_url(fragment.name)" target="_blank">@{{fragment.name}}</a> <i v-if="fragment.visibility == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Publico">public</i>
-                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Privado">lock</i>
+                            <span class="card-title"><a :href="base_url(fragment.name)" target="_blank">@{{fragment.name}}</a> <i v-if="fragment.visibility == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('public'); ?>">public</i>
+                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('private'); ?>">lock</i>
                             </span>
                             <div class="card-info">
                                 <p>
@@ -102,10 +102,10 @@
                                 <span class="activator right"><i class="material-icons">more_vert</i></span>
                                 <ul>
                                     <li>
-                                        Type: @{{fragment.type}}
+                                        <?php echo lang('type'); ?>: @{{fragment.type}}
                                     </li>
                                     <li class="truncate">
-                                        Author: <a :href="base_url('admin/users/ver/' + fragment.user_id)">@{{fragment.user.user_data.nombre}} @{{fragment.user.user_data.apellido}}</a>
+                                        <?php echo lang('author'); ?>: <a :href="base_url('admin/users/ver/' + fragment.user_id)">@{{fragment.user.user_data.nombre}} @{{fragment.user.user_data.apellido}}</a>
                                     </li>
                                 </ul>
                             </div>
@@ -120,13 +120,13 @@
                             @{{fragment.subtitle}}
                         </span>
                         <ul>
-                            <li><b>Fecha de publicacion:</b> <br> @{{fragment.date_publish ? fragment.date_publish : fragment.date_create}}</li>
-                            <li><b>Estado:</b>
+                            <li><b><?php echo lang('publish_date'); ?>:</b> <br> @{{fragment.date_publish ? fragment.date_publish : fragment.date_create}}</li>
+                            <li><b><?php echo lang('status'); ?>:</b>
                                 <span v-if="fragment.status == 1">
-                                    Publicado
+                                    <?php echo lang('published'); ?>
                                 </span>
                                 <span v-else>
-                                    Borrador
+                                    <?php echo lang('draft'); ?>
                                 </span>
                             </li>
                         </ul>
@@ -136,20 +136,20 @@
         </div>
     </div>
     <div class="container" v-if="!loader && fragments.length == 0" v-cloak>
-        <h4>No hay Fragmentos</h4>
+        <h4><?php echo lang('no_fragments'); ?></h4>
     </div>
     <confirm-modal
         id="deleteModal"
-        title="Confirmar Borrar"
+        title="<?php echo lang('confirm_delete'); ?>"
         v-on:notify="confirmCallback"
     >
         <p>
-            ¿Desea borrar Fragmento?
+            <?php echo lang('delete_fragment_question'); ?>
         </p>
     </confirm-modal>
 </div>
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Crear Fragmento" href="<?php echo base_url('admin/fragments/nueva/') ?>">
+    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('create_fragment'); ?>" href="<?php echo base_url('admin/fragments/nueva/') ?>">
         <i class="large material-icons">add</i>
     </a>
 </div>

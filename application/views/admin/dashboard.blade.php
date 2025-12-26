@@ -68,7 +68,7 @@
                     <span>{{userdata('nombre') }} {{userdata('apellido') }}</span>
                 </div>
                 <div class="columns">
-                    <div class="colum st-teal">
+                    <a href="{{ base_url('admin/users') }}" class="colum st-teal" style="text-decoration:none;">
                         <div class="colum__icon">
                             <i class="material-icons text-st-white">people</i>
                         </div>
@@ -76,8 +76,8 @@
                             <div class="text-st-white"><b>@{{users.length}}</b></div>
                             <div class="text-st-white">{{ lang('menu_users') }}</div>
                         </div>
-                    </div>
-                    <div class="colum st-pink">
+                    </a>
+                    <a href="{{ base_url('admin/pages') }}" class="colum st-pink" style="text-decoration:none;">
                         <div class="colum__icon">
                             <i class="material-icons text-st-white">web</i>
                         </div>
@@ -85,8 +85,8 @@
                             <div class="text-st-white"><b>@{{pages.length}}</b></div>
                             <div class="text-st-white">Pages</div>
                         </div>
-                    </div>
-                    <div class="colum st-gray">
+                    </a>
+                    <a href="{{ base_url('admin/files') }}" class="colum st-gray" style="text-decoration:none;">
                         <div class="colum__icon">
                             <i class="material-icons text-st-white">markunread_mailbox</i>
                         </div>
@@ -94,8 +94,8 @@
                             <div class="text-st-white"><b>@{{files.length}}</b></div>
                             <div class="text-st-white">Files</div>
                         </div>
-                    </div>
-                    <div class="colum st-gray-light">
+                    </a>
+                    <a href="{{ base_url('admin/events') }}" class="colum st-gray-light" style="text-decoration:none;">
                         <div class="colum__icon">
                             <i class="material-icons text-st-gray">assistant</i>
                         </div>
@@ -103,18 +103,7 @@
                             <div class="text-st-gray"><b>3</b></div>
                             <div class="text-st-gray">Events</div>
                         </div>
-                    </div>
-                    <div class="colum st-blue">
-                        <a href="{{base_url('admin/configuration/analytics')}}" style="color: inherit; display: flex; align-items: center; width: 100%;">
-                            <div class="colum__icon">
-                                <i class="material-icons text-st-white">analytics</i>
-                            </div>
-                            <div class="colum__description">
-                                <div class="text-st-white"><b>Analytics</b></div>
-                                <div class="text-st-white" style="font-size: 0.8rem;">{{ lang('dashboard_view_dashboard') }}</div>
-                            </div>
-                        </a>
-                    </div>
+                    </a>
                 </div>
                 <div class="img">
                     <img src="{{url('public/img/admin/dashboard/undraw_charts.png')}}" alt="undraw_charts">

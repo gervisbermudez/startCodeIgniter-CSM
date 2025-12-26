@@ -112,9 +112,13 @@ var FragmentsLists = new Vue({
         if (elems.length > 0) {
           M.Tooltip.init(elems, {});
         }
-        var elems = document.querySelectorAll(".dropdown-trigger");
-        if (elems.length > 0) {
-          M.Dropdown.init(elems, {});
+        var dropdowns = document.querySelectorAll(".dropdown-trigger");
+        if (dropdowns.length > 0) {
+          M.Dropdown.init(dropdowns, {});
+        }
+        var modals = document.querySelectorAll('.modal');
+        if (modals.length > 0) {
+          M.Modal.init(modals, {});
         }
       }, 3000);
     },

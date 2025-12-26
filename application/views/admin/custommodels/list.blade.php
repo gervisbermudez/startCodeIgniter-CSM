@@ -28,7 +28,7 @@
                             class="material-icons">more_vert</i></a>
                     <!-- Dropdown Structure -->
                     <ul id='dropdown-options' class='dropdown-content'>
-                        <li><a href="#!">Archivados</a></li>
+                                <li><a href="#!"><?= lang('custommodels_archived') ?></a></li>
                     </ul>
                 </li>
             </ul>
@@ -40,12 +40,12 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Model Name</th>
-                            <th>Model Description</th>
-                            <th>Author</th>
-                            <th>Status</th>
-                            <th>Publish Date</th>
-                            <th>Options</th>
+                            <th><?= lang('custommodels_table_name') ?></th>
+                            <th><?= lang('custommodels_table_description') ?></th>
+                            <th><?= lang('custommodels_table_author') ?></th>
+                            <th><?= lang('custommodels_table_status') ?></th>
+                            <th><?= lang('custommodels_table_publish_date') ?></th>
+                            <th><?= lang('custommodels_table_options') ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -61,21 +61,21 @@
                             </td>
                             <td>
                                 <i v-if="form.status == 1" class="material-icons tooltipped" data-position="left"
-                                    data-delay="50" data-tooltip="Activo">publish</i>
+                                    data-delay="50" :data-tooltip="'<?= lang('custommodels_published') ?>'">publish</i>
                                 <i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
-                                    data-tooltip="Inactivo">edit</i>
+                                    :data-tooltip="'<?= lang('custommodels_draft') ?>'">edit</i>
                             </td>
                             <td>
                                 <a class='dropdown-trigger' href='#!'
                                     :data-target='"dropdown_" + form.custom_model_id'><i
                                         class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown_" + form.custom_model_id' class='dropdown-content'>
-                                    <li><a :href="base_url('admin/custommodels/addData/' + form.custom_model_id)">
-                                            Agregar data</a></li>
-                                    <li><a :href="base_url('admin/custommodels/editForm/' + form.custom_model_id)">
-                                            Editar</a></li>
-                                    <li><a class="modal-trigger" href="#deleteModal"
-                                            v-on:click="tempDelete(form, index);">Borrar</a></li>
+                                        <li><a :href="base_url('admin/custommodels/addData/' + form.custom_model_id)">
+                                            <?= lang('custommodels_add_data') ?></a></li>
+                                        <li><a :href="base_url('admin/custommodels/editForm/' + form.custom_model_id)">
+                                            <?= lang('custommodels_edit') ?></a></li>
+                                        <li><a class="modal-trigger" href="#deleteModal"
+                                            v-on:click="tempDelete(form, index);"><?= lang('custommodels_delete') ?></a></li>
                                 </ul>
                             </td>
                         </tr>
@@ -95,12 +95,10 @@
                             :data-target='"dropdown" + form.custom_model_id'>
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown" + form.custom_model_id' class='dropdown-content'>
-                            <li><a :href="base_url('admin/custommodels/addData/' + form.custom_model_id)"> Agregar
-                                    data</a></li>
-                            <li><a :href="base_url('admin/custommodels/editForm/' + form.custom_model_id)"> Editar</a>
-                            </li>
-                            <li><a class="modal-trigger" href="#deleteModal"
-                                    v-on:click="tempDelete(form, index);">Borrar</a></li>
+                                <li><a :href="base_url('admin/custommodels/addData/' + form.custom_model_id)"> <?= lang('custommodels_add_data') ?></a></li>
+                                <li><a :href="base_url('admin/custommodels/editForm/' + form.custom_model_id)"> <?= lang('custommodels_edit') ?></a></li>
+                                <li><a class="modal-trigger" href="#deleteModal"
+                                    v-on:click="tempDelete(form, index);"><?= lang('custommodels_delete') ?></a></li>
                         </ul>
                     </div>
                     <div class="card-content">
@@ -108,9 +106,9 @@
                             <span class="card-title"><a :href="base_url(form.path)"
                                     target="_blank">@{{form.form_name}}</a> <i v-if="form.visibility == 1"
                                     class="material-icons tooltipped" data-position="left" data-delay="50"
-                                    data-tooltip="Publico">public</i>
+                                    :data-tooltip="'<?= lang('custommodels_published') ?>'">public</i>
                                 <i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
-                                    data-tooltip="Privado">lock</i>
+                                    :data-tooltip="'<?= lang('custommodels_draft') ?>'">lock</i>
                             </span>
                             <div class="card-info">
                                 <p>
@@ -119,7 +117,7 @@
                                 <span class="activator right"><i class="material-icons">more_vert</i></span>
                                 <ul>
                                     <li class="truncate" v-if="form.user">
-                                        Author: <a
+                                        <?= lang('custommodels_author') ?> <a
                                             :href="base_url('admin/users/ver/' + form.user_id)">@{{form.user.get_fullname()}}</a>
                                     </li>
                                 </ul>
@@ -135,18 +133,18 @@
                             @{{form.form_description}}
                         </span>
                         <ul>
-                            <li><b>Fecha de publicacion:</b> <br>
+                            <li><b><?= lang('custommodels_publish_date') ?>:</b> <br>
                                 @{{form.date_publish ? form.date_publish : form.date_create}}</li>
-                            <li><b>Categorie:</b> @{{form.categorie}}</li>
-                            <li><b>Subcategorie:</b> @{{form.subcategorie ? form.subcategorie : 'Ninguna'}}</li>
-                            <li><b>Template:</b> @{{form.template}}</li>
-                            <li><b>Type:</b> @{{form.page_type_name}}</li>
-                            <li><b>Estado:</b>
+                            <li><b><?= lang('custommodels_category') ?></b> @{{form.categorie}}</li>
+                            <li><b><?= lang('custommodels_subcategory') ?></b> @{{form.subcategorie ? form.subcategorie : '<?= lang('custommodels_none') ?>'}}</li>
+                            <li><b><?= lang('custommodels_template') ?></b> @{{form.template}}</li>
+                            <li><b><?= lang('custommodels_type') ?></b> @{{form.page_type_name}}</li>
+                            <li><b><?= lang('custommodels_status') ?></b>
                                 <span v-if="form.status == 1">
-                                    Publicado
+                                    <?= lang('custommodels_published') ?>
                                 </span>
                                 <span v-else>
-                                    Borrador
+                                    <?= lang('custommodels_draft') ?>
                                 </span>
                             </li>
                         </ul>
@@ -154,19 +152,19 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> 
     <div class="container" v-if="!loader && forms.length == 0" v-cloak>
-        <h4>No hay modelos</h4>
+        <h4><?= lang('custommodels_no_models') ?></h4>
     </div>
-    <confirm-modal id="deleteModal" title="Confirmar Borrar" v-on:notify="confirmCallback">
+    <confirm-modal id="deleteModal" :title="'<?= lang('custommodels_confirm_delete_title') ?>'" v-on:notify="confirmCallback">
         <p>
-            ¿Desea borrar el modelo?
+            <?= lang('custommodels_confirm_delete_message') ?>
         </p>
     </confirm-modal>
 </div>
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
     <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left"
-        data-delay="50" data-tooltip="Nuevo Modelo" href="{{base_url('admin/custommodels/nuevo/')}}">
+        data-delay="50" data-tooltip="<?= lang('custommodels_new_model_tooltip') ?>" href="{{base_url('admin/custommodels/nuevo/')}}">
         <i class="material-icons">add</i>
     </a>
 </div>

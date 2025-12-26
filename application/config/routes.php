@@ -73,7 +73,7 @@ $route['form/error'] = 'PageController/formerror';
 
 // Admin routes - English aliases
 $route['admin/users/add(/?|)'] = 'admin/UsersController/agregar';
-$route['admin/users/edit/(:num)(/?|)'] = 'admin/UsersController/editar/$1';
+$route['admin/users/edit/(:num)(/?|)'] = 'admin/UsersController/edit/$1';
 $route['admin/pages/new(/?|)'] = 'admin/PagesController/nueva';
 $route['admin/pages/edit/(:num)(/?|)'] = 'admin/PagesController/editar/$1';
 $route['admin/siteforms/new(/?|)'] = 'admin/SiteFormsController/nuevo';

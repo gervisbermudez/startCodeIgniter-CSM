@@ -7,6 +7,7 @@ Vue.component("configuration", {
       show_arrow: false,
       show_label: true,
       handle_value_as: "input",
+      last_value: "",
     };
   },
   mixins: [mixins],
@@ -15,30 +16,112 @@ Vue.component("configuration", {
       return (this.configuration.config_value == this.configuration.config_data.true);
     },
   },
+  watch: {
+    configuration: {
+      handler: function (val) {
+        this.initComponent();
+      },
+      deep: true,
+    },
+  },
   methods: {
+    initComponent: function () {
+      if (!this.configuration) return;
+      if (!this.configuration.config_data) {
+        this.configuration.config_data = {};
+      }
+
+      this.configuration.validate = true;
+      let data = this.configuration.config_data;
+
+      // Sanitize perm_values: ensure it's either a valid object/array or null
+      if (data.perm_values && (typeof data.perm_values !== "object" || (Array.isArray(data.perm_values) && data.perm_values.length === 0))) {
+        data.perm_values = null;
+      } else if (data.perm_values === "") {
+        data.perm_values = null;
+      }
+
+      // Automatic Switch Detection: If there are exactly 2 options, treat as switch
+      if (Array.isArray(data.perm_values) && data.perm_values.length == 2 && !data.handle_as) {
+        data.handle_as = "switch";
+        // If "true" value is not defined, assume the last one is the positive one
+        if (!data.true) {
+          data.true = data.perm_values[1];
+        }
+      }
+
+      // Default editor
+      this.handle_value_as = data.handle_as || (data.perm_values ? "select" : "input");
+
+      // Logic for Booleans / Switches
+      if (data.type_value == "boolean" || this.handle_value_as == "switch") {
+        this.show_body = false;
+        this.show_arrow = false;
+        this.show_label = false;
+        this.handle_value_as = "switch";
+
+        // Asegurar valores para el switch si no existen o son solo números
+        if (!data.perm_values || (Array.isArray(data.perm_values) && data.perm_values[0] == '0' && data.perm_values[1] == '1')) {
+          data.perm_values = ['No', 'Si'];
+          data.false = '0';
+          data.true = '1';
+        }
+      } else if (data.perm_values) {
+        // Has options but not a switch
+        this.show_body = true;
+        this.show_arrow = true;
+        this.show_label = false;
+        this.handle_value_as = data.handle_as || "select";
+      } else {
+        // Standard input
+        this.show_body = true;
+        this.show_label = true;
+        this.show_arrow = false;
+        this.handle_value_as = data.handle_as || "input";
+      }
+    },
     toggleEddit() {
       this.configuration.editable = !this.configuration.editable;
       this.$forceUpdate();
     },
     switchCahnged($event) {
       let isChecked = $event.target.checked;
+      let data = this.configuration.config_data;
       if (isChecked) {
-        this.configuration.config_value = this.configuration.config_data.true;
+        this.configuration.config_value = data.true || (data.perm_values ? data.perm_values[1] : '1');
       } else {
-        this.configuration.config_value = this.configuration.config_data.true;
-        this.configuration.config_data.perm_values.forEach((element) => {
-          if (element != this.configuration.config_data.true) {
-            this.configuration.config_value = element;
-          }
-        });
+        this.configuration.config_value = data.false || (data.perm_values ? data.perm_values[0] : '0');
       }
       this.runSave();
     },
 
+    focusInput() {
+      this.last_value = JSON.stringify({
+        value: this.configuration.config_value,
+        label: this.configuration.config_label,
+      });
+    },
     saveConfig() {
       var self = this;
-      this.toggleEddit();
       let configuration = self.configuration;
+
+      // Check if anything actually changed
+      let current_state = JSON.stringify({
+        value: configuration.config_value,
+        label: configuration.config_label,
+      });
+
+      if (current_state === this.last_value) {
+        if (configuration.editable) {
+          this.toggleEddit();
+        }
+        return;
+      }
+
+      if (configuration.editable) {
+        this.toggleEddit();
+      }
+
       if (configuration.config_data.type_value != "boolean") {
         let form = new VueForm({
           field: {
@@ -58,14 +141,11 @@ Vue.component("configuration", {
           this.runSave();
         }
       } else {
+        let data = configuration.config_data;
         if (configuration.config_value) {
-          configuration.config_value = configuration.config_data.true;
+          configuration.config_value = data.true || (data.perm_values ? data.perm_values[1] : '1');
         } else {
-          configuration.config_data.perm_values.forEach((element) => {
-            if (element != configuration.config_data.true) {
-              configuration.config_value = element;
-            }
-          });
+          configuration.config_value = data.false || (data.perm_values ? data.perm_values[0] : '0');
         }
         this.runSave();
       }
@@ -110,30 +190,7 @@ Vue.component("configuration", {
   mounted: function () {
     this.$nextTick(function () {
       this.initPlugins();
-      this.configuration.validate = true;
-      this.handle_value_as = this.configuration.config_data.handle_as;
-      if (this.configuration.config_data.type_value == "boolean") {
-        this.show_body = false;
-        this.show_arrow = false;
-        this.show_label = false;
-        this.handle_value_as = "switch";
-      } else if (
-        this.configuration.config_data.type_value == "string" &&
-        this.configuration.config_data.perm_values == null
-      ) {
-        this.show_body = true;
-        this.show_label = true;
-        this.show_arrow = false;
-        this.handle_value_as = this.configuration.config_data.handle_as;
-      } else if (
-        this.configuration.config_data.type_value == "string" &&
-        typeof this.configuration.config_data.perm_values == "object"
-      ) {
-        this.show_body = true;
-        this.show_arrow = true;
-        this.show_label = false;
-        this.handle_value_as = this.configuration.config_data.handle_as;
-      }
+      this.initComponent();
     });
   },
 });

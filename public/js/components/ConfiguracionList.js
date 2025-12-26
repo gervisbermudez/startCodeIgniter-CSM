@@ -14,9 +14,13 @@ var ConfiguracionList = new Vue({
       "database",
       "theme",
       "updater",
+      "system",
       "addConfig",
     ],
     files: [],
+    searchQuery: '',
+    creatingBackup: false,
+    fileToDelete: null,
     themes: [],
     updaterloader: false,
     updaterInfo: null,
@@ -28,6 +32,7 @@ var ConfiguracionList = new Vue({
       site_config_id: "",
       user_id: "",
       config_name: "",
+      config_label: "",
       config_value: "",
       config_description: "",
       config_type: "general",
@@ -46,6 +51,12 @@ var ConfiguracionList = new Vue({
       status: "1",
       validate: true,
     },
+    last_state: "",
+    systemInfo: {},
+    lastCleanupResult: null,
+    charts: {
+      configDistribution: null
+    }
   },
   mixins: [mixins],
   computed: {
@@ -64,9 +75,7 @@ var ConfiguracionList = new Vue({
     analyticsConfigurations: function () {
       return this.filterConfigurations("analytics");
     },
-    seoConfigurations: function () {
-      return this.filterConfigurations("seo");
-    },
+
     pixelConfigurations: function () {
       return this.filterConfigurations("pixel");
     },
@@ -79,6 +88,87 @@ var ConfiguracionList = new Vue({
     loggerConfig: function () {
       return this.filterConfigurations("logger");
     },
+    systemConfigurations: function () {
+      return this.configurations.filter(c => c.config_type == 'system');
+    },
+    healthIssues: function () {
+      let issues = [];
+
+      // Check Analytics
+      if (this.getConfigValueBoolean('ANALYTICS_ACTIVE') && !this.getConfigValue('ANALYTICS_ID')) {
+        issues.push({
+          type: 'warning',
+          title: 'Analytics incomplete',
+          message: 'Tracking is active but Tracking ID is empty.'
+        });
+      }
+
+      // Check Pixel
+      if (this.getConfigValueBoolean('PIXEL_ACTIVE') && !this.getConfigValue('PIXEL_CODE')) {
+        issues.push({
+          type: 'warning',
+          title: 'Facebook Pixel incomplete',
+          message: 'Pixel is active but Head Code is empty.'
+        });
+      }
+
+      // Check SEO
+      if (!this.getConfigValue('SITE_DESCRIPTION')) {
+        issues.push({
+          type: 'info',
+          title: 'SEO Opportunity',
+          message: 'Site Description is empty. This affects search engine rankings.'
+        });
+      }
+      // Maintenance Check
+      var autoCleanup = this.configurations.find(c => c.config_name === 'AUTO_CLEANUP_ENABLED');
+      if (!autoCleanup || autoCleanup.config_value != '1') {
+        issues.push({
+          type: 'info',
+          title: 'Mantenimiento Desactivado',
+          message: 'La limpieza automática de logs está desactivada. Los registros antiguos podrían llenar la base de datos.'
+        });
+      }
+
+      if (this.lastCleanupResult) {
+        var totalDeleted = this.lastCleanupResult.system_logs + this.lastCleanupResult.api_logs + this.lastCleanupResult.user_tracking;
+        if (totalDeleted > 0) {
+          issues.push({
+            type: 'success',
+            title: 'Limpieza Ejecutada',
+            message: 'Se han eliminado ' + totalDeleted + ' registros antiguos para optimizar el sistema.'
+          });
+        }
+      }
+
+      return issues;
+    },
+    recentActivity: function () {
+      return this.configurations
+        .filter(c => c.date_update)
+        .sort((a, b) => new Date(b.date_update) - new Date(a.date_update))
+        .slice(0, 5);
+    },
+    filteredFiles: function () {
+      if (!this.searchQuery) return this.files;
+      const query = this.searchQuery.toLowerCase();
+      return this.files.filter(file =>
+        file.get_filename().toLowerCase().includes(query) ||
+        file.file_path.toLowerCase().includes(query)
+      );
+    },
+    lastBackupDate: function () {
+      if (!this.files.length) return 'N/A';
+      const latest = this.files.reduce((prev, current) =>
+        new Date(prev.date_create) > new Date(current.date_create) ? prev : current
+      );
+      return this.formatDate(latest.date_create);
+    },
+    totalSize: function () {
+      if (!this.files.length) return '0 MB';
+      const total = this.files.reduce((sum, file) => sum + (file.file_size || 0), 0);
+      return this.formatFileSize(total);
+    }
   },
   methods: {
     saveNewConfig: function () {
@@ -104,6 +194,7 @@ var ConfiguracionList = new Vue({
               html: "Config saved!",
             });
             this.newConfig.config_name = "";
+            this.newConfig.config_label = "";
             this.newConfig.config_value = "";
             this.newConfig.config_description = "";
           } else {
@@ -160,6 +251,12 @@ var ConfiguracionList = new Vue({
     },
     changeSectionActive: function (e) {
       switch (((this.sectionActive = e), e)) {
+        case "home":
+          this.getSystemInfo();
+          setTimeout(() => {
+            this.initCharts();
+          }, 500);
+          break;
         case "theme":
           this.getThemes();
           break;
@@ -296,7 +393,25 @@ var ConfiguracionList = new Vue({
         M.FormSelect.init(e, {});
       }, 3e3);
     },
+    focusInput: function (e) {
+      this.last_state = JSON.stringify({
+        value: e.config_value,
+        label: e.config_label,
+      });
+    },
     saveConfig(e) {
+      let current_state = JSON.stringify({
+        value: e.config_value,
+        label: e.config_label,
+      });
+
+      if (current_state === this.last_state) {
+        if (e.editable) {
+          this.toggleEddit(e);
+        }
+        return;
+      }
+
       if ((this.toggleEddit(e), "boolean" != e.config_data)) {
         let t = new VueForm({
           field: {
@@ -343,12 +458,14 @@ var ConfiguracionList = new Vue({
       });
     },
     getconfigurations: function () {
-      var e = this,
-        t = BASEURL + "api/v1/config/";
-      fetch(t)
-        .then((e) => e.json())
-        .then((t) => {
-          let a = t.data;
+      var self = this;
+      $.ajax({
+        type: "GET",
+        url: BASEURL + "api/v1/config/",
+        data: {},
+        dataType: "json",
+        success: function (response) {
+          let a = response.data;
           for (const e in a)
             if (a.hasOwnProperty(e)) {
               a[e].user = new User(a[e].user);
@@ -358,14 +475,36 @@ var ConfiguracionList = new Vue({
                 a[e].config_data = {};
               }
             }
-          (e.configurations = a), (e.loader = !1);
-        })
-        .catch((t) => {
-          M.toast({
-            html: t.responseJSON.error_message,
-          }),
-            (e.loader = !1);
+          self.configurations = a;
+          self.loader = !1;
+          self.getSystemInfo();
+          setTimeout(() => {
+            self.initCharts();
+          }, 500);
+          self.runAutoCleanup();
+        },
+        error: function (error) {
+          M.toast({ html: "Error loading configurations" });
+          self.loader = !1;
+        }
+      });
+    },
+    runAutoCleanup: function () {
+      var self = this;
+      // Solo si está habilitada la limpieza automática
+      var enabled = self.configurations.find(c => c.config_name === 'AUTO_CLEANUP_ENABLED');
+      if (enabled && enabled.config_value == '1') {
+        $.ajax({
+          type: "POST",
+          url: BASEURL + "api/v1/config/cleanup_logs",
+          success: function (response) {
+            self.lastCleanupResult = response.data;
+            if (response.data.system_logs > 0 || response.data.api_logs > 0 || response.data.user_tracking > 0) {
+              console.log("Mantenimiento completado", response.data);
+            }
+          }
         });
+      }
     },
     deleteConfiguration: function (e, t) {
       var a = this;
@@ -435,40 +574,136 @@ var ConfiguracionList = new Vue({
         dataType: "json",
         success: function (e) {
           if (200 == e.code) {
-            (html = "<span>Done! </span>"),
-              M.toast({
-                html: html,
-              }),
-              t.getDatabaseBackups();
-            var a = document.querySelectorAll(".collapsible");
-            M.Collapsible.init(a, {});
+            M.toast({
+              html: '<i class="material-icons left">check_circle</i>Backup eliminado correctamente',
+              classes: 'green'
+            });
+            t.getDatabaseBackups();
+            // Close modal
+            var modal = M.Modal.getInstance(document.getElementById('deleteBackupModal'));
+            if (modal) modal.close();
           }
         },
       });
     },
+    confirmDelete(file) {
+      this.fileToDelete = file;
+      var modal = M.Modal.getInstance(document.getElementById('deleteBackupModal'));
+      if (!modal) {
+        var elem = document.getElementById('deleteBackupModal');
+        modal = M.Modal.init(elem, {});
+      }
+      modal.open();
+    },
+    formatDate(dateString) {
+      if (!dateString) return 'N/A';
+      const date = new Date(dateString);
+      const options = {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      };
+      return date.toLocaleDateString('es-ES', options);
+    },
+    formatFileSize(bytes) {
+      if (!bytes || bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+    },
     createDatabaseBackup() {
+      this.creatingBackup = true;
       fetch(BASEURL + "api/v1/config/backup_database")
         .then((e) => e.json())
         .then((e) => {
-          "200" == e.code
-            ? (M.toast({
-              html: e.result,
-            }),
-              this.reloadFileExplorer())
-            : M.toast({
-              html: e.result,
+          this.creatingBackup = false;
+          if ("200" == e.code) {
+            M.toast({
+              html: '<i class="material-icons left">check_circle</i>' + e.result,
+              classes: 'green'
             });
+            this.reloadFileExplorer();
+          } else {
+            M.toast({
+              html: '<i class="material-icons left">error</i>' + e.result,
+              classes: 'red'
+            });
+          }
         })
         .catch((e) => {
+          this.creatingBackup = false;
           M.toast({
-            html: "Error code: 001",
+            html: '<i class="material-icons left">error</i>Error al crear backup',
+            classes: 'red'
           });
         });
+    },
+    getSystemInfo() {
+      fetch(BASEURL + "api/v1/config/system_info")
+        .then((e) => e.json())
+        .then((e) => {
+          if (e.code == 200) {
+            this.systemInfo = e.data;
+          }
+        });
+    },
+    initCharts() {
+      if (!this.configurations.length) return;
+
+      const ctx = document.getElementById('configDistributionChart');
+      if (!ctx) return;
+
+      // Group configuration by type
+      const distribution = {};
+      this.configurations.forEach(config => {
+        distribution[config.config_type] = (distribution[config.config_type] || 0) + 1;
+      });
+
+      const labels = Object.keys(distribution).map(l => l.charAt(0).toUpperCase() + l.slice(1));
+      const data = Object.values(distribution);
+
+      if (this.charts.configDistribution) {
+        this.charts.configDistribution.destroy();
+      }
+
+      this.charts.configDistribution = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: data,
+            backgroundColor: [
+              '#2196F3', // blue
+              '#E91E63', // pink
+              '#009688', // teal
+              '#4CAF50', // green
+              '#673AB7', // deep-purple
+              '#FFC107', // amber
+              '#F44336', // red
+              '#3F51B5'  // indigo
+            ],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          maintainAspectRatio: false,
+          legend: {
+            position: 'right',
+            labels: {
+              boxWidth: 12
+            }
+          }
+        }
+      });
     },
   },
   mounted: function () {
     this.$nextTick(function () {
       this.getconfigurations(),
+        this.getDatabaseBackups(),
         window.addEventListener(
           "popstate",
           (e) => {

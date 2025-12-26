@@ -111,7 +111,9 @@
             </ul>
         </div>
     </nav>
-    <div class="status-filters" v-cloak v-show="!loader">
+    <div class="row">
+        <div class="col s12">
+            <div class="status-filters" v-cloak v-show="!loader">
         <div class="status-chip" :class="{active: currentStatus === null}" @click="getPages(null)">
             All Active
         </div>
@@ -126,6 +128,8 @@
         </div>
         <div class="status-chip" :class="{active: currentStatus === 0}" @click="getPages(0)">
             Trash (Deleted)
+        </div>
+    </div>
         </div>
     </div>
     <div class="pages" v-cloak v-if="!loader && pages.length > 0">

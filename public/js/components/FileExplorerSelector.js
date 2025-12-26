@@ -468,6 +468,17 @@ Vue.component("FileExplorerSelector", {
   mounted: function () {
     this.$nextTick(function () {
       this.updateSelector();
+      // Initialize the Materialize modal for this selector after it renders
+      setTimeout(() => {
+        try {
+          var modalEl = document.getElementById(this.modal);
+          if (modalEl && typeof M !== 'undefined' && M.Modal) {
+            M.Modal.init(modalEl, {});
+          }
+        } catch (e) {
+          console.warn('Modal init failed for FileExplorerSelector', e);
+        }
+      }, 300);
     });
   },
 });
