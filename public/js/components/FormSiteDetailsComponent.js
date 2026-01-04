@@ -1,4 +1,4 @@
-var dataDeatils = Vue.component("FormSiteDetails", {
+var FormSiteDetails = Vue.component("FormSiteDetails", {
   template: "#FormSiteDetails-template",
   props: {},
   data: function () {

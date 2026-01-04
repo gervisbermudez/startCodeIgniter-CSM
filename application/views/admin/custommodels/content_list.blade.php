@@ -22,7 +22,7 @@
             </form>
             <ul class="right hide-on-med-and-down">
                 <li><a href="#!" v-on:click="toggleView();"><i class="material-icons">view_module</i></a></li>
-                <li><a href="#!" v-on:click="getForms();"><i class="material-icons">refresh</i></a></li>
+                <li><a href="#!" v-on:click="getModels();"><i class="material-icons">refresh</i></a></li>
                 <li>
                     <a href="#!" class='dropdown-trigger' data-target='dropdown-options'><i
                             class="material-icons">more_vert</i></a>
@@ -160,5 +160,5 @@
 @endsection
 
 @section('footer_includes')
-<script src="{{base_url('resources/components/FormContentList.js')}}"></script>
+<script src="{{base_url('resources/components/CustomModelContentList.js')}}"></script>
 @endsection

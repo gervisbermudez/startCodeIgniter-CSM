@@ -1,4 +1,4 @@
-var FormContentList = new Vue({
+var CustomModelContentList = new Vue({
   el: "#root",
   data: {
     debug: DEBUGMODE,

@@ -1,10 +1,10 @@
-var FormNewModule = new Vue({
+var CustomModelContentModule = new Vue({
   el: "#root",
   data: {
     debug: DEBUGMODE,
     editMode: false,
     loader: true,
-    form_name: "Nuevo Formulario",
+    form_name: "Nuevo Contenido de Modelo",
     form_description: "",
     date_create: null,
     date_update: null,
@@ -12,8 +12,9 @@ var FormNewModule = new Vue({
     status: true,
     tabs: [],
     custom_model_id: null,
+    custom_model_content_id: null,
     formsElements: formsElements,
-    configurable: true,
+    configurable: false,
   },
   methods: {
     getInitialTab() {
@@ -81,36 +82,20 @@ var FormNewModule = new Vue({
       setTimeout(() => {
         var elems = document.querySelectorAll(".collapsible");
         M.Collapsible.init(elems, {});
-        var elems = document.querySelectorAll(".tooltipped");
-        var instances = M.Tooltip.init(elems, {});
-        M.AutoInit();
       }, 2000);
-    },
-    removeField(tabindex, fieldindex) {
-      if (
-        this.tabs[tabindex].custom_model_fields[fieldindex].component ==
-        "formTextFormat"
-      ) {
-        this.getfieldsData();
-        editor = this.tabs[tabindex].custom_model_fields[fieldindex].data;
-        tinymce.editors[editor.fieldID].destroy();
-        this.tabs[tabindex].custom_model_fields.splice(fieldindex, 1);
-      } else {
-        this.tabs[tabindex].custom_model_fields.splice(fieldindex, 1);
-      }
     },
     getfieldsData() {
       this.debug ? console.log("getfieldsData trigger") : null;
-      fieldsComponents = FormNewModule.$refs;
+      fieldsComponents = CustomModelContentModule.$refs;
       for (const key in fieldsComponents) {
         if (fieldsComponents.hasOwnProperty(key)) {
           const element = fieldsComponents[key];
           for (let index = 0; index < element.length; index++) {
             const component = element[index];
-            FormNewModule.setFieldData(
+            CustomModelContentModule.setFieldData(
               component.tabParent.tabID,
               component.fieldRefIndex,
-              JSON.parse(JSON.stringify(component.getData()))
+              JSON.parse(JSON.stringify(component.getContentData()))
             );
           }
         }
@@ -128,6 +113,7 @@ var FormNewModule = new Vue({
       this.getfieldsData();
       return {
         custom_model_id: this.custom_model_id,
+        custom_model_content_id: this.custom_model_content_id,
         form_name: this.form_name,
         form_description: this.form_description,
         date_create: this.date_create,
@@ -139,16 +125,17 @@ var FormNewModule = new Vue({
     },
     saveData() {
       $("html, body").animate({ scrollTop: 0 }, 600);
-      this.loader = true;
       this.debug ? console.log("saveData trigger") : null;
       var data = this.getFormData();
-      var url = BASEURL + "api/v1/models";
+      var url = BASEURL + "api/v1/models/data";
+      console.log(data);
+      this.loader = true;
       var self = this;
       $.ajax({
         type: "POST",
         url: url,
         data: {
-          data: JSON.stringify(data),
+          data: data,
         },
         dataType: "json",
         success: function (response) {
@@ -157,16 +144,13 @@ var FormNewModule = new Vue({
             self.custom_model_id = response.data.custom_model_id;
             self.editMode = true;
             self.loader = false;
-            M.toast({
-              html: `<span>Formulario Guardado</span> <a class="btn-flat toast-action" href="${
-                BASEURL + "admin/custommodels/addData/" + self.custom_model_id
-              }"> Agregar Data</a>`,
-            });
+            M.toast({ html: "Datos Guardados" });
           }
         },
         error: function (response) {
           self.loader = false;
-          M.toast({ html: response.error_message });
+          console.log(response);
+          M.toast({ html: "Ocurrió un error" });
         },
       });
     },
@@ -175,9 +159,14 @@ var FormNewModule = new Vue({
         //cargar datos del formulario
         this.editMode = true;
         this.custom_model_id = custom_model_id;
+        this.custom_model_content_id = custom_model_content_id || null;
         console.log("editMode", this.editMode);
         var self = this;
-        var url = BASEURL + "api/v1/models/" + custom_model_id;
+        if (custom_model_content_id) {
+          var url = BASEURL + "api/v1/models/data/" + custom_model_content_id;
+        } else {
+          var url = BASEURL + "api/v1/models/" + custom_model_id;
+        }
         $.ajax({
           type: "GET",
           url: url,
@@ -186,7 +175,11 @@ var FormNewModule = new Vue({
           success: function (response) {
             self.debug ? console.log(url, response) : null;
             if (response.code == "200") {
-              self.updateFormData(response.data);
+              if (custom_model_content_id) {
+                self.updateFormData(response.data[0].custom_model);
+              } else {
+                self.updateFormData(response.data);
+              }
             }
           },
           error: function (response) {
@@ -224,13 +217,15 @@ var FormNewModule = new Vue({
       setTimeout(() => {
         var elems = document.querySelectorAll(".collapsible");
         M.Collapsible.init(elems, {});
+        var elems = document.querySelectorAll(".modal");
+        var instances = M.Modal.init(elems, {});
         this.loader = false;
       }, 2000);
     },
   },
   mounted: function () {
     this.$nextTick(function () {
-      this.debug ? console.log("FormNewModule mounted") : null;
+      this.debug ? console.log("CustomModelContentModule mounted") : null;
       this.tabs.push(this.getInitialTab());
       this.tabs[0].edited = false;
       this.checkEditMode();

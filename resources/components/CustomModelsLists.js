@@ -1,7 +1,7 @@
-var CustomFormLists = new Vue({
+var CustomModelsLists = new Vue({
   el: "#root",
   data: {
-    forms: [],
+    models: [],
     tableView: false,
     loader: true,
     filter: "",
@@ -10,14 +10,14 @@ var CustomFormLists = new Vue({
   },
   mixins: [mixins],
   computed: {
-    filterForms: function () {
+    filterModels: function () {
       if (!!this.filter) {
         let filterTerm = this.filter.toLowerCase();
-        return this.forms.filter((value, index) => {
+        return this.models.filter((value, index) => {
           return this.searchInObject(value, filterTerm);
         });
       } else {
-        return this.forms;
+        return this.models;
       }
     },
   },
@@ -29,19 +29,19 @@ var CustomFormLists = new Vue({
     resetFilter: function () {
       this.filter = "";
     },
-    getPageImagePath(form) {
-      if (form.imagen_file) {
+    getPageImagePath(model) {
+      if (model.imagen_file) {
         return (
           BASEURL +
-          form.imagen_file.file_path.substr(2) +
-          form.imagen_file.file_name +
+          model.imagen_file.file_path.substr(2) +
+          model.imagen_file.file_name +
           "." +
-          form.imagen_file.file_type
+          model.imagen_file.file_type
         );
       }
       return BASEURL + "/public/img/default.jpg";
     },
-    getForms: function () {
+    getModels: function () {
       var self = this;
       $.ajax({
         type: "GET",
@@ -49,7 +49,7 @@ var CustomFormLists = new Vue({
         data: {},
         dataType: "json",
         success: function (response) {
-          self.forms = response.data.map((element) => {
+          self.models = response.data.map((element) => {
             element.user = new User(element.user);
             return element;
           });
@@ -65,17 +65,17 @@ var CustomFormLists = new Vue({
         },
       });
     },
-    deleteForm: function (form, index) {
+    deleteForm: function (model, index) {
       var self = this;
       self.loader = true;
       $.ajax({
         type: "DELETE",
-        url: BASEURL + "api/v1/models/" + form.custom_model_id,
+        url: BASEURL + "api/v1/models/" + model.custom_model_id,
         data: {},
         dataType: "json",
         success: function (response) {
           if (response.code == 200) {
-            self.forms.splice(index, 1);
+            self.models.splice(index, 1);
           }
           setTimeout(() => {
             self.loader = false;
@@ -89,8 +89,8 @@ var CustomFormLists = new Vue({
         },
       });
     },
-    tempDelete: function (form, index) {
-      this.toDeleteItem.item = form;
+    tempDelete: function (model, index) {
+      this.toDeleteItem.item = model;
       this.toDeleteItem.index = index;
     },
     confirmCallback(data) {
@@ -109,7 +109,7 @@ var CustomFormLists = new Vue({
   },
   mounted: function () {
     this.$nextTick(function () {
-      this.getForms();
+      this.getModels();
       this.init();
     });
   },

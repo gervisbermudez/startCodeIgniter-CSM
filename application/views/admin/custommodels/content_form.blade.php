@@ -78,7 +78,7 @@
 <script src="{{base_url('public/vendors/fileinput/js/locales/es.js')}}"></script>
 <script src="{{base_url('public/vendors/tinymce/js/tinymce/tinymce.min.js')}}"></script>
 <script src="{{base_url('resources/components/FileExplorerSelector.js')}}"></script>
-<!-- Load form field components before FormContentNewModule -->
+<!-- Load form field components before CustomModelContentModule -->
 <script src="{{base_url('resources/components/formComponents/formFieldTitle.js')}}"></script>
 <script src="{{base_url('resources/components/formComponents/formFieldTextArea.js')}}"></script>
 <script src="{{base_url('resources/components/formComponents/formTextFormat.js')}}"></script>
@@ -88,5 +88,5 @@
 <script src="{{base_url('resources/components/formComponents/formFieldNumber.js')}}"></script>
 <script src="{{base_url('resources/components/formComponents/formFieldSelect.js')}}"></script>
 <script src="{{base_url('resources/components/formComponents/formFieldBoolean.js')}}"></script>
-<script src="{{base_url('resources/components/FormContentNewModule.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/CustomModelContentModule.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

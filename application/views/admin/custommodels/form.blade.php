@@ -124,5 +124,5 @@ const custom_model_id = <?php echo json_encode($custom_model_id); ?>;
 <script src="{{base_url('resources/components/formComponents/formFieldTextArea.js?v=' . ADMIN_VERSION)}}"></script>
 <script src="{{base_url('resources/components/formComponents/formTextFormat.js?v=' . ADMIN_VERSION)}}"></script>
 <script src="{{base_url('resources/components/formComponents/formImageSelector.js?v=' . ADMIN_VERSION)}}"></script>
-<script src="{{base_url('resources/components/FormNewModule.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/CustomModelModule.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection
