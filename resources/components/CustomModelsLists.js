@@ -5,7 +5,8 @@ var CustomFormLists = new Vue({
     tableView: false,
     loader: true,
     filter: "",
-    toDeleteItem: { form: null, index: null },
+    toDeleteItem: {},
+    modalid: 'deleteModal'
   },
   mixins: [mixins],
   computed: {
@@ -89,12 +90,12 @@ var CustomFormLists = new Vue({
       });
     },
     tempDelete: function (form, index) {
-      this.toDeleteItem.form = form;
+      this.toDeleteItem.item = form;
       this.toDeleteItem.index = index;
     },
     confirmCallback(data) {
       if (data) {
-        this.deleteForm(this.toDeleteItem.form, this.toDeleteItem.index);
+        this.deleteForm(this.toDeleteItem.item, this.toDeleteItem.index);
       }
     },
     init: function () {

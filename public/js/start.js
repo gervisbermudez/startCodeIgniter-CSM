@@ -785,8 +785,8 @@ Vue.component("confirmModal", {
           </div>
       </div>
       <div class="modal-footer">
-          <button type="button" class="modal-action modal-close waves-effect waves-red btn red" @click="onClickButton(false);">Cancel</button>
-          <button type="button" class="modal-close waves-effect waves-green btn" @click="onClickButton(true);">Accept</button>
+          <button type="button" class="modal-action modal-close waves-effect waves-red btn" @click="onClickButton(false);">Cancel</button>
+          <button type="button" class="modal-close waves-effect waves-green btn red" @click="onClickButton(true);">Accept</button>
       </div>
   </div>
   `,
@@ -794,6 +794,12 @@ Vue.component("confirmModal", {
     onClickButton(result) {
       this.$emit("notify", result);
     },
+  },
+  mounted() {
+    // Inicializa el modal de Materialize al montar el componente
+    if (window.M && this.$el && this.$el.classList.contains('modal')) {
+      window.M.Modal.init(this.$el, {});
+    }
   },
 });
 

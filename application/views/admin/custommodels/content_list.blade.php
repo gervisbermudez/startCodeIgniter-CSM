@@ -15,7 +15,7 @@
         <div class="nav-wrapper">
             <form>
                 <div class="input-field">
-                    <input class="input-search" type="search" placeholder="Buscar..." v-model="filter">
+                                <input class="input-search" type="search" placeholder="<?= lang('custommodels_content_search_placeholder') ?>" v-model="filter">
                     <label class="label-icon" for="search"><i class="material-icons">search</i></label>
                     <i class="material-icons" v-on:click="resetFilter();">close</i>
                 </div>
@@ -28,7 +28,7 @@
                             class="material-icons">more_vert</i></a>
                     <!-- Dropdown Structure -->
                     <ul id='dropdown-options' class='dropdown-content'>
-                        <li><a href="#!">Archivados</a></li>
+                         <li><a href="#"><?= lang('custommodels_content_archived') ?></a></li>
                     </ul>
                 </li>
             </ul>
@@ -40,12 +40,12 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Form Type</th>
-                            <th>Content Description</th>
-                            <th>Author</th>
-                            <th>Status</th>
-                            <th>Publish Date</th>
-                            <th>Options</th>
+                                <th><?= lang('custommodels_content_table_type') ?></th>
+                                <th><?= lang('custommodels_content_table_description') ?></th>
+                                <th><?= lang('custommodels_content_table_author') ?></th>
+                                <th><?= lang('custommodels_content_table_status') ?></th>
+                                <th><?= lang('custommodels_content_table_publish_date') ?></th>
+                                <th><?= lang('custommodels_content_table_options') ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -56,10 +56,10 @@
                                     :href="base_url('admin/users/ver/' + content.user_id)">@{{content.user.username}}</a>
                             </td>
                             <td>
-                                <i v-if="content.status == 1" class="material-icons tooltipped" data-position="left"
-                                    data-delay="50" data-tooltip="Activo">publish</i>
-                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
-                                    data-tooltip="Inactivo">edit</i>
+                                    <i v-if="content.status == 1" class="material-icons tooltipped" data-position="left"
+                                        data-delay="50" :data-tooltip="'<?= lang('custommodels_content_published') ?>'">publish</i>
+                                    <i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
+                                        :data-tooltip="'<?= lang('custommodels_content_draft') ?>'">edit</i>
                             </td>
                             <td>
                                 @{{content.date_publish ? content.date_publish : content.date_create}}
@@ -69,11 +69,11 @@
                                     :data-target='"dropdown_" + content.custom_model_content_id'><i
                                         class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown_" + content.custom_model_content_id' class='dropdown-content'>
-                                    <li><a
+                                        <li><a
                                             :href="base_url('admin/custommodels/editData/' + content.custom_model_id + '/' + content.custom_model_content_id)">
-                                            Editar</a></li>
-                                    <li><a class="modal-trigger" href="#deleteModal"
-                                            v-on:click="tempDelete(content, index);">Borrar</a></li>
+                                            <?= lang('custommodels_content_edit') ?></a></li>
+                                        <li><a class="modal-trigger" href="#deleteModal"
+                                            v-on:click="tempDelete(content, index);"><?= lang('custommodels_content_delete') ?></a></li>
                                 </ul>
                             </td>
                         </tr>
@@ -93,20 +93,20 @@
                             :data-target='"dropdown" + content.custom_model_id'>
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown" + content.custom_model_id' class='dropdown-content'>
-                            <li><a
-                                    :href="base_url('admin/CustomModels/editData/' + content.custom_model_id + '/' + content.custom_model_content_id)">
-                                    Editar</a></li>
-                            <li><a class="modal-trigger" href="#deleteModal"
-                                    v-on:click="tempDelete(content, index);">Borrar</a></li>
+                                <li><a
+                                    :href="base_url('admin/custommodels/editData/' + content.custom_model_id + '/' + content.custom_model_content_id)">
+                                    <?= lang('btn_edit') ?></a></li>
+                                <li><a class="modal-trigger" href="#deleteModal"
+                                    v-on:click="tempDelete(content, index);"><?= lang('btn_delete') ?></a></li>
                         </ul>
                     </div>
                     <div class="card-content">
                         <div>
                             <span class="card-title">@{{content.custom_model.form_name}} <i
-                                    v-if="content.visibility == 1" class="material-icons tooltipped"
-                                    data-position="left" data-delay="50" data-tooltip="Publico">public</i>
-                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
-                                    data-tooltip="Privado">lock</i>
+                                        v-if="content.visibility == 1" class="material-icons tooltipped"
+                                        data-position="left" data-delay="50" :data-tooltip="'<?= lang('custommodels_content_public') ?>'">public</i>
+                                    <i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
+                                        :data-tooltip="'<?= lang('custommodels_content_private') ?>'">lock</i>
                             </span>
                             <div class="card-info">
                                 <p>
@@ -115,9 +115,9 @@
                                 <span class="activator right"><i class="material-icons">more_vert</i></span>
                                 <ul>
                                     <li class="truncate">
-                                        Author: <a
-                                            :href="base_url('admin/users/ver/' + content.user_id)">@{{content.user.username}}</a>
-                                    </li>
+                                            <?= lang('custommodels_content_table_author') ?> <a
+                                                :href="base_url('admin/users/ver/' + content.user_id)">@{{content.user.username}}</a>
+                                        </li>
                                 </ul>
                             </div>
                         </div>
@@ -131,17 +131,17 @@
                             @{{getcontentText(content)}}
                         </span>
                         <ul>
-                            <li><b>Fecha de publicacion:</b> <br>
+                            <li><b><?= lang('custommodels_content_table_publish_date') ?></b> <br>
                                 @{{content.date_publish ? content.date_publish : content.date_create}}</li>
-                            <li><b>Type:</b>@{{content.custom_model.form_name}}</li>
-                            <li><b>Estado:</b>
-                                <span v-if="content.status == 1">
-                                    Publicado
-                                </span>
-                                <span v-else>
-                                    Borrador
-                                </span>
-                            </li>
+                                <li><b><?= lang('custommodels_content_table_type') ?></b>@{{content.custom_model.form_name}}</li>
+                                <li><b><?= lang('custommodels_content_table_status') ?></b>
+                                    <span v-if="content.status == 1">
+                                        <?= lang('custommodels_content_published') ?>
+                                    </span>
+                                    <span v-else>
+                                        <?= lang('custommodels_content_draft') ?>
+                                    </span>
+                                </li>
                         </ul>
                     </div>
                 </div>
@@ -149,11 +149,11 @@
         </div>
     </div>
     <div class="container" v-if="!loader && contents.length == 0" v-cloak>
-        <h4>No hay contenidos creados</h4>
+           <h4><?= lang('custommodels_content_no_contents') ?></h4>
     </div>
     <confirm-modal id="deleteModal" title="Confirmar Borrar" v-on:notify="confirmCallback">
         <p>
-            ¿Desea borrar esta content?
+              <?= lang('custommodels_content_confirm_delete_message') ?>
         </p>
     </confirm-modal>
 </div>

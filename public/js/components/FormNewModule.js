@@ -142,7 +142,7 @@ var FormNewModule = new Vue({
       this.loader = true;
       this.debug ? console.log("saveData trigger") : null;
       var data = this.getFormData();
-      var url = BASEURL + "api/v1/forms";
+      var url = BASEURL + "api/v1/models";
       var self = this;
       $.ajax({
         type: "POST",

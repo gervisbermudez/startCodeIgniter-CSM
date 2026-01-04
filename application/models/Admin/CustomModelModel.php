@@ -85,11 +85,11 @@ class CustomModelModel extends MY_Model
         SELECT custom_model_fields_id, CONCAT('{', GROUP_CONCAT(dataconfigs), '}') AS dataconfigs
         FROM (
         SELECT custom_model_fields_id, CONCAT('"', _key, '":"', _value, '"') AS dataconfigs
-        FROM form_fields_data) sq1
+        FROM custom_model_fields_data) sq1
         GROUP BY custom_model_fields_id) sq2
         INNER JOIN custom_model_fields ff ON sq2.custom_model_fields_id = ff.custom_model_fields_id) sq3
         GROUP BY custom_model_tab_id) sq4
-        INNER JOIN form_tabs t ON t.custom_model_tab_id = sq4.custom_model_tab_id
+        INNER JOIN custom_model_tabs t ON t.custom_model_tab_id = sq4.custom_model_tab_id
         INNER JOIN custom_model fc ON t.custom_model_id = fc.custom_model_id
         $where
 EOD;
@@ -126,7 +126,7 @@ EOD;
                     'custom_model_id' => $custom_model_id,
                     'tab_name' => $tab->tab_name,
                 );
-                $this->db->insert('form_tabs', $insert_tab);
+                $this->db->insert('custom_model_tabs', $insert_tab);
                 $tab_id = $this->db->insert_id();
                 //Guardar fields
                 foreach ($tab->custom_model_fields as $field) {
@@ -146,7 +146,7 @@ EOD;
                             '_key' => $index,
                             '_value' => $value,
                         );
-                        $this->db->insert('form_fields_data', $field_config);
+                        $this->db->insert('custom_model_fields_data', $field_config);
                     }
                 }
 
@@ -197,13 +197,13 @@ EOD;
         if ($result) {
             $custom_model_id = $data->custom_model_id;
             $this->db->where(array('custom_model_id' => $custom_model_id));
-            $this->db->delete('form_tabs');
+            $this->db->delete('custom_model_tabs');
             foreach ($data->tabs as $tab) {
                 $insert_tab = array(
                     'custom_model_id' => $custom_model_id,
                     'tab_name' => $tab->tab_name,
                 );
-                $this->db->insert('form_tabs', $insert_tab);
+                $this->db->insert('custom_model_tabs', $insert_tab);
                 $tab_id = $this->db->insert_id();
                 //Guardar fields
                 foreach ($tab->custom_model_fields as $field) {
@@ -223,7 +223,7 @@ EOD;
                             '_key' => $index,
                             '_value' => $value,
                         );
-                        $this->db->insert('form_fields_data', $field_config);
+                        $this->db->insert('custom_model_fields_data', $field_config);
 
                     }
                 }

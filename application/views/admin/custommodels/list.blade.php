@@ -15,8 +15,8 @@
         <div class="nav-wrapper">
             <form>
                 <div class="input-field">
-                    <input class="input-search" type="search" placeholder="Buscar..." v-model="filter">
-                    <label class="label-icon" for="search"><i class="material-icons">search</i></label>
+                    <input class="input-search" type="search" placeholder="<?= lang("custommodels_search_placeholder") ?>" v-model="filter">
+                    <label class="label-icon" for="search"><i class="material-icons">search</i></label>`
                     <i class="material-icons" v-on:click="resetFilter();">close</i>
                 </div>
             </form>
@@ -171,5 +171,5 @@
 @endsection
 
 @section('footer_includes')
-<script src="{{base_url('resources/components/CustomFormLists.js')}}"></script>
+<script src="{{base_url('resources/components/CustomModelsLists.js')}}"></script>
 @endsection

@@ -45,20 +45,20 @@
         </div>
         <div class="row">
             <div class="form-group">
-                Publicar Data
+                <?= lang('custommodels_content_table_status') ?>
                 <div class="switch">
                     <label>
-                        No Publicado
+                        <?= lang('custommodels_content_draft') ?>
                         <input type="checkbox" checked v-model="status" name="status" value="on">
                         <span class="lever"></span>
-                        Publicado
+                        <?= lang('custommodels_content_published') ?>
                     </label>
                 </div>
             </div>
             <br>
             <div class="col s12 text-center form-group" class="" id="buttons">
-                <a href="<?php echo base_url('admin/custommodels/'); ?>" class="btn waves-effect waves-teal btn-flat">Cancelar</a>
-                <a class="waves-effect waves-light btn waves-effect waves-teal" @click="saveData()"><i class="material-icons left">cloud</i> Guardar</a>
+                <a href="<?php echo base_url('admin/custommodels/'); ?>" class="btn waves-effect waves-teal btn-flat"><?= lang('btn_cancel') ?></a>
+                <a class="waves-effect waves-light btn waves-effect waves-teal" @click="saveData()"><i class="material-icons left">cloud</i> <?= lang('btn_save') ?></a>
             </div>
         </div>
     </div>
@@ -78,5 +78,15 @@
 <script src="{{base_url('public/vendors/fileinput/js/locales/es.js')}}"></script>
 <script src="{{base_url('public/vendors/tinymce/js/tinymce/tinymce.min.js')}}"></script>
 <script src="{{base_url('resources/components/FileExplorerSelector.js')}}"></script>
+<!-- Load form field components before FormContentNewModule -->
+<script src="{{base_url('resources/components/formComponents/formFieldTitle.js')}}"></script>
+<script src="{{base_url('resources/components/formComponents/formFieldTextArea.js')}}"></script>
+<script src="{{base_url('resources/components/formComponents/formTextFormat.js')}}"></script>
+<script src="{{base_url('resources/components/formComponents/formImageSelector.js')}}"></script>
+<script src="{{base_url('resources/components/formComponents/formFieldDate.js')}}"></script>
+<script src="{{base_url('resources/components/formComponents/formFieldTime.js')}}"></script>
+<script src="{{base_url('resources/components/formComponents/formFieldNumber.js')}}"></script>
+<script src="{{base_url('resources/components/formComponents/formFieldSelect.js')}}"></script>
+<script src="{{base_url('resources/components/formComponents/formFieldBoolean.js')}}"></script>
 <script src="{{base_url('resources/components/FormContentNewModule.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

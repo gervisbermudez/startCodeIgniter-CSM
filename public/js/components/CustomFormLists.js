@@ -5,6 +5,7 @@ var CustomFormLists = new Vue({
     tableView: false,
     loader: true,
     filter: "",
+    toDeleteItem: { form: null, index: null },
   },
   mixins: [mixins],
   computed: {

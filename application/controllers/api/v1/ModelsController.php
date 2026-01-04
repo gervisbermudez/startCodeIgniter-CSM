@@ -130,10 +130,10 @@ class ModelsController extends REST_Controller
         $data = (json_decode($_POST['data']));
         if (isset($data->custom_model_id) && $data->custom_model_id) {
             //Update Form
-            $result = $this->Custom_model->update_form($data);
+            $result = $this->CustomModelModel->update_form($data);
         } else {
             //Insert Form
-            $result = $this->Custom_model->save_form($data);
+            $result = $this->CustomModelModel->save_form($data);
         }
 
         if ($result) {
@@ -237,7 +237,7 @@ class ModelsController extends REST_Controller
         if (isset($data['custom_model_content_id']) && $data['custom_model_content_id']) {
             $result = $Form_conten->update_data_form($data);
         } else {
-            $result = $this->Custom_model_content->save_data_form((object) $data);
+            $result = $Form_conten->save_data_form((object) $data);
         }
         if ($result) {
             $this->response_ok($result);
