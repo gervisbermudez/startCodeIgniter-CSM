@@ -115,5 +115,5 @@
 
 @section('footer_includes')
 <script src="{{ base_url('resources/js/validateForm.js') }}"></script>
-<script src="{{base_url('resources/components/PageView.component.js')}}"></script>
+<script src="{{base_url('resources/components/PageViewComponent.js')}}"></script>
 @endsection

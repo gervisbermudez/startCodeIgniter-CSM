@@ -341,9 +341,9 @@
 @endsection
 
 @section('footer_includes')
-@include('admin.components.configurationComponent')
+@include('admin.components.ConfigurationComponent')
 <script src="{{base_url('public/vendors/chartjs/Chart.min.js?v=' . ADMIN_VERSION)}}"></script>
 <script src="{{base_url('resources/js/validateForm.js?v=' . ADMIN_VERSION)}}"></script>
 <script src="{{base_url('resources/components/ConfigurationComponent.js?v=' . ADMIN_VERSION)}}"></script>
-<script src="{{base_url('resources/components/ConfiguracionList.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/ConfigurationList.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

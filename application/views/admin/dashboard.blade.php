@@ -286,20 +286,20 @@
                 href="{{ base_url('admin/events/agregar/') }}"><i class="material-icons">assistant</i></a></li>
     </ul>
 </div>
-@include('admin.components.pageCardComponent')
-@include('admin.components.userCollectionComponent')
-@include('admin.components.createContentsComponent')
-@include('admin.components.fileExplorerCollectionComponent')
-@include('admin.components.albumesWidgetComponent')
+@include('admin.components.PageCardComponent')
+@include('admin.components.UsersCollectionComponent')
+@include('admin.components.CreateContentsComponent')
+@include('admin.components.FileExplorerCollectionComponent')
+@include('admin.components.AlbumsWidgetComponent')
 
 @endsection
 
 @section('footer_includes')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="<?=base_url('resources/components/widget/albumesWidgetComponent.js?v=' . ADMIN_VERSION)?>"></script>
-<script src="<?=base_url('resources/components/widget/createContents.js?v=' . ADMIN_VERSION)?>"></script>
-<script src="<?=base_url('resources/components/widget/fileExplorerCollection.js?v=' . ADMIN_VERSION)?>"></script>
-<script src="<?=base_url('resources/components/widget/pageCardComponent.js?v=' . ADMIN_VERSION)?>"></script>
-<script src="<?=base_url('resources/components/widget/usersCollection.js?v=' . ADMIN_VERSION)?>"></script>
-<script src="<?=base_url('resources/components/dashboardModule.js?v=' . ADMIN_VERSION)?>"></script>
+<script src="<?=base_url('resources/components/widget/AlbumsWidgetComponent.js?v=' . ADMIN_VERSION)?>"></script>
+<script src="<?=base_url('resources/components/widget/CreateContents.js?v=' . ADMIN_VERSION)?>"></script>
+<script src="<?=base_url('resources/components/widget/FileExplorerCollection.js?v=' . ADMIN_VERSION)?>"></script>
+<script src="<?=base_url('resources/components/widget/PageCardComponent.js?v=' . ADMIN_VERSION)?>"></script>
+<script src="<?=base_url('resources/components/widget/UsersCollection.js?v=' . ADMIN_VERSION)?>"></script>
+<script src="<?=base_url('resources/components/DashboardModule.js?v=' . ADMIN_VERSION)?>"></script>
 @endsection

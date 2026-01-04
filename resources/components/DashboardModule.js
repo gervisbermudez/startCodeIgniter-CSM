@@ -1,4 +1,4 @@
-var dashboardModule = new Vue({
+var DashboardModule = new Vue({
   el: "#root",
   data: {
     debug: DEBUGMODE,

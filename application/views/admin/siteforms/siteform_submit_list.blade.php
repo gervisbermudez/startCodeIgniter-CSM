@@ -10,9 +10,9 @@
 @endsection
 
 @section('footer_includes')
-@include('admin.components.dataTableComponent')
-@include('admin.components.formSiteDetails')
+@include('admin.components.DataTableComponent')
+@include('admin.components.FormSiteDetailsComponent')
 <script src="{{base_url('resources/components/DataTableComponent.js?v=' . ADMIN_VERSION)}}"></script>
-<script src="{{base_url('resources/components/FormSiteDetails.component.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/FormSiteDetailsComponent.js?v=' . ADMIN_VERSION)}}"></script>
 <script src="{{base_url('resources/components/SiteFormSubmitList.js')}}"></script>
 @endsection

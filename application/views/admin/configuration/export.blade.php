@@ -94,5 +94,5 @@
 @endsection
 
 @section('footer_includes')
-<script src="{{base_url('resources/components/export.component.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/ExportComponent.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

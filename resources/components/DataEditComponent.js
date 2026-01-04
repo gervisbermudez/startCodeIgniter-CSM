@@ -1,4 +1,4 @@
-var dataEdit = Vue.component("dataEdit", {
+var DataEdit = Vue.component("dataEdit", {
   template: "#dataEditComponent-template",
   props: {},
   data: function () {

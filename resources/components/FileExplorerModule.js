@@ -1,4 +1,4 @@
-var fileExplorerModule = new Vue({
+var FileExplorerModule = new Vue({
   el: "#root",
   data: {
     debug: DEBUGMODE,

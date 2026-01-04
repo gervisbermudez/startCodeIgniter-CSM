@@ -1,4 +1,4 @@
-var searchComponent = new Vue({
+var SearchComponent = new Vue({
   el: "#root",
   data: {
     items: [],

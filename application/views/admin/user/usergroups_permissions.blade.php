@@ -112,7 +112,7 @@
 	const usergroup_id = <?=json_encode($usergroup_id ? $usergroup_id : false);?>;
 	const editMode = <?=json_encode($editMode ? $editMode : 'new');?>;
 </script>
-	@include('admin.components.DataSelector')
+	@include('admin.components.DataSelectorComponent')
 @endsection
 
 @section('footer_includes')

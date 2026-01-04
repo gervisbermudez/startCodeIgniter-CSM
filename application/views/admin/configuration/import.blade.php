@@ -105,5 +105,5 @@
 @endsection
 
 @section('footer_includes')
-<script src="{{base_url('resources/components/import.component.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/ImportComponent.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

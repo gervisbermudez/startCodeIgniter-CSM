@@ -1,4 +1,4 @@
-var fileUploaderModule = new Vue({
+var FileUploaderModule = new Vue({
   el: "#fileUploader",
   data: {
     debug: DEBUGMODE,
@@ -70,7 +70,7 @@ var fileUploaderModule = new Vue({
   },
   methods: {
     finishedSelection() {
-      fileUploaderModule.callBakSelectedImagen(this.getSelectedFiles());
+      FileUploaderModule.callBakSelectedImagen(this.getSelectedFiles());
     },
     getSelectedFiles() {
       return this.files.filter((item, index) => {

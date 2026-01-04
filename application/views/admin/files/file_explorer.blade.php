@@ -465,7 +465,7 @@
 
 @section('footer_includes')
 <script src="<?=base_url('resources/components/FileExplorerSelector.js');?>"></script>
-<script src="<?=base_url('resources/components/fileExplorerModule.js');?>"></script>
+<script src="<?=base_url('resources/components/FileExplorerModule.js');?>"></script>
 <script src="<?=base_url('public/vendors/lightbox2/dist/js/lightbox.min.js');?>"></script>
 <script src="<?=base_url('public/vendors/fileinput/js/fileinput.min.js');?>"></script>
 <script src="<?=base_url('public/vendors/fileinput/js/plugins/canvas-to-blob.min.js');?>"></script>
@@ -536,7 +536,7 @@ $(document).on('ready', function() {
         progressPauseClass: 'determinate progress-bar bg-primary progress-bar-primary progress-bar-striped active',
         progressErrorClass: 'determinate progress-bar bg-danger progress-bar-danger',
     }).on('fileuploaded', function(event, previewId, index, fileId) {
-        fileExplorerModule.reloadFileExplorer();
+        FileExplorerModule.reloadFileExplorer();
         M.toast({
             html: "File Uploaded!"
         });

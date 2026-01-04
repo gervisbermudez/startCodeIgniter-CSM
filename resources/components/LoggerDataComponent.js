@@ -1,4 +1,4 @@
-var PermissionsData = new Vue({
+var LoggerData = new Vue({
   el: "#root",
   router: new VueRouter({
     routes: [

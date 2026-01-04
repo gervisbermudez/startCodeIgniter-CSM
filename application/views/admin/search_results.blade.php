@@ -150,7 +150,7 @@
 @endsection
 
 @section('footer_includes')
-@include('admin.components.dataTableComponent')
+@include('admin.components.DataTableComponent')
 <script src="{{base_url('resources/components/DataTableComponent.js?v=' . ADMIN_VERSION)}}"></script>
-<script src="{{base_url('resources/components/searchComponent.js')}}"></script>
+<script src="{{base_url('resources/components/SearchComponent.js')}}"></script>
 @endsection
