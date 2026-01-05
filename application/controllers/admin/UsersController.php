@@ -91,7 +91,7 @@ class UsersController extends MY_Controller
             //$data['footer_includes'] = array('file-input' => '<script src="' . base_url('public/js/fileinput-master/js/fileinput.js') . '"></script>', 'file-input-canvas' => '<script src="' . base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js') . '"></script>');
 
             // Load the views
-            echo $this->blade->view("admin.user.userprofile", $data);
+            echo $this->blade->view("admin.user.user_profile", $data);
         } else {
             $this->error404();
         }
@@ -116,7 +116,7 @@ class UsersController extends MY_Controller
     {
         $user = $this->findOrFail(new UserModel(), $id, 'User not found');
         
-        $this->renderAdminView('admin.user.changepassword', 'Change Password', 'Change Password', [
+        $this->renderAdminView('admin.user.change_password', 'Change Password', 'Change Password', [
             'userdata' => $user,
             'action' => 'Admin/User/save/',
             'mode' => 'new'

@@ -12,12 +12,12 @@ class Events extends MY_Controller
 
     public function index()
     {
-        $this->renderAdminView('admin.events.eventos_list', 'Eventos', 'Eventos');
+        $this->renderAdminView('admin.events.events_list', 'Eventos', 'Eventos');
     }
 
     public function agregar()
     {
-        $this->renderAdminView('admin.events.crear_evento', 'Nuevo Evento', 'Agregar nuevo Evento', [
+        $this->renderAdminView('admin.events.create_event', 'Nuevo Evento', 'Agregar nuevo Evento', [
             'editMode' => 'new',
             'event_id' => null
         ]);

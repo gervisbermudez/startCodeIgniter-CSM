@@ -32,7 +32,7 @@ class CategoriesController extends MY_Controller
 
     public function index()
     {
-        $this->renderAdminView('admin.categories.categorias_list', lang('menu_categories'), lang('categories_all'));
+        $this->renderAdminView('admin.categories.categories_list', lang('menu_categories'), lang('categories_all'));
     }
 
     public function nueva()

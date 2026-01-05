@@ -61,7 +61,7 @@ class MY_Controller extends CI_Controller
         $data['header'] = $this->load->view('admin/header', $data, true);
 
         // Carga la vista en blanco y muestra el mensaje de error
-        echo $this->blade->view("admin.blankpage", $data);
+        echo $this->blade->view("admin.blank_page", $data);
     }
 
     /**
@@ -130,11 +130,11 @@ class MY_Controller extends CI_Controller
             'admin.pages.view' => 'PageView.js',
             'admin.menu.menu_list' => 'MenuLists.js',
             'admin.notes.list' => 'NotesLists.js',
-            'admin.galeria.albumes_list' => 'AlbumsLists.js',
-            'admin.eventos.eventos_list' => ['DataTableComponent.js', 'EventsList.js'],
+            'admin.gallery.albums_list' => 'AlbumsLists.js',
+            'admin.events.events_list' => ['DataTableComponent.js', 'EventsList.js'],
             'admin.fragmentos.fragments_list' => 'FragmentsLists.js',
-            'admin.categorias.categorias_list' => 'CategoriesLists.js',
-            'admin.videos.videos_listado' => 'VideosLists.js',
+            'admin.categories.categories_list' => 'CategoriesLists.js',
+            'admin.videos.videos_list' => 'VideosLists.js',
             'admin.configuracion.all_logger' => ['DataTableComponent.js', 'dataEdit.component.js'],
             'admin.configuracion.all_apilogger' => ['DataTableComponent.js', 'dataEdit.component.js', 'ApiLoggerDataComponent.js'],
             'admin.analytics.dashboard' => 'AnalyticsDashboard.js',
@@ -211,7 +211,7 @@ class MY_Controller extends CI_Controller
                 // If the user is logged in, display a 404 error page
                 $data['h1'] = "404 Page not found :(";
                 $data['header'] = $this->load->view('admin/header', $data, true);
-                echo $this->blade->view("admin.blankpage", $data);
+                echo $this->blade->view("admin.blank_page", $data);
             }
         }
 
@@ -402,7 +402,7 @@ class Base_Controller extends CI_Controller
             else {
                 $data['h1'] = "404 Page not found :(";
                 $data['header'] = $this->load->view('admin/header', $data, true);
-                echo $this->blade->view("admin.blankpage", $data);
+                echo $this->blade->view("admin.blank_page", $data);
             }
         }
 

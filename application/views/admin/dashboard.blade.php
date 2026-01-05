@@ -286,11 +286,11 @@
                 href="{{ base_url('admin/events/agregar/') }}"><i class="material-icons">assistant</i></a></li>
     </ul>
 </div>
-@include('admin.components.PageCardComponent')
-@include('admin.components.UsersCollectionComponent')
-@include('admin.components.CreateContentsComponent')
-@include('admin.components.FileExplorerCollectionComponent')
-@include('admin.components.AlbumsWidgetComponent')
+@include('admin.components.page_card_component')
+@include('admin.components.users_collection_component')
+@include('admin.components.create_contents_component')
+@include('admin.components.file_explorer_collection_component')
+@include('admin.components.albums_widget_component')
 
 @endsection
 

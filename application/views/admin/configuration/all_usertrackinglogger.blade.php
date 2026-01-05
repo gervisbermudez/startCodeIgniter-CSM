@@ -15,8 +15,8 @@
 @endsection
 
 @section('footer_includes')
-@include('admin.components.DataTableComponent')
-@include('admin.components.DataEditComponent')
+@include('admin.components.data_table_component')
+@include('admin.components.data_edit_component')
 <script src="{{base_url('resources/components/DataTableComponent.js?v=' . ADMIN_VERSION)}}"></script>
 <script src="{{base_url('resources/components/DataEditComponent.js?v=' . ADMIN_VERSION)}}"></script>
 <script src="{{base_url('resources/components/UserTrackingLoggerDataComponent.js?v=' . ADMIN_VERSION)}}"></script>

@@ -152,7 +152,7 @@
     :initialdir="'./public/img/profile/' + user.username + '/'"
     ></file-explorer-selector>
 </div>
-@include('admin.components.FileExplorerSelector')
+@include('admin.components.file_explorer_selector_component')
 @endsection
 
 @section('footer_includes')

@@ -12,7 +12,7 @@ class VideosController extends MY_Controller
 
     public function index()
     {
-        $this->renderAdminView('admin.videos.videos_listado', lang('menu_videos'), lang('videos_all'));
+        $this->renderAdminView('admin.videos.videos_list', lang('menu_videos'), lang('videos_all'));
     }
 
     public function nuevo()
@@ -22,7 +22,7 @@ class VideosController extends MY_Controller
         if (method_exists($this->Video, 'get_categoria')) {
             $categorias = $this->Video->get_categoria(['tipo' => 'video']);
         }
-        $this->renderAdminView('admin.videos.crear', lang('menu_videos'), lang('videos_new'), [
+        $this->renderAdminView('admin.videos.create', lang('menu_videos'), lang('videos_new'), [
             'video_id' => '',
             'editMode' => 'new',
             'action' => 'admin/videos/save',
@@ -62,7 +62,7 @@ class VideosController extends MY_Controller
                 }
             }
         }
-        $this->renderAdminView('admin.videos.crear', lang('menu_videos'), lang('videos_edit'), [
+        $this->renderAdminView('admin.videos.create', lang('menu_videos'), lang('videos_edit'), [
             'video_id' => $video_id,
             'editMode' => 'edit',
             'action' => 'admin/videos/update',
@@ -110,6 +110,6 @@ class VideosController extends MY_Controller
             ];
         }
         $data['options'] = $this->menu->get_menu($links);
-        echo $this->blade->view('admin.videos.ver', $data);
+        echo $this->blade->view('admin.videos.view', $data);
     }
 }

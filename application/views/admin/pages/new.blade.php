@@ -281,7 +281,7 @@
     <file-explorer-selector :uploader="'single'" :preselected="[]" :modal="'editorModal'" :mode="'files'"
         :filter="'images'" :multiple="true" v-on:notify="onSelectImageCallcack"></file-explorer-selector>
 </div>
-@include('admin.components.FileExplorerSelector')
+@include('admin.components.file_explorer_selector_component')
 @endsection
 
 @section('footer_includes')

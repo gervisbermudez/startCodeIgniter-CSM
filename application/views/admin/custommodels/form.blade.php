@@ -104,7 +104,7 @@
         </div>
     </div>
 </div>
-@include('admin.custommodels.formsFields')
+@include('admin.custommodels.forms_fields')
 @isset($custom_model_id)
 <script>
 const custom_model_id = <?php echo json_encode($custom_model_id); ?>;

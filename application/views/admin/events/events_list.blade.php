@@ -18,7 +18,7 @@
 @endsection
 
 @section('footer_includes')
-@include('admin.components.DataTableComponent')
+@include('admin.components.data_table_component')
 <script src="{{base_url('resources/components/DataTableComponent.js?v=' . ADMIN_VERSION)}}"></script>
 <script src="{{base_url('resources/components/EventsList.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

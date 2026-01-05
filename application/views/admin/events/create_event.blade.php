@@ -142,7 +142,7 @@
     <file-explorer-selector :uploader="'single'" :preselected="[]" :modal="'fileUploader'" :mode="'files'"
         :filter="'images'" :multiple="false" v-on:notify="copyCallcack"></file-explorer-selector>
 </div>
-@include('admin.components.FileExplorerSelector')
+@include('admin.components.file_explorer_selector_component')
 </div>
 <script>
 const event_id = <?=json_encode($event_id ? $event_id : false);?>;

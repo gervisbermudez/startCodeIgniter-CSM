@@ -21,7 +21,7 @@ class AdminController extends MY_Controller
     {
         $data = $this->prepareAdminData('Dashboard', 'You are offline <i class="material-icons small">network_check</i> ');
         $data['header'] = '';
-        echo $this->blade->view("admin.blankpage", $data);
+        echo $this->blade->view("admin.blank_page", $data);
     }
 
     public function search()

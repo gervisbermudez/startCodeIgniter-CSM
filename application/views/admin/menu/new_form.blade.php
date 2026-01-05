@@ -193,7 +193,7 @@
 	const menu_id = <?=json_encode($menu_id ? $menu_id : false);?>;
 	const editMode = <?=json_encode($editMode ? $editMode : 'new');?>;
 </script>
-	@include('admin.components.DataSelectorComponent')
+	@include('admin.components.data_selector_component')
 @endsection
 
 @section('footer_includes')

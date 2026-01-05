@@ -137,7 +137,7 @@
     const album_id = <?= json_encode($album_id ? $album_id : false);?>;
     const editMode = <?= json_encode($editMode ? $editMode : 'new');?>;
 </script>
-@include('admin.components.FileExplorerSelector')
+@include('admin.components.file_explorer_selector_component')
 @endsection
 
 @section('footer_includes')

@@ -13,7 +13,7 @@ class GalleryController extends MY_Controller
 
     public function index()
     {
-        $this->renderAdminView('admin.gallery.albumes_list', 'Galería', 'Galería de Imagenes');
+        $this->renderAdminView('admin.gallery.albums_list', 'Galería', 'Galería de Imagenes');
     }
 
     public function items($albumid = '')
@@ -24,7 +24,7 @@ class GalleryController extends MY_Controller
         }
 
         $album = $this->findOrFail(new AlbumModel(), $albumid, 'Album no encontrado :(');
-        $this->renderAdminView('admin.gallery.albumes_items', 'Galería', 'Galería de Imagenes');
+        $this->renderAdminView('admin.gallery.albums_items', 'Galería', 'Galería de Imagenes');
     }
 
     public function nuevo()

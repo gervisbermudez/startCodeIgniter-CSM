@@ -458,7 +458,7 @@
 
 
 
-@include('admin.components.FileExplorerSelector')
+@include('admin.components.file_explorer_selector_component')
 
 @endsection
 
