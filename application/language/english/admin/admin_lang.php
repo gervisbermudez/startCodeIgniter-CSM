@@ -56,6 +56,26 @@ $lang['status_inactive'] = 'Inactive';
 $lang['status_public'] = 'Public';
 $lang['status_private'] = 'Private';
 
+// Generic terms
+$lang['search_placeholder'] = 'Search...';
+$lang['description'] = 'Description';
+$lang['author'] = 'Author';
+$lang['publish_date'] = 'Publish Date';
+$lang['status'] = 'Status';
+$lang['options'] = 'Options';
+$lang['published'] = 'Published';
+$lang['draft'] = 'Draft';
+$lang['edit'] = 'Edit';
+$lang['delete'] = 'Delete';
+$lang['preview'] = 'Preview';
+$lang['archive'] = 'Archive';
+$lang['public'] = 'Public';
+$lang['private'] = 'Private';
+$lang['file'] = 'File';
+$lang['confirm_delete'] = 'Confirm Delete';
+$lang['name'] = 'Name';
+$lang['type'] = 'Type';
+
 
 // Dashboard
 $lang['dashboard_overview'] = 'Overview';
@@ -175,6 +195,25 @@ $lang['fragments_publish'] = 'Publish Fragment';
 $lang['fragments_type'] = 'Fragment Type';
 $lang['fragments_select'] = 'Select';
 $lang['fragments_additional'] = 'Additional';
+$lang['no_fragments'] = 'No Fragments';
+$lang['delete_fragment_question'] = 'Do you want to delete the fragment?';
+$lang['create_fragment'] = 'Create Fragment';
+
+// Albums
+$lang['albums_new'] = 'New Album';
+$lang['albums_edit'] = 'Edit Album';
+$lang['albums_all'] = 'All Albums';
+$lang['albums_basic_data'] = 'Basic Data';
+$lang['albums_name'] = 'Name:';
+$lang['albums_description'] = 'Description:';
+$lang['albums_save'] = 'Save';
+$lang['albums_cancel'] = 'Cancel';
+$lang['albums_not_found'] = 'Album not found';
+$lang['albums_publish'] = 'Publish Album';
+$lang['album_title'] = 'Album Title';
+$lang['no_albums'] = 'No Albums';
+$lang['delete_album_question'] = 'Do you want to delete the album?';
+$lang['new_album'] = 'New Album';
 
 // Custom Models (custommodels)
 $lang['custommodels_search_placeholder'] = 'Search...';

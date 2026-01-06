@@ -15,7 +15,7 @@
         <div class="nav-wrapper">
             <form>
                 <div class="input-field">
-                    <input class="input-search" type="search" placeholder="Buscar..." v-model="filter">
+                    <input class="input-search" type="search" placeholder="<?php echo lang('search_placeholder'); ?>" v-model="filter">
                     <label class="label-icon" for="search"><i class="material-icons">search</i></label>
                     <i class="material-icons" v-on:click="resetFilter();">close</i>
                 </div>
@@ -27,7 +27,7 @@
                     <a href="#!" class='dropdown-trigger' data-target='dropdown-options'><i class="material-icons">more_vert</i></a>
                     <!-- Dropdown Structure -->
                     <ul id='dropdown-options' class='dropdown-content'>
-                        <li><a href="#!">Archivo</a></li>
+                        <li><a href="#!"><?php echo lang('file'); ?></a></li>
                     </ul>
                 </li>
             </ul>
@@ -39,12 +39,12 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Album Title</th>
-                            <th>Description</th>
-                            <th>Author</th>
-                            <th>Publish Date</th>
-                            <th>Status</th>
-                            <th>Options</th>
+                            <th><?php echo lang('album_title'); ?></th>
+                            <th><?php echo lang('description'); ?></th>
+                            <th><?php echo lang('author'); ?></th>
+                            <th><?php echo lang('publish_date'); ?></th>
+                            <th><?php echo lang('status'); ?></th>
+                            <th><?php echo lang('options'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -59,15 +59,15 @@
                                 @{{album.date_publish ? album.date_publish : album.date_create}}
                             </td>
                             <td>
-                                <i v-if="album.status == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Publicado">publish</i>
-                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Borrador">edit</i>
+                                <i v-if="album.status == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('published'); ?>">publish</i>
+                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('draft'); ?>">edit</i>
                             </td>
                             <td>
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + album.album_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + album.album_id' class='dropdown-content'>
                                     <li><a :href="base_url('admin/pages/editar/' + album.album_id)">{{ lang('edit') }}</a></li>
                                     <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(album, index);">{{ lang('delete') }}</a></li>
-                                    <li v-if="album.status == 2"><a :href="base_url('admin/pages/preview?album_id=' + album.album_id)" target="_blank">Preview</a></li>
+                                    <li v-if="album.status == 2"><a :href="base_url('admin/pages/preview?album_id=' + album.album_id)" target="_blank">{{ lang('preview') }}</a></li>
                                     <li><a :href="base_url('/admin/gallery/items/' + album.album_id)" target="_blank">{{ lang('archive') }}</a></li>
                                 </ul>
                             </td>
@@ -90,14 +90,14 @@
                         <ul :id='"dropdown" + album.album_id' class='dropdown-content'>
                             <li><a :href="base_url('admin/gallery/editar/' + album.album_id)">{{ lang('edit') }}</a></li>
                             <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(album, index);">{{ lang('delete') }}</a></li>
-                            <li v-if="album.status == 2"><a :href="base_url('admin/pages/preview?album_id=' + album.album_id)" target="_blank">Preview</a></li>
+                            <li v-if="album.status == 2"><a :href="base_url('admin/pages/preview?album_id=' + album.album_id)" target="_blank">{{ lang('preview') }}</a></li>
                             <li><a :href="base_url('/admin/gallery/items/' + album.album_id)" target="_blank">{{ lang('archive') }}</a></li>
                         </ul>
                     </div>
                     <div class="card-content">
                         <div>
-                            <span class="card-title"><a :href="base_url('/admin/gallery/items/' + album.album_id)">@{{album.name}}</a> <i v-if="album.status == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Publico">public</i>
-                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Privado">lock</i>
+                            <span class="card-title"><a :href="base_url('/admin/gallery/items/' + album.album_id)">@{{album.name}}</a> <i v-if="album.status == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('public'); ?>">public</i>
+                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('private'); ?>">lock</i>
                             </span>
                             <div class="card-info">
                                 <p>
@@ -117,13 +117,13 @@
                             @{{getcontentText(album.description)}}
                         </span>
                         <ul>
-                            <li><b>Fecha de publicacion:</b> <br> @{{album.date_publish ? album.date_publish : album.date_create}}</li>
-                            <li><b>Estado:</b>
+                            <li><b><?php echo lang('publish_date'); ?>:</b> <br> @{{album.date_publish ? album.date_publish : album.date_create}}</li>
+                            <li><b><?php echo lang('status'); ?>:</b>
                                 <span v-if="album.status == 1">
-                                    Publicado
+                                    <?php echo lang('published'); ?>
                                 </span>
                                 <span v-else>
-                                    Borrador
+                                    <?php echo lang('draft'); ?>
                                 </span>
                             </li>
                         </ul>
@@ -133,20 +133,20 @@
         </div>
     </div>
     <div class="container" v-if="!loader && albums.length == 0" v-cloak>
-        <h4>No hay Albumes</h4>
+        <h4><?php echo lang('no_albums'); ?></h4>
     </div>
     <confirm-modal 
         id="deleteModal" 
-        title="Confirmar Borrar"
+        title="<?php echo lang('confirm_delete'); ?>"
         v-on:notify="confirmCallback"
     >
         <p>
-            ¿Desea borrar el album?
+            <?php echo lang('delete_album_question'); ?>
         </p>
     </confirm-modal>
 </div>
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Nuevo Album" href="{{base_url('admin/gallery/nuevo/')}}">
+    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('new_album'); ?>" href="{{base_url('admin/gallery/nuevo/')}}">
         <i class="large material-icons">add</i>
     </a>
 </div>
