@@ -54,7 +54,9 @@ var CategoriesLists = new Vue({
           let categories = response.data;
           for (const key in categories) {
             if (categories.hasOwnProperty(key)) {
-              categories[key].user = new User(categories[key].user);
+              if (categories[key].user) {
+                categories[key].user = new User(categories[key].user);
+              }
             }
           }
           self.categories = categories;
