@@ -3,6 +3,7 @@
 @section('header')
 @endsection
 @section('content')
+@include('admin.components.data_table_component')
 <div id="root">
   <data-table
     :endpoint="endpoint"
@@ -15,10 +16,4 @@
     v-on:delete="deleteItem"
   ></data-table>
 </div>
-@endsection
-
-@section('footer_includes')
-@include('admin.components.data_table_component')
-<script src="{{base_url('resources/components/DataTableComponent.js?v=' . ADMIN_VERSION)}}"></script>
-<script src="{{base_url('resources/components/EventsList.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

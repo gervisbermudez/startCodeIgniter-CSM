@@ -1,6 +1,6 @@
 <script type="text/x-template" id="dataTableComponent-template">
     <div id="dataTableComponent-root">
-        <div class="col s12 center" v-bind:class="{ hide: !loader }">
+        <div class="col s12 center" v-show="loader">
             <br><br>
             <preloader />
         </div>

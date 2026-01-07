@@ -249,7 +249,8 @@ var dataTable = Vue.component("dataTable", {
       fetch(url)
         .then((response) => response.json())
         .then((response) => {
-          let data = response.data;
+          // Coerce response data to an array and handle missing pagination fields
+          let data = Array.isArray(response.data) ? response.data : (response && response.data ? [response.data] : []);
           if (response.current_page && this.pagination) {
             this.showPagination = true;
             this.paginator.current_page = response.current_page;
@@ -263,7 +264,15 @@ var dataTable = Vue.component("dataTable", {
             this.paginator.prev_page = response.prev_page;
             this.set_paginatorLinks();
           }
-          self.data = this.preProssesData(data);
+          // Ensure loader is hidden even if preprocessing fails
+          try {
+            self.data = this.preProssesData(data);
+          } catch (e) {
+            self.data = Array.isArray(data) ? data : [];
+            if (window && window.console && console.error) {
+              console.error("DataTable preProssesData error:", e);
+            }
+          }
           self.loader = false;
           this.initPlugins();
         })
