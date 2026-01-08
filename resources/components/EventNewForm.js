@@ -9,7 +9,7 @@ var EventNewForm = new Vue({
     subtitle: "",
     address: "",
     content: "",
-    status: false,
+    status: true,
     visibility: true,
     date_publish: "",
     date_create: "",
@@ -89,19 +89,37 @@ var EventNewForm = new Vue({
       return self.form.fields[field].valid;
     },
     validateForm() {
-      return this.name && this.content;
+      const isValid = this.name && this.content;
+      console.log('validateForm:', {
+        name: this.name,
+        content: this.content,
+        contentLength: this.content ? this.content.length : 0,
+        isValid: isValid
+      });
+      return isValid;
     },
 
     save() {
       var self = this;
+      console.log('save() called');
       var callBack = (response) => {
         var toastHTML = "<span>Event saved </span>";
         M.toast({ html: toastHTML });
       };
+      // Capturar el contenido del editor TinyMCE antes de validar
+      if (tinymce.editors["id_cazary"]) {
+        const editorContent = tinymce.editors["id_cazary"].getContent();
+        console.log('TinyMCE content captured:', editorContent ? editorContent.substring(0, 100) : 'empty');
+        this.content = editorContent;
+      } else {
+        console.warn('TinyMCE editor not found');
+      }
       if (self.validateForm()) {
+        console.log('Validation passed, saving...');
         this.loader = true;
         this.runSaveData(callBack);
       } else {
+        console.error('Validation failed');
         M.toast({ html: "Check all form fields" });
       }
     },
