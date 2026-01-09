@@ -24,7 +24,7 @@
                     <a href="#!" class='dropdown-trigger' data-target='dropdown-options'><i class="material-icons">more_vert</i></a>
                     <!-- Dropdown Structure -->
                     <ul id='dropdown-options' class='dropdown-content'>
-                        <li><a href="#!">Archivo</a></li>
+                        <li><a href="#!"><?php echo lang('archive'); ?></a></li>
                     </ul>
                 </li>
             </ul>
@@ -56,13 +56,13 @@
                                 @{{note.date_publish ? note.date_publish : note.date_create}}
                             </td>
                             <td>
-                                <i v-if="note.status == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Publicado">publish</i>
-                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Borrador">edit</i>
+                                <i v-if="note.status == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('published'); ?>">publish</i>
+                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('draft'); ?>">edit</i>
                             </td>
                             <td>
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + note.note_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + note.note_id' class='dropdown-content'>
-                                    <li><a :href="base_url('admin/sitenotes/editar/' + note.note_id)">Editar</a></li>
+                                    <li><a :href="base_url('admin/sitenotes/editar/' + note.note_id)"><?php echo lang('edit'); ?></a></li>
                                     <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(note, index);">Borrar</a></li>
                                     <li v-if="note.status == 2"><a :href="base_url('admin/sitenotes/preview?note_id=' + note.note_id)" target="_blank">Preview</a></li>
                                     <li><a :href="base_url(note.path)" target="_blank">Archivar</a></li>
@@ -92,8 +92,8 @@
                     </div>
                     <div class="card-content">
                         <div>
-                            <span class="card-title"><a :href="base_url(note.title)" target="_blank">@{{note.title}}</a> <i v-if="note.visibility == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Publico">public</i>
-                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Privado">lock</i>
+                            <span class="card-title"><a :href="base_url(note.title)" target="_blank">@{{note.title}}</a> <i v-if="note.visibility == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('public'); ?>">public</i>
+                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('private'); ?>">lock</i>
                             </span>
                             <div class="card-info">
                                 <p>
@@ -123,10 +123,10 @@
                             <li><b>Fecha de publicacion:</b> <br> @{{note.date_publish ? note.date_publish : note.date_create}}</li>
                             <li><b>Estado:</b>
                                 <span v-if="note.status == 1">
-                                    Publicado
+                                    <?php echo lang('published'); ?>
                                 </span>
                                 <span v-else>
-                                    Borrador
+                                    <?php echo lang('draft'); ?>
                                 </span>
                             </li>
                         </ul>

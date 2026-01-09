@@ -62,7 +62,7 @@
                 </div>
             </div>
             <div class="col s12" v-if="searchResults.albumes.length > 0">
-                <h5>Albumes</h5>
+                <h5><?php echo lang('albums'); ?></h5>
                 <div class="row">
                     <div class="col s12 m4" v-for="(album, index) in searchResults.albumes" :key="index">
                         <div class="card">

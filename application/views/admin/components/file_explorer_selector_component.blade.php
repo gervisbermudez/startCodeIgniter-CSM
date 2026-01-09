@@ -128,7 +128,7 @@
                 <div v-if="getFiles.length == 0 && !fileloader && ( mode == 'files' || mode == 'all' )">
                     <div class="row">
                         <div class="col s12">
-                            <h5>No hay archivos</h5>
+                            <h5><?php echo lang('no_files'); ?></h5>
                         </div>
                     </div>
                 </div>
@@ -144,7 +144,7 @@
   </div>
     </div>
     <div class="modal-footer">
-        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat"><?php echo lang('cancel'); ?></a>
         <a href="#!" class="modal-action waves-effect waves-green btn" v-if="(mode != 'files')" @click="makeNewFolder()"><i class="material-icons left">create_new_folder</i> New Folder</a>
         <button class="btn waves-effect waves-light" type="submit" v-on:click="onClickButton()" name="action">
             Seleccionar

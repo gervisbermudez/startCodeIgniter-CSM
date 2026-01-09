@@ -147,7 +147,7 @@
             </div>
             <br><br>
             <div class="input-field" id="buttons">
-                <a href="<?php echo base_url('admin/configuration/'); ?>" class="btn-flat">Cancelar</a>
+                <a href="<?php echo base_url('admin/configuration/'); ?>" class="btn-flat"><?php echo lang('cancel'); ?></a>
                 <button type="submit" class="btn btn-primary" @click="save()" :class="{disabled: !btnEnable}">
                     <span><i class="material-icons right">edit</i> Guardar</span>
                 </button>
@@ -164,7 +164,7 @@
                 <span>@{{date_create}}</span> <br><br>
                 <b>Modificado</b>: <br>
                 <span>@{{date_update}}</span> <br><br>
-                <b>Publicado</b>: <br>
+                <b><?php echo lang('published'); ?></b>: <br>
                 <span>@{{date_publish}}</span>
             </p>
         </div>

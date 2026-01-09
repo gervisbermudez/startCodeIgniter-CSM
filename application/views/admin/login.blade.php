@@ -36,7 +36,7 @@
                     </div>
                     <form v-cloak class="" role="form" method="post" v-show="!loader">
                         <div class="center-align">
-                            <span class="title">Iniciar sesion</span>
+                            <span class="title"><?php echo lang('login'); ?></span>
                         </div>
                         <div class="content">
                             <div v-if="userdata" class="user" tabindex="0">
@@ -63,14 +63,13 @@
                                 <p>
                                     <label>
                                         <input type="checkbox" v-model="remember_user" />
-                                        <span>Recordarme</span>
+                                        <span><?php echo lang('remember_me'); ?></span>
                                     </label>
                                 </p>
                             </div>
                             <div class="input-field" v-if="userdata">
                                 <p>
-                                    <a href="#!" class="reset-user" @click="resetUserdata();">Ingresar con otro
-                                        usuario</a>
+                                    <a href="#!" class="reset-user" @click="resetUserdata();"><?php echo lang('login_with_other_user'); ?></a>
                                 </p>
                             </div>
                         </div>

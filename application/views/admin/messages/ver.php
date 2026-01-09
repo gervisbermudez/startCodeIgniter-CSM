@@ -10,9 +10,9 @@
 						<span class="card-title activator grey-text text-darken-4"><?php echo $array['nombre'] ?></h3></span>
 						<a href="#" data-activates='options' class="dropdown-button right"><i class="material-icons">more_vert</i></a>
 						<?php echo $options ?>
-						<div><b>Email:</b> <a href="mailto:<?php echo $array['email'] ?>"><?php echo $array['email'] ?></a></div>
-						<div><b>Telefono:</b> <?php echo $array['telefono'] ?></div>
-						<div><b>Fecha:</b> <?php echo $array['fecha'] ?></div>
+<div><b><?php echo lang('email'); ?>:</b> <a href="mailto:<?php echo $array['email'] ?>"><?php echo $array['email'] ?></a></div>
+                        <div><b>Telefono:</b> <?php echo $array['telefono'] ?></div>
+                        <div><b><?php echo lang('date'); ?>:</b> <?php echo $array['fecha'] ?></div>
 						
 					</div><div class="card-action">
 					<?php echo $array['mensaje'] ?>
@@ -35,6 +35,6 @@
 <div class="modal-footer">
 	<a href="<?php echo $base_url ?>index.php/Admin/Mensajes/eliminar/<?php echo $array['id']; ?>" class=" modal-action modal-close waves-effect waves-green btn-flat"><?= lang('accept') ?></a>
 	<a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat"><?= lang('cancel') ?></a>
-	<a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
+
 </div>
 </div>

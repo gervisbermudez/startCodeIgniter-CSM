@@ -21,7 +21,7 @@
                   <div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div>
                 </div>
             </div>
-            <p class="grey-text">Cargando configuraciones de sistema...</p>
+            <p class="grey-text"><?php echo lang('loading_system_configs'); ?>...</p>
         </div>
     </div>
     
@@ -30,10 +30,10 @@
             <div class="card-panel green lighten-5">
                 <span class="green-text text-darken-2">
                     <i class="material-icons left">check_circle</i>
-                    <strong>Último mantenimiento realizado:</strong> 
-                    Se eliminaron @{{lastCleanupResult.system_logs}} logs de sistema, 
-                    @{{lastCleanupResult.api_logs}} logs de API y 
-                    @{{lastCleanupResult.user_tracking}} tracks de usuarios.
+                    <strong><?php echo lang('system_logs_cleaned'); ?>:</strong> 
+                    <?php echo str_replace('@count', '@{{lastCleanupResult.system_logs}}', lang('system_logs_cleaned')); ?>, 
+                    <?php echo str_replace('@count', '@{{lastCleanupResult.api_logs}}', lang('error_logs_cleaned')); ?> <?php echo lang('and'); ?> 
+                    <?php echo str_replace('@count', '@{{lastCleanupResult.user_tracking}}', lang('user_tracking_cleaned')); ?>.
                 </span>
             </div>
         </div>

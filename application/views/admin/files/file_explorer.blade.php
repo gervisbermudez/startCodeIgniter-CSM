@@ -292,7 +292,7 @@
                             <div v-if="getFiles.length == 0 && !fileloader" v-bind:class="{ hide: fileloader }">
                                 <div class="row">
                                     <div class="col s12">
-                                        <h5>No hay archivos</h5>
+                                        <h5><?php echo lang('no_files'); ?></h5>
                                     </div>
                                 </div>
                             </div>
@@ -448,11 +448,11 @@
 <!-- Modal Structure -->
 <div id="uploaderModal" class="modal bottom-sheet">
     <div class="modal-content">
-        <h4>Subir Archivos</h4>
+        <h4><?php echo lang('upload_files'); ?></h4>
         <input type="file" id="input-100" name="input-100[]" accept="*" multiple>
     </div>
     <div class="modal-footer">
-        <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
+        <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat"><?php echo lang('cancel'); ?></a>
     </div>
 </div>
 

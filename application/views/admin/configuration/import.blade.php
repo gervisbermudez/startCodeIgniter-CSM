@@ -94,7 +94,7 @@
                 </div>
             </div>
             <div class="input-field" id="buttons" v-show="selectedFile">
-                <a href="<?php echo base_url('admin/configuration/'); ?>" class="btn-flat">Cancelar</a>
+                <a href="<?php echo base_url('admin/configuration/'); ?>" class="btn-flat"><?php echo lang('cancel'); ?></a>
                 <button type="submit" class="btn btn-primary" @click="saveData()" :class="{disabled: !btnEnable}">
                     <span><i class="material-icons right">save</i> Import</span>
                 </button>

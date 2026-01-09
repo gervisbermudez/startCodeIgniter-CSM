@@ -58,25 +58,24 @@
                     <p>
                         <label>
                             <input name="visibility" v-model="visibility" value="1" type="radio" checked />
-                            <span>Publico</span>
+                            <span><?php echo lang('public'); ?></span>
                         </label>
                     </p>
                     <p>
                         <label>
                             <input class="red" name="visibility" v-model="visibility" value="2" type="radio" />
-                            <span>Privada</span>
+                            <span><?php echo lang('private'); ?></span>
                         </label>
                     </p>
-                    <b class="grey-text text-darken-2"><i class="material-icons left">date_range</i> Fecha de
-                        Publicación</b>
+                    <b class="grey-text text-darken-2"><i class="material-icons left">date_range</i> <?php echo lang('publish_date'); ?></b>
                     <p>
                         <label>
                             <input type="checkbox" checked v-model="publishondate" />
-                            <span>Publicar inmediatamente</span>
+                            <span><?php echo lang('publish_immediately'); ?></span>
                         </label>
                     </p>
                     <div v-show="!publishondate">
-                        <b class="grey-text text-darken-2">Seleccionar fecha y hora:</b>
+                        <b class="grey-text text-darken-2">Seleccionar <?php echo lang('date'); ?> <?php echo lang('and'); ?> <?php echo lang('time'); ?>:</b>
                         <br />
                         <div class="input-field">
                             <label for="datepublish">Fecha:</label>
@@ -103,8 +102,8 @@
                 </div>
                 <div v-cloak v-show="!loader">
             <div class="input-field" id="buttons">
-                <a href="<?php echo base_url('admin/pages/'); ?>" class="btn-flat">Cancelar</a>
-                <a href="<?php echo base_url('admin/pages/editar/' . $page_id); ?>" class="waves-effect waves-light btn"><i class="material-icons left">create</i>Editar</a>
+                <a href="<?php echo base_url('admin/pages/'); ?>" class="btn-flat"><?php echo lang('cancel'); ?></a>
+                <a href="<?php echo base_url('admin/pages/editar/' . $page_id); ?>" class="waves-effect waves-light btn"><i class="material-icons left">create</i><?php echo lang('edit'); ?></a>
             </div>
         </div>
             </div>

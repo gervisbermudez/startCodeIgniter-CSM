@@ -46,7 +46,7 @@
             </div>
             <ul class="collection with-header">
                 <li class="collection-header">
-                    <span>Datos del usuario</span>
+                    <span><?php echo lang('user_data'); ?></span>
                 </li>
                 <li class="collection-item"><i class="material-icons left">message</i>
                     <a href="#!"><?=$user->email?></a>
@@ -63,7 +63,7 @@
             <div class="row">
                 <div class="col s12">
                     <ul class="tabs" id="user-tabs">
-                        <li class="tab col s12 m4"><a class="active" href="#test1"> <i class="material-icons">view_day</i> <span>Actividad</span></a></li>
+                        <li class="tab col s12 m4"><a class="active" href="#test1"> <i class="material-icons">view_day</i> <span><?php echo lang('activity'); ?></span></a></li>
                     </ul>
                 </div>
                 <div id="test1" class="col s12">
@@ -88,7 +88,7 @@
                                                 :data-target='"page_id" + element.page_id'>
                                                 <i class="material-icons">more_vert</i></a>
                                                 <ul :id='"page_id" + element.page_id' class='dropdown-content'>
-                                                    <li><a :href="base_url('admin/pages/editar/' + element.page_id)">Editar</a></li>
+                                                    <li><a :href="base_url('admin/pages/editar/' + element.page_id)"><?php echo lang('edit'); ?></a></li>
                                                     <li ><a :href="base_url('admin/pages/view/' + element.page_id)">Preview</a></li>
                                                 </ul>
 
@@ -102,7 +102,7 @@
                                                     @{{getcontentText(element)}}
                                                 </p>                                            </div>
                                             <div class="card-action">
-                                            <a :href="base_url('admin/pages/editar/' + element.page_id)">Editar</a>
+                                            <a :href="base_url('admin/pages/editar/' + element.page_id)"><?php echo lang('edit'); ?></a>
                                             <a :href="base_url('admin/pages/view/' + element.page_id)">Preview</a>
                                             </div>
                                         </div>

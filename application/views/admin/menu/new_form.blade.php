@@ -174,7 +174,7 @@
 				<span>@{{date_create}}</span> <br><br>
 				<b>Modificado</b>: <br>
 				<span>@{{date_update}}</span> <br><br>
-				<b>Publicado</b>: <br>
+				<b><?php echo lang('published'); ?></b>: <br>
 				<span>@{{date_publish}}</span>
 			</p>
 		</div>

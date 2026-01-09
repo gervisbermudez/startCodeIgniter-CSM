@@ -159,7 +159,7 @@
             <p class="red-text"><i class="material-icons tiny">info</i> Esta acción no se puede deshacer.</p>
         </div>
         <div class="modal-footer">
-            <button class="modal-close waves-effect waves-light btn-flat">Cancelar</button>
+            <button class="modal-close waves-effect waves-light btn-flat"><?php echo lang('cancel'); ?></button>
             <button @click="deleteFile(fileToDelete)" class="waves-effect waves-light btn red">
                 <i class="material-icons left">delete</i>
                 Eliminar

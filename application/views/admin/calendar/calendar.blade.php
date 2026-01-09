@@ -18,13 +18,13 @@
         <div class="col s12">
             <div class="card">
                 <div class="card-content">
-                    <span class="card-title">Filtros</span>
+                    <span class="card-title"><?php echo lang('filters'); ?></span>
                     <div class="row">
                         <div class="col s12 m6 l3">
                             <p>
                                 <label>
                                     <input type="checkbox" v-model="filters.pages" @change="applyFilters" />
-                                    <span>📄 Páginas</span>
+                                    <span>📄 <?php echo lang('pages'); ?></span>
                                 </label>
                             </p>
                         </div>
@@ -32,7 +32,7 @@
                             <p>
                                 <label>
                                     <input type="checkbox" v-model="filters.albums" @change="applyFilters" />
-                                    <span>🖼️ Álbumes</span>
+                                    <span>🖼️ <?php echo lang('albums'); ?></span>
                                 </label>
                             </p>
                         </div>
@@ -40,7 +40,7 @@
                             <p>
                                 <label>
                                     <input type="checkbox" v-model="filters.users" @change="applyFilters" />
-                                    <span>👤 Usuarios</span>
+                                    <span>👤 <?php echo lang('users'); ?></span>
                                 </label>
                             </p>
                         </div>

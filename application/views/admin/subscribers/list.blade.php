@@ -18,10 +18,10 @@
 							<thead>
 								<tr>
 									<th>#</th>
-									<th>Nombre</th>
-									<th>Email</th>
+									<th><?php echo lang('name'); ?></th>
+									<th><?php echo lang('email'); ?></th>
 									<th>Recibir</th>
-									<th>Fecha</th>
+									<th><?php echo lang('date'); ?></th>
 									<th>Estatus</th>
 									<?php if ($this->session->userdata('type') == "Administrador"): ?>
 									<td><i class="fa fa-trash"></i></td>

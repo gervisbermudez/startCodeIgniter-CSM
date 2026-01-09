@@ -64,15 +64,15 @@
                                 <div class="input-field">
                                     <div class="switch">
                                         <label>
-                                            No publicado
+                                            <?php echo lang('not_published'); ?>
                                             <input type="checkbox" name="status_form" value="1" v-model="album_item.status">
                                             <span class="lever"></span>
-                                            Publicado
+                                            <?php echo lang('published'); ?>
                                         </label>
                                     </div>
                                 </div>
                                 <ul>
-                                    <li><b>Fecha de creacion:</b> <br>
+                                    <li><b><?php echo lang('creation_date'); ?>:</b> <br>
                                         @{{album_item.date_create}}
                                     </li>
                                 </ul>
@@ -83,25 +83,25 @@
             </div>
             <div class="">
                 <a type="button" class="btn btn-primary modal-trigger" href="#folderSelector">
-                    <span><i class="material-icons right">image</i> Agregar Imagenes</span>
+                    <span><i class="material-icons right">image</i> <?php echo lang('add_images'); ?></span>
                 </a>
             </div>
             <br>
-            Publicar Album
+            <?php echo lang('publish_album'); ?>
             <br>
             <div class="input-field">
                 <div class="switch">
                     <label>
-                        No publicado
+                        <?php echo lang('not_published'); ?>
                         <input type="checkbox" name="status_form" value="1" v-model="status">
                         <span class="lever"></span>
-                        Publicado
+                        <?php echo lang('published'); ?>
                     </label>
                 </div>
             </div>
             <br><br>
             <div class="input-field" id="buttons">
-                <a href="<?php echo base_url('admin/categories/'); ?>" class="btn-flat">Cancelar</a>
+                <a href="<?php echo base_url('admin/categories/'); ?>" class="btn-flat"><?php echo lang('cancel'); ?></a>
                 <button type="submit" class="btn btn-primary" @click="save()" :class="{disabled: !btnEnable}">
                     <span><i class="material-icons right">edit</i> Guardar</span>
                 </button>
@@ -118,7 +118,7 @@
                 <span>@{{date_create}}</span> <br><br>
                 <b>Modificado</b>: <br>
                 <span>@{{date_update}}</span> <br><br>
-                <b>Publicado</b>: <br>
+                <b><?php echo lang('published'); ?></b>: <br>
                 <span>@{{date_publish}}</span>
             </p>
         </div>

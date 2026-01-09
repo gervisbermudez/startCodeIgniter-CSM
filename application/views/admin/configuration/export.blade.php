@@ -83,7 +83,7 @@
             </div>
 
             <div class="input-field" id="buttons">
-                <a href="<?php echo base_url('admin/configuration/'); ?>" class="btn-flat">Cancelar</a>
+                <a href="<?php echo base_url('admin/configuration/'); ?>" class="btn-flat"><?php echo lang('cancel'); ?></a>
                 <button type="submit" class="btn btn-primary" @click="generateFile()" :class="{disabled: !btnEnable}">
                     <span><i class="material-icons right">file_download</i> Export</span>
                 </button>

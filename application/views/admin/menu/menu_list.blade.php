@@ -61,7 +61,7 @@
                             <td>
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + menu.menu_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + menu.menu_id' class='dropdown-content'>
-                                    <li><a :href="base_url('admin/menus/editar/' + menu.menu_id)">Editar</a></li>
+                                    <li><a :href="base_url('admin/menus/editar/' + menu.menu_id)"><?php echo lang('edit'); ?></a></li>
                                     <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(menu, index);">Borrar</a></li>
                                     <li v-if="menu.status == 2"><a :href="base_url('admin/menus/preview?menu_id=' + menu.menu_id)" target="_blank">Preview</a></li>
                                     <li><a :href="base_url(menu.path)" target="_blank">Archivar</a></li>
@@ -118,8 +118,8 @@
                             @{{menu.template}}
                         </span>
                         <ul>
-                            <li><b>Fecha de publicacion:</b> <br> @{{menu.date_publish ? menu.date_publish : menu.date_create}}</li>
-                            <li><b>Estado:</b>
+                            <li><b><?php echo lang('publish_date'); ?>:</b> <br> @{{menu.date_publish ? menu.date_publish : menu.date_create}}</li>
+                            <li><b><?php echo lang('status'); ?>:</b>
                                 <span v-if="menu.status == 1">
                                     Publicado
                                 </span>

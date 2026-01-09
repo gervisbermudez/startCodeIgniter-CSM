@@ -67,7 +67,7 @@
                             <td>
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + usergroup.usergroup_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + usergroup.usergroup_id' class='dropdown-content'>
-                                    <li><a :href="'/admin/users/editGroup/' + usergroup.usergroup_id">Editar</a></li>
+                                    <li><a :href="'/admin/users/editGroup/' + usergroup.usergroup_id"><?php echo lang('edit'); ?></a></li>
                                     <li><a href="#!" v-on:click="deletePage(usergroup, index);">Borrar</a></li>
                                 </ul>
                             </td>

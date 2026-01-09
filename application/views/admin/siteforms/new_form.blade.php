@@ -168,16 +168,16 @@
 			<div class="input-field">
 				<div class="switch">
 					<label>
-						No Activo
+						<?php echo lang('not_active'); ?>
 						<input type="checkbox" name="status_form" value="1" v-model="status">
 						<span class="lever"></span>
-						Activo
+						<?php echo lang('active'); ?>
 					</label>
 				</div>
 			</div>
 			<br><br>
 			<div class="input-field" id="buttons">
-				<a href="<?php echo base_url('admin/categories/'); ?>" class="btn-flat">Cancelar</a>
+				<a href="<?php echo base_url('admin/categories/'); ?>" class="btn-flat"><?php echo lang('cancel'); ?></a>
 				<button type="submit" class="btn btn-primary" @click="save()" :class="{disabled: !btnEnable}">
 					<span><i class="material-icons right">edit</i> Guardar</span>
 				</button>
@@ -194,7 +194,7 @@
 				<span>@{{date_create}}</span> <br><br>
 				<b>Modificado</b>: <br>
 				<span>@{{date_update}}</span> <br><br>
-				<b>Publicado</b>: <br>
+				<b><?php echo lang('published'); ?></b>: <br>
 				<span>@{{date_publish}}</span>
 			</p>
 		</div>

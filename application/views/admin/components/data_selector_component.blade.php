@@ -27,8 +27,8 @@
                         </div>
                         <div class="card-content">
                             <div>
-                                <span class="card-title"><a :href="base_url(page.path)" target="_blank">@{{page.title}}</a> <i v-if="page.visibility == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Publico">public</i>
-                                    <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Privado">lock</i>
+                                <span class="card-title"><a :href="base_url(page.path)" target="_blank">@{{page.title}}</a> <i v-if="page.visibility == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('public'); ?>">public</i>
+                                    <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('private'); ?>">lock</i>
                                 </span>
                                 <div class="card-info">
                                     <p>
@@ -48,17 +48,17 @@
                                 @{{page.subtitle}}
                             </span>
                             <ul>
-                                <li><b>Fecha de publicacion:</b> <br> @{{page.date_publish ? page.date_publish : page.date_create}}</li>
-                                <li><b>Categorie:</b> @{{page.categorie}}</li>
-                                <li><b>Subcategorie:</b> @{{page.subcategorie ? page.subcategorie : 'Ninguna'}}</li>
-                                <li><b>Template:</b> @{{page.template}}</li>
-                                <li><b>Type:</b> @{{page.page_type_name}}</li>
-                                <li><b>Estado:</b>
+                                <li><b><?php echo lang('publish_date'); ?>:</b> <br> @{{page.date_publish ? page.date_publish : page.date_create}}</li>
+                                <li><b><?php echo lang('category'); ?>:</b> @{{page.categorie}}</li>
+                                <li><b><?php echo lang('subcategory'); ?>:</b> @{{page.subcategorie ? page.subcategorie : '<?php echo lang('none'); ?>'}}</li>
+                                <li><b><?php echo lang('template'); ?>:</b> @{{page.template}}</li>
+                                <li><b><?php echo lang('type'); ?>:</b> @{{page.page_type_name}}</li>
+                                <li><b><?php echo lang('status'); ?>:</b>
                                     <span v-if="page.status == 1">
-                                        Publicado
+                                        <?php echo lang('published'); ?>
                                     </span>
                                     <span v-else>
-                                        Borrador
+                                        <?php echo lang('draft'); ?>
                                     </span>
                                 </li>
                             </ul>
@@ -71,9 +71,9 @@
   </div>
     </div>
     <div class="modal-footer">
-        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Cancelar</a>
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat"><?php echo lang('cancel'); ?></a>
         <button class="btn waves-effect waves-light" type="submit" v-on:click="onClickButton()" name="action">
-            Seleccionar
+            <?php echo lang('select'); ?>
             <i class="material-icons right">send</i>
         </button>
     </div>

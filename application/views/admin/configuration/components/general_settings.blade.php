@@ -7,7 +7,7 @@
                 <div class="nav-wrapper">
                     <form>
                         <div class="input-field">
-                            <input class="input-search" type="search" placeholder="Buscar..." v-model="filter">
+                            <input class="input-search" type="search" placeholder="<?php echo lang('search'); ?>..." v-model="filter">
                             <label class="label-icon" for="search"><i class="material-icons">search</i></label>
                             <i class="material-icons" v-on:click="resetFilter();">close</i>
                         </div>
@@ -74,8 +74,8 @@
                                             :data-target='"dropdown" + configuration.site_config_id'><i
                                                 class="material-icons">more_vert</i></a>
                                         <ul :id='"dropdown" + configuration.site_config_id' class='dropdown-content'>
-                                            <li><a href="#!" v-on:click="toggleEddit(configuration);">Editar</a></li>
-                                            <li><a href="#!" v-on:click="deletePage(configuration, index);">Borrar</a>
+                                            <li><a href="#!" v-on:click="toggleEddit(configuration);"><?php echo lang('edit'); ?></a></li>
+                                            <li><a href="#!" v-on:click="deletePage(configuration, index);"><?php echo lang('delete'); ?></a>
                                             </li>
                                         </ul>
                                     </td>
@@ -92,6 +92,6 @@
                 </div>
             </div>
             <div class="container" v-if="!loader && configurations.length == 0">
-                <h4>No hay Configuraciones</h4>
+                <h4><?php echo lang('no_configurations'); ?></h4>
             </div>
         </div>

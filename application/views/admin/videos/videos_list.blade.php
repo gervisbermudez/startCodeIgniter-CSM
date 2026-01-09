@@ -15,7 +15,7 @@
             <div class="nav-wrapper">
                 <form>
                     <div class="input-field">
-                        <input class="input-search" type="search" placeholder="Buscar..." v-model="filter">
+                        <input class="input-search" type="search" placeholder="<?php echo lang('search'); ?>..." v-model="filter">
                         <label class="label-icon" for="search"><i class="material-icons">search</i></label>
                         <i class="material-icons" v-on:click="resetFilter();">close</i>
                     </div>
@@ -27,7 +27,7 @@
                         <a href="#!" class='dropdown-trigger' data-target='dropdown-options'><i
                                 class="material-icons">more_vert</i></a>
                         <ul id='dropdown-options' class='dropdown-content'>
-                            <li><a href="#!">Archivo</a></li>
+                            <li><a href="#!"><?php echo lang('archive'); ?></a></li>
                         </ul>
                     </li>
                 </ul>

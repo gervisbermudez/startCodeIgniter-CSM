@@ -5,8 +5,8 @@
         <div class="row">
             <div class="col s12">
                 <ul class="tabs">
-                    <li class="tab col s3"><a class="active" href="#test1">Subir Archivo</a></li>
-                    <li class="tab col s3"><a href="#test2"  @click="navigateFiles('./')">Tus Archivos</a></li>
+                    <li class="tab col s3"><a class="active" href="#test1"><?php echo lang('upload_file'); ?></a></li>
+                    <li class="tab col s3"><a href="#test2"  @click="navigateFiles('./')"><?php echo lang('your_files'); ?></a></li>
                     <li class="tab col s3"><a href="#test2" @click="filterFiles('images')">Imagenes</a></li>
                 </ul>
             </div>
@@ -123,7 +123,7 @@
                             <div v-if="getFiles.length == 0 && !fileloader">
                                 <div class="row">
                                     <div class="col s12">
-                                        <h5>No hay archivos</h5>
+                                        <h5><?php echo lang('no_files'); ?></h5>
                                     </div>
                                 </div>
                             </div>

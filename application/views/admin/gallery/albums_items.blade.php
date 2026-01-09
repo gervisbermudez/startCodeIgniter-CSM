@@ -19,7 +19,7 @@
                 <a class='dropdown-trigger right' href='#!' :data-target='"album" + album.album_id'><i
                         class="material-icons">more_vert</i></a>
                 <ul :id='"album" + album.album_id' class='dropdown-content'>
-                    <li><a :href="base_url('admin/gallery/editar/' + album.album_id)">Editar</a></li>
+                    <li><a :href="base_url('admin/gallery/editar/' + album.album_id)"><?php echo lang('edit'); ?></a></li>
                     <li><a href="#!" v-on:click="deletePage(album, index);">Borrar</a></li>
                     <li v-if="album.status == 2"><a :href="base_url('admin/pages/preview?album_id=' + album.album_id)"
                             target="_blank">Preview</a></li>
@@ -100,7 +100,7 @@
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + album.album_item_id'><i
                                         class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + album.album_item_id' class='dropdown-content'>
-                                    <li><a :href="base_url('admin/pages/editar/' + album.album_item_id)">Editar</a>
+                                    <li><a :href="base_url('admin/pages/editar/' + album.album_item_id)"><?php echo lang('edit'); ?></a>
                                     </li>
                                     <li><a href="#!" v-on:click="deletePage(album, index);">Borrar</a></li>
                                     <li v-if="album.status == 2"><a
