@@ -4,6 +4,35 @@
 
 @section('head_includes')
 <link rel="stylesheet" href="<?=base_url('public/css/admin/dashboard.min.css')?>">
+<style>
+    .rotating {
+        animation: rotate 1s linear infinite;
+    }
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    .text-green {
+        color: #4caf50;
+    }
+    .text-red {
+        color: #f44336;
+    }
+    /* Mejorar truncamiento de texto en charts */
+    .chart .col2 .truncate {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block;
+        max-width: 100%;
+    }
+    .chart .chart-header .chart-description {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 50%;
+    }
+</style>
 @endsection
 
 @section('content')
@@ -100,13 +129,13 @@
                             <i class="material-icons text-st-gray">assistant</i>
                         </div>
                         <div class="colum__description">
-                            <div class="text-st-gray"><b>3</b></div>
+                            <div class="text-st-gray"><b>@{{events.length}}</b></div>
                             <div class="text-st-gray">Events</div>
                         </div>
                     </a>
                 </div>
                 <div class="img">
-                    <img src="{{url('public/img/admin/dashboard/undraw_charts.png')}}" alt="undraw_charts">
+                    <img src="{{base_url('public/img/admin/dashboard/undraw_charts.png')}}" alt="undraw_charts">
                 </div>
             </div>
         </div>
@@ -129,8 +158,8 @@
                                         </div>
                                         <div class="col2">
                                             <span class="chart-title">VISITORS</span>
-                                            <div class="chart-big-number">20.345</div>
-                                            <div class="chart-description">Views 53%</div>
+                                            <div class="chart-big-number">@{{stats.totalVisitors.toLocaleString()}}</div>
+                                            <div class="chart-description" :class="{'text-green': stats.visitorGrowth >= 0, 'text-red': stats.visitorGrowth < 0}">Growth @{{stats.visitorGrowth}}%</div>
                                         </div>
                                     </div>
                                 </div>
@@ -140,9 +169,9 @@
                                     </div>
                                     <div class="chart-body">
                                         <div class="col2">
-                                            <span class="chart-title">VISITORS</span>
-                                            <div class="chart-big-number">20.345</div>
-                                            <div class="chart-description">Views 53%</div>
+                                            <span class="chart-title">REQUESTS</span>
+                                            <div class="chart-big-number">@{{stats.totalRequests.toLocaleString()}}</div>
+                                            <div class="chart-description" :class="{'text-green': stats.requestGrowth >= 0, 'text-red': stats.requestGrowth < 0}">Growth @{{stats.requestGrowth}}%</div>
                                         </div>
                                         <div class="col1 ">
                                             <canvas id="myChart2"></canvas>
@@ -152,7 +181,9 @@
                                 <div class="chart chart-3">
                                     <div class="chart-header">
                                         {{ lang('dashboard_devices') }}
-                                        <div class="chart-description">@{{graphs.devices.labelMayor}}
+                                        <div class="chart-description tooltipped" 
+                                            data-position="top" 
+                                            :data-tooltip="graphs.devices.labelMayor + ' ' + graphs.devices.porcentajeMayor + '%'">@{{graphs.devices.labelMayor}}
                                             @{{graphs.devices.porcentajeMayor}}%</div>
                                     </div>
                                     <div class="chart-body">
@@ -170,11 +201,12 @@
                                             <canvas id="myChart4"></canvas>
                                         </div>
                                         <div class="col2">
-                                            <span
-                                                class="chart-title truncate">@{{graphs.urlFrecuentes.labelMayor}}</span>
-                                            <div class="chart-big-number truncate">
+                                            <span class="chart-title truncate tooltipped" 
+                                                data-position="top" 
+                                                :data-tooltip="graphs.urlFrecuentes.labelMayor">@{{graphs.urlFrecuentes.labelMayor}}</span>
+                                            <div class="chart-big-number">
                                                 @{{graphs.urlFrecuentes.valorMasAlto}}</div>
-                                            <div class="chart-description truncate">
+                                            <div class="chart-description">
                                                 @{{graphs.urlFrecuentes.porcentajeMayor}}%
                                             </div>
                                         </div>
@@ -218,8 +250,12 @@
                                 :data-tooltip="mode" @click="setCreatorMode(mode)">@{{creator.icons[mode]}}</i>
                         </div>
                         <button class="waves-effect waves-light btn" @click="saveDraft"
-                            :class="{disabled: creator.content.length < 6}">Create<i
-                                class="material-icons right">send</i></a>
+                            :class="{disabled: creator.content.length < 6 || creator.saving}">
+                            <span v-if="!creator.saving">Create</span>
+                            <span v-else>Creating...</span>
+                            <i class="material-icons right" v-if="!creator.saving">send</i>
+                            <i class="material-icons right rotating" v-else>sync</i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -248,7 +284,7 @@
                             <i class="material-icons card-options">more_vert</i>
                             <div class="card-header">
                                 <img class="circle responsive-img"
-                                    src="{{base_url()}}public/img/profile/default_profile_2.jpg" />
+                                    :src="card.user && card.user.avatar ? card.user.avatar : '{{base_url()}}public/img/profile/default_profile_2.jpg'" />
                                 <div class="card-info">
                                     <span class="truncate title">@{{card.title}}</span>
                                     <span class="truncate datetime">@{{card.date}}</span>

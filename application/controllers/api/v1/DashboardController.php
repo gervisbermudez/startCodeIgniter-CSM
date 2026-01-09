@@ -22,6 +22,7 @@ class DashboardController extends REST_Controller
 
         $this->load->database();
         $this->load->helper('general');
+        $this->load->driver('cache', array('adapter' => 'file'));
     }
 
     /**
@@ -51,6 +52,15 @@ class DashboardController extends REST_Controller
      */
     public function index_get()
     {
+        // Intentar obtener datos del caché
+        $cache_key = 'dashboard_data_' . userdata('user_id');
+        $cached_data = $this->cache->get($cache_key);
+        
+        if ($cached_data !== FALSE) {
+            $this->response($cached_data, REST_Controller::HTTP_OK);
+            return;
+        }
+        
         $this->load->model('Admin/CategorieModel');
         $this->load->model('Admin/UserModel');
         $this->load->model('Admin/PageModel');
@@ -58,6 +68,7 @@ class DashboardController extends REST_Controller
         $this->load->model('Admin/CustomModelContentModel');
         $this->load->model('Admin/FileModel');
         $this->load->model('Admin/AlbumModel');
+        $this->load->model('Admin/EventModel');
 
         $result = array();
 
@@ -83,6 +94,9 @@ class DashboardController extends REST_Controller
         $album = new AlbumModel();
         $result['albumes'] = $album->all();
 
+        $event = new EventModel();
+        $result['events'] = $event->all();
+
         $this->load->model('Admin/UserTrackingModel');
         $User_tracking = new UserTrackingModel();
         $tempResult = $User_tracking->all();
@@ -93,10 +107,16 @@ class DashboardController extends REST_Controller
         $result['chart3'] = $this->getTraficByDevice($tempData);
         $result['chart4'] = $this->getTopVisitedUrls($tempData, 7);
 
+        // Calcular estadísticas generales
+        $result['stats'] = $this->calculateStats($tempData);
+
         $response = array(
             'code' => 200,
             'data' => $result,
         );
+
+        // Guardar en caché por 5 minutos (300 segundos)
+        $this->cache->save($cache_key, $response, 300);
 
         $this->response($response, REST_Controller::HTTP_OK);
     }
@@ -113,29 +133,33 @@ class DashboardController extends REST_Controller
 
         // Iterar a través de los datos y contar las visitas por mes
         foreach ($tempData as $entry) {
-            // Obtener el mes de la fecha del objeto de entrada
+            // Obtener el mes y año de la fecha del objeto de entrada
+            $monthYear = date('Y-m', strtotime($entry->date_create));
             $month = date('F', strtotime($entry->date_create));
 
             // Si ya se contaron visitas para este mes, agregar una al recuento existente
-            if (isset($visits[$month])) {
-                $visits[$month]++;
+            if (isset($visits[$monthYear])) {
+                $visits[$monthYear]['count']++;
             }
             // De lo contrario, crear una nueva entrada en el array de recuento de visitas
             else {
-                $visits[$month] = 1;
+                $visits[$monthYear] = array(
+                    'count' => 1,
+                    'label' => $month
+                );
             }
         }
 
         // Eliminar los meses sin visitas del array de datos
         $visits = array_filter($visits);
 
-        // Ordenar los datos por mes (orden alfabético)
+        // Ordenar los datos por mes-año cronológicamente
         ksort($visits);
 
         // Crear arrays separados para las etiquetas (meses) y los datos (número de visitas)
-        foreach ($visits as $month => $count) {
-            $labels[] = $month;
-            $data[] = $count;
+        foreach ($visits as $monthData) {
+            $labels[] = $monthData['label'];
+            $data[] = $monthData['count'];
         }
 
         // Crear el array de salida en el formato deseado
@@ -154,7 +178,17 @@ class DashboardController extends REST_Controller
 
     private function getTopVisitedUrls($data, $topCount = 5)
     {
-        $ignoredUrls = ['/favicon.ico', '/robots.txt', '/'];
+        $ignoredUrls = [
+            '/favicon.ico', 
+            '/robots.txt', 
+            '/', 
+            '/sitemap.xml',
+            '/manifest.json',
+            '/service-worker.js',
+            '/sw.js',
+            '/apple-touch-icon.png',
+            '/browserconfig.xml'
+        ];
         $filteredData = array_filter($data, function ($item) use ($ignoredUrls) {
             return !in_array($item->requested_url, $ignoredUrls);
         });
@@ -274,6 +308,40 @@ class DashboardController extends REST_Controller
         return $data;
     }
 
+    private function calculateStats($data)
+    {
+        $totalVisitors = count($data);
+        $uniqueIPs = array_unique(array_column($data, 'ip_address'));
+        $uniqueVisitors = count($uniqueIPs);
+        
+        // Calcular crecimiento comparando últimos 7 días vs 7 días anteriores
+        $now = time();
+        $lastWeek = [];
+        $previousWeek = [];
+        
+        foreach ($data as $item) {
+            $timestamp = strtotime($item->date_create);
+            $daysAgo = floor(($now - $timestamp) / 86400);
+            
+            if ($daysAgo <= 7) {
+                $lastWeek[] = $item;
+            } elseif ($daysAgo > 7 && $daysAgo <= 14) {
+                $previousWeek[] = $item;
+            }
+        }
+        
+        $lastWeekCount = count($lastWeek);
+        $previousWeekCount = count($previousWeek) ?: 1;
+        $visitorGrowth = round((($lastWeekCount - $previousWeekCount) / $previousWeekCount) * 100);
+        
+        return array(
+            'totalVisitors' => $uniqueVisitors,
+            'visitorGrowth' => $visitorGrowth,
+            'totalRequests' => $totalVisitors,
+            'requestGrowth' => $visitorGrowth
+        );
+    }
+
     /**
      * Get All Data from this method.
      *
@@ -359,9 +427,18 @@ class DashboardController extends REST_Controller
     {
 
         $dashboard = new CategorieModel();
-        $result = $dashboard->where(
-            $_GET
-        );
+        
+        // Sanitizar parámetros GET
+        $filters = array();
+        $allowed_fields = array('parent_id', 'type', 'status', 'categorie_id');
+        
+        foreach ($_GET as $key => $value) {
+            if (in_array($key, $allowed_fields)) {
+                $filters[$key] = $this->db->escape_str($value);
+            }
+        }
+        
+        $result = $dashboard->where($filters);
 
         if ($result) {
             $response = array(
@@ -373,7 +450,7 @@ class DashboardController extends REST_Controller
                 'code' => REST_Controller::HTTP_NOT_FOUND,
                 'error_message' => lang('not_found_error'),
                 'data' => [],
-                'filters' => $_GET
+                'filters' => $filters
             );
         }
         $this->response($response, REST_Controller::HTTP_OK);

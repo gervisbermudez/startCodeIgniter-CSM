@@ -18,8 +18,10 @@
             </p>
             <a href="#!" class="secondary-content" :class="{'yellow-text': file.featured == '1'}" v-on:click="featuredFileServe(file);"><i class="material-icons">grade</i></a>
         </li>
-        <li v-else class="collection-item">
-            No files found
+        <li v-else class="collection-item center-align" style="padding: 40px 20px;">
+            <i class="material-icons" style="font-size: 48px; color: #9e9e9e;">folder_open</i>
+            <p style="color: #9e9e9e; margin-top: 10px;">No files uploaded yet</p>
+            <a href="{{base_url('admin/files')}}" class="btn-small waves-effect waves-light" style="margin-top: 10px;">Upload Files</a>
         </li>
     </ul>
 </div>

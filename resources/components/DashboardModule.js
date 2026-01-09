@@ -9,12 +9,19 @@ var DashboardModule = new Vue({
     forms_types: [],
     albumes: [],
     content: [],
+    events: [],
     api_data: {
       dashboard: BASEURL + "api/v1/dashboard/",
     },
     graphs: {
       devices: { porcentajeMayor: "", labelMayor: "" },
       urlFrecuentes: { porcentajeMayor: "", labelMayor: "", valorMasAlto: "" },
+    },
+    stats: {
+      totalVisitors: 0,
+      visitorGrowth: 0,
+      totalRequests: 0,
+      requestGrowth: 0
     },
     timeline: [],
     creator: {
@@ -27,6 +34,7 @@ var DashboardModule = new Vue({
       },
       content: "",
       mode: "page", // page, album, categorie, fragment
+      saving: false,
     },
   },
   mixins: [mixins],
@@ -218,12 +226,22 @@ var DashboardModule = new Vue({
 
     saveDraft: function () {
       if (this.creator.content.length < 6) return;
+      if (this.creator.saving) return; // Prevenir doble click
+      
+      // Sanitizar contenido básico (prevenir tags peligrosos)
+      const sanitizedContent = this.creator.content
+        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+        .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+        .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '');
+      
+      this.creator.saving = true;
       let data = {};
       let url = "";
 
       switch (this.creator.mode) {
         case "page":
           data = this.getPageObject();
+          data.content = sanitizedContent;
           url = `${BASEURL}api/v1/pages/`;
 
           break;
@@ -268,6 +286,7 @@ var DashboardModule = new Vue({
                 break;
               case "fragment":
                 window.location.href = `${BASEURL}admin/Fragments/editar/${response.data.fragment_id}`;
+                break;
               default:
                 break;
             }
@@ -275,8 +294,9 @@ var DashboardModule = new Vue({
         },
         error: function (response) {
           self.loader = false;
+          self.creator.saving = false;
           M.toast({ html: "An unexpected error occurred" });
-          console.error(error);
+          console.error(response);
         },
       });
     },
@@ -288,7 +308,7 @@ var DashboardModule = new Vue({
         M.Collapsible.init(elems, {});
         var elems = document.querySelectorAll(".tooltipped");
         M.Tooltip.init(elems, {});
-      }, 3000);
+      }, 500);
     },
     createChart: (id, chartData) => {
       // Function that creates a new chart with the provided data
@@ -381,38 +401,65 @@ var DashboardModule = new Vue({
               return album;
             })
             : [];
+          this.events = data.events ? data.events : [];
+          
+          // Procesar estadísticas
+          if (data.stats) {
+            this.stats = data.stats;
+          }
+          
           this.loader = false;
 
-          this.graphs.devices = this.calcularPorcentajeMayor(data.chart3);
-          this.graphs.urlFrecuentes = this.calcularPorcentajeMayor(data.chart4);
-          this.timeline = this.getTimeLine(data.timeline);
-          this.createChart("myChart1", {
-            type: "line",
-            data: data.chart1,
-            displayGrid: false,
-          });
-          this.createChart("myChart2", {
-            type: "bar",
-            data: data.chart2,
-            displayGrid: false,
-          });
-          this.createChart("myChart3", {
-            type: "bar",
-            data: data.chart3,
-            displayX: false,
-            displayY: false,
-          });
-          this.createChart("myChart4", {
-            type: "doughnut",
-            data: data.chart4,
-            displayX: false,
-            displayY: false,
-          });
+          // Validar y procesar gráficos solo si existen los datos
+          if (data.chart3 && data.chart3.labels && data.chart3.datasets) {
+            this.graphs.devices = this.calcularPorcentajeMayor(data.chart3);
+            this.createChart("myChart3", {
+              type: "bar",
+              data: data.chart3,
+              displayX: false,
+              displayY: false,
+            });
+          }
+          
+          if (data.chart4 && data.chart4.labels && data.chart4.datasets) {
+            this.graphs.urlFrecuentes = this.calcularPorcentajeMayor(data.chart4);
+            this.createChart("myChart4", {
+              type: "doughnut",
+              data: data.chart4,
+              displayX: false,
+              displayY: false,
+            });
+          }
+          
+          if (data.timeline) {
+            this.timeline = this.getTimeLine(data.timeline);
+          }
+          
+          if (data.chart1 && data.chart1.labels && data.chart1.datasets) {
+            this.createChart("myChart1", {
+              type: "line",
+              data: data.chart1,
+              displayGrid: false,
+            });
+          }
+          
+          if (data.chart2 && data.chart2.labels && data.chart2.datasets) {
+            this.createChart("myChart2", {
+              type: "bar",
+              data: data.chart2,
+              displayGrid: false,
+            });
+          }
 
           this.init();
         })
         .catch((error) => {
-          console.error(error);
+          console.error('Dashboard data error:', error);
+          this.loader = false;
+          M.toast({ 
+            html: '<i class="material-icons">error</i> Error loading dashboard data. Please refresh the page.',
+            classes: 'red'
+          });
         });
     },
   },

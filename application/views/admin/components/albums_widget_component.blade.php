@@ -22,6 +22,11 @@
                         </div>
                     </div>
 				</div>
+				<div v-if="albumes.length === 0" class="col s12 center-align" style="padding: 60px 20px;">
+					<i class="material-icons" style="font-size: 64px; color: #9e9e9e;">photo_library</i>
+					<p style="color: #9e9e9e; margin-top: 15px; font-size: 16px;">No albums created yet</p>
+					<a href="{{base_url('admin/gallery/nuevo')}}" class="btn waves-effect waves-light" style="margin-top: 15px;">Create First Album</a>
+				</div>
 			</div>
 		</div>
 	</div>

@@ -14,5 +14,10 @@
 		</a>
 		<a :href="user.get_edit_url()" class="secondary-content"><i class="material-icons">more_vert</i></a>
 	</li>
+	<li v-if="users.length === 0" class="collection-item center-align" style="padding: 40px 20px;">
+		<i class="material-icons" style="font-size: 48px; color: #9e9e9e;">people_outline</i>
+		<p style="color: #9e9e9e; margin-top: 10px;">No users yet</p>
+		<a href="{{base_url('admin/users/agregar')}}" class="btn-small waves-effect waves-light" style="margin-top: 10px;">Add First User</a>
+	</li>
 </ul>
 </script>
