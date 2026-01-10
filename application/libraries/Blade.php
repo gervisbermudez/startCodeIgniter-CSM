@@ -17,10 +17,11 @@ class Blade
     }
 
     /**
-     * @param $view_name String template named .balde.php
-     * @param $params Object params to render into the view
+     * @param $view_name String template named .blade.php
+     * @param $params Array params to render into the view
+     * @param $return_output Boolean if true, returns the output; if false, echoes it
      */
-    public function view($view_name, $params)
+    public function view($view_name, $params = [], $return_output = true)
     {
         $ci = &get_instance();
         $params['ci'] = $ci;
@@ -29,7 +30,16 @@ class Blade
         $this->BladeOne->session = isset($ci->session) ? $ci->session : null;
         $this->BladeOne->config = isset($ci->config) ? $ci->config : null;
         $this->BladeOne->input = isset($ci->input) ? $ci->input : null;
-        return $this->BladeOne->run($view_name, $params);
+        
+        $output = $this->BladeOne->run($view_name, $params);
+        
+        if ($return_output) {
+            // Return the rendered output
+            return $output;
+        } else {
+            // Display the output directly
+            echo $output;
+        }
     }
 
     /**

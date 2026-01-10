@@ -89,7 +89,7 @@ function render_form(string $siteform_name): string
 
     init_form($siteform_name);
 
-    return $ci->blade->view("site.templates.forms." . $siteform->template, ['siteform' => $siteform]);
+    return $ci->blade->view("site.templates.forms." . $siteform->template, ['siteform' => $siteform], true);
 }
 
 function fragment(string $fragment_name)
@@ -391,7 +391,7 @@ function render_menu($name)
                 $blade->changePath(APPPATH);
             }
         }
-        $rendered_menu = $blade->view("site.templates.menu." . $menu->template, $data);
+        $rendered_menu = $blade->view("site.templates.menu." . $menu->template, $data, true);
 
         return $rendered_menu;
     }

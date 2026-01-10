@@ -9,6 +9,7 @@ class PageController extends Base_Controller
     {
         parent::__construct();
         $this->load->model('Admin/PageModel');
+        $this->Page = new PageModel();
         $config['enable_profiler'] = false;
     }
 

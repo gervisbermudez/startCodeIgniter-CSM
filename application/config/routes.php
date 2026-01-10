@@ -121,10 +121,25 @@ $route['admin/events'] = 'admin/EventsController';
 $route['admin/categories/(.+)'] = 'admin/CategoriesController/$1';
 $route['admin/categories'] = 'admin/CategoriesController';
 
+// Cache routes
+$route['admin/cache/clear-page/(:num)'] = 'admin/Cache/clear_page/$1';
+$route['admin/cache/clear-blog/(:num)'] = 'admin/Cache/clear_blog/$1';
+$route['admin/cache/clear-all'] = 'admin/Cache/clear_all';
+$route['admin/cache/info'] = 'admin/Cache/info';
+$route['admin/cache/(.+)'] = 'admin/Cache/$1';
 
+// Configuration routes
+$route['admin/config/toggle-debug'] = 'admin/ConfigurationController/toggle_debug';
+$route['admin/config/(.+)'] = 'admin/ConfigurationController/$1';
+$route['admin/config'] = 'admin/ConfigurationController';
 $route['admin/configuration/(.+)'] = 'admin/ConfigurationController/$1';
-
 $route['admin/configuration'] = 'admin/ConfigurationController';
+
+// Siteforms routes
+$route['admin/siteforms/export/(.+)'] = 'admin/SiteFormsController/export/$1';
+$route['admin/siteforms/stats/(.+)'] = 'admin/SiteFormsController/stats/$1';
+$route['admin/siteforms/(.+)'] = 'admin/SiteFormsController/$1';
+$route['admin/siteforms'] = 'admin/SiteFormsController';
 
 // API v1 routes
 $route['api/v1/analytics/(.+)'] = 'api/v1/AnalyticsController/$1';
