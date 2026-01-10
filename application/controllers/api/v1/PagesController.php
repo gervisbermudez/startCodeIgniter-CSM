@@ -331,4 +331,62 @@ class PagesController extends REST_Controller
         }
     }
 
+    /**
+     * Update page status (publish/draft)
+     *
+     * @return Response
+     */
+    public function updatestatus_post($id = null)
+    {
+        $status = $this->input->post('status');
+        
+        log_message('debug', 'UpdateStatus - ID recibido: ' . $id);
+        log_message('debug', 'UpdateStatus - Status recibido: ' . $status);
+        
+        if (!$status) {
+            $this->response_error('Estado requerido', [], REST_Controller::HTTP_BAD_REQUEST);
+            return;
+        }
+
+        // Verificar que la página existe
+        $page = new PageModel();
+        $pageExists = $page->find($id);
+        
+        log_message('debug', 'UpdateStatus - Página existe: ' . ($pageExists ? 'SI' : 'NO'));
+        
+        if (!$pageExists) {
+            $this->response_error(lang('not_found_error'));
+            return;
+        }
+
+        log_message('debug', 'UpdateStatus - Status actual en DB antes de update: ' . $page->status);
+
+        // Actualizar directamente con query builder
+        $this->db->where('page_id', $id);
+        $result = $this->db->update('page', [
+            'status' => $status,
+            'date_update' => date('Y-m-d H:i:s')
+        ]);
+        
+        log_message('debug', 'UpdateStatus - Resultado del update: ' . ($result ? 'TRUE' : 'FALSE'));
+        log_message('debug', 'UpdateStatus - Affected rows: ' . $this->db->affected_rows());
+        log_message('debug', 'UpdateStatus - Last query: ' . $this->db->last_query());
+        
+        if ($this->db->affected_rows() >= 0) {
+            system_logger('pages', $id, "status_updated", "Page status updated from " . $page->status . " to: " . $status);
+            
+            // Recargar el objeto con los datos actualizados
+            $updatedPage = new PageModel();
+            $updatedPage->find($id);
+            
+            log_message('debug', 'UpdateStatus - Status después de recargar: ' . $updatedPage->status);
+            
+            $this->response_ok($updatedPage);
+        } else {
+            $error = $this->db->error();
+            log_message('error', 'UpdateStatus - Error DB: ' . json_encode($error));
+            $this->response_error('No se pudo actualizar el estado. Error: ' . $error['message'], [], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

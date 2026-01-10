@@ -72,18 +72,29 @@ $form_name = $has_form ? (isset($siteform->form_name) ? $siteform->form_name : n
             </div>
             
             <!-- Dropdown: Admin Panel -->
-            <ul id="scms-admin-panel-dropdown" class="dropdown-content scms-adminbar-dropdown">
+            <ul id="scms-admin-panel-dropdown" class="dropdown-content scms-adminbar-dropdown scms-admin-panel-menu">
+                <li class="scms-dropdown-header">Panel de Administración</li>
+                <li class="divider scms-adminbar-divider"></li>
                 @if(has_permisions('SELECT_PAGES'))
                 <li><a href="{{ base_url('admin/pages') }}"><i class="material-icons scms-adminbar-icon">description</i>Páginas</a></li>
                 @endif
-                @if(has_permisions('SELECT_BLOG'))
-                <li><a href="{{ base_url('admin/blogs') }}"><i class="material-icons scms-adminbar-icon">article</i>Blog</a></li>
+                @if(has_permisions('SELECT_PAGES'))
+                <li><a href="{{ base_url('admin/pages?type=blog') }}"><i class="material-icons scms-adminbar-icon">article</i>Blog</a></li>
                 @endif
                 @if(has_permisions('SELECT_USERS'))
                 <li><a href="{{ base_url('admin/users') }}"><i class="material-icons scms-adminbar-icon">people</i>Usuarios</a></li>
                 @endif
                 @if(has_permisions('SELECT_SITEFORMS'))
                 <li><a href="{{ base_url('admin/siteforms') }}"><i class="material-icons scms-adminbar-icon">assignment</i>Formularios</a></li>
+                @endif
+                @if(has_permisions('SELECT_MENU'))
+                <li><a href="{{ base_url('admin/menus') }}"><i class="material-icons scms-adminbar-icon">menu</i>Menús</a></li>
+                @endif
+                @if(has_permisions('SELECT_GALLERY'))
+                <li><a href="{{ base_url('admin/gallery') }}"><i class="material-icons scms-adminbar-icon">photo_library</i>Galería</a></li>
+                @endif
+                @if(has_permisions('SELECT_ANALYTICS'))
+                <li><a href="{{ base_url('admin/analytics') }}"><i class="material-icons scms-adminbar-icon">analytics</i>Analíticas</a></li>
                 @endif
                 <li class="divider scms-adminbar-divider"></li>
                 <li><a href="{{ base_url('admin/config') }}"><i class="material-icons scms-adminbar-icon">settings</i>Configuración</a></li>
@@ -99,18 +110,26 @@ $form_name = $has_form ? (isset($siteform->form_name) ? $siteform->form_name : n
             </div>
             
             <!-- Dropdown: New Content -->
-            <ul id="scms-new-content-dropdown" class="dropdown-content scms-adminbar-dropdown">
+            <ul id="scms-new-content-dropdown" class="dropdown-content scms-adminbar-dropdown scms-new-content-menu">
+                <li class="scms-dropdown-header">Crear Nuevo Contenido</li>
+                <li class="divider scms-adminbar-divider"></li>
                 @if(has_permisions('CREATE_PAGE'))
-                <li><a href="{{ base_url('admin/pages/add') }}"><i class="material-icons scms-adminbar-icon">description</i>Página</a></li>
+                <li><a href="{{ base_url('admin/pages/new') }}"><i class="material-icons scms-adminbar-icon">description</i>Página</a></li>
                 @endif
                 @if(has_permisions('CREATE_BLOG'))
-                <li><a href="{{ base_url('admin/blogs/add') }}"><i class="material-icons scms-adminbar-icon">article</i>Post</a></li>
+                <li><a href="{{ base_url('admin/pages/add?type=blog') }}"><i class="material-icons scms-adminbar-icon">article</i>Post de Blog</a></li>
                 @endif
                 @if(has_permisions('CREATE_USER'))
                 <li><a href="{{ base_url('admin/users/add') }}"><i class="material-icons scms-adminbar-icon">person_add</i>Usuario</a></li>
                 @endif
                 @if(has_permisions('SELECT_GALLERY'))
                 <li><a href="{{ base_url('admin/gallery') }}"><i class="material-icons scms-adminbar-icon">photo_library</i>Media</a></li>
+                @endif
+                @if(has_permisions('SELECT_MENU'))
+                <li><a href="{{ base_url('admin/menus/new') }}"><i class="material-icons scms-adminbar-icon">menu</i>Menú</a></li>
+                @endif
+                @if(has_permisions('SELECT_SITEFORMS'))
+                <li><a href="{{ base_url('admin/siteforms/new') }}"><i class="material-icons scms-adminbar-icon">assignment</i>Formulario</a></li>
                 @endif
             </ul>
         </div>
@@ -139,13 +158,24 @@ $form_name = $has_form ? (isset($siteform->form_name) ? $siteform->form_name : n
                     <small><?php echo $current_page_template ?: 'default'; ?></small>
                 </li>
                 <li class="divider scms-adminbar-divider"></li>
-                <li><a href="{{ current_url() }}" target="_blank"><i class="material-icons scms-adminbar-icon">open_in_new</i>Abrir en Nueva Pestaña</a></li>
+                <li><a href="#!" onclick="scmsAdminBar.copyPageUrl('{{ current_url() }}'); return false;"><i class="material-icons scms-adminbar-icon">link</i>Copiar Enlace</a></li>
+                <li><a href="#!" onclick="scmsAdminBar.duplicatePage(<?php echo $current_page_id; ?>, '<?php echo addslashes($current_page_title); ?>'); return false;"><i class="material-icons scms-adminbar-icon">content_copy</i>Duplicar Página</a></li>
                 @if(has_permisions('SELECT_ANALYTICS'))
                 <li><a href="{{ base_url('admin/analytics?page_id=' . $current_page_id) }}"><i class="material-icons scms-adminbar-icon">analytics</i>Ver Estadísticas</a></li>
                 @endif
-                @if(has_permisions('SELECT_PAGES'))
                 <li class="divider scms-adminbar-divider"></li>
-                <li><a href="{{ base_url('admin/pages') }}"><i class="material-icons scms-adminbar-icon">description</i>Todas las Páginas</a></li>
+                <li class="scms-toggle-item">
+                    <label class="scms-toggle-label">
+                        <span><i class="material-icons scms-adminbar-icon">visibility</i>Publicada</span>
+                        <div class="scms-toggle-switch" data-page-id="<?php echo $current_page_id; ?>" data-action="toggle-visibility">
+                            <input type="checkbox" <?php echo ($current_page_status == '1' || $current_page_status === 'publish' || $current_page_status === 'active') ? 'checked' : ''; ?>>
+                            <span class="scms-toggle-slider"></span>
+                        </div>
+                    </label>
+                </li>
+                @if(has_permisions('DELETE_PAGE'))
+                <li class="divider scms-adminbar-divider"></li>
+                <li><a href="#!" onclick="scmsAdminBar.archivePage(<?php echo $current_page_id; ?>, '<?php echo addslashes($current_page_title); ?>'); return false;" class="scms-danger-action"><i class="material-icons scms-adminbar-icon">archive</i>Archivar Página</a></li>
                 @endif
             </ul>
             
@@ -171,13 +201,24 @@ $form_name = $has_form ? (isset($siteform->form_name) ? $siteform->form_name : n
                     <small>Blog</small>
                 </li>
                 <li class="divider scms-adminbar-divider"></li>
-                <li><a href="{{ current_url() }}" target="_blank"><i class="material-icons scms-adminbar-icon">open_in_new</i>Abrir en Nueva Pestaña</a></li>
+                <li><a href="#!" onclick="scmsAdminBar.copyPageUrl('{{ current_url() }}'); return false;"><i class="material-icons scms-adminbar-icon">link</i>Copiar Enlace</a></li>
+                <li><a href="#!" onclick="scmsAdminBar.duplicatePage(<?php echo $current_blog_id; ?>, '<?php echo addslashes($current_blog_title); ?>'); return false;"><i class="material-icons scms-adminbar-icon">content_copy</i>Duplicar Post</a></li>
                 @if(has_permisions('SELECT_ANALYTICS'))
                 <li><a href="{{ base_url('admin/analytics?page_id=' . $current_blog_id) }}"><i class="material-icons scms-adminbar-icon">analytics</i>Ver Estadísticas</a></li>
                 @endif
-                @if(has_permisions('SELECT_PAGES'))
                 <li class="divider scms-adminbar-divider"></li>
-                <li><a href="{{ base_url('admin/pages') }}"><i class="material-icons scms-adminbar-icon">description</i>Todas las Páginas</a></li>
+                <li class="scms-toggle-item">
+                    <label class="scms-toggle-label">
+                        <span><i class="material-icons scms-adminbar-icon">visibility</i>Publicado</span>
+                        <div class="scms-toggle-switch" data-page-id="<?php echo $current_blog_id; ?>" data-action="toggle-visibility">
+                            <input type="checkbox" checked>
+                            <span class="scms-toggle-slider"></span>
+                        </div>
+                    </label>
+                </li>
+                @if(has_permisions('DELETE_PAGE'))
+                <li class="divider scms-adminbar-divider"></li>
+                <li><a href="#!" onclick="scmsAdminBar.archivePage(<?php echo $current_blog_id; ?>, '<?php echo addslashes($current_blog_title); ?>'); return false;" class="scms-danger-action"><i class="material-icons scms-adminbar-icon">archive</i>Archivar Post</a></li>
                 @endif
             </ul>
             <?php endif; ?>
@@ -193,9 +234,30 @@ $form_name = $has_form ? (isset($siteform->form_name) ? $siteform->form_name : n
             </div>
             
             <ul id="scms-form-dropdown" class="dropdown-content scms-adminbar-dropdown">
-                <li><a href="{{ base_url('admin/siteforms/data?form=' . urlencode($form_name)) }}"><i class="material-icons scms-adminbar-icon">inbox</i>Ver Envíos (<?php echo $form_name; ?>)</a></li>
+                <li class="scms-dropdown-header">Formulario: <?php echo $form_name; ?></li>
+                <li class="divider scms-adminbar-divider"></li>
+                <li><a href="{{ base_url('admin/siteforms/data?form=' . urlencode($form_name)) }}"><i class="material-icons scms-adminbar-icon">inbox</i>Ver Envíos</a></li>
                 <li><a href="{{ base_url('admin/siteforms/edit/' . urlencode($form_name)) }}"><i class="material-icons scms-adminbar-icon">edit</i>Editar Formulario</a></li>
                 <li><a href="#!" onclick="scmsAdminBar.exportFormData('<?php echo $form_name; ?>')"><i class="material-icons scms-adminbar-icon">download</i>Exportar Datos</a></li>
+                <li class="divider scms-adminbar-divider"></li>
+                <li class="scms-toggle-item">
+                    <label class="scms-toggle-label">
+                        <span><i class="material-icons scms-adminbar-icon">notifications_active</i>Notificar</span>
+                        <div class="scms-toggle-switch" data-form-name="<?php echo $form_name; ?>" data-action="toggle-notifications">
+                            <input type="checkbox" checked>
+                            <span class="scms-toggle-slider"></span>
+                        </div>
+                    </label>
+                </li>
+                <li class="scms-toggle-item">
+                    <label class="scms-toggle-label">
+                        <span><i class="material-icons scms-adminbar-icon">shield</i>CAPTCHA</span>
+                        <div class="scms-toggle-switch" data-form-name="<?php echo $form_name; ?>" data-action="toggle-captcha">
+                            <input type="checkbox">
+                            <span class="scms-toggle-slider"></span>
+                        </div>
+                    </label>
+                </li>
             </ul>
             <?php endif; ?>
             
@@ -213,14 +275,14 @@ $form_name = $has_form ? (isset($siteform->form_name) ? $siteform->form_name : n
                 <li class="divider scms-adminbar-divider"></li>
                 <li id="scms-no-notifications"><a href="#!"><i class="material-icons scms-adminbar-icon">info</i>No hay notificaciones nuevas</a></li>
                 <li class="divider scms-adminbar-divider"></li>
-                <li><a href="{{ base_url('admin/notifications') }}"><i class="material-icons scms-adminbar-icon">list</i>Ver todas</a></li>
+                <li><a href="{{ base_url('admin') }}"><i class="material-icons scms-adminbar-icon">list</i>Ver todas</a></li>
             </ul>
             
             <!-- User Menu -->
             <div class="scms-adminbar-item dropdown-trigger" data-target="scms-user-menu-dropdown">
                 <a href="#!" class="scms-adminbar-link scms-adminbar-user">
                     @if(userdata('avatar'))
-                    <img src="{{ base_url('uploads/' . userdata('avatar')) }}" alt="Avatar" class="scms-adminbar-avatar">
+                    <img src="{{ base_url(userdata('avatar')) }}" alt="Avatar" class="scms-adminbar-avatar">
                     @else
                     <i class="material-icons scms-adminbar-icon">account_circle</i>
                     @endif
@@ -236,7 +298,7 @@ $form_name = $has_form ? (isset($siteform->form_name) ? $siteform->form_name : n
                     <small>{{ userdata('role') }}</small>
                 </li>
                 <li class="divider scms-adminbar-divider"></li>
-                <li><a href="{{ base_url('admin/users/edit/' . userdata('user_id')) }}"><i class="material-icons scms-adminbar-icon">person</i>Mi Perfil</a></li>
+                <li><a href="{{ base_url('admin/users/ver/' . userdata('user_id')) }}"><i class="material-icons scms-adminbar-icon">person</i>Mi Perfil</a></li>
                 <li><a href="{{ base_url('admin') }}"><i class="material-icons scms-adminbar-icon">dashboard</i>Dashboard</a></li>
                 <li class="divider scms-adminbar-divider"></li>
                 <li><a href="{{ base_url('api/v1/login/logout') }}" id="scms-admin-bar-logout"><i class="material-icons scms-adminbar-icon">exit_to_app</i>Cerrar Sesión</a></li>
@@ -324,19 +386,17 @@ $form_name = $has_form ? (isset($siteform->form_name) ? $siteform->form_name : n
     color: rgba(240, 246, 252, 0.9) !important;
 }
 
-/* Botón de edición destacado */
+/* Botón de edición sutil */
 .scms-wp-adminbar .scms-adminbar-edit-btn {
-    background: #00b0ff !important;
-    color: #fff !important;
+    color: #00b0ff !important;
     font-weight: 500 !important;
-    padding: 0 16px !important;
-    border-radius: 2px !important;
-    margin: 0 4px !important;
+    padding: 0 12px !important;
+    border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
 .scms-wp-adminbar .scms-adminbar-edit-btn:hover {
-    background: #0097d6 !important;
-    color: #fff !important;
+    background: rgba(0, 176, 255, 0.1) !important;
+    color: #00d4ff !important;
 }
 
 /* Highlight para formularios */
@@ -456,8 +516,122 @@ ul.dropdown-content.scms-adminbar-dropdown.scms-notifications-dropdown {
     min-width: 280px !important;
 }
 
+ul.dropdown-content.scms-adminbar-dropdown.scms-admin-panel-menu,
+ul.dropdown-content.scms-adminbar-dropdown.scms-new-content-menu {
+    min-width: 240px !important;
+}
+
 ul.dropdown-content.scms-adminbar-dropdown li.scms-context-item {
     background: rgba(0, 176, 255, 0.1) !important;
+}
+
+/* Toggle Switches en Dropdowns */
+ul.dropdown-content.scms-adminbar-dropdown li.scms-toggle-item {
+    padding: 8px 16px !important;
+    min-height: 48px !important;
+}
+
+ul.dropdown-content.scms-adminbar-dropdown li.scms-toggle-item .scms-toggle-label {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    cursor: pointer !important;
+    margin: 0 !important;
+    color: rgba(240, 246, 252, 0.7) !important;
+    font-size: 13px !important;
+}
+
+ul.dropdown-content.scms-adminbar-dropdown li.scms-toggle-item .scms-toggle-label span {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+ul.dropdown-content.scms-adminbar-dropdown li.scms-toggle-item:hover {
+    background: #32373c !important;
+}
+
+/* Toggle Switch Component */
+.scms-toggle-switch {
+    position: relative !important;
+    display: inline-block !important;
+    width: 40px !important;
+    height: 20px !important;
+    margin-left: auto !important;
+}
+
+.scms-toggle-switch input {
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+.scms-toggle-slider {
+    position: absolute !important;
+    cursor: pointer !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    transition: 0.3s !important;
+    border-radius: 20px !important;
+}
+
+.scms-toggle-slider:before {
+    position: absolute !important;
+    content: "" !important;
+    height: 14px !important;
+    width: 14px !important;
+    left: 3px !important;
+    bottom: 3px !important;
+    background-color: white !important;
+    transition: 0.3s !important;
+    border-radius: 50% !important;
+}
+
+.scms-toggle-switch input:checked + .scms-toggle-slider {
+    background-color: #00b0ff !important;
+}
+
+.scms-toggle-switch input:checked + .scms-toggle-slider:before {
+    transform: translateX(20px) !important;
+}
+
+.scms-toggle-switch:hover .scms-toggle-slider {
+    background-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.scms-toggle-switch input:checked:hover + .scms-toggle-slider {
+    background-color: #0097d6 !important;
+}
+
+/* Quick Edit Toggle en navbar */
+.scms-adminbar-link.scms-quick-edit-toggle {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+}
+
+.scms-toggle-switch.scms-inline-toggle {
+    margin-left: 0 !important;
+}
+
+/* Danger Action Styles */
+.scms-adminbar-dropdown a.scms-danger-action {
+    color: #ff5252 !important;
+}
+
+.scms-adminbar-dropdown a.scms-danger-action:hover {
+    background: rgba(255, 82, 82, 0.1) !important;
+    color: #ff1744 !important;
+}
+
+.scms-adminbar-dropdown a.scms-danger-action .material-icons {
+    color: #ff5252 !important;
 }
 
 body.scms-has-admin-bar {
@@ -484,116 +658,9 @@ body.scms-has-admin-bar {
 </style>
 
 <script>
-(function() {
-    'use strict';
-    
-    // Simple Toast Notification (reemplazo de M.toast)
-    function showToast(message, type) {
-        var toast = document.createElement('div');
-        toast.className = 'scms-toast scms-toast-' + type;
-        toast.textContent = message;
-        toast.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:' + 
-            (type === 'success' ? '#4caf50' : type === 'error' ? '#f44336' : '#2196f3') + 
-            ';color:#fff;padding:12px 24px;border-radius:4px;z-index:999999;box-shadow:0 2px 8px rgba(0,0,0,0.3)';
-        document.body.appendChild(toast);
-        setTimeout(function() {
-            toast.style.opacity = '0';
-            toast.style.transition = 'opacity 0.3s';
-            setTimeout(function() { document.body.removeChild(toast); }, 300);
-        }, 3000);
-    }
-    
-    document.addEventListener('DOMContentLoaded', function() {
-        // Vanilla JS Dropdown Implementation (sin Materialize)
-        var dropdownTriggers = document.querySelectorAll('#scms-wp-adminbar .dropdown-trigger');
-        
-        dropdownTriggers.forEach(function(trigger) {
-            var targetId = trigger.getAttribute('data-target');
-            var dropdown = document.getElementById(targetId);
-            
-            if (!dropdown) return;
-            
-            // Posicionar dropdown
-            dropdown.style.position = 'absolute';
-            dropdown.style.display = 'none';
-            dropdown.style.zIndex = '999999';
-            
-            trigger.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                // Cerrar otros dropdowns
-                document.querySelectorAll('.dropdown-content').forEach(function(dd) {
-                    if (dd !== dropdown) dd.style.display = 'none';
-                });
-                
-                // Toggle este dropdown
-                if (dropdown.style.display === 'none') {
-                    var rect = trigger.getBoundingClientRect();
-                    dropdown.style.top = rect.bottom + 'px';
-                    dropdown.style.left = (rect.left - dropdown.offsetWidth + rect.width) + 'px';
-                    dropdown.style.display = 'block';
-                } else {
-                    dropdown.style.display = 'none';
-                }
-            });
-        });
-        
-        // Cerrar dropdowns al hacer clic fuera
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.dropdown-trigger')) {
-                document.querySelectorAll('.dropdown-content').forEach(function(dd) {
-                    dd.style.display = 'none';
-                });
-            }
-        });
-        
-        // Cerrar dropdown al hacer clic en un item
-        document.querySelectorAll('.dropdown-content a').forEach(function(link) {
-            link.addEventListener('click', function() {
-                document.querySelectorAll('.dropdown-content').forEach(function(dd) {
-                    dd.style.display = 'none';
-                });
-            });
-        });
-        
-        document.body.classList.add('scms-has-admin-bar');
-        
-        var fixedNavbar = document.querySelector('.navbar.fixed-top');
-        if (fixedNavbar) {
-            fixedNavbar.style.top = '46px';
-        }
-        
-        var logoutLink = document.getElementById('scms-admin-bar-logout');
-        if (logoutLink) {
-            logoutLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
-                    window.location.href = this.href;
-                }
-            });
-        }
-        
-        scmsLoadNotifications();
-    });
-    
-    function scmsLoadNotifications() {
-        var badge = document.getElementById('scms-notification-count');
-        if (badge) {
-            // TODO: Implementar API de notificaciones
-        }
-    }
-    
-    function scmsExportFormData(formName) {
-        if (!formName) return;
-        window.location.href = '{{ base_url("admin/siteforms/export/") }}' + encodeURIComponent(formName);
-        showToast('Descargando datos...', 'info');
-    }
-    
-    window.scmsAdminBar = {
-        loadNotifications: scmsLoadNotifications,
-        exportFormData: scmsExportFormData
-    };
-})();
+// Variables de configuración para admin-navbar.js
+window.SCMS_BASE_URL = '{{ base_url() }}';
+window.SCMS_CURRENT_URL = '{{ current_url() }}';
 </script>
+<script src="{{ base_url('public/js/admin-navbar.js') }}"></script>
 @endif
