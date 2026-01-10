@@ -23,6 +23,14 @@ var DashboardModule = new Vue({
       totalRequests: 0,
       requestGrowth: 0
     },
+    kpis: {
+      uniqueVisitors: 0,
+      bounceRate: 0,
+      pagesPerSession: 0,
+      dailyGrowth: 0
+    },
+    topPages: [],
+    referrers: [],
     timeline: [],
     creator: {
       modes: ["page", "album", "categorie", "fragment"],
@@ -406,6 +414,21 @@ var DashboardModule = new Vue({
           // Procesar estadísticas
           if (data.stats) {
             this.stats = data.stats;
+          }
+          
+          // Procesar KPIs
+          if (data.kpis) {
+            this.kpis = data.kpis;
+          }
+          
+          // Procesar páginas más visitadas
+          if (data.topPages) {
+            this.topPages = data.topPages;
+          }
+          
+          // Procesar referrers (fuentes de tráfico)
+          if (data.referrers) {
+            this.referrers = data.referrers;
           }
           
           this.loader = false;

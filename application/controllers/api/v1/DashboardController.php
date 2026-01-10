@@ -109,6 +109,10 @@ class DashboardController extends REST_Controller
 
         // Calcular estadísticas generales
         $result['stats'] = $this->calculateStats($tempData);
+        $result['kpis'] = $this->calculateKPIs($tempData);
+        $result['referrers'] = $this->getTopReferrers($tempData, 5);
+        $result['topPages'] = $this->getTopPages($tempData, 5);
+        $result['hourlyHeatmap'] = $this->getHourlyHeatmap($tempData);
 
         $response = array(
             'code' => 200,
@@ -340,6 +344,118 @@ class DashboardController extends REST_Controller
             'totalRequests' => $totalVisitors,
             'requestGrowth' => $visitorGrowth
         );
+    }
+
+    private function calculateKPIs($data)
+    {
+        $totalVisits = count($data);
+        $uniqueIPs = array_unique(array_column($data, 'ip_address'));
+        $uniqueVisitors = count($uniqueIPs);
+        
+        // Calcular páginas por sesión (promedio)
+        $pagesPerSession = $uniqueVisitors > 0 ? round($totalVisits / $uniqueVisitors, 2) : 0;
+        
+        // Calcular bounce rate (visitantes con solo 1 página vista)
+        $ipCounts = array_count_values(array_column($data, 'ip_address'));
+        $singlePageVisits = count(array_filter($ipCounts, function($count) { return $count == 1; }));
+        $bounceRate = $uniqueVisitors > 0 ? round(($singlePageVisits / $uniqueVisitors) * 100, 1) : 0;
+        
+        // Visitas hoy
+        $today = date('Y-m-d');
+        $todayVisits = count(array_filter($data, function($item) use ($today) {
+            return date('Y-m-d', strtotime($item->date_create)) == $today;
+        }));
+        
+        // Visitas ayer para comparación
+        $yesterday = date('Y-m-d', strtotime('-1 day'));
+        $yesterdayVisits = count(array_filter($data, function($item) use ($yesterday) {
+            return date('Y-m-d', strtotime($item->date_create)) == $yesterday;
+        }));
+        
+        $dailyGrowth = $yesterdayVisits > 0 ? round((($todayVisits - $yesterdayVisits) / $yesterdayVisits) * 100, 1) : 0;
+        
+        return array(
+            'uniqueVisitors' => $uniqueVisitors,
+            'totalVisits' => $totalVisits,
+            'pagesPerSession' => $pagesPerSession,
+            'bounceRate' => $bounceRate,
+            'todayVisits' => $todayVisits,
+            'yesterdayVisits' => $yesterdayVisits,
+            'dailyGrowth' => $dailyGrowth
+        );
+    }
+    
+    private function getTopReferrers($data, $topCount = 5)
+    {
+        $referrers = array();
+        
+        foreach ($data as $item) {
+            if (isset($item->referer) && !empty($item->referer) && $item->referer != '-') {
+                $host = parse_url($item->referer, PHP_URL_HOST);
+                if ($host) {
+                    $referrers[] = $host;
+                }
+            } else {
+                $referrers[] = 'Direct';
+            }
+        }
+        
+        $referrerCounts = array_count_values($referrers);
+        arsort($referrerCounts);
+        $topReferrers = array_slice($referrerCounts, 0, $topCount, true);
+        
+        return array(
+            'labels' => array_keys($topReferrers),
+            'datasets' => array(
+                array('data' => array_values($topReferrers))
+            )
+        );
+    }
+    
+    private function getTopPages($data, $topCount = 5)
+    {
+        $ignoredUrls = [
+            '/favicon.ico', '/robots.txt', '/', '/sitemap.xml',
+            '/manifest.json', '/service-worker.js', '/sw.js'
+        ];
+        
+        $pages = array();
+        foreach ($data as $item) {
+            if (!in_array($item->requested_url, $ignoredUrls)) {
+                $pages[] = $item->requested_url;
+            }
+        }
+        
+        $pageCounts = array_count_values($pages);
+        arsort($pageCounts);
+        
+        return array_slice($pageCounts, 0, $topCount, true);
+    }
+    
+    private function getHourlyHeatmap($data)
+    {
+        $heatmap = array();
+        $days = array('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun');
+        
+        // Inicializar matriz
+        foreach ($days as $day) {
+            for ($hour = 0; $hour < 24; $hour++) {
+                $heatmap[$day][$hour] = 0;
+            }
+        }
+        
+        // Llenar con datos
+        foreach ($data as $item) {
+            $timestamp = strtotime($item->date_create);
+            $day = date('D', $timestamp);
+            $hour = (int)date('G', $timestamp);
+            
+            if (isset($heatmap[$day][$hour])) {
+                $heatmap[$day][$hour]++;
+            }
+        }
+        
+        return $heatmap;
     }
 
     /**
