@@ -320,7 +320,17 @@ class PageController extends Base_Controller
             redirect('/');
         }
 
-        $data = $this->get_page_info(array('page_id' => $this->input->get('page_id')));
+        // Get page_id from request
+        $page_id = $this->input->get('page_id');
+        
+        // First check if the page exists and is not deleted
+        $page = $this->Page->find($page_id);
+        if (!$page || $page->status == 0) {
+            $this->error404();
+            return;
+        }
+
+        $data = $this->get_page_info(array('page_id' => $page_id));
         if ($data == null) {
             $this->error404();
             return;
