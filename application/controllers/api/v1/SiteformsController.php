@@ -79,17 +79,15 @@ class SiteformsController extends REST_Controller
         if ($siteform_id) {
             $result = $siteform->find_with(array('siteform_id' => $siteform_id));
             $result = $result ? $siteform->as_data() : [];
-        } else {
-            $result = $siteform->all();
-        }
-
-        if ($result) {
-            $this->response_ok($result);
+            if ($result) {
+                $this->response_ok($result);
+                return;
+            }
+            $this->response_error(lang('not_found_error'));
             return;
         }
 
-        $this->response_error(lang('not_found_error'));
-
+        $this->respond_index_list($siteform);
     }
 
     /**
@@ -362,17 +360,15 @@ class SiteformsController extends REST_Controller
         if ($siteFormSubmit_id) {
             $result = $SiteFormSubmit->find_with(array('siteform_submit_id' => $siteFormSubmit_id));
             $result = $result ? $SiteFormSubmit->as_data() : [];
-        } else {
-            $result = $SiteFormSubmit->all();
-        }
-
-        if ($result) {
-            $this->response_ok($result);
+            if ($result) {
+                $this->response_ok($result);
+                return;
+            }
+            $this->response_error(lang('not_found_error'));
             return;
         }
 
-        $this->response_error(lang('not_found_error'));
-
+        $this->respond_index_list($SiteFormSubmit);
     }
 
     /**

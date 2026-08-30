@@ -51,6 +51,10 @@ class MY_Model extends CI_Model implements JsonSerializable
     @var array
      */
     protected $attributes = array();
+    /** Columnas usadas por el parámetro GET `q` al paginar. Vacío = auto (excepto blobs/password). */
+    public $searchable = array();
+    /** Último metadata de pager() para get_pagination_info() sin argumentos. */
+    protected $last_pagination = array();
     /**Constructor de la clase */
     public function __construct()
     {
@@ -108,56 +112,238 @@ class MY_Model extends CI_Model implements JsonSerializable
     }
 
     /**
-     * Método que devuelve una lista de elementos paginados utilizando el método all()
-     * @return Collection|bool Lista de elementos paginados
-     * */
-    public function pager()
+     * Lista paginada. Query: page, per_page (máx. 100), q.
+     * Sin $where y sin unfiltered, aplica status = 1 (igual que all()).
+     *
+     * @param array $where Filtros. `status_in` => array de enteros usa WHERE IN.
+     * @param array $order [campo, dirección]
+     * @param array $options unfiltered = true omite el filtro status=1 por defecto
+     * @return Collection|bool
+     */
+    public function pager($where = array(), $order = array(), $options = array())
     {
-        // Obtiene la información de paginación
-        $pagination_info = $this->get_pagination_info();
-
-        // Establece los límites de la consulta
-        $limit = [$pagination_info["per_page"], $pagination_info["offset"]];
-
-        // Retorna la lista de elementos obtenidos mediante el método all()
-        return $this->all($limit);
+        $unfiltered = !empty($options['unfiltered']);
+        $filters = $this->normalize_list_filters($where, $unfiltered);
+        $search = $this->list_search_term();
+        $pagination_info = $this->build_pagination_info($filters, $search);
+        $this->last_pagination = $pagination_info;
+        $limit = array($pagination_info['per_page'], $pagination_info['offset']);
+        return $this->find_list($filters, $limit, $order, $search);
     }
 
     /**
-     * Obtiene información de paginación para una lista de resultados.
+     * Metadata de paginación. Tras pager() se puede llamar sin argumentos.
      *
-     * @return array Información de paginación.
+     * @param array|null $where
+     * @param string|null $search
+     * @return array
      */
-    public function get_pagination_info()
+    public function get_pagination_info($where = null, $search = null)
     {
-        // Verifica si el parámetro 'page' está presente en la URL.
-        if (isset($_GET['page'])) {
-            $current_page = $_GET['page'];
-        } else {
-            $current_page = 1;
+        if ($where === null && $search === null && !empty($this->last_pagination)) {
+            return $this->last_pagination;
         }
-        $per_page = 25; // Número de resultados por página.
-        $total_rows = $this->get_count_all(); // Número total de resultados.
-        $offset = (($current_page - 1) * $per_page) + 1; // Registro de inicio en la página actual.
-        $total_pages = ceil($total_rows / $per_page); // Número total de páginas.
-
-        // Devuelve un arreglo con la información de paginación.
-        return [
-            "current_page" => $current_page,
-            "per_page" => $per_page,
-            "total_rows" => $total_rows,
-            "offset" => $offset,
-            "total_pages" => $total_pages,
-            "first_page" => 1,
-            "last_page" => $total_pages,
-            "next_page" => $current_page + 1,
-            "prev_page" => $current_page - 1,
-        ];
+        $filters = is_array($where) ? $where : array();
+        $term = $search !== null ? $search : $this->list_search_term();
+        return $this->build_pagination_info($filters, $term);
     }
 
-    public function get_count_all()
+    /**
+     * @param array $where
+     * @param string $search
+     * @return int
+     */
+    public function get_count_all($where = array(), $search = '')
     {
-        return $this->db->count_all($this->table);
+        if (empty($where) && $search === '') {
+            return (int) $this->db->count_all($this->table);
+        }
+        $this->apply_list_filters($where, $search);
+        return (int) $this->db->count_all_results($this->table);
+    }
+
+    /**
+     * Listado con filtros opcionales (status_in, q) y limit/offset.
+     *
+     * @param array $where
+     * @param array|string $limit [per_page, offset] o entero
+     * @param array $order
+     * @param string $search
+     * @return Collection|bool
+     */
+    public function find_list($where = array(), $limit = array(), $order = array(), $search = '')
+    {
+        $this->apply_list_filters($where, $search);
+        $this->apply_query_limit($limit);
+        $this->apply_query_order($order);
+        $this->db->select($this->getFieldsSelectCompile());
+        $query = $this->db->get($this->table);
+        if ($query->num_rows() > 0) {
+            return new Collection($this->filter_results($query->result()));
+        }
+        return false;
+    }
+
+    /**
+     * @return string
+     */
+    public function list_search_term()
+    {
+        $q = $this->input->get('q');
+        if ($q === null || $q === false) {
+            return '';
+        }
+        return trim((string) $q);
+    }
+
+    /**
+     * @param array $where
+     * @param bool $unfiltered
+     * @return array
+     */
+    protected function normalize_list_filters($where, $unfiltered)
+    {
+        if (!empty($where)) {
+            return $where;
+        }
+        if ($unfiltered) {
+            return array();
+        }
+        return array('status' => 1);
+    }
+
+    /**
+     * @param array $where
+     * @param string $search
+     * @return array
+     */
+    protected function build_pagination_info($where, $search)
+    {
+        $current_page = (int) $this->input->get('page');
+        if ($current_page < 1) {
+            $current_page = 1;
+        }
+        $per_page = (int) $this->input->get('per_page');
+        if ($per_page < 1) {
+            $per_page = 25;
+        }
+        if ($per_page > 100) {
+            $per_page = 100;
+        }
+        $total_rows = $this->get_count_all($where, $search);
+        $offset = ($current_page - 1) * $per_page;
+        $total_pages = $per_page > 0 ? (int) ceil($total_rows / $per_page) : 0;
+
+        return array(
+            'current_page' => $current_page,
+            'per_page' => $per_page,
+            'total_rows' => $total_rows,
+            'offset' => $offset,
+            'total_pages' => $total_pages,
+            'first_page' => 1,
+            'last_page' => $total_pages,
+            'next_page' => $current_page + 1,
+            'prev_page' => $current_page - 1,
+        );
+    }
+
+    /**
+     * @param array $filters
+     * @param string $search
+     * @return void
+     */
+    protected function apply_list_filters($filters, $search = '')
+    {
+        $filters = is_array($filters) ? $filters : array();
+        if (isset($filters['status_in'])) {
+            $ids = array_values(array_map('intval', (array) $filters['status_in']));
+            if (!empty($ids)) {
+                $this->db->where_in('status', $ids);
+            }
+            unset($filters['status_in']);
+        }
+        if (!empty($filters)) {
+            $this->db->where($filters);
+        }
+        $search = is_string($search) ? trim($search) : '';
+        if ($search === '') {
+            return;
+        }
+        $fields = $this->get_searchable_fields();
+        if (empty($fields)) {
+            return;
+        }
+        $this->db->group_start();
+        foreach ($fields as $i => $field) {
+            if ($i === 0) {
+                $this->db->like($field, $search);
+            } else {
+                $this->db->or_like($field, $search);
+            }
+        }
+        $this->db->group_end();
+    }
+
+    /**
+     * @return array
+     */
+    protected function get_searchable_fields()
+    {
+        if (is_array($this->searchable) && count($this->searchable) > 0) {
+            return $this->searchable;
+        }
+        $skip = array(
+            'password',
+            'json_content',
+            'content',
+            'html',
+            'css',
+            'js',
+            'params',
+            'user_agent',
+        );
+        $fields = $this->db->list_fields($this->table);
+        $out = array();
+        foreach ($fields as $field) {
+            if (in_array($field, $skip) || in_array($field, $this->protectedFields)) {
+                continue;
+            }
+            $out[] = $field;
+        }
+        return $out;
+    }
+
+    /**
+     * @param array|string $limit
+     * @return void
+     */
+    protected function apply_query_limit($limit)
+    {
+        if (!$limit) {
+            return;
+        }
+        if (is_array($limit)) {
+            if (isset($limit[1])) {
+                $this->db->limit((int) $limit[0], (int) $limit[1]);
+            } else {
+                $this->db->limit((int) $limit[0]);
+            }
+            return;
+        }
+        $this->db->limit((int) $limit);
+    }
+
+    /**
+     * @param array $order
+     * @return void
+     */
+    protected function apply_query_order($order)
+    {
+        if ($order) {
+            $this->db->order_by($order[0], $order[1]);
+            return;
+        }
+        $this->db->order_by($this->primaryKey, 'ASC');
     }
 
     /**

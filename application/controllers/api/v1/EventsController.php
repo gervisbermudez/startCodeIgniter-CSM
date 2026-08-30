@@ -77,26 +77,22 @@ class EventsController extends REST_Controller
         if ($event_id) {
             $result = $event->find_with(array('event_id' => $event_id));
             $result = $result ? $event->as_data() : [];
-        } else {
-            // Verificar si se solicita filtrar por status
-            $status = $this->input->get('status');
-            
-            if ($status !== null) {
-                // Filtrar por status específico
-                $result = $event->where(['status' => $status])->get_all();
-            } else {
-                // Devolver todos sin filtrar (para admin)
-                $result = $event->get_all();
+            if ($result) {
+                $this->response_ok($result);
+                return;
             }
-        }
-
-        if ($result) {
-            $this->response_ok($result);
+            $this->response_error(lang('not_found_error'));
             return;
         }
 
-        $this->response_error(lang('not_found_error'));
-
+        $status = $this->get('status');
+        $where = array();
+        $options = array('unfiltered' => true, 'use_get_all' => true);
+        if ($status !== null && $status !== '') {
+            $where['status'] = $status;
+            $options = array();
+        }
+        $this->respond_index_list($event, $where, array('event_id', 'DESC'), $options);
     }
 
     /**

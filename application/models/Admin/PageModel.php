@@ -20,6 +20,7 @@ class PageModel extends MY_Model
     public $page_data = [];
 
     public $computed = ["json_content" => "get_json_content"];
+    public $searchable = array('title', 'path', 'subtitle');
 
     /**
      * Page status:
@@ -43,7 +44,8 @@ class PageModel extends MY_Model
      * Return all records found on a table or false if nothing is found
      * @return Collection
      */
-    public function all($limit = '25', $order = array())
+
+    public function all($limit = array(), $order = array())
     {
         $sql = 'SELECT p.*, pt.`page_type_name`, u.`username`, ug.`name`, ug.`level`, file_data.file as imagen_file
                 FROM page p
@@ -53,6 +55,14 @@ class PageModel extends MY_Model
                 INNER JOIN page_type pt ON pt.`page_type_id` = p.`page_type_id`
                 WHERE p.status = 1
                 ';
+        if ($limit && is_array($limit)) {
+            $count = (int) $limit[0];
+            if (isset($limit[1])) {
+                $sql .= ' LIMIT ' . (int) $limit[1] . ', ' . $count;
+            } else {
+                $sql .= ' LIMIT ' . $count;
+            }
+        }
         $query = $this->db->query($sql);
         if ($query->num_rows() > 0) {
             $data = $query->result();

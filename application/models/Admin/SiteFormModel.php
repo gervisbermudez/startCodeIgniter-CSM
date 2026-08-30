@@ -16,6 +16,7 @@ class SiteFormModel extends MY_Model
     ];
 
     public $computed = array("properties" => "properties_to_json");
+    public $searchable = array('name', 'description', 'template');
 
     public $properties = [];
 

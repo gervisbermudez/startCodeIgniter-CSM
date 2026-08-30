@@ -86,19 +86,15 @@ class CategoriesController extends REST_Controller
             $result = $categorie->where(array('parent_id' => '0', 'categorie_id' => $categorie_id));
             // Si se encuentra una categoría con ese ID, se guarda en $result. De lo contrario, se guarda un arreglo vacío
             $result = $result ? $result->first() : [];
-        } else {
-            // Si no se recibe un parámetro "categorie_id", se buscan todas las categorías cuyo "parent_id" = 0
-            $result = $categorie->where(array('parent_id' => '0'));
-        }
-
-        // Si se encontró una categoría, se responde con un código de éxito (200) y se envía la categoría como respuesta
-        if ($result) {
-            $this->response_ok($result);
+            if ($result) {
+                $this->response_ok($result);
+                return;
+            }
+            $this->response_error(lang('not_found_error'));
             return;
         }
 
-        // Si no se encontró una categoría, se responde con un error de "no encontrado" (404)
-        $this->response_error(lang('not_found_error'));
+        $this->respond_index_list($categorie, array('parent_id' => '0'), array(), array('unfiltered' => true));
     }
 
     /**

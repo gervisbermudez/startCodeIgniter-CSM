@@ -5,10 +5,14 @@ var NotesLists = new Vue({
     tableView: false,
     loader: true,
     filter: "",
+    serverPagination: true,
   },
   mixins: [mixins],
   computed: {
     filterNotes: function () {
+      if (this.serverPagination) {
+        return this.notes;
+      }
       if (!!this.filter) {
         let filterTerm = this.filter.toLowerCase();
         return this.notes.filter((value, index) => {
@@ -30,6 +34,9 @@ var NotesLists = new Vue({
     resetFilter: function () {
       this.filter = "";
     },
+    reloadList: function (page) {
+      this.getNotes(page);
+    },
     getPageImagePath(fragment) {
       if (fragment.imagen_file) {
         return (
@@ -42,21 +49,23 @@ var NotesLists = new Vue({
       }
       return BASEURL + "/public/img/default.jpg";
     },
-    getNotes: function () {
+    getNotes: function (page) {
       var self = this;
+      self.loader = true;
       $.ajax({
         type: "GET",
         url: BASEURL + "api/v1/notes/",
-        data: {},
+        data: this.listQuery({}, page),
         dataType: "json",
         success: function (response) {
-          let notes = response.data;
+          let notes = response.data || [];
           for (const key in notes) {
-            if (notes.hasOwnProperty(key)) {
+            if (notes.hasOwnProperty(key) && notes[key].user) {
               notes[key].user = new User(notes[key].user);
             }
           }
           self.notes = notes;
+          self.applyPaginatorFromResponse(response);
           setTimeout(() => {
             self.loader = false;
             self.initPlugins();
@@ -79,7 +88,7 @@ var NotesLists = new Vue({
         dataType: "json",
         success: function (response) {
           if (response.code == 200) {
-            self.notes.splice(index, 1);
+            self.getNotes();
           }
           setTimeout(() => {
             self.loader = false;

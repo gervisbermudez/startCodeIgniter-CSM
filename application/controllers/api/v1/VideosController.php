@@ -27,18 +27,15 @@ class VideosController extends REST_Controller
         if ($video_id) {
             $found = $video->find($video_id);
             $result = $found ? $video : [];
-        } else {
-            // Use the model helper to return mapped results (includes relations)
-            $result = $video->all();
-            $result = $result ? (is_array($result) ? $result : $result->toArray()) : [];
-        }
-
-        if ($result || (is_array($result) && count($result) === 0)) {
-            $this->response_ok($result);
+            if ($result) {
+                $this->response_ok($result);
+                return;
+            }
+            $this->response_error(lang('not_found_error'));
             return;
         }
 
-        $this->response_error(lang('not_found_error'));
+        $this->respond_index_list($video);
     }
 
     public function index_post()

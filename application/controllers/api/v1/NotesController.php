@@ -40,32 +40,21 @@ class NotesController extends REST_Controller
         if ($note_id) {
             $result = $note->find($note_id);
             $result = $result ? $note : [];
-        } else {
-            $result = $note->where(['status' => '1']);
-            $archived = $note->where(['status' => '2']);
-            $result = $result ? $result->toArray() : [];
-            $archived = $archived ? $archived->toArray() : [];
-            $result = array_merge($result, $archived);
-        }
-
-        if ($result) {
-            $this->response_ok($result);
+            if ($result) {
+                $this->response_ok($result);
+                return;
+            }
+            $this->response_error(lang('not_found_error'));
             return;
         }
 
-        if ($note_id) {
-            $response = array(
-                'code' => REST_Controller::HTTP_NOT_FOUND,
-                "error_message" => lang('not_found_error'),
-                'data' => [],
-            );
+        $status = $this->get('status');
+        if ($status !== null && $status !== '') {
+            $where = array('status' => $status);
         } else {
-            $response = array(
-                'code' => REST_Controller::HTTP_OK,
-                'data' => [],
-            );
+            $where = array('status_in' => array(1, 2));
         }
-        $this->response($response, REST_Controller::HTTP_OK);
+        $this->respond_index_list($note, $where);
     }
 
     /**

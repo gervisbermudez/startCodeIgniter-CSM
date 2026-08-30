@@ -8,7 +8,7 @@
         <br><br>
         <preloader />
     </div>
-    <nav class="page-navbar" v-cloak v-show="!loader && fragments.length > 0">
+    <nav class="page-navbar" v-cloak v-show="!loader">
         <div class="nav-wrapper">
             <form>
                 <div class="input-field">
@@ -138,6 +138,7 @@
     <div class="container" v-if="!loader && fragments.length == 0" v-cloak>
         <h4><?php echo lang('no_fragments'); ?></h4>
     </div>
+    @include('admin.components.pagination')
     <confirm-modal
         id="deleteModal"
         title="<?php echo lang('confirm_delete'); ?>"

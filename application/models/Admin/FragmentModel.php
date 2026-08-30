@@ -8,6 +8,7 @@ class FragmentModel extends MY_Model
     public $table = 'fragmentos';
     public $primaryKey = 'fragment_id';
     public $softDelete = true;
+    public $searchable = array('name', 'description', 'type');
 
     public $hasOne = [
         'user' => ['user_id', 'Admin/UserModel', 'UserModel'],

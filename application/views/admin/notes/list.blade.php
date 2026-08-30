@@ -8,7 +8,7 @@
         <br><br>
         <preloader />
     </div>
-    <nav class="page-navbar" v-cloak v-show="!loader && notes.length > 0">
+    <nav class="page-navbar" v-cloak v-show="!loader">
         <div class="nav-wrapper">
             <form>
                 <div class="input-field">
@@ -19,7 +19,7 @@
             </form>
             <ul class="right hide-on-med-and-down">
                 <li><a href="#!" v-on:click="toggleView();"><i class="material-icons">view_module</i></a></li>
-                <li><a href="#!" v-on:click="getPages();"><i class="material-icons">refresh</i></a></li>
+                <li><a href="#!" v-on:click="getNotes();"><i class="material-icons">refresh</i></a></li>
                 <li>
                     <a href="#!" class='dropdown-trigger' data-target='dropdown-options'><i class="material-icons">more_vert</i></a>
                     <!-- Dropdown Structure -->
@@ -138,6 +138,7 @@
     <div class="container" v-if="!loader && notes.length == 0" v-cloak>
         <h4>No hay Notas</h4>
     </div>
+    @include('admin.components.pagination')
     <confirm-modal
         id="deleteModal"
         title="Confirmar Borrar"

@@ -96,7 +96,7 @@
         <br><br>
         <preloader />
     </div>
-    <nav class="page-navbar" v-cloak v-show="!loader && pages.length > 0">
+    <nav class="page-navbar" v-cloak v-show="!loader">
         <div class="nav-wrapper">
             <form v-on:submit.prevent="">
                 <div class="input-field">
@@ -623,6 +623,7 @@
     <div class="container" v-if="!loader && pages.length == 0" v-cloak>
         <h4>No pages found</h4>
     </div>
+    @include('admin.components.pagination')
     <confirm-modal id="deleteModal" title="Confirm Delete" v-on:notify="confirmDelete">
         <p>
             Do you want to delete this Page?

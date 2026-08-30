@@ -79,16 +79,15 @@ class FragmentsController extends REST_Controller
         if ($fragment_id) {
             $result = $fragmento->where(array('fragment_id' => $fragment_id));
             $result = $result ? $result->first() : [];
-        } else {
-            $result = $fragmento->where(array());
-        }
-
-        if ($result) {
-            $this->response_ok($result);
+            if ($result) {
+                $this->response_ok($result);
+                return;
+            }
+            $this->response_error(lang('not_found_error'));
             return;
         }
 
-        $this->response_error(lang('not_found_error'));
+        $this->respond_index_list($fragmento, array(), array(), array('unfiltered' => true));
     }
 
     /**

@@ -9,6 +9,7 @@ class CategorieModel extends MY_Model
     public $table = 'categories';
     public $primaryKey = 'categorie_id';
     public $softDelete = true;
+    public $searchable = array('name', 'description', 'type');
 
     public $hasOne = [
         'user' => ['user_id', 'Admin/UserModel', 'UserModel'],

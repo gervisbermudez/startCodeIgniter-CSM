@@ -74,17 +74,15 @@ class MenusController extends REST_Controller
         if ($menu_id) {
             $result = $menu->find_with(array('menu_id' => $menu_id));
             $result = $result ? $menu->as_data() : [];
-        } else {
-            $result = $menu->all();
-        }
-
-        if ($result) {
-            $this->response_ok($result);
+            if ($result) {
+                $this->response_ok($result);
+                return;
+            }
+            $this->response_error(lang('not_found_error'));
             return;
         }
 
-        $this->response_error(lang('not_found_error'));
-
+        $this->respond_index_list($menu);
     }
 
     /**

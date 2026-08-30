@@ -6,6 +6,7 @@ class LoggerModel extends MY_Model
 {
     public $table = 'logger';
     public $primaryKey = 'logger_id';
+    public $searchable = array('type', 'token', 'comment');
 
     public function __construct()
     {

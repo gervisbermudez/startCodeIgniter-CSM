@@ -11,6 +11,7 @@ class EventModel extends MY_Model
     public $table = "events";
     public $softDelete = true;
     public $computed = ["mainImage" => "mainImage"];
+    public $searchable = array('name', 'description');
     public $hasOne = [
         'user' => ['user_id', 'Admin/UserModel', 'UserModel'],
     ];

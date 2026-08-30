@@ -7,7 +7,8 @@ var PagesLists = new Vue({
     loader: true,
     filter: "",
     tempPage: {},
-    currentStatus: null // null means Published + Drafts
+    currentStatus: null, // null means Published + Drafts
+    serverPagination: true,
   },
   mixins: [mixins],
   computed: {
@@ -22,6 +23,9 @@ var PagesLists = new Vue({
       });
     },
     filterAll: function () {
+      if (this.serverPagination) {
+        return this.pages;
+      }
       if (!!this.filter) {
         let filterTerm = this.filter.toLowerCase();
         return this.pages.filter((value, index) => {
@@ -53,30 +57,27 @@ var PagesLists = new Vue({
     resetFilter: function () {
       this.filter = "";
     },
-    getPageImagePath(page) {
-      if (page.imagen_file && page.imagen_file.file_front_path) {
-        // Si file_front_path ya viene procesado desde el backend con /
-        return page.imagen_file.file_front_path;
-      }
-      if (page.imagen_file) {
-        return (
-          BASEURL +
-          page.imagen_file.file_path.substr(2) +
-          page.imagen_file.file_name +
-          "." +
-          page.imagen_file.file_type
-        );
-      }
-      return BASEURL + "/public/img/default.jpg";
+    reloadList: function (page) {
+      this.getPages(this.currentStatus, page);
     },
-    getPages: function (status = null) {
+    getPages: function (status, page) {
       var self = this;
+      if (typeof status === "undefined") {
+        status = this.currentStatus;
+      }
+      if (status !== this.currentStatus) {
+        page = 1;
+      }
+      if (typeof page === "undefined") {
+        page = this.currentPage || 1;
+      }
       self.loader = true;
       self.currentStatus = status;
-      var data = {};
+      var extra = {};
       if (status !== null) {
-        data.status = status;
+        extra.status = status;
       }
+      var data = this.listQuery(extra, page);
 
       $.ajax({
         type: "GET",
@@ -95,6 +96,7 @@ var PagesLists = new Vue({
           } else {
             self.pages = [];
           }
+          self.applyPaginatorFromResponse(response);
           self.loader = false;
           self.$nextTick(() => {
             self.initPlugins();
@@ -107,6 +109,22 @@ var PagesLists = new Vue({
         },
       });
     },
+    getPageImagePath(page) {
+      if (page.imagen_file && page.imagen_file.file_front_path) {
+        // Si file_front_path ya viene procesado desde el backend con /
+        return page.imagen_file.file_front_path;
+      }
+      if (page.imagen_file) {
+        return (
+          BASEURL +
+          page.imagen_file.file_path.substr(2) +
+          page.imagen_file.file_name +
+          "." +
+          page.imagen_file.file_type
+        );
+      }
+      return BASEURL + "/public/img/default.jpg";
+    },
     deletePage: function (page) {
       var self = this;
       self.loader = true;
@@ -117,8 +135,9 @@ var PagesLists = new Vue({
         dataType: "json",
         success: function (response) {
           if (response.code == 200) {
-            self.pages = self.pages.filter(p => p.page_id !== page.page_id);
             M.toast({ html: "Page deleted successfully" });
+            self.getPages(self.currentStatus);
+            return;
           }
           self.loader = false;
           self.initPlugins();
@@ -180,8 +199,9 @@ var PagesLists = new Vue({
         dataType: "json",
         success: function (response) {
           if (response.code == 200) {
-            self.pages = self.pages.filter(p => p.page_id !== page.page_id);
             M.toast({ html: "Page archived successfully" });
+            self.getPages(self.currentStatus);
+            return;
           } else {
             M.toast({ html: response.error_message });
           }
@@ -205,8 +225,9 @@ var PagesLists = new Vue({
         dataType: "json",
         success: function (response) {
           if (response.code == 200) {
-            self.pages = self.pages.filter(p => p.page_id !== page.page_id);
             M.toast({ html: "Page restored as draft" });
+            self.getPages(self.currentStatus);
+            return;
           } else {
             M.toast({ html: response.error_message });
           }

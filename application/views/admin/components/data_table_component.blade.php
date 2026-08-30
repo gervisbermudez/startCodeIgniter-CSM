@@ -4,7 +4,7 @@
             <br><br>
             <preloader />
         </div>
-        <nav class="page-navbar" v-cloak v-show="!loader && data.length > 0" v-if="search_input">
+        <nav class="page-navbar" v-cloak v-show="!loader" v-if="search_input">
             <div class="nav-wrapper">
                 <form>
                     <div class="input-field">
@@ -36,7 +36,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(item, index) in data" :key="index">
+                            <tr v-for="(item, index) in (pagination ? data : filterData)" :key="index">
                                 <td v-for="(colum, i) in colums" :key="i" >
                                     <span v-if="colum.colum !== 'options'" v-html="getContent(item, colum)"></span>
                                     <span v-else>
@@ -60,20 +60,11 @@
                     </table>
                 </div>
             </div>
-            <div class="row" v-if="showPagination">
-                <div class="col s12">
-                    <ul class="pagination">
-                        <li v-for="(link, index) in paginatorLinks" :key="index" :class="link.class">
-                            <a v-if="link.class !== 'disabled'" v-on:click="pagerTo(link.page);" v-html="link.label"></a>
-                            <a v-else v-html="link.label"></a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
         </div>
         <div class="container" v-if="!loader && data.length == 0 && show_empty_input" v-cloak>
             <h4>No hay datos para mostrar</h4>
         </div>
+        @include('admin.components.pagination')
         <confirm-modal
                 id="deleteModal"
                 title="Confirmar Borrar"

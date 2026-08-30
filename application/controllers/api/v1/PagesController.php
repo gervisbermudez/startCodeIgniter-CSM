@@ -39,33 +39,33 @@ class PagesController extends REST_Controller
         if ($page_id) {
             $result = $page->find($page_id);
             $result = $result ? $page : [];
-        } else {
-            $status = $this->input->get('status');
-            
-            if ($status !== null) {
-                // If status is provided, filter by it
-                $result = $page->where(['status' => $status]);
-            } else if ($this->input->get('filters')) {
-                // Compatibility with existing frontend filters
-                $result = $page->where($this->input->get('filters'));
-            } else {
-                // Default: return Published (1) and Draft (2)
-                $result = $page->where(['status' => '1']);
-                $drafts = $page->where(['status' => '2']);
-                $result = $result ? $result->toArray() : [];
-                $drafts = $drafts ? $drafts->toArray() : [];
-                $result = array_merge($result, $drafts);
+            if ($result) {
+                $this->response_ok($result);
+                return;
             }
-            
-            $result = $result ? (is_array($result) ? $result : $result->toArray()) : [];
-        }
-
-        if ($result || (is_array($result) && count($result) === 0)) {
-            $this->response_ok($result);
+            $this->response_error(lang('not_found_error'));
             return;
         }
 
-        $this->response_error(lang('not_found_error'));
+        $this->respond_index_list($page, $this->pages_list_filters());
+    }
+
+    /**
+     * Filtros del listado admin: status, filters[], o publicados + borradores.
+     *
+     * @return array
+     */
+    protected function pages_list_filters()
+    {
+        $status = $this->get('status');
+        if ($status !== null && $status !== '') {
+            return array('status' => $status);
+        }
+        $filters = $this->get('filters');
+        if ($filters) {
+            return is_array($filters) ? $filters : array();
+        }
+        return array('status_in' => array(1, 2));
     }
 
     /**

@@ -2157,4 +2157,71 @@ abstract class REST_Controller extends \CI_Controller
         $this->response($response, $response_code);
     }
 
+    /**
+     * @return bool
+     */
+    protected function wants_pagination()
+    {
+        return $this->get('page') !== null || $this->get('per_page') !== null;
+    }
+
+    /**
+     * @param mixed $result
+     * @return array|mixed
+     */
+    protected function collection_to_array($result)
+    {
+        if (!$result) {
+            return array();
+        }
+        if (is_object($result) && method_exists($result, 'toArray')) {
+            return $result->toArray();
+        }
+        return $result;
+    }
+
+    /**
+     * Lista vacía = 200 + data []. Si $model viene de pager(), incluye metadata.
+     *
+     * @param mixed $result
+     * @param object|null $model
+     * @return void
+     */
+    protected function respond_collection($result, $model = null)
+    {
+        $data = $this->collection_to_array($result);
+        if ($model !== null) {
+            $this->response_ok($data, $model->get_pagination_info());
+            return;
+        }
+        $this->response_ok($data);
+    }
+
+    /**
+     * Colección: con ?page o ?per_page pagina; si no, comportamiento anterior (all/find_list).
+     *
+     * @param object $model
+     * @param array $where
+     * @param array $order
+     * @param array $options unfiltered, use_get_all
+     * @return void
+     */
+    protected function respond_index_list($model, $where = array(), $order = array(), $options = array())
+    {
+        if ($this->wants_pagination()) {
+            $this->respond_collection($model->pager($where, $order, $options), $model);
+            return;
+        }
+
+        $unfiltered = !empty($options['unfiltered']);
+        if ($unfiltered && empty($where) && !empty($options['use_get_all']) && method_exists($model, 'get_all')) {
+            $result = $model->get_all(array(), $order);
+        } elseif (!empty($where) || $unfiltered) {
+            $result = $model->find_list($where, array(), $order);
+        } else {
+            $result = $model->all(array(), $order);
+        }
+        $this->respond_collection($result);
+    }
+
 }

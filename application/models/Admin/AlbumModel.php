@@ -11,6 +11,7 @@ class AlbumModel extends MY_Model {
     public $table = 'album';
     public $primaryKey = 'album_id';
     public $softDelete = true;
+    public $searchable = array('name', 'description');
 
 	public $hasOne = [
         'user' => ['user_id', 'Admin/UserModel', 'UserModel'],

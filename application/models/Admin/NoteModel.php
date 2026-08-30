@@ -14,6 +14,7 @@ class NoteModel extends MY_Model
     ];
 
     public $computed = ["json_content" => "get_json_content", "attachments" => "get_file_attachments"];
+    public $searchable = array('title');
 
     /**
      * Page status:

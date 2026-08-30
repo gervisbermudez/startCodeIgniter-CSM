@@ -71,16 +71,15 @@ class ModelsController extends REST_Controller
         if ($form_id) {
             $result = $form->find($form_id);
             $result = $result ? $form : [];
-        } else {
-            $result = $form->all();
-        }
-
-        if ($result) {
-            $this->response_ok($result);
+            if ($result) {
+                $this->response_ok($result);
+                return;
+            }
+            $this->response_error(lang('not_found_error'));
             return;
         }
 
-        $this->response_error(lang('not_found_error'));
+        $this->respond_index_list($form);
     }
 
     /**
@@ -188,16 +187,15 @@ class ModelsController extends REST_Controller
         if ($form_id) {
             $result = $Form_conten->where(['custom_model_content_id' => $form_id]);
             $result = $result ? $result : [];
-        } else {
-            $result = $Form_conten->all();
-        }
-
-        if ($result) {
-            $this->response_ok($result);
+            if ($result) {
+                $this->response_ok($result);
+                return;
+            }
+            $this->response_error(lang('not_found_error'));
             return;
         }
 
-        $this->response_error(lang('not_found_error'));
+        $this->respond_index_list($Form_conten);
     }
 
     /**
@@ -213,7 +211,8 @@ class ModelsController extends REST_Controller
             $result = $Form_conten->where(['custom_model_id' => $form_id, 'status' => 1]);
             $result = $result ? $Form_conten->as_single_object($result) : [];
         } else {
-            $result = $Form_conten->all();
+            $this->respond_index_list($Form_conten);
+            return;
         }
 
         if ($result) {

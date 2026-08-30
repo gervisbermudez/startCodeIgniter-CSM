@@ -378,16 +378,15 @@ class ConfigController extends REST_Controller
         if ($logger_id) {
             $result = $Logger->where(["logger_id" => $logger_id]);
             $result = $result ? $result->first() : [];
-        } else {
-            $result = $Logger->pager();
-        }
-
-        if ($result) {
-            $this->response_ok($result, $Logger->get_pagination_info());
+            if ($result) {
+                $this->response_ok($result);
+                return;
+            }
+            $this->response_error(lang('not_found_error'));
             return;
         }
 
-        $this->response_error(lang('not_found_error'), $Logger->get_pagination_info());
+        $this->respond_collection($Logger->pager(), $Logger);
     }
 
     public function apilogger_get($api_log_id = null)
@@ -398,16 +397,15 @@ class ConfigController extends REST_Controller
         if ($api_log_id) {
             $result = $Api_logs->where(["api_log_id" => $api_log_id]);
             $result = $result ? $result->first() : [];
-        } else {
-            $result = $Api_logs->pager();
-        }
-
-        if ($result) {
-            $this->response_ok($result, $Api_logs->get_pagination_info());
+            if ($result) {
+                $this->response_ok($result);
+                return;
+            }
+            $this->response_error(lang('not_found_error'));
             return;
         }
 
-        $this->response_error(lang('not_found_error'), $Api_logs->get_pagination_info());
+        $this->respond_collection($Api_logs->pager(), $Api_logs);
     }
 
     public function usertrackinglogger_get($user_tracking_id = null)
@@ -418,16 +416,15 @@ class ConfigController extends REST_Controller
         if ($user_tracking_id) {
             $result = $User_tracking->where(["user_tracking_id" => $user_tracking_id]);
             $result = $result ? $result->first() : [];
-        } else {
-            $result = $User_tracking->pager();
-        }
-
-        if ($result) {
-            $this->response_ok($result, $User_tracking->get_pagination_info());
+            if ($result) {
+                $this->response_ok($result);
+                return;
+            }
+            $this->response_error(lang('not_found_error'));
             return;
         }
 
-        $this->response_error(lang('not_found_error'), $User_tracking->get_pagination_info());
+        $this->respond_collection($User_tracking->pager(), $User_tracking);
     }
 
     public function export_data_get()

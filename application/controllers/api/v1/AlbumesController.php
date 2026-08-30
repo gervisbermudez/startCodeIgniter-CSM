@@ -36,21 +36,15 @@ class AlbumesController extends REST_Controller
         $album = new AlbumModel();
         if ($album_id) {
             $result = $album->where(["album_id" => $album_id])->first();
-        } else {
-            $result = $album->all();
-        }
-
-        if ($result) {
-            $this->response_ok($result);
-            return;
-        }
-
-        if ($album_id) {
+            if ($result) {
+                $this->response_ok($result);
+                return;
+            }
             $this->response_error(lang('not_found_error'));
             return;
         }
 
-        $this->response_ok([]);
+        $this->respond_index_list($album);
     }
 
     /**

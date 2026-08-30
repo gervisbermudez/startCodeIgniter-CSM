@@ -11,7 +11,7 @@
         <br><br>
         <preloader />
     </div>
-    <nav class="page-navbar" v-cloak v-show="!loader && contents.length > 0">
+    <nav class="page-navbar" v-cloak v-show="!loader">
         <div class="nav-wrapper">
             <form>
                 <div class="input-field">
@@ -22,7 +22,7 @@
             </form>
             <ul class="right hide-on-med-and-down">
                 <li><a href="#!" v-on:click="toggleView();"><i class="material-icons">view_module</i></a></li>
-                <li><a href="#!" v-on:click="getModels();"><i class="material-icons">refresh</i></a></li>
+                <li><a href="#!" v-on:click="getContents();"><i class="material-icons">refresh</i></a></li>
                 <li>
                     <a href="#!" class='dropdown-trigger' data-target='dropdown-options'><i
                             class="material-icons">more_vert</i></a>
@@ -151,6 +151,7 @@
     <div class="container" v-if="!loader && contents.length == 0" v-cloak>
            <h4><?= lang('custommodels_content_no_contents') ?></h4>
     </div>
+    @include('admin.components.pagination')
     <confirm-modal id="deleteModal" title="Confirmar Borrar" v-on:notify="confirmCallback">
         <p>
               <?= lang('custommodels_content_confirm_delete_message') ?>
