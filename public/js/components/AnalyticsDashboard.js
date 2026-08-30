@@ -1,540 +1,367 @@
 /**
- * Analytics Dashboard Component
- * 
- * Comprehensive analytics dashboard with charts and metrics
- * Uses Chart.js for visualizations
+ * Analytics Dashboard (Vue 2)
+ * Loads GET /api/v1/analytics/dashboard then polls realtime.
+ * Chart.js must be loaded first (MY_Controller footer includes).
  */
-if (document.getElementById('analytics-dashboard') && !window.AnalyticsDashboardMounted) {
-  console.log('Creating Vue instance for Analytics Dashboard');
+if (document.getElementById("analytics-dashboard") && !window.AnalyticsDashboardMounted) {
   window.AnalyticsDashboardMounted = true;
-var AnalyticsDashboard = new Vue({
-  el: "#analytics-dashboard",
-  data: {
-    // API endpoint
-    baseEndpoint: "/api/v1/analytics/",
-    
-    // Loading states
-    loading: {
-      overview: false,
-      trend: false,
-      pages: false,
-      devices: false,
-      realtime: false
-    },
-    
-    // Data
-    overview: {
-      total_sessions: 0,
-      total_pageviews: 0,
-      unique_visitors: 0,
-      avg_time_on_page: 0,
-      bounce_rate: 0,
-      conversion_rate: 0,
-      pages_per_session: 0,
-      mobile_visits: 0,
-      desktop_visits: 0,
-      tablet_visits: 0
-    },
-    
-    trendData: [],
-    popularPages: [],
-    deviceStats: [],
-    trafficSources: [],
-    realtimeVisitors: [],
-    
-    // Date filters
-    dateRange: {
-      start: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split('T')[0],
-      end: new Date().toISOString().split('T')[0]
-    },
-    
-    // Charts
-    charts: {
-      trend: null,
-      devices: null,
-      pages: null,
-      hourly: null
-    },
-    
-    // Refresh interval for realtime
-    realtimeInterval: null,
-    
-    // Export loading
-    exporting: false
-  },
-  
-  computed: {
-    /**
-     * Format average time on page
-     */
-    formattedAvgTime() {
-      const seconds = Math.round(this.overview.avg_time_on_page);
-      const minutes = Math.floor(seconds / 60);
-      const remainingSeconds = seconds % 60;
-      return `${minutes}m ${remainingSeconds}s`;
-    },
-    
-    /**
-     * Total visits (all devices)
-     */
-    totalVisits() {
-      return this.overview.mobile_visits + 
-             this.overview.desktop_visits + 
-             this.overview.tablet_visits;
-    }
-  },
-  
-  methods: {
-    /**
-     * Initialize dashboard
-     */
-    async init() {
-      console.log('Loading all data...');
-      await this.loadAllData();
-      console.log('All data loaded, setting up realtime refresh');
-      this.setupRealtimeRefresh();
-    },
-    
-    /**
-     * Load all dashboard data
-     */
-    async loadAllData() {
-      await Promise.all([
-        this.loadOverview(),
-        this.loadTrend(),
-        this.loadPopularPages(),
-        this.loadDeviceStats(),
-        this.loadTrafficSources(),
-        this.loadRealtimeVisitors()
-      ]);
-      
-      console.log('Loading states:', this.loading);
-    },
-    
-    /**
-     * Load overview statistics
-     */
-    async loadOverview() {
-      this.loading.overview = true;
-      
-      try {
-        const params = new URLSearchParams({
-          start_date: this.dateRange.start,
-          end_date: this.dateRange.end
-        });
-        
-        const url = `${this.baseEndpoint}overview?${params}`;
-        console.log('Loading overview from:', url);
-        const response = await fetch(url);
-        const data = await response.json();
-        
-        console.log('Overview response:', data);
-        
-        if (data.code === 200 && data.data) {
-          this.overview = data.data;
-        }
-      } catch (error) {
-        console.error('Error loading overview:', error);
-      } finally {
-        this.loading.overview = false;
-      }
-    },
-    
-    /**
-     * Load trend data and render chart
-     */
-    async loadTrend(days = 30) {
-      this.loading.trend = true;
-      
-      try {
-        const response = await fetch(`${this.baseEndpoint}trend?days=${days}`);
-        const data = await response.json();
-        
-        if (data.code === 200 && data.data) {
-          this.trendData = Array.isArray(data.data) ? data.data : [];
-          this.renderTrendChart();
-        } else {
-          this.trendData = [];
-        }
-      } catch (error) {
-        console.error('Error loading trend:', error);
-      } finally {
-        this.loading.trend = false;
-        console.log('Trend loading set to false');
-      }
-    },
-    
-    /**
-     * Load popular pages
-     */
-    async loadPopularPages() {
-      this.loading.pages = true;
-      
-      try {
-        const params = new URLSearchParams({
-          limit: 10,
-          start_date: this.dateRange.start,
-          end_date: this.dateRange.end
-        });
-        
-        const response = await fetch(`${this.baseEndpoint}popular-pages?${params}`);
-        const data = await response.json();
-        
-        if (data.code === 200 && data.data) {
-          this.popularPages = Array.isArray(data.data) ? data.data : [];
-          this.renderPopularPagesChart();
-        } else {
-          this.popularPages = [];
-        }
-      } catch (error) {
-        console.error('Error loading popular pages:', error);
-      } finally {
-        this.loading.pages = false;
-        console.log('Pages loading set to false');
-      }
-    },
-    
-    /**
-     * Load device statistics
-     */
-    async loadDeviceStats() {
-      this.loading.devices = true;
-      
-      try {
-        const params = new URLSearchParams({
-          start_date: this.dateRange.start,
-          end_date: this.dateRange.end
-        });
-        
-        const response = await fetch(`${this.baseEndpoint}devices?${params}`);
-        const data = await response.json();
-        
-        if (data.code === 200 && data.data) {
-          this.deviceStats = Array.isArray(data.data) ? data.data : [];
-          this.renderDeviceChart();
-        } else {
-          this.deviceStats = [];
-        }
-      } catch (error) {
-        console.error('Error loading device stats:', error);
-      } finally {
-        this.loading.devices = false;
-        console.log('Devices loading set to false');
-      }
-    },
-    
-    /**
-     * Load traffic sources
-     */
-    async loadTrafficSources() {
-      try {
-        const params = new URLSearchParams({
-          start_date: this.dateRange.start,
-          end_date: this.dateRange.end
-        });
-        
-        const response = await fetch(`${this.baseEndpoint}traffic-sources?${params}`);
-        const data = await response.json();
-        
-        if (data.code === 200 && data.data) {
-          this.trafficSources = Array.isArray(data.data) ? data.data : [];
-        } else {
-          this.trafficSources = [];
-        }
-      } catch (error) {
-        console.error('Error loading traffic sources:', error);
-      }
-    },
-    
-    /**
-     * Load realtime visitors
-     */
-    async loadRealtimeVisitors() {
-      this.loading.realtime = true;
-      
-      try {
-        const response = await fetch(`${this.baseEndpoint}realtime`);
-        const data = await response.json();
-        
-        if (data.code === 200 && data.data) {
-          this.realtimeVisitors = data.data;
-        }
-      } catch (error) {
-        console.error('Error loading realtime visitors:', error);
-      } finally {
-        this.loading.realtime = false;
-      }
-    },
-    
-    /**
-     * Render trend chart (line chart)
-     */
-    renderTrendChart() {
-      const canvas = document.getElementById('trendChart');
-      if (!canvas) return;
-      
-      // Destroy existing chart using Chart.js registry
-      const existingChart = Chart.getChart('trendChart');
-      if (existingChart) {
-        existingChart.destroy();
-      }
-      
-      if (this.charts.trend) {
-        this.charts.trend = null;
-      }
-      
-      if (!this.trendData || this.trendData.length === 0) {
-        console.warn('No trend data to display');
-        return;
-      }
-      
-      const ctx = canvas.getContext('2d');
-      
-      const labels = this.trendData.map(d => d.date);
-      const sessions = this.trendData.map(d => d.sessions);
-      const pageviews = this.trendData.map(d => d.pageviews);
-      
-      this.charts.trend = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [
-            {
-              label: 'Sessions',
-              data: sessions,
-              borderColor: '#4CAF50',
-              backgroundColor: 'rgba(76, 175, 80, 0.1)',
-              tension: 0.4
-            },
-            {
-              label: 'Pageviews',
-              data: pageviews,
-              borderColor: '#2196F3',
-              backgroundColor: 'rgba(33, 150, 243, 0.1)',
-              tension: 0.4
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: true,
-              position: 'top'
-            },
-            title: {
-              display: true,
-              text: 'Traffic Trend (Last 30 Days)'
-            }
-          },
-          scales: {
-            y: {
-              beginAtZero: true
-            }
-          }
-        }
-      });
-    },
-    
-    /**
-     * Render device chart (doughnut chart)
-     */
-    renderDeviceChart() {
-      const canvas = document.getElementById('deviceChart');
-      if (!canvas) return;
-      
-      // Destroy existing chart using Chart.js registry
-      const existingChart = Chart.getChart('deviceChart');
-      if (existingChart) {
-        existingChart.destroy();
-      }
-      
-      if (this.charts.devices) {
-        this.charts.devices = null;
-      }
-      
-      if (!this.deviceStats || this.deviceStats.length === 0) {
-        console.warn('No device stats to display');
-        return;
-      }
-      
-      const ctx = canvas.getContext('2d');
-      
-      const labels = this.deviceStats.map(d => d.device_type);
-      const data = this.deviceStats.map(d => d.sessions);
-      
-      this.charts.devices = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: labels,
-          datasets: [{
-            data: data,
-            backgroundColor: [
-              '#4CAF50',
-              '#2196F3',
-              '#FF9800',
-              '#9C27B0'
-            ]
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: true,
-              position: 'bottom'
-            },
-            title: {
-              display: true,
-              text: 'Visits by Device Type'
-            }
-          }
-        }
-      });
-    },
-    
-    /**
-     * Render popular pages chart (horizontal bar)
-     */
-    renderPopularPagesChart() {
-      const canvas = document.getElementById('popularPagesChart');
-      if (!canvas) return;
-      
-      // Destroy existing chart using Chart.js registry
-      const existingChart = Chart.getChart('popularPagesChart');
-      if (existingChart) {
-        existingChart.destroy();
-      }
-      
-      if (this.charts.pages) {
-        this.charts.pages = null;
-      }
-      
-      if (!this.popularPages || this.popularPages.length === 0) {
-        console.warn('No popular pages to display');
-        return;
-      }
-      
-      const ctx = canvas.getContext('2d');
-      
-      const labels = this.popularPages.slice(0, 10).map(p => p.page_name);
-      const data = this.popularPages.slice(0, 10).map(p => p.visits);
-      
-      this.charts.pages = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Visits',
-            data: data,
-            backgroundColor: '#2196F3'
-          }]
-        },
-        options: {
-          indexAxis: 'y',
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false
-            },
-            title: {
-              display: true,
-              text: 'Top 10 Most Visited Pages'
-            }
-          },
-          scales: {
-            x: {
-              beginAtZero: true
-            }
-          }
-        }
-      });
-    },
-    
-    /**
-     * Apply date filter
-     */
-    async applyDateFilter() {
-      await this.loadAllData();
-    },
-    
-    /**
-     * Export data to CSV
-     */
-    async exportData() {
-      this.exporting = true;
-      
-      try {
-        const params = new URLSearchParams({
-          start_date: this.dateRange.start,
-          end_date: this.dateRange.end
-        });
-        
-        window.location.href = `${this.baseEndpoint}export?${params}`;
-        
-        setTimeout(() => {
-          this.exporting = false;
-        }, 2000);
-      } catch (error) {
-        console.error('Error exporting data:', error);
-        this.exporting = false;
-      }
-    },
-    
-    /**
-     * Setup realtime refresh (every 30 seconds)
-     */
-    setupRealtimeRefresh() {
-      this.realtimeInterval = setInterval(() => {
-        this.loadRealtimeVisitors();
-      }, 30000); // 30 seconds
-    },
-    
-    /**
-     * Get date X days ago
-     */
-    getDateDaysAgo(days) {
-      const date = new Date();
-      date.setDate(date.getDate() - days);
-      return date.toISOString().split('T')[0];
-    },
-    
-    /**
-     * Get today's date
-     */
-    getToday() {
-      return new Date().toISOString().split('T')[0];
-    },
-    
-    /**
-     * Format number with commas
-     */
-    formatNumber(num) {
-      return num ? num.toLocaleString() : '0';
-    }
-  },
-  
-  mounted() {
-    console.log('AnalyticsDashboard mounted');
-    this.$nextTick(function() {
-      console.log('Initializing analytics dashboard...');
-      this.init();
-    });
-  },
-  
-  beforeDestroy() {
-    // Clear realtime interval
-    if (this.realtimeInterval) {
-      clearInterval(this.realtimeInterval);
-    }
-    
-    // Destroy charts
-    Object.values(this.charts).forEach(chart => {
-      if (chart) chart.destroy();
-    });
+
+  var analyticsRoot = document.getElementById("analytics-dashboard");
+
+  function analyticsPad(n) {
+    return n < 10 ? "0" + n : String(n);
   }
-});
+
+  function analyticsLocalDate(date) {
+    return (
+      date.getFullYear() +
+      "-" +
+      analyticsPad(date.getMonth() + 1) +
+      "-" +
+      analyticsPad(date.getDate())
+    );
+  }
+
+  function analyticsDaysAgo(days) {
+    var date = new Date();
+    date.setDate(date.getDate() - days);
+    return analyticsLocalDate(date);
+  }
+
+  var AnalyticsDashboard = new Vue({
+    el: "#analytics-dashboard",
+    mixins: typeof mixins !== "undefined" ? [mixins] : [],
+    data: {
+      loading: {
+        overview: false,
+        trend: false,
+        pages: false,
+        devices: false,
+        realtime: false,
+      },
+      overview: {
+        total_sessions: 0,
+        total_pageviews: 0,
+        unique_visitors: 0,
+        avg_time_on_page: 0,
+        bounce_rate: 0,
+        conversion_rate: 0,
+        pages_per_session: 0,
+        mobile_visits: 0,
+        desktop_visits: 0,
+        tablet_visits: 0,
+      },
+      trendData: [],
+      popularPages: [],
+      deviceStats: [],
+      trafficSources: [],
+      realtimeVisitors: [],
+      topEvents: [],
+      pageId: analyticsRoot.getAttribute("data-page-id") || "",
+      i18n: {
+        sessions: analyticsRoot.getAttribute("data-i18n-sessions") || "Sessions",
+        pageviews: analyticsRoot.getAttribute("data-i18n-pageviews") || "Pageviews",
+        trend: analyticsRoot.getAttribute("data-i18n-trend") || "Traffic trend",
+        devices: analyticsRoot.getAttribute("data-i18n-devices") || "Devices",
+        topPages: analyticsRoot.getAttribute("data-i18n-top-pages") || "Top pages",
+        noData: analyticsRoot.getAttribute("data-i18n-no-data") || "No data",
+        unauthorized: analyticsRoot.getAttribute("data-i18n-unauthorized") || "Unauthorized",
+      },
+      dateRange: {
+        start: analyticsDaysAgo(30),
+        end: analyticsLocalDate(new Date()),
+      },
+      charts: {
+        trend: null,
+        devices: null,
+        pages: null,
+      },
+      realtimeInterval: null,
+      exporting: false,
+    },
+    computed: {
+      formattedAvgTime: function () {
+        var seconds = Math.round(this.overview.avg_time_on_page || 0);
+        var minutes = Math.floor(seconds / 60);
+        var remainingSeconds = seconds % 60;
+        return minutes + "m " + remainingSeconds + "s";
+      },
+      clearPageFilterUrl: function () {
+        var base = typeof BASEURL !== "undefined" ? BASEURL : "/";
+        return base + "admin/analytics";
+      },
+    },
+    methods: {
+      apiUrl: function (path) {
+        var base = typeof BASEURL !== "undefined" ? BASEURL : "/";
+        return base + "api/v1/analytics/" + path.replace(/^\//, "");
+      },
+      buildParams: function (extra) {
+        var params = {
+          start_date: this.dateRange.start,
+          end_date: this.dateRange.end,
+        };
+        if (this.pageId) {
+          params.page_id = this.pageId;
+        }
+        if (extra) {
+          Object.keys(extra).forEach(function (key) {
+            params[key] = extra[key];
+          });
+        }
+        return new URLSearchParams(params).toString();
+      },
+      apiGet: function (path) {
+        return fetch(this.apiUrl(path), {
+          credentials: "same-origin",
+          headers: {
+            Accept: "application/json",
+            "X-Requested-With": "XMLHttpRequest",
+          },
+        }).then(function (response) {
+          if (response.status === 401) {
+            return { code: 401, data: null };
+          }
+          return response.json();
+        });
+      },
+      destroyChart: function (canvasId, key) {
+        if (typeof Chart !== "undefined" && Chart.getChart) {
+          var existing = Chart.getChart(canvasId);
+          if (existing) {
+            existing.destroy();
+          }
+        }
+        if (this.charts[key]) {
+          this.charts[key] = null;
+        }
+      },
+      loadAllData: function () {
+        var self = this;
+        self.loading.overview = true;
+        self.loading.trend = true;
+        self.loading.pages = true;
+        self.loading.devices = true;
+
+        return self.apiGet("dashboard?" + self.buildParams()).then(function (data) {
+          if (data && data.code === 200 && data.data) {
+            var payload = data.data;
+            if (payload.overview) {
+              self.overview = payload.overview;
+            }
+            self.trendData = Array.isArray(payload.trend) ? payload.trend : [];
+            self.popularPages = Array.isArray(payload.popular_pages) ? payload.popular_pages : [];
+            self.deviceStats = Array.isArray(payload.devices) ? payload.devices : [];
+            self.trafficSources = Array.isArray(payload.traffic_sources) ? payload.traffic_sources : [];
+            self.topEvents = Array.isArray(payload.events) ? payload.events : [];
+            self.realtimeVisitors = Array.isArray(payload.realtime) ? payload.realtime : [];
+            self.$nextTick(function () {
+              self.renderTrendChart();
+              self.renderDeviceChart();
+              self.renderPopularPagesChart();
+            });
+          }
+        }).catch(function () {
+          if (typeof M !== "undefined") {
+            M.toast({ html: "Ocurrió un error inesperado" });
+          }
+        }).then(function () {
+          self.loading.overview = false;
+          self.loading.trend = false;
+          self.loading.pages = false;
+          self.loading.devices = false;
+        });
+      },
+      loadRealtimeVisitors: function () {
+        var self = this;
+        var qs = self.pageId ? "?page_id=" + encodeURIComponent(self.pageId) : "";
+        return self.apiGet("realtime" + qs).then(function (data) {
+          if (data && data.code === 200 && data.data) {
+            self.realtimeVisitors = Array.isArray(data.data) ? data.data : [];
+          }
+        });
+      },
+      renderTrendChart: function () {
+        var canvas = document.getElementById("trendChart");
+        this.destroyChart("trendChart", "trend");
+        if (!canvas || !this.trendData.length || typeof Chart === "undefined") {
+          return;
+        }
+        this.charts.trend = new Chart(canvas.getContext("2d"), {
+          type: "line",
+          data: {
+            labels: this.trendData.map(function (d) {
+              return d.date;
+            }),
+            datasets: [
+              {
+                label: this.i18n.sessions,
+                data: this.trendData.map(function (d) {
+                  return d.sessions;
+                }),
+                borderColor: "#4CAF50",
+                backgroundColor: "rgba(76, 175, 80, 0.1)",
+                tension: 0.4,
+              },
+              {
+                label: this.i18n.pageviews,
+                data: this.trendData.map(function (d) {
+                  return d.pageviews;
+                }),
+                borderColor: "#2196F3",
+                backgroundColor: "rgba(33, 150, 243, 0.1)",
+                tension: 0.4,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: true, position: "top" },
+              title: { display: true, text: this.i18n.trend },
+            },
+            scales: { y: { beginAtZero: true } },
+          },
+        });
+      },
+      renderDeviceChart: function () {
+        var canvas = document.getElementById("deviceChart");
+        this.destroyChart("deviceChart", "devices");
+        if (!canvas || !this.deviceStats.length || typeof Chart === "undefined") {
+          return;
+        }
+        this.charts.devices = new Chart(canvas.getContext("2d"), {
+          type: "doughnut",
+          data: {
+            labels: this.deviceStats.map(function (d) {
+              return d.device_type;
+            }),
+            datasets: [
+              {
+                data: this.deviceStats.map(function (d) {
+                  return d.sessions;
+                }),
+                backgroundColor: ["#4CAF50", "#2196F3", "#FF9800", "#9C27B0"],
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: true, position: "bottom" },
+              title: { display: true, text: this.i18n.devices },
+            },
+          },
+        });
+      },
+      renderPopularPagesChart: function () {
+        var canvas = document.getElementById("popularPagesChart");
+        this.destroyChart("popularPagesChart", "pages");
+        if (!canvas || !this.popularPages.length || typeof Chart === "undefined") {
+          return;
+        }
+        var top = this.popularPages.slice(0, 10);
+        this.charts.pages = new Chart(canvas.getContext("2d"), {
+          type: "bar",
+          data: {
+            labels: top.map(function (p) {
+              return p.page_name;
+            }),
+            datasets: [
+              {
+                label: this.i18n.sessions,
+                data: top.map(function (p) {
+                  return p.visits;
+                }),
+                backgroundColor: "#2196F3",
+              },
+            ],
+          },
+          options: {
+            indexAxis: "y",
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              title: { display: true, text: this.i18n.topPages },
+            },
+            scales: { x: { beginAtZero: true } },
+          },
+        });
+      },
+      applyDateFilter: function () {
+        this.loadAllData();
+      },
+      exportData: function () {
+        var self = this;
+        self.exporting = true;
+        fetch(self.apiUrl("export?" + self.buildParams()), {
+          credentials: "same-origin",
+          headers: { "X-Requested-With": "XMLHttpRequest" },
+        })
+          .then(function (response) {
+            if (response.status === 401) {
+              if (typeof M !== "undefined") {
+                M.toast({ html: self.i18n.unauthorized });
+              }
+              return null;
+            }
+            var type = response.headers.get("content-type") || "";
+            if (type.indexOf("text/csv") === -1) {
+              return null;
+            }
+            return response.blob();
+          })
+          .then(function (blob) {
+            if (!blob) {
+              return;
+            }
+            var url = window.URL.createObjectURL(blob);
+            var link = document.createElement("a");
+            link.href = url;
+            link.download = "analytics_export_" + self.dateRange.end + ".csv";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+          })
+          .catch(function () {
+            if (typeof M !== "undefined") {
+              M.toast({ html: "Ocurrió un error inesperado" });
+            }
+          })
+          .then(function () {
+            self.exporting = false;
+          });
+      },
+      setupRealtimeRefresh: function () {
+        var self = this;
+        self.realtimeInterval = setInterval(function () {
+          self.loadRealtimeVisitors();
+        }, 30000);
+      },
+      formatNumber: function (num) {
+        return num ? Number(num).toLocaleString() : "0";
+      },
+    },
+    mounted: function () {
+      var self = this;
+      this.$nextTick(function () {
+        self.loadAllData();
+        self.setupRealtimeRefresh();
+      });
+    },
+    beforeDestroy: function () {
+      if (this.realtimeInterval) {
+        clearInterval(this.realtimeInterval);
+      }
+      Object.keys(this.charts).forEach(function (key) {
+        if (this.charts[key]) {
+          this.charts[key].destroy();
+        }
+      }, this);
+    },
+  });
 }

@@ -6,10 +6,14 @@ var CategoriesLists = new Vue({
     loader: true,
     filter: "",
     toDeleteItem: {},
+    serverPagination: true,
   },
   mixins: [mixins],
   computed: {
     filterCategories: function () {
+      if (this.serverPagination) {
+        return this.categories;
+      }
       if (!!this.filter) {
         let filterTerm = this.filter.toLowerCase();
         return this.categories.filter((value, index) => {
@@ -31,27 +35,19 @@ var CategoriesLists = new Vue({
     resetFilter: function () {
       this.filter = "";
     },
-    getPageImagePath(categorie) {
-      if (categorie.imagen_file) {
-        return (
-          BASEURL +
-          categorie.imagen_file.file_path.substr(2) +
-          categorie.imagen_file.file_name +
-          "." +
-          categorie.imagen_file.file_type
-        );
-      }
-      return BASEURL + "/public/img/default.jpg";
+    reloadList: function (page) {
+      this.getCategories(page);
     },
-    getCategories: function () {
+    getCategories: function (page) {
       var self = this;
+      self.loader = true;
       $.ajax({
         type: "GET",
         url: BASEURL + "api/v1/categories/",
-        data: {},
+        data: this.listQuery({}, page),
         dataType: "json",
         success: function (response) {
-          let categories = response.data;
+          let categories = response.data || [];
           for (const key in categories) {
             if (categories.hasOwnProperty(key)) {
               if (categories[key].user) {
@@ -60,6 +56,7 @@ var CategoriesLists = new Vue({
             }
           }
           self.categories = categories;
+          self.applyPaginatorFromResponse(response);
           setTimeout(() => {
             self.loader = false;
             self.initPlugins();
@@ -72,6 +69,18 @@ var CategoriesLists = new Vue({
         },
       });
     },
+    getPageImagePath(categorie) {
+      if (categorie.imagen_file) {
+        return (
+          BASEURL +
+          categorie.imagen_file.file_path.substr(2) +
+          categorie.imagen_file.file_name +
+          "." +
+          categorie.imagen_file.file_type
+        );
+      }
+      return BASEURL + "/public/img/default.jpg";
+    },
     delete: function (categorie, index) {
       var self = this;
       self.loader = true;
@@ -82,7 +91,7 @@ var CategoriesLists = new Vue({
         dataType: "json",
         success: function (response) {
           if (response.code == 200) {
-            self.categories.splice(index, 1);
+            self.getCategories();
           }
           setTimeout(() => {
             self.loader = false;

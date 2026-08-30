@@ -80,7 +80,7 @@ var CustomModelContentModule = new Vue({
       );
 
       setTimeout(() => {
-        var elems = document.querySelectorAll(".collapsible");
+        var elems = document.querySelectorAll(".collapsible:not(#slide-out)");
         M.Collapsible.init(elems, {});
       }, 2000);
     },
@@ -215,7 +215,7 @@ var CustomModelContentModule = new Vue({
 
       this.tabs[0].active = true;
       setTimeout(() => {
-        var elems = document.querySelectorAll(".collapsible");
+        var elems = document.querySelectorAll(".collapsible:not(#slide-out)");
         M.Collapsible.init(elems, {});
         var elems = document.querySelectorAll(".modal");
         var instances = M.Modal.init(elems, {});

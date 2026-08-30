@@ -79,7 +79,7 @@ var CustomModelModule = new Vue({
       );
 
       setTimeout(() => {
-        var elems = document.querySelectorAll(".collapsible");
+        var elems = document.querySelectorAll(".collapsible:not(#slide-out)");
         M.Collapsible.init(elems, {});
         var elems = document.querySelectorAll(".tooltipped");
         var instances = M.Tooltip.init(elems, {});
@@ -222,7 +222,7 @@ var CustomModelModule = new Vue({
 
       this.tabs[0].active = true;
       setTimeout(() => {
-        var elems = document.querySelectorAll(".collapsible");
+        var elems = document.querySelectorAll(".collapsible:not(#slide-out)");
         M.Collapsible.init(elems, {});
         this.loader = false;
       }, 2000);

@@ -6,10 +6,14 @@ var CustomModelContentList = new Vue({
     tableView: false,
     loader: true,
     filter: "",
+    serverPagination: true,
   },
   mixins: [mixins],
   computed: {
     filterContents: function () {
+      if (this.serverPagination) {
+        return this.contents;
+      }
       if (!!this.filter) {
         let filterTerm = this.filter.toLowerCase();
         return this.contents.filter((value, index) => {
@@ -33,6 +37,9 @@ var CustomModelContentList = new Vue({
     resetFilter: function () {
       this.filter = "";
     },
+    reloadList: function (page) {
+      this.getContents(page);
+    },
     getContentImagePath(content) {
       if (content.imagen_file) {
         return (
@@ -45,15 +52,17 @@ var CustomModelContentList = new Vue({
       }
       return BASEURL + "/public/img/default.jpg";
     },
-    getContents: function () {
+    getContents: function (page) {
       var self = this;
+      self.loader = true;
       $.ajax({
         type: "GET",
         url: BASEURL + "api/v1/models/data",
-        data: {},
+        data: this.listQuery({}, page),
         dataType: "json",
         success: function (response) {
-          self.contents = response.data;
+          self.contents = response.data || [];
+          self.applyPaginatorFromResponse(response);
           setTimeout(() => {
             self.loader = false;
             self.initPlugins();
@@ -76,7 +85,7 @@ var CustomModelContentList = new Vue({
         dataType: "json",
         success: function (response) {
           if (response.code == 200) {
-            self.contents.splice(index, 1);
+            self.getContents();
           }
           setTimeout(() => {
             self.loader = false;

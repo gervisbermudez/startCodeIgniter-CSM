@@ -6,10 +6,14 @@ var FragmentsLists = new Vue({
     loader: true,
     filter: "",
     toDeleteItem: {},
+    serverPagination: true,
   },
   mixins: [mixins],
   computed: {
     filterFragments: function () {
+      if (this.serverPagination) {
+        return this.fragments;
+      }
       if (!!this.filter) {
         let filterTerm = this.filter.toLowerCase();
         return this.fragments.filter((value, index) => {
@@ -31,6 +35,9 @@ var FragmentsLists = new Vue({
     resetFilter: function () {
       this.filter = "";
     },
+    reloadList: function (page) {
+      this.getFragments(page);
+    },
     getPageImagePath(fragment) {
       if (fragment.imagen_file) {
         return (
@@ -43,21 +50,23 @@ var FragmentsLists = new Vue({
       }
       return BASEURL + "/public/img/default.jpg";
     },
-    getFragments: function () {
+    getFragments: function (page) {
       var self = this;
+      self.loader = true;
       $.ajax({
         type: "GET",
         url: BASEURL + "api/v1/fragments/",
-        data: {},
+        data: this.listQuery({}, page),
         dataType: "json",
         success: function (response) {
-          let fragments = response.data;
+          let fragments = response.data || [];
           for (const key in fragments) {
-            if (fragments.hasOwnProperty(key)) {
+            if (fragments.hasOwnProperty(key) && fragments[key].user) {
               fragments[key].user = new User(fragments[key].user);
             }
           }
           self.fragments = fragments;
+          self.applyPaginatorFromResponse(response);
           setTimeout(() => {
             self.loader = false;
             self.initPlugins();
@@ -80,7 +89,7 @@ var FragmentsLists = new Vue({
         dataType: "json",
         success: function (response) {
           if (response.code == 200) {
-            self.fragments.splice(index, 1);
+            self.getFragments();
           }
           setTimeout(() => {
             self.loader = false;

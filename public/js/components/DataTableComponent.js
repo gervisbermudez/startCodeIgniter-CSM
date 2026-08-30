@@ -133,107 +133,6 @@ var dataTable = Vue.component("dataTable", {
       this.tableView = !this.tableView;
       this.initPlugins();
     },
-    set_paginatorLinks: function () {
-      if (this.showPagination) {
-        let links = [];
-        links.push({
-          page: this.paginator.prev_page,
-          label: '<i class="material-icons">chevron_left</i>',
-          class: this.paginator.prev_page == 0 ? "disabled" : "waves-effect",
-        });
-        let pages = this.rangodepaginas(
-          this.paginator.current_page - 0,
-          2,
-          this.paginator.total_pages
-        );
-
-        pages = this.paginaEllipsis(pages);
-
-        if (!pages.includes(1)) {
-          links.push({
-            page: 1,
-            label: 1,
-            class: this.paginator.current_page == 1 ? "active" : "waves-effect",
-          });
-        }
-        for (let index = 1; index <= pages.length; index++) {
-          if (pages[index - 1] == "...") {
-            if (index === 2) {
-              links.push({
-                page: parseInt(pages[index]) - 1,
-                label: pages[index - 1],
-                class: `waves-effect `,
-              });
-            } else {
-              links.push({
-                page: parseInt(pages[index - 2]) + 1,
-                label: pages[index - 1],
-                class: `waves-effect `,
-              });
-            }
-          } else {
-            links.push({
-              page: pages[index - 1],
-              label: pages[index - 1],
-              class:
-                this.paginator.current_page == pages[index - 1]
-                  ? "active"
-                  : "waves-effect",
-            });
-          }
-        }
-        if (!pages.includes(this.paginator.total_pages)) {
-          links.push({
-            page: this.paginator.total_pages,
-            label: this.paginator.total_pages,
-            class:
-              this.paginator.current_page == this.paginator.total_pages
-                ? "active"
-                : "waves-effect",
-          });
-        }
-        links.push({
-          page: this.paginator.next_page,
-          label: '<i class="material-icons">chevron_right</i>',
-          class:
-            this.paginator.next_page > this.paginator.total_pages
-              ? "disabled"
-              : "waves-effect",
-        });
-
-        return (this.paginatorLinks = links);
-      }
-      return null;
-    },
-    rangodepaginas: function (actual, rango, final) {
-      var desde = actual - rango,
-        hasta = actual + rango,
-        paginas = [];
-      for (var i = 1; i <= final; i++) {
-        if (i === 1 || i === final || (i >= desde && i <= hasta)) {
-          paginas.push(i);
-        }
-      }
-      return paginas;
-    },
-    paginaEllipsis: function (paginas) {
-      var final = paginas.pop();
-      paginas.push(final);
-      rango_con_ellipsis = [];
-      for (var i = 1; i < paginas.length - 1; i++) {
-        if (paginas[i - 1] === 1 && paginas[i] !== 2) {
-          rango_con_ellipsis.push(1);
-          rango_con_ellipsis.push("...");
-        }
-        rango_con_ellipsis.push(paginas[i]);
-
-        if (paginas[i + 1] === final && paginas[i] !== final - 1) {
-          rango_con_ellipsis.push("...");
-          rango_con_ellipsis.push(final);
-        }
-      }
-      return rango_con_ellipsis;
-    },
     toggleEddit(configuration) {
       configuration.editable = !configuration.editable;
       this.$forceUpdate();
@@ -250,20 +149,27 @@ var dataTable = Vue.component("dataTable", {
         M.Tooltip.init(elems, {});
         var elems = document.querySelectorAll(".dropdown-trigger");
         M.Dropdown.init(elems, {});
-        var elems = document.querySelectorAll(".collapsible");
+        var elems = document.querySelectorAll(".collapsible:not(#slide-out)");
         M.Collapsible.init(elems, {});
         var elems = document.querySelectorAll("select");
         M.FormSelect.init(elems, {});
       }, 3000);
     },
-    getData: function (page = 1) {
+    getData: function (page) {
       var self = this;
+      if (typeof page === "undefined") {
+        page = this.currentPage || 1;
+      }
       console.log('[DataTable] getData called, setting loader=true');
       self.loader = true;
+      var url = BASEURL + this.endpoint;
       if (this.pagination) {
-        var url = BASEURL + this.endpoint + "?page=" + page;
-      } else {
-        var url = BASEURL + this.endpoint;
+        var query = this.listQuery({}, page);
+        var params = [];
+        Object.keys(query).forEach(function (key) {
+          params.push(encodeURIComponent(key) + "=" + encodeURIComponent(query[key]));
+        });
+        url += (url.indexOf("?") >= 0 ? "&" : "?") + params.join("&");
       }
       console.log('[DataTable] Fetching from:', url);
       fetch(url)
@@ -276,18 +182,8 @@ var dataTable = Vue.component("dataTable", {
           // Coerce response data to an array and handle missing pagination fields
           let data = Array.isArray(response.data) ? response.data : (response && response.data ? [response.data] : []);
           console.log('[DataTable] Data extracted:', data.length, 'items');
-          if (response.current_page && this.pagination) {
-            this.showPagination = true;
-            this.paginator.current_page = response.current_page;
-            this.paginator.per_page = response.per_page;
-            this.paginator.total_rows = response.total_rows;
-            this.paginator.offset = response.offset;
-            this.paginator.total_pages = response.total_pages;
-            this.paginator.first_page = response.first_page;
-            this.paginator.last_page = response.last_page;
-            this.paginator.next_page = response.next_page;
-            this.paginator.prev_page = response.prev_page;
-            this.set_paginatorLinks();
+          if (this.pagination) {
+            this.applyPaginatorFromResponse(response);
           }
           // Ensure loader is hidden even if preprocessing fails
           try {
