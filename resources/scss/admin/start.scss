@@ -1434,6 +1434,19 @@ div#dropnotify {
     float: left;
     width: 80%;
   }
+
+  .page-navbar-actions a {
+    cursor: pointer;
+  }
+}
+
+.page-search-empty {
+  padding: 2rem 1rem 1rem;
+  text-align: center;
+
+  .page-header {
+    margin-bottom: 0.5rem;
+  }
 }
 
 #uploaderModal {

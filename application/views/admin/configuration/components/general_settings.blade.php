@@ -2,7 +2,7 @@
     <div class="col s12 center" v-show="loader">
         <preloader />
     </div>
-    <nav class="page-navbar" v-show="!loader && listedConfigurations.length > 0">
+    <nav class="page-navbar" v-show="!loader">
         <div class="nav-wrapper">
             <form @submit.prevent>
                 <div class="input-field">
@@ -11,9 +11,9 @@
                     <i class="material-icons" v-on:click="resetFilter();">close</i>
                 </div>
             </form>
-            <ul class="right hide-on-med-and-down">
+            <ul class="right page-navbar-actions">
                 <li>
-                    <a href="#!" v-on:click.prevent="getconfigurations();" class="tooltipped" data-tooltip="<?php echo lang('search'); ?>" aria-label="<?php echo lang('search'); ?>">
+                    <a href="#!" v-on:click.prevent="getconfigurations();" class="tooltipped" data-position="bottom" data-tooltip="<?php echo lang('refresh'); ?>" aria-label="<?php echo lang('refresh'); ?>">
                         <i class="material-icons">refresh</i>
                     </a>
                 </li>
@@ -28,6 +28,10 @@
             </ul>
         </div>
     </nav>
+    <div class="page-search-empty" v-if="!loader && filter && listedConfigurations.length === 0" v-cloak>
+        <p class="page-header"><?php echo htmlspecialchars(trim(preg_replace('/%s|"/', '', lang('search_no_results'))), ENT_QUOTES, 'UTF-8'); ?> «<strong>@{{ filter }}</strong>»</p>
+        <a href="#!" class="btn-flat" v-on:click.prevent="resetFilter()"><?php echo lang('search_empty_cta'); ?></a>
+    </div>
     <div class="configurations" v-if="!loader && listedConfigurations.length > 0">
         <div class="row">
             <div class="col s12">
@@ -35,7 +39,7 @@
             </div>
         </div>
     </div>
-    <div class="config-empty" v-if="!loader && listedConfigurations.length == 0">
+    <div class="config-empty" v-if="!loader && !filter && listedConfigurations.length == 0">
         <i class="material-icons" aria-hidden="true">settings</i>
         <p class="page-header"><?php echo lang('config_empty_title'); ?></p>
         <a href="#!" class="btn waves-effect waves-light btn-accent" v-on:click.prevent="changeSectionActive('addConfig')">

@@ -7,28 +7,12 @@
 
 @section('content')
 <div id="root">
-    <nav class="page-navbar" v-cloak v-if="!loader">
-        <div class="nav-wrapper">
-            <form>
-                <div class="input-field">
-                    <input class="input-search" type="search" placeholder="Search..." v-model="filter">
-                    <label class="label-icon" for="search"><i class="material-icons">search</i></label>
-                    <i class="material-icons" v-on:click="resetSearch();">close</i>
-                </div>
-            </form>
-            <ul class="right hide-on-med-and-down">
-                <li><a href="#!" v-on:click="toggleView();"><i class="material-icons">view_module</i></a></li>
-                <li><a href="#!" v-on:click="getUsers();"><i class="material-icons">refresh</i></a></li>
-                <li>
-                    <a href="#!" class='dropdown-trigger' data-target='dropdown-options'><i class="material-icons">more_vert</i></a>
-                    <!-- Dropdown Structure -->
-                    <ul id='dropdown-options' class='dropdown-content'>
-                        <li><a href="#!">Archived</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </nav>
+    @include('admin.components.page_navbar', [
+        'searchInputId' => 'users-search',
+        'refreshMethod' => 'getUsers()',
+        'navbarShow' => '!loader',
+        'itemsExpr' => 'filterUsers',
+    ])
     <div class="container">
         <div class="row">
             <div class="col s12">

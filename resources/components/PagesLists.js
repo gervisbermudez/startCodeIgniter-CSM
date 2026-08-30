@@ -13,13 +13,13 @@ var PagesLists = new Vue({
   mixins: [mixins],
   computed: {
     filterPages: function () {
-      return this.pages.filter((value, index) => {
-        return !value.path.includes("blog/")
+      return this.filterAll.filter(function (value) {
+        return !value.path || value.path.indexOf("blog/") === -1;
       });
     },
     blogs: function () {
-      return this.pages.filter((value, index) => {
-        return value.path.includes("blog/")
+      return this.filterAll.filter(function (value) {
+        return value.path && value.path.indexOf("blog/") !== -1;
       });
     },
     filterAll: function () {

@@ -96,21 +96,11 @@
         <br><br>
         <preloader />
     </div>
-    <nav class="page-navbar" v-cloak v-show="!loader">
-        <div class="nav-wrapper">
-            <form v-on:submit.prevent="">
-                <div class="input-field">
-                    <input class="input-search" type="search" placeholder="Search..." v-model="filter">
-                    <label class="label-icon" for="search"><i class="material-icons">search</i></label>
-                    <i class="material-icons" v-on:click="resetFilter();">close</i>
-                </div>
-            </form>
-            <ul class="right hide-on-med-and-down">
-                <li><a href="#!" v-on:click="toggleView();"><i class="material-icons">view_module</i></a></li>
-                <li><a href="#!" v-on:click="getPages(currentStatus);"><i class="material-icons">refresh</i></a></li>
-            </ul>
-        </div>
-    </nav>
+    @include('admin.components.page_navbar', [
+        'searchInputId' => 'pages-search',
+        'refreshMethod' => 'getPages(currentStatus)',
+        'itemsExpr' => 'filterAll',
+    ])
     <div class="row">
         <div class="col s12">
             <div class="status-filters" v-cloak v-show="!loader">
@@ -214,7 +204,7 @@
             </div>
         </div>
         <div class="row pages-grid" v-else>
-            <div class="col s12 m4" v-for="(page, index) in filterPages" :key="index">
+            <div class="col s12 m4" v-for="(page, index) in filterAll" :key="index">
                 <div class="card page-card">
                     <div class="card-image">
                         <div class="card-image-container">
@@ -620,7 +610,7 @@
             </div>
         </div>
     </div>
-    <div class="container" v-if="!loader && pages.length == 0" v-cloak>
+    <div class="container" v-if="!loader && pages.length == 0 && !filter" v-cloak>
         <h4>No pages found</h4>
     </div>
     @include('admin.components.pagination')

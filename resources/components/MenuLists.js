@@ -7,6 +7,7 @@ var MenuLists = new Vue({
     filter: "",
     toDeleteItem: {},
   },
+  mixins: [mixins],
   computed: {
     filterMenus: function () {
       if (!!this.filter) {

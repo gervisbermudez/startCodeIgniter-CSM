@@ -268,6 +268,7 @@ var mixins = {
       paginatorLinks: [],
       currentPage: 1,
       serverPagination: false,
+      tableView: false,
       _searchTimer: null,
     };
   },
@@ -279,7 +280,43 @@ var mixins = {
       return value.charAt(0).toUpperCase() + value.slice(1);
     },
   },
+  computed: {
+    viewToggleIcon: function () {
+      return this.tableView ? "view_list" : "view_module";
+    },
+  },
   methods: {
+    resetFilter: function () {
+      this.filter = "";
+    },
+    toggleView: function () {
+      this.tableView = !this.tableView;
+      if (typeof this.initPlugins === "function") {
+        this.initPlugins();
+      }
+    },
+    refreshList: function () {
+      if (typeof this.reloadList === "function") {
+        this.reloadList(this.currentPage || 1);
+        return;
+      }
+      if (typeof this.getData === "function") {
+        this.getData(this.currentPage || 1);
+      }
+    },
+    onNavbarSearch: function () {
+      if (!this.pagination && !this.serverPagination) {
+        return;
+      }
+      clearTimeout(this._searchTimer);
+      if (typeof this.reloadList === "function") {
+        this.reloadList(1);
+        return;
+      }
+      if (typeof this.getData === "function") {
+        this.getData(1);
+      }
+    },
     searchInObject(object, strSearchTerm) {
       // Función para buscar un término dentro de un objeto
       var keys = Object.keys(object);

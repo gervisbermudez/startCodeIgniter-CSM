@@ -8,28 +8,13 @@
         <br><br>
         <preloader />
     </div>
-    <nav class="page-navbar" v-cloak v-show="!loader && usergroups.length > 0">
-        <div class="nav-wrapper">
-            <form>
-                <div class="input-field">
-                    <input class="input-search" type="search" placeholder="Buscar..." v-model="filter">
-                    <label class="label-icon" for="search"><i class="material-icons">search</i></label>
-                    <i class="material-icons" v-on:click="resetFilter();">close</i>
-                </div>
-            </form>
-            <ul class="right hide-on-med-and-down">
-                <li><a href="#!" v-on:click="toggleView();"><i class="material-icons">view_module</i></a></li>
-
-                <li><a href="#!" v-on:click="getUserGroups();"><i class="material-icons">refresh</i></a></li>
-                <li>
-                    <a href="#!" class='dropdown-trigger' data-target='dropdown-options'><i class="material-icons">more_vert</i></a>
-                    <ul id='dropdown-options' class='dropdown-content'>
-                        <li><a href="#!">Archivo</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </nav>
+    @include('admin.components.page_navbar', [
+        'searchInputId' => 'usergroups-search',
+        'refreshMethod' => 'getUserGroups()',
+        'showViewToggle' => false,
+        'navbarShow' => '!loader && usergroups.length > 0',
+        'itemsExpr' => 'filterUsergroups',
+    ])
     <div class="configurations" v-cloak v-if="!loader && usergroups.length > 0">
         <div class="row">
             <div class="col s12">

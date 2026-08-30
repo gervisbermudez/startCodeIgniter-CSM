@@ -55,21 +55,12 @@
         <br><br>
         <preloader />
     </div>
-    <nav class="page-navbar" v-cloak v-show="!loader && album.items.length > 0">
-        <div class="nav-wrapper">
-            <form>
-                <div class="input-field">
-                    <input class="input-search" type="search" placeholder="Buscar..." v-model="filter">
-                    <label class="label-icon" for="search"><i class="material-icons">search</i></label>
-                    <i class="material-icons" v-on:click="resetFilter();">close</i>
-                </div>
-            </form>
-            <ul class="right hide-on-med-and-down">
-                <li><a href="#!" v-on:click="toggleView();"><i class="material-icons">view_module</i></a></li>
-                <li><a href="#!" v-on:click="getPages();"><i class="material-icons">refresh</i></a></li>
-            </ul>
-        </div>
-    </nav>
+    @include('admin.components.page_navbar', [
+        'searchInputId' => 'album-items-search',
+        'refreshMethod' => 'getPages()',
+        'navbarShow' => '!loader && album.items.length > 0',
+        'itemsExpr' => 'filterData',
+    ])
     <div class="pages" v-cloak v-if="!loader && album.items.length > 0">
         <div class="row" v-if="tableView">
             <div class="col s12">

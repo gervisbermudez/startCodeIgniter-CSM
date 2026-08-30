@@ -4,28 +4,13 @@
             <br><br>
             <preloader />
         </div>
-        <nav class="page-navbar" v-cloak v-show="!loader" v-if="search_input">
-            <div class="nav-wrapper">
-                <form>
-                    <div class="input-field">
-                        <input class="input-search" type="search" placeholder="<?php echo lang('search'); ?>..." v-model="filter">
-                        <label class="label-icon" for="search"><i class="material-icons">search</i></label>
-                        <i class="material-icons" v-on:click="resetFilter();">close</i>
-                    </div>
-                </form>
-                <ul class="right hide-on-med-and-down">
-                    <li><a v-on:click="toggleView();"><i class="material-icons">view_module</i></a></li>
-
-                    <li><a v-on:click="getData();"><i class="material-icons">refresh</i></a></li>
-                    <li>
-                        <a class='dropdown-trigger' data-target='dropdown-options'><i class="material-icons">more_vert</i></a>
-                        <ul id='dropdown-options' class='dropdown-content'>
-                            <li><a href="#!"><?php echo lang('archive'); ?></a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+        @include('admin.components.page_navbar', [
+            'searchInputId' => 'datatable-search',
+            'refreshMethod' => 'getData()',
+            'showViewToggle' => false,
+            'navbarIf' => 'search_input',
+            'itemsExpr' => '(pagination ? data : filterData)',
+        ])
         <div class="configurations" v-cloak v-if="!loader && data.length > 0">
             <div class="row">
                 <div class="col s12">
@@ -61,7 +46,7 @@
                 </div>
             </div>
         </div>
-        <div class="container" v-if="!loader && data.length == 0 && show_empty_input" v-cloak>
+        <div class="container" v-if="!loader && !filter && data.length == 0 && show_empty_input" v-cloak>
             <h4>No hay datos para mostrar</h4>
         </div>
         @include('admin.components.pagination')
