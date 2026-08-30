@@ -1,0 +1,32 @@
+---
+description: Tokens, patrones y copy del admin (Materialize + Vue)
+globs: "{application/views/admin/**/*.blade.php,resources/scss/admin/**/*.scss,resources/components/**/*.js,resources/js/**/*.js}"
+alwaysApply: false
+---
+
+# Admin UX
+
+Leer `docs/DESIGN.md` antes de cambiar UI. Resumen operativo:
+
+## Tokens (`resources/scss/admin/components/palette.scss`)
+
+- Chrome / navbar: `$color4` `#646b7f`
+- Acento / FAB / ítem activo: `$color3` `#fb9678`
+- Interacción / focus / chip activo: `$teal` `#26A69A`
+- Texto: `#444` / `$gray-text` `#5D5D5D`
+- Superficie: blanco sobre page `#f9f9f9`
+
+No uses el red de Materialize (`$primary-color`), ni `#03a9f4` en tabs/links nuevos. No `<style>` en Blade ni hex sueltos: añade el token a `palette.scss`.
+
+## Copy
+
+Todo visible por `lang()`. Un idioma por pantalla. Toasts también (`M.toast({ html: lang('...') })`). Typos históricos (`permisions`, `categorie`) se quedan en rutas/API, no en el copy.
+
+## Patrones
+
+- Listas: `page-navbar` + filtros + un `v-for` + empty state con CTA + FAB accent + `confirm-modal`.
+- Un `more_vert` por ítem. Icono solo = tooltip + `aria-label`.
+- Títulos de página: `.page-header` (20px), no `h1`–`h3` display de Materialize.
+- Dark mode: clase `html.dark-mode`. Pintar superficies, nunca `* { color }`. No `body.dark-mode`.
+- Iconos sidenav: files `folder`, events `event`, menus `account_tree`. No Font Awesome en pantallas nuevas.
+- Materialize: `initPlugins()` en `$nextTick`, no `M.AutoInit()`.

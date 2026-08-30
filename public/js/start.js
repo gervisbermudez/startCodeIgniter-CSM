@@ -431,7 +431,7 @@ class User {
 
   // Método de la clase que retorna la URL de edición del usuario
   get_edit_url = () => {
-    return BASEURL + "admin/usuarios/edit/" + this.user_id;
+    return BASEURL + "admin/users/edit/" + this.user_id;
   };
 }
 

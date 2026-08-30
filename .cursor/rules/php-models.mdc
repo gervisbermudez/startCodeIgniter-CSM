@@ -1,0 +1,30 @@
+---
+description: Modelos MY_Model, tablas y relaciones
+globs: application/models/**/*.php
+alwaysApply: false
+---
+
+# Models
+
+Extiende `MY_Model`. Declara `$table` y `$primaryKey` (casi nunca es `id`).
+
+```php
+class PageModel extends MY_Model
+{
+    public $table = 'page';
+    public $primaryKey = 'page_id';
+    public $softDelete = true;
+    public $hasData = true; // EAV en {tabla}_data (_key / _value)
+    public $hasOne = [
+        'user' => ['user_id', 'Admin/UserModel', 'UserModel'],
+    ];
+}
+```
+
+- Carga: `$this->load->model('Admin/PageModel');` o `new PageModel()`.
+- `all()` filtra `status = 1`. Status: `0` deleted, `1` published, `2` draft, `3` archived.
+- Colecciones: `Tightenco\Collect` (`->toArray()`, `->first()`). `false` si no hay filas.
+- `$hasData = true` usa tablas EAV (`page_data`, `user_data`, …). No inventes columnas para meta/tags.
+- Evita N+1: `loadUsersRelation()`, `loadFilesRelation()`, `decodeJsonFields()`.
+- `protectedFields` (ej. `password`) no se serializan.
+- SQL crudo está permitido cuando `all()` no alcanza; nombra tablas como en `start.sql` (`page`, `user`, `fragmentos`).

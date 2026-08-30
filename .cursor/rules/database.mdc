@@ -1,0 +1,21 @@
+---
+description: Schema MySQL, status, EAV y migraciones
+globs: application/database/**/*.sql
+alwaysApply: false
+---
+
+# Database
+
+Motor: MySQL 5.7, driver `mysqli`. Schema canónico: `application/database/start.sql`. Deltas: `application/database/migrations/00N_*.sql` (aplicar a mano; CI3 migrations no es el flujo principal).
+
+Tablas reales (singular / typos): `page`, `user`, `file`, `menu`, `video`, `events`, `categories`, `fragmentos`, `siteform`, `permisions`, `usergroup`, `usergroup_permisions`, `site_config`, `logger`, `album`.
+
+PKs: `{tabla}_id` (`page_id`, `user_id`). Timestamps: `date_create`, `date_update`, `date_delete`. Soft delete + `status`.
+
+Status de contenido: `0` deleted, `1` published, `2` draft, `3` archived.
+
+EAV: `page_data`, `user_data`, `messages_data` — columnas `_key`, `_value`. Meta, tags y extras van ahí, no como columnas nuevas en `page`.
+
+Permisos nuevos: INSERT en `permisions` (`CREATE_FOO`, `UPDATE_FOO`, `DELETE_FOO`, `SELECT_FOOS`) y filas en `usergroup_permisions`.
+
+No reformatees dumps enormes de `start.sql`. No asumas FK en todas las tablas (varias son lógicas). Charset mixto (`utf8`, `utf8mb4`, `latin1`); no lo unifiques de paso.

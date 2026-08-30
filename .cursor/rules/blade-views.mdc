@@ -1,0 +1,26 @@
+---
+description: Vistas BladeOne del admin y del sitio
+globs: "**/*.blade.php"
+alwaysApply: false
+---
+
+# Blade views
+
+Admin: `@extends('admin.layouts.app')`. Nombre de archivo = ruta con puntos (`admin.pages.pages_list`).
+
+```blade
+@extends('admin.layouts.app')
+@section('title', $title)
+@section('content')
+<div id="root">
+    {{-- Vue monta aquí. Datos iniciales vía PHP o fetch a /api/v1 --}}
+</div>
+@endsection
+```
+
+- Layout ya incluye navbar, sidenav, `window.BASEURL`, Materialize y footer.
+- PHP en vistas está permitido (`<?= doctype('html5') ?>`, helpers `base_url()`, `lang()`, `has_permisions()`).
+- Sitio público: temas en `themes/{theme}/` via `ThemeController_Base::render()`. Template = `site.{template}`.
+- Navbar contextual del admin en el front: `shared.admin_navbar` (no duplicar en cada tema).
+- No crees layouts nuevos si `admin.layouts.app` o `admin.layouts.login` alcanzan.
+- i18n: `lang('pages_all')` — claves en `application/language/english/admin/`.

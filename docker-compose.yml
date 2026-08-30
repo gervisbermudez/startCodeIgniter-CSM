@@ -10,8 +10,8 @@ services:
       - "8081:80"
     volumes:
       - ./:/var/www/html
-    depends_on:
-      - db
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   db:
     image: mysql:5.7
@@ -23,7 +23,7 @@ services:
       MYSQL_USER: ci_user
       MYSQL_PASSWORD: ci_pass
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./application/database/start.sql:/docker-entrypoint-initdb.d/start.sql

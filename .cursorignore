@@ -1,0 +1,24 @@
+# Dependencias y vendors (no indexar)
+node_modules/
+vendor/
+public/vendors/
+
+# Caché y artefactos
+application/cache/
+graphify-out/
+application/graphify-out/
+*.bladec
+*.map
+
+# Uploads y backups
+uploads/
+trash/
+backups/database/
+themes/*/cache/
+
+# CSS compilado (fuente: resources/scss)
+public/css/admin/*.min.css
+
+# Copias de JS (fuente: resources/)
+public/js/*.js
+public/js/components/

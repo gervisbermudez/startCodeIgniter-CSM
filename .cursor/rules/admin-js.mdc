@@ -1,0 +1,40 @@
+---
+description: Vue 2 legacy del admin (resources/components, mixins, API)
+globs: resources/**/*.js
+alwaysApply: false
+---
+
+# Admin JavaScript (Vue 2)
+
+Sin bundler, sin `import`/`export`. Vue, jQuery (`$`), Materialize (`M`) y `mixins` son globales. Fuente: `resources/`. Tras cambiar JS: `npm run build` (copia a `public/js/`). El panel carga `resources/components/*.js` directo.
+
+```javascript
+var PagesLists = new Vue({
+  el: "#root",
+  mixins: [mixins],
+  data: { pages: [], loader: true },
+  methods: {
+    getPages: function () {
+      var self = this;
+      $.ajax({
+        type: "GET",
+        url: BASEURL + "api/v1/pages/",
+        dataType: "json",
+        success: function (response) {
+          self.pages = (response && response.data) ? response.data : [];
+          self.loader = false;
+        },
+        error: function () {
+          M.toast({ html: "Ocurrió un error inesperado" });
+          self.loader = false;
+        },
+      });
+    },
+  },
+});
+```
+
+- Globals: `BASEURL`, `DEBUGMODE`, `mixins` (`resources/js/start.js`).
+- Éxito API: `response.code == 200` y `response.data`.
+- Materialize: inicializa plugins en `$nextTick` (`self.initPlugins()` del mixin). No `M.AutoInit()` global.
+- SCSS del admin: `resources/scss/admin/`. Compilar con `npm run build` / `npm run watch`.

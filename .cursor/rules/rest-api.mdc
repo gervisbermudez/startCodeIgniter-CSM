@@ -1,0 +1,33 @@
+---
+description: Controladores REST /api/v1 (JWT, FormValidator, response_ok)
+globs: application/controllers/api/**/*.php
+alwaysApply: false
+---
+
+# REST API
+
+Extiende `REST_Controller`. CodeIgniter REST: `{metodo}_{http}` → `GET /api/v1/pages` = `index_get`, `POST /api/v1/pages/duplicate/3` = `duplicate_post($id)`.
+
+```php
+public function __construct()
+{
+    parent::__construct();
+    $this->output->enable_profiler(false);
+    $this->lang->load('rest_lang', 'english');
+    if (!$this->verify_request()) {
+        $this->response(['code' => REST_Controller::HTTP_UNAUTHORIZED], REST_Controller::HTTP_UNAUTHORIZED);
+        exit();
+    }
+    $this->load->model('Admin/PageModel');
+}
+
+public function index_get($page_id = null) { /* find o where; response_ok */ }
+```
+
+- Éxito: `$this->response_ok($model)` → `{ code: 200, data: ... }`.
+- Error: `$this->response_error(lang('not_found_error'))`. Validación: HTTP 400 + `errors` de `FormValidator`.
+- Auth: header `Authorization` o `userdata('token')`. Login es la excepción (`api/v1/LoginController`).
+- Tras mutar: `system_logger('pages', $page->page_id, 'created', 'A page has been created');`
+- Autor: `$page->user_id = userdata('user_id');`
+- Rutas nuevas: `application/config/routes.php` (`$route['api/v1/foo'] = 'api/v1/FooController';`).
+- Vue espera `response.data` y `response.code == 200`.

@@ -1,0 +1,19 @@
+---
+description: Stack, mapa del repo y reglas globales del CMS
+alwaysApply: true
+---
+
+# startCodeIgniter CSM
+
+PHP 7.4 + CodeIgniter 3.1. No uses PHP 8+. Front admin: Vue 2 global + jQuery + Materialize. Plantillas: BladeOne (`.blade.php`). Persistencia: API REST `/api/v1`, no POST de formularios admin.
+
+Lee `AGENTS.md` para el mapa y el flujo de una feature. Fuentes de verdad:
+
+- PHP app: `application/`
+- JS admin: `resources/components/` y `resources/js/` (no `public/js/`)
+- SCSS: `resources/scss/admin/` (no `public/css/admin/*.min.css`)
+- Schema: `application/database/start.sql`
+
+No edites `vendor/`, `public/vendors/`, `graphify-out/`. No “corrijas” typos históricos: `permisions`, `categorie`, `albumes`, `fragmentos`, `patern`.
+
+Helpers habituales: `userdata()`, `has_permisions()`, `config()`, `system_logger()`, `lang()`. Base classes: `MY_Controller` (admin), `REST_Controller` (API), `Base_Controller` (sitio), `MY_Model`.

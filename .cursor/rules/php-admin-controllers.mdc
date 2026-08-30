@@ -1,0 +1,35 @@
+---
+description: Controladores HTML del panel admin (MY_Controller)
+globs: application/controllers/admin/**/*.php
+alwaysApply: false
+---
+
+# Admin controllers
+
+Extiende `MY_Controller`. El constructor del padre exige sesión. Llama `$this->check_permisions()` en `__construct` si defines `$routes_permisions`.
+
+```php
+class PagesController extends MY_Controller
+{
+    public $routes_permisions = [
+        "index" => [
+            "patern" => '/admin\/pages/',
+            "required_permissions" => ["SELECT_PAGES"],
+            "conditions" => [],
+        ],
+    ];
+
+    public function index()
+    {
+        $this->renderAdminView('admin.pages.pages_list', lang('menu_pages'), lang('pages_all'), [
+            'paginas' => (new PageModel())->all(),
+        ]);
+    }
+}
+```
+
+- Vistas con notación de puntos: `admin.pages.new` → `application/views/admin/pages/new.blade.php`.
+- Recurso por ID: `$this->findOrFail(new PageModel(), $id, lang('pages_not_found'))`.
+- No hagas CRUD aquí. Guarda/borra en `application/controllers/api/v1/`.
+- Métodos de pantalla suelen ir en español (`nueva`, `editar`); las URLs EN están en `routes.php`.
+- Si agregas una vista con Vue, registra el JS en `MY_Controller::getAutoFooterIncludes()`.
