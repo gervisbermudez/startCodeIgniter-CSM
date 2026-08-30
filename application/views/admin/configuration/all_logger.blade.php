@@ -6,7 +6,7 @@
 <div id="root">
   <router-view
     :endpoint="endpoint"
-    :module="'usuarios/permissions/'"
+    :module="'config/systemlogger/'"
     :colums="colums"
     :index_data="index_data"
     :pagination="true"

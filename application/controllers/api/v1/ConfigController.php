@@ -376,7 +376,7 @@ class ConfigController extends REST_Controller
 
         $Logger = new LoggerModel();
         if ($logger_id) {
-            $result = $Logger->where(["site_config_id" => $logger_id]);
+            $result = $Logger->where(["logger_id" => $logger_id]);
             $result = $result ? $result->first() : [];
         } else {
             $result = $Logger->pager();
@@ -396,7 +396,7 @@ class ConfigController extends REST_Controller
 
         $Api_logs = new ApiLogsModel();
         if ($api_log_id) {
-            $result = $Api_logs->where(["site_config_id" => $api_log_id]);
+            $result = $Api_logs->where(["api_log_id" => $api_log_id]);
             $result = $result ? $result->first() : [];
         } else {
             $result = $Api_logs->pager();
@@ -410,13 +410,13 @@ class ConfigController extends REST_Controller
         $this->response_error(lang('not_found_error'), $Api_logs->get_pagination_info());
     }
 
-    public function usertrackinglogger_get($api_log_id = null)
+    public function usertrackinglogger_get($user_tracking_id = null)
     {
         $this->load->model('Admin/UserTrackingModel');
 
         $User_tracking = new UserTrackingModel();
-        if ($api_log_id) {
-            $result = $User_tracking->where(["site_config_id" => $api_log_id]);
+        if ($user_tracking_id) {
+            $result = $User_tracking->where(["user_tracking_id" => $user_tracking_id]);
             $result = $result ? $result->first() : [];
         } else {
             $result = $User_tracking->pager();

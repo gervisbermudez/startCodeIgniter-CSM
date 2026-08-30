@@ -1,0 +1,602 @@
+@import "components/palette";
+
+$config-danger: #F44336;
+$config-success: #4CAF50;
+$config-warning: #ff9800;
+$config-info: $teal;
+$config-surface-dark: #121414;
+$config-text-dark: #e0e0e0;
+$config-text-dark-secondary: #aeadac;
+
+.btn-accent {
+  background-color: $color3 !important;
+
+  &:hover,
+  &:focus {
+    background-color: darken($color3, 6%) !important;
+  }
+}
+
+.configuration-layout {
+  margin-bottom: 0;
+}
+
+.config-sidebar {
+  padding-top: 8px;
+  border-right: 1px solid $grayLight;
+  min-height: calc(100vh - 50px);
+  background: $white;
+
+  .collection {
+    border: none;
+    margin: 0;
+  }
+
+  .collection-item {
+    border-bottom: none;
+    padding: 10px 16px;
+    cursor: pointer;
+    color: $gray-text;
+    display: flex;
+    align-items: center;
+    position: relative;
+
+    i {
+      margin-right: 10px;
+      font-size: 1.35rem;
+      color: $color4;
+    }
+
+    &:hover {
+      background-color: $color5;
+    }
+
+    &.active {
+      background-color: $color5;
+      color: #444;
+      font-weight: 500;
+
+      &::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 5px;
+        background: $color3;
+      }
+
+      i {
+        color: $color3;
+      }
+    }
+  }
+}
+
+.config-content {
+  padding: 20px 24px 40px;
+  background-color: #f9f9f9;
+  min-height: calc(100vh - 50px);
+}
+
+.config-mobile-nav {
+  margin-bottom: 8px;
+}
+
+.config-section-header {
+  margin: 0 0 20px;
+
+  .page-header {
+    font-size: 20px;
+    font-weight: 400;
+    margin: 0 0 4px;
+    line-height: 1.3;
+  }
+
+  .section-description {
+    margin: 0;
+    color: $gray-text;
+    font-size: 0.9rem;
+  }
+}
+
+.config-section-header--split {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.configuration-root {
+  .card {
+    border-radius: 8px;
+  }
+
+  .widget-title {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #444;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+
+    i {
+      margin-right: 8px;
+      color: $color4;
+    }
+  }
+}
+
+.dashboard-widget {
+  margin-bottom: 20px;
+}
+
+.health-check-list {
+  .alert-item {
+    display: flex;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    align-items: flex-start;
+    background: $white;
+    border-left: 4px solid $color4;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .alert-warning {
+    border-left-color: $config-warning;
+  }
+
+  .alert-info {
+    border-left-color: $config-info;
+  }
+
+  .alert-success {
+    border-left-color: $config-success;
+  }
+
+  .alert-content {
+    margin-left: 10px;
+  }
+
+  .alert-title {
+    display: block;
+    font-size: 0.9rem;
+  }
+
+  .alert-msg {
+    font-size: 0.8rem;
+    color: $gray-text;
+  }
+}
+
+.health-empty {
+  padding: 16px 8px;
+  color: $gray-text;
+
+  i {
+    color: $config-success;
+  }
+}
+
+.quick-settings-list {
+  margin: 0;
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid $grayLight;
+  }
+
+  li:last-child {
+    border-bottom: none;
+  }
+}
+
+.stat-item {
+  margin-bottom: 16px;
+}
+
+.stat-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+}
+
+.system-details {
+  margin-top: 16px;
+
+  .detail-val {
+    font-weight: 600;
+    color: #444;
+    font-size: 1rem;
+  }
+
+  .detail-label {
+    font-size: 0.75rem;
+    color: $gray-text;
+  }
+}
+
+.activity-feed {
+  position: relative;
+  padding-left: 20px;
+  list-style: none;
+  margin: 0;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: $grayLight;
+  }
+
+  li {
+    position: relative;
+    margin-bottom: 14px;
+    padding-left: 14px;
+  }
+}
+
+.activity-dot {
+  position: absolute;
+  left: -20px;
+  top: 6px;
+  width: 8px;
+  height: 8px;
+  background: $teal;
+  border-radius: 50%;
+  border: 2px solid $white;
+  z-index: 1;
+}
+
+.activity-name {
+  display: block;
+  font-size: 0.9rem;
+}
+
+.activity-time {
+  font-size: 0.75rem;
+  color: $gray-text;
+}
+
+.backup-mini-list {
+  list-style: none;
+  margin: 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 0.85rem;
+  }
+
+  i {
+    margin-right: 10px;
+    color: $color4;
+  }
+}
+
+.backup-date {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: $gray-text;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.config-empty {
+  text-align: center;
+  padding: 48px 20px;
+
+  i {
+    font-size: 3.5rem;
+    color: $color4;
+    opacity: 0.45;
+    margin-bottom: 12px;
+  }
+
+  .page-header {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+
+  p {
+    color: $gray-text;
+    margin-bottom: 20px;
+  }
+}
+
+.database-manager {
+  .stats-row {
+    margin-bottom: 16px;
+  }
+
+  .stats-card .card-content {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+  }
+
+  .stats-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 14px;
+    background: $color5;
+
+    i {
+      color: $color4;
+      font-size: 1.5rem;
+    }
+
+    &.teal i {
+      color: $teal;
+    }
+
+    &.accent i {
+      color: $color3;
+    }
+  }
+
+  .stats-label {
+    display: block;
+    font-size: 0.8rem;
+    color: $gray-text;
+    margin-bottom: 2px;
+  }
+
+  .stats-value {
+    margin: 0;
+    font-weight: 500;
+    font-size: 1.15rem;
+  }
+
+  .card-title-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  table thead {
+    background: $color4;
+
+    th {
+      color: $white;
+      font-weight: 500;
+      padding: 12px 10px;
+    }
+  }
+
+  .file-info {
+    display: flex;
+    align-items: center;
+  }
+
+  .file-icon {
+    color: $color4;
+    margin-right: 8px;
+  }
+
+  .date-badge,
+  .size-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 16px;
+    font-size: 0.85rem;
+    background: $color5;
+    color: $gray-text;
+  }
+
+  .path-code {
+    background: $color5;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: #444;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    i {
+      position: absolute;
+      left: 10px;
+      color: $gray-text;
+    }
+
+    input {
+      padding-left: 36px;
+      border: 1px solid $grayLight;
+      border-radius: 4px;
+      height: 40px;
+      width: 220px;
+      margin: 0;
+    }
+
+    input:focus {
+      border-color: $teal;
+      box-shadow: 0 1px 0 $teal;
+    }
+  }
+}
+
+.theme-card {
+  .card-image-container {
+    height: 140px;
+    overflow: hidden;
+    background: $color5;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .theme-active-chip {
+    background: $teal;
+    color: $white;
+  }
+}
+
+.integrations-card {
+  margin-bottom: 20px;
+}
+
+.config-log-tabs {
+  margin-bottom: 16px;
+
+  .chip {
+    cursor: pointer;
+    background: $color5;
+    color: $gray-text;
+
+    &.active {
+      background: $teal;
+      color: $white;
+    }
+  }
+}
+
+.collapsible.configuration-component + .configuration-component {
+  border-bottom: 0;
+}
+
+.collapsible.configuration-component {
+  margin: 0;
+
+  li {
+    position: relative;
+  }
+
+  .switch {
+    position: absolute;
+    right: 20px;
+  }
+
+  .collapsible-header .current {
+    position: absolute;
+    right: 20px;
+  }
+
+  .collapsible-body-hidden {
+    display: none !important;
+  }
+
+  .config-key {
+    font-size: 0.8rem;
+    color: $gray-text;
+    border-top: 1px solid $grayLight;
+    padding-top: 10px;
+    margin-top: 10px;
+  }
+}
+
+html.dark-mode {
+  .config-sidebar {
+    background: $config-surface-dark;
+    border-right-color: #2f3335;
+  }
+
+  .config-content {
+    background: #141617;
+  }
+
+  .config-sidebar .collection-item {
+    color: $config-text-dark-secondary;
+
+    i {
+      color: $config-text-dark-secondary;
+    }
+
+    &:hover,
+    &.active {
+      background: #1c1f20;
+      color: $config-text-dark;
+    }
+  }
+
+  .configuration-root .card,
+  .configuration-root .card-panel,
+  .dashboard-widget,
+  .database-manager .card {
+    background: $config-surface-dark;
+  }
+
+  .configuration-root .widget-title,
+  .config-section-header .page-header,
+  .detail-val,
+  .activity-name,
+  .stats-value {
+    color: $config-text-dark;
+  }
+
+  .health-check-list .alert-item {
+    background: #1c1f20;
+  }
+
+  .quick-settings-list li,
+  .collapsible.configuration-component .config-key {
+    border-color: #2f3335;
+  }
+
+  .database-manager {
+    .stats-icon {
+      background: #1c1f20;
+    }
+
+    .path-code,
+    .date-badge,
+    .size-badge {
+      background: #1c1f20;
+      color: $config-text-dark-secondary;
+    }
+  }
+
+  .activity-dot {
+    border-color: $config-surface-dark;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .config-content {
+    padding: 16px 12px 32px;
+  }
+
+  .config-section-header--split {
+    flex-direction: column;
+  }
+
+  .database-manager .search-wrapper,
+  .database-manager .search-wrapper input {
+    width: 100%;
+  }
+
+  .btn-large.config-full-btn {
+    width: 100%;
+  }
+}

@@ -1,41 +1,38 @@
 <div v-show="sectionActive == 'system'" class="col s12">
-    <div class="row">
-        <div class="col s12">
-            <h5 class="widget-title">
-                <i class="material-icons left">settings_applications</i> Mantenimiento del Sistema
-            </h5>
-            <p class="grey-text">Configura la retención de logs y las tareas de limpieza automática.</p>
-        </div>
+    <div class="config-section-header">
+        <h2 class="page-header">
+            <i class="material-icons left" aria-hidden="true">build</i> <?php echo lang('config_system_maintenance'); ?>
+        </h2>
+        <p class="section-description"><?php echo lang('config_system_maintenance_desc'); ?></p>
     </div>
 
-    <div class="row" v-if="systemConfigurations.length > 0">
-        <div class="col s12">
-            <configuration v-for="configuration in systemConfigurations" :key="configuration.site_config_id" :configuration="configuration"></configuration>
-        </div>
+    <div v-if="systemConfigurations.length > 0">
+        <configuration v-for="configuration in systemConfigurations" :key="'sys-' + configuration.site_config_id" :configuration="configuration"></configuration>
     </div>
-    
-    <div class="row" v-else>
-        <div class="col s12 center">
-            <div class="preloader-wrapper small active">
-                <div class="spinner-layer spinner-blue-only">
-                  <div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div>
-                </div>
-            </div>
-            <p class="grey-text"><?php echo lang('loading_system_configs'); ?>...</p>
-        </div>
+
+    <div v-if="loggerConfig.length > 0">
+        <h2 class="page-header"><?php echo lang('config_logger_settings'); ?></h2>
+        <configuration v-for="configuration in loggerConfig" :key="'log-' + configuration.site_config_id" :configuration="configuration"></configuration>
     </div>
-    
-    <div class="row" v-if="lastCleanupResult">
-        <div class="col s12">
-            <div class="card-panel green lighten-5">
-                <span class="green-text text-darken-2">
-                    <i class="material-icons left">check_circle</i>
-                    <strong><?php echo lang('system_logs_cleaned'); ?>:</strong> 
-                    <?php echo str_replace('@count', '@{{lastCleanupResult.system_logs}}', lang('system_logs_cleaned')); ?>, 
-                    <?php echo str_replace('@count', '@{{lastCleanupResult.api_logs}}', lang('error_logs_cleaned')); ?> <?php echo lang('and'); ?> 
-                    <?php echo str_replace('@count', '@{{lastCleanupResult.user_tracking}}', lang('user_tracking_cleaned')); ?>.
-                </span>
+
+    <div class="center" v-if="systemConfigurations.length == 0 && loggerConfig.length == 0">
+        <div class="preloader-wrapper small active">
+            <div class="spinner-layer spinner-green-only">
+              <div class="circle-clipper left"><div class="circle"></div></div>
+              <div class="gap-patch"><div class="circle"></div></div>
+              <div class="circle-clipper right"><div class="circle"></div></div>
             </div>
         </div>
+        <p class="grey-text"><?php echo lang('loading_system_configs'); ?></p>
+    </div>
+
+    <div class="card-panel" v-if="lastCleanupResult">
+        <span>
+            <i class="material-icons left teal-text" aria-hidden="true">check_circle</i>
+            <?php echo lang('last_maintenance'); ?>:
+            <?php echo str_replace('@count', '@{{lastCleanupResult.system_logs}}', lang('system_logs_cleaned')); ?>,
+            <?php echo str_replace('@count', '@{{lastCleanupResult.api_logs}}', lang('error_logs_cleaned')); ?> <?php echo lang('and'); ?>
+            <?php echo str_replace('@count', '@{{lastCleanupResult.user_tracking}}', lang('user_tracking_cleaned')); ?>.
+        </span>
     </div>
 </div>

@@ -219,6 +219,7 @@
                 </ul>
             </div>
         </li>
+        @if(has_permisions('SELECT_CONFIG'))
         <li class="{{isSectionActive('configuration')}}">
             <div class="collapsible-header">
                 <i class="material-icons">settings</i>
@@ -226,27 +227,19 @@
             </div>
             <div class="collapsible-body">
                 <ul>
-                    <li>
+                    <li class="{{ !in_array(get_instance()->uri->segment(3), array('data', 'import', 'export', 'logs', 'logger', 'apilogger', 'usertrackinglogger')) ? 'current' : '' }}">
                         <a class="waves-effect" href="{{ base_url('admin/configuration') }}">{{ lang('menu_configuration') }}</a>
                     </li>
-                    <li>
-                        <a class="waves-effect" href="{{ base_url('admin/configuration/import') }}">{{ lang('menu_import') }}</a>
+                    <li class="{{ in_array(get_instance()->uri->segment(3), array('data', 'import', 'export')) ? 'current' : '' }}">
+                        <a class="waves-effect" href="{{ base_url('admin/configuration/data') }}">{{ lang('menu_data') }}</a>
                     </li>
-                    <li>
-                        <a class="waves-effect" href="{{ base_url('admin/configuration/export') }}">{{ lang('menu_export') }}</a>
-                    </li>
-                    <li>
-                        <a class="waves-effect" href="{{ base_url('admin/configuration/apilogger') }}">{{ lang('menu_api_log') }}</a>
-                    </li>
-                    <li>
-                        <a class="waves-effect" href="{{ base_url('admin/configuration/logger') }}">{{ lang('menu_system_log') }}</a>
-                    </li>
-                    <li>
-                        <a class="waves-effect" href="{{ base_url('admin/configuration/usertrackinglogger') }}">{{ lang('menu_user_tracking') }}</a>
+                    <li class="{{ in_array(get_instance()->uri->segment(3), array('logs', 'logger', 'apilogger', 'usertrackinglogger')) ? 'current' : '' }}">
+                        <a class="waves-effect" href="{{ base_url('admin/configuration/logs') }}">{{ lang('menu_logs') }}</a>
                     </li>
                 </ul>
             </div>
         </li>
+        @endif
 
     </ul>
 </div>

@@ -1,55 +1,40 @@
         <div v-show="sectionActive == 'theme'" class="container form">
-            <div class="row">
-                <div class="col s12">
-                    <h4>Manage Themes</h4>
-                </div>
+            <div class="config-section-header">
+                <h2 class="page-header">{{ lang('config_manage_themes') }}</h2>
             </div>
             <div class="row pages">
-                <div class="col s12">
-                    <div class="col s12 m4" v-for="(theme, index) in themes" :key="index">
-                        <div class="card page-card">
-                            <div class="card-image">
-                                <div class="card-image-container">
-                                    <img :src="getThemePreviewUrl(index, theme)" />
-                                </div>
-                                <label class="indicator">
-                                    <input name="group1" type="radio" :checked="getThemeIsChecked(index)"
-                                        v-on:change="changeTheme(index)" />
-                                    <span>&nbsp;</span>
-                                </label>
+                <div class="col s12 m4" v-for="(theme, index) in themes" :key="index">
+                    <div class="card z-depth-1 theme-card">
+                        <div class="card-image">
+                            <div class="card-image-container">
+                                <img :src="getThemePreviewUrl(index, theme)" :alt="theme.name" />
                             </div>
-                            <div class="card-content">
-                                <div>
-                                    <span class="card-title">@{{theme.name}}
-                                        <a href="#!"><span class="activator right"><i
-                                                    class="material-icons">more_vert</i></span></a>
-                                    </span>
-                                    <div class="card-info">
-                                        <p>
-                                            @{{theme.description}}
-                                        </p>
-                                        <a @click="changeTheme(index)" class="waves-effect waves-light btn "><i
-                                                class="material-icons left">brush</i>Aplicar theme</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-reveal">
-                                <span class="card-title grey-text text-darken-4">
-                                    <i class="material-icons right">close</i>
-                                    @{{theme.name}}
-                                </span>
-                                <span class="subtitle">
-                                    @{{theme.description}}
-                                </span>
-                                <ul>
-                                    <li><b>Author:</b> <br> @{{theme.author}}</li>
-                                    <li><b>Actualizacion:</b> <br> @{{theme.updated}}</li>
-                                    <li><b>License:</b> @{{theme.license}}</li>
-                                    <li><b>Url:</b> @{{theme.url}}</li>
-                                    <li><b>Url:</b> @{{theme.url}}</li>
-                                    <li><b>Version:</b> @{{theme.version}}</li>
-                                </ul>
-                            </div>
+                            <label class="indicator">
+                                <input name="theme-group" type="radio" :checked="getThemeIsChecked(index)"
+                                    v-on:change="changeTheme(index)" />
+                                <span>&nbsp;</span>
+                            </label>
+                        </div>
+                        <div class="card-content">
+                            <span class="card-title">
+                                @{{theme.name}}
+                                <a href="#!" class="activator right" aria-label="{{ lang('options') }}"><i class="material-icons">more_vert</i></a>
+                            </span>
+                            <p>@{{theme.description}}</p>
+                            <span class="chip theme-active-chip" v-if="getThemeIsChecked(index)">{{ lang('config_theme_active') }}</span>
+                        </div>
+                        <div class="card-reveal">
+                            <span class="card-title grey-text text-darken-4">
+                                <i class="material-icons right">close</i>
+                                @{{theme.name}}
+                            </span>
+                            <ul>
+                                <li><b>{{ lang('config_theme_author') }}:</b> @{{theme.author}}</li>
+                                <li><b>{{ lang('config_theme_updated') }}:</b> @{{theme.updated}}</li>
+                                <li><b>{{ lang('config_theme_license') }}:</b> @{{theme.license}}</li>
+                                <li><b>{{ lang('config_theme_url') }}:</b> @{{theme.url}}</li>
+                                <li><b>{{ lang('config_theme_version') }}:</b> @{{theme.version}}</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
