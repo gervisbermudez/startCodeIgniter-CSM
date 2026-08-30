@@ -185,7 +185,7 @@ var dataFormModule = new Vue({
       this.getfieldsData();
       let data = {
         form_name: this.form_name,
-        form_status: this.form_status ? 1 : 0,
+        form_status: this.form_status ? 1 : 2,
         tabs: {},
         custom_model_id: this.custom_model_id,
       };
