@@ -5,8 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "copy-js": "bash bin/copy-js.sh",
     "build": "bash bin/copy-js.sh && vite build",
-    "watch": "vite build --watch",
+    "watch": "bash bin/watch.sh",
+    "watch:css": "vite build --watch",
+    "watch:js": "node bin/watch-js.mjs",
     "validate": "./bin/validate-env.sh",
     "backup-db": "./bin/backup-db.sh",
     "serve": "./bin/server.sh",

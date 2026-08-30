@@ -105,10 +105,6 @@ class UsersController extends MY_Controller
             'userdata' => $user,
             'action' => 'Admin/User/save/',
             'mode' => 'new',
-            'footer_includes' => [
-                script('resources/js/validateForm.js'),
-                script('resources/components/UserNewForm.js'),
-            ]
         ]);
     }
 
@@ -131,10 +127,6 @@ class UsersController extends MY_Controller
             'action' => 'Admin/User/save/',
             'userdata' => false,
             'mode' => 'new',
-            'footer_includes' => [
-                script('resources/js/validateForm.js'),
-                script('resources/components/UserNewForm.js'),
-            ]
         ]);
     }
 

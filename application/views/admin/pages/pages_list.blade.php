@@ -505,3 +505,7 @@
     </a>
 </div>
 @endsection
+
+@section('footer_includes')
+<script src="{{base_url('resources/components/PagesLists.js?v=' . ADMIN_VERSION)}}"></script>
+@endsection

@@ -59,3 +59,7 @@
     </div>
 </div>
 @endsection
+
+@section('footer_includes')
+<script src="{{base_url('resources/components/SearchComponent.js?v=' . ADMIN_VERSION)}}"></script>
+@endsection

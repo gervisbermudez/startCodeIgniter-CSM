@@ -29,7 +29,6 @@ class AdminController extends MY_Controller
         $title = lang('search_results_title');
         $data = $this->prepareAdminData($title, $title);
         $data['header'] = '';
-        $data['footer_includes'] = $this->getAutoFooterIncludes('admin.search_results');
         echo $this->blade->view("admin.search_results", $data);
     }
 

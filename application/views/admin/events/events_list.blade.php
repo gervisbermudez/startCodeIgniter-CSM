@@ -19,3 +19,8 @@
   ></data-table>
 </div>
 @endsection
+
+@section('footer_includes')
+<script src="{{base_url('resources/components/DataTableComponent.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/EventsList.js?v=' . ADMIN_VERSION)}}"></script>
+@endsection

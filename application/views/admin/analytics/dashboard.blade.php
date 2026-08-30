@@ -408,3 +408,8 @@
   </div>
 </div>
 @endsection
+
+@section('footer_includes')
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="{{base_url('resources/components/AnalyticsDashboard.js?v=' . ADMIN_VERSION)}}"></script>
+@endsection
