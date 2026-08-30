@@ -17,55 +17,57 @@
                     <input class="file-path validate" type="text">
                 </div>
             </div>
-            <ul class="collapsible" v-show="selectedFile">
+            <ul class="collapsible config-pick" v-show="selectedFile">
                 <li v-if="exportData.pages.length">
-                    <div class="toggle-all-data">
-                        <label>
-                            <input type="checkbox" v-on:change="toggleData(exportData.pages, 'pages')" />
+                    <div class="collapsible-header config-pick-header">
+                        <label class="config-pick-check" @click.stop aria-label="{{ lang('config_select_all') }}">
+                            <input type="checkbox" class="filled-in" v-on:change="toggleData(exportData.pages, 'pages')" />
                             <span></span>
                         </label>
+                        <i class="material-icons" aria-hidden="true">web</i>
+                        <span class="config-pick-header__label">{{ lang('config_pages') }}</span>
                     </div>
-                    <div class="collapsible-header"><i class="material-icons">web</i>{{ lang('config_pages') }}</div>
-                    <div class="collapsible-body">
-                        <ul class="collection">
-                            <li class="collection-item avatar" v-for="(page, index) in exportData.pages" :key="'ip-' + index">
-                                <div class="material-icons circle checkbox">
-                                    <label>
-                                        <input type="checkbox" v-model="page.checked" />
-                                        <span></span>
-                                    </label>
+                    <div class="collapsible-body config-pick-body">
+                        <ul class="config-pick-list">
+                            <li class="config-pick-row" v-for="(page, index) in exportData.pages" :key="'ip-' + index">
+                                <label class="config-pick-check">
+                                    <input type="checkbox" class="filled-in" v-model="page.checked" />
+                                    <span></span>
+                                </label>
+                                <div class="config-pick-row__text">
+                                    <span class="config-pick-row__title">@{{page.title}}</span>
+                                    <span class="config-pick-row__meta">@{{page.path}}</span>
                                 </div>
-                                <span class="title"><b>@{{page.title}}</b></span>
-                                <p>@{{page.path}}</p>
                             </li>
                         </ul>
                     </div>
                 </li>
                 <li v-if="exportData.config.length">
-                    <div class="toggle-all-data">
-                        <label>
-                            <input type="checkbox" v-on:change="toggleData(exportData.config, 'config')" />
+                    <div class="collapsible-header config-pick-header">
+                        <label class="config-pick-check" @click.stop aria-label="{{ lang('config_select_all') }}">
+                            <input type="checkbox" class="filled-in" v-on:change="toggleData(exportData.config, 'config')" />
                             <span></span>
                         </label>
+                        <i class="material-icons" aria-hidden="true">settings</i>
+                        <span class="config-pick-header__label">{{ lang('menu_configuration') }}</span>
                     </div>
-                    <div class="collapsible-header"><i class="material-icons">settings</i> {{ lang('menu_configuration') }}</div>
-                    <div class="collapsible-body">
-                        <ul class="collection">
-                            <li class="collection-item avatar" v-for="(item, index) in exportData.config" :key="'ic-' + index">
-                                <div class="material-icons circle checkbox">
-                                    <label>
-                                        <input type="checkbox" v-model="item.checked" />
-                                        <span></span>
-                                    </label>
+                    <div class="collapsible-body config-pick-body">
+                        <ul class="config-pick-list">
+                            <li class="config-pick-row" v-for="(item, index) in exportData.config" :key="'ic-' + index">
+                                <label class="config-pick-check">
+                                    <input type="checkbox" class="filled-in" v-model="item.checked" />
+                                    <span></span>
+                                </label>
+                                <div class="config-pick-row__text">
+                                    <span class="config-pick-row__title">@{{item.config_label}}</span>
+                                    <span class="config-pick-row__meta">@{{item.config_name}}</span>
                                 </div>
-                                <span class="title"><b>@{{item.config_label}}</b></span>
-                                <p>@{{item.config_name}}</p>
                             </li>
                         </ul>
                     </div>
                 </li>
             </ul>
-            <div v-show="selectedFile">
+            <div class="config-actions" v-show="selectedFile">
                 <button type="button" class="btn waves-effect waves-light btn-accent" @click="saveData()" :disabled="!btnEnable">
                     <i class="material-icons left">save</i> {{ lang('config_import') }}
                 </button>

@@ -1,4 +1,7 @@
 	<div v-show="sectionActive == 'home'">
+		<div class="config-section-header">
+			<h2 class="page-header">{{ lang('dashboard_overview') }}</h2>
+		</div>
 		<div class="row">
 			<div class="col s12 m12 l4">
 				<div class="card z-depth-1 dashboard-widget">

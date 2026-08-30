@@ -272,7 +272,20 @@ a.brand-logo {
 
     .collapsible-body {
       background-color: transparent;
-      padding: 0;
+      padding: 0 0 8px;
+      position: relative;
+
+      &::before {
+        content: "";
+        position: absolute;
+        left: 24px;
+        top: 4px;
+        bottom: 8px;
+        width: 2px;
+        background: var(--st-border);
+        border-radius: 1px;
+        pointer-events: none;
+      }
 
       li {
         position: relative;
@@ -285,7 +298,7 @@ a.brand-logo {
         padding: 0 16px 0 3.25rem;
         font-size: 13px;
         font-weight: 400;
-        color: $gray-text;
+        color: var(--st-text-secondary);
 
         &:hover {
           background-color: var(--st-hover);
