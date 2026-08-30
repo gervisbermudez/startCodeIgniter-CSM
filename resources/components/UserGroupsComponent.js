@@ -42,7 +42,7 @@ var UserGroupsComponents = new Vue({
         M.Tooltip.init(elems, {});
         var elems = document.querySelectorAll(".dropdown-trigger");
         M.Dropdown.init(elems, {});
-        var elems = document.querySelectorAll(".collapsible");
+        var elems = document.querySelectorAll(".collapsible:not(#slide-out)");
         M.Collapsible.init(elems, {});
         var elems = document.querySelectorAll("select");
         M.FormSelect.init(elems, {});

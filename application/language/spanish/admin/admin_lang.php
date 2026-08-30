@@ -1,6 +1,10 @@
 <?php defined('BASEPATH') or exit('No direct script access allowed');
 
 $lang['menu_dashboard'] = 'Panel';
+$lang['menu_expand'] = 'Expandir menú';
+$lang['menu_collapse'] = 'Contraer menú';
+$lang['menu_admin'] = 'Menú de administración';
+$lang['dashboard_overview'] = 'Resumen';
 $lang['menu_users'] = 'Usuarios';
 $lang['menu_usergroups'] = 'Grupos';
 $lang['menu_new'] = 'Nuevo';

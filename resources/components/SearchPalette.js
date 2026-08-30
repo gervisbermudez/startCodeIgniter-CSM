@@ -237,7 +237,7 @@ window.SearchMapper = (function () {
     {
       key: "menus",
       type: "menus",
-      icon: "account_tree",
+      icon: "view_list",
       href: function (i) {
         return "admin/menus/editar/" + i.menu_id;
       },

@@ -201,7 +201,7 @@ var dataFormModule = new Vue({
       );
 
       setTimeout(() => {
-        var elems = document.querySelectorAll(".collapsible");
+        var elems = document.querySelectorAll(".collapsible:not(#slide-out)");
         M.Collapsible.init(elems, {});
       }, 2000);
     },

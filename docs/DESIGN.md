@@ -127,16 +127,19 @@ Reglas:
 `admin.layouts.app` = navbar fija + sidenav + `.main`.
 
 - Navbar: búsqueda global (GET `/admin/search`), dark mode, notificaciones, menú de usuario.
-- Sidenav: secciones con `collapsible`; ítem activo = `.current` + barra `$color3` de 5px.
-- Iconos de menú (corregir cuando se toque el archivo):
+- Sidenav: contrato único de estados (no mezclar con Materialize `.active` ni `$primary-color`):
 
-| Sección | Icono correcto | Evitar |
+| Estado | Clase | Visual |
 |---|---|---|
-| Files | `folder` | `markunread_mailbox` |
-| Events | `event` | `assistant` (ya lo usan siteforms) |
-| Menus | `account_tree` | `menu` (conflicto con hamburguesa) |
-| Models | `view_module` | `assessment` (analytics) |
-| Analytics | `assessment` | — |
+| Hover | — | fondo `rgba(0,0,0,.05)`, sin lift |
+| Sección abierta (accordion) | `li.active` | sin relleno extra; no es “estoy aquí” |
+| Ruta actual | `li.current` | barra `$color3` de 5px + fondo muted + icono `$color3` |
+| Hoja actual | `li.current` en el hijo | la misma barra/fondo; `aria-current="page"` en el `<a>` |
+
+- Sección actual abre el accordion (`current active` en el `li` padre). La hoja se marca con `isNavItemActive()` (exacto o `path*` para edit). Settings vive en el rail principal (`configNavCurrent()`): Overview, General, Appearance, SEO, Integrations, System, Updates, Backups, Import, Export, Logs. No hay un segundo sidebar interno de configuración.
+- Colapsado (`body.sidenav-open`, el nombre está invertido): solo iconos. **Click** en hamburguesa o en un header de sección expande. **No** hover-peek. Con rail colapsado, tooltip a la derecha + `aria-label` en el toggle.
+- Labels siempre en `<span>`. Enlaces del menú: `waves-effect`.
+- Iconos: Files `folder`, Events `event`, Menus `view_list`, Models `view_module`, Analytics `assessment`. `account_tree` no está en el woff2 de Material Icons del admin (es Material Symbols); no usar `menu` (conflicto con la hamburguesa).
 
 Dashboard en sidenav solo aparece `show-on-medium-and-down`. En desktop el logo es el home. Mantener ese contrato o añadir Dashboard también en desktop; no dejarlo a medias.
 
@@ -251,7 +254,7 @@ Prioridad para trabajo de UX, no un backlog de features. Detalle y archivos en e
 **P0 — roto o engañoso**
 
 1. “Archive” en cards de páginas (y categorías) abre la URL pública, no archiva.
-2. `<li>` duplicado en sidenav de fragments (HTML inválido).
+2. ~~`<li>` duplicado en sidenav de fragments~~ (corregido).
 3. Dark mode del dashboard (`body.dark-mode`) no coincide con el switch (`html.dark-mode`).
 4. Tabs del editor de página: ambos con `.active`; ids `#test1` / `#test2`.
 5. `id="title"` duplicado en el form de página.
@@ -264,7 +267,7 @@ Prioridad para trabajo de UX, no un backlog de features. Detalle y archivos en e
 9. Editor de página: save al final, sin sticky, sin feedback de dirty state.
 10. Lista de páginas triplicada e inconsistente (restore/archive según el bloque).
 11. Estados vacíos pobres; Recents del file explorer muerto.
-12. Hover-expand del sidenav colapsado; iconos semánticamente incorrectos.
+12. ~~Hover-expand del sidenav colapsado; iconos semánticamente incorrectos~~ (corregido: click expande; iconos según tabla del Shell).
 
 **P2 — pulido**
 

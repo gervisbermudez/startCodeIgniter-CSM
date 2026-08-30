@@ -153,7 +153,7 @@ a.sidenav-trigger-lg {
   height: 50px;
   float: right;
   text-align: center;
-  color: #646b7f;
+  color: $color4;
 }
 
 a.sidenav-trigger-lg i {
@@ -168,7 +168,7 @@ a.brand-logo {
   width: 140px;
   text-align: center;
   font-size: 22px;
-  color: #646b7f;
+  color: $color4;
   font-family: "Coda";
   letter-spacing: 1px;
 
@@ -189,7 +189,7 @@ a.brand-logo {
   transition: 0.3s ease all;
   z-index: 999;
   height: 100%;
-  background-color: white;
+  background-color: $white;
 
   @media all and (max-width: 992px) {
     width: 0px;
@@ -198,22 +198,23 @@ a.brand-logo {
   .sidenav {
     transform: none;
     width: $sidemenuWidthExpanded;
-    margin: 50px 0px 0px;
+    margin: 50px 0 0;
     -webkit-transition: 0.3s ease all;
     transition: 0.3s ease all;
-    height: 100vh;
+    height: calc(100vh - 50px);
+    overflow-y: auto;
+    box-shadow: none;
+    background-color: $white;
 
-    &.animate-open {
-      width: $sidemenuWidthExpanded !important;
-      -webkit-transition: 0.3s ease all;
-      transition: 0.3s ease all;
+    li.active {
+      background-color: transparent;
+    }
 
-      .collapsible-header span {
-        display: inline-block;
-      }
+    .collapsible-body > ul:not(.collapsible) > li.active {
+      background-color: transparent;
 
-      .active .collapsible-body {
-        display: block !important;
+      a {
+        color: inherit;
       }
     }
 
@@ -226,20 +227,64 @@ a.brand-logo {
       margin-right: 1rem;
     }
 
-    li {
+    > li {
       position: relative;
 
-      &>a {
+      > a,
+      > .collapsible-header {
+        display: flex;
+        align-items: center;
+        height: 48px;
+        line-height: 48px;
         padding: 0 16px;
+        font-size: 14px;
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.87);
+
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.05);
+        }
 
         i.material-icons {
-          margin: 0 15px 0 0;
+          margin: 0 16px 0 0;
+          height: 48px;
+          line-height: 48px;
+          flex-shrink: 0;
+        }
+
+        span {
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+
+    .collapsible-body {
+      background-color: transparent;
+      padding: 0;
+
+      li {
+        position: relative;
+      }
+
+      li > a {
+        display: block;
+        height: 44px;
+        line-height: 44px;
+        padding: 0 16px 0 3.25rem;
+        font-size: 13px;
+        font-weight: 400;
+        color: $gray-text;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.05);
         }
       }
     }
 
     li.current {
-      background-color: rgba(0, 0, 0, 0.05);
+      background-color: transparent;
 
       &:before {
         background-color: $color3;
@@ -248,14 +293,32 @@ a.brand-logo {
         height: 48px;
         display: block;
         position: absolute;
-        left: 0px;
-        top: 0px;
+        left: 0;
+        top: 0;
+        pointer-events: none;
+        z-index: 1;
       }
 
-      ul {
+      > a,
+      > .collapsible-header {
         background-color: rgba(0, 0, 0, 0.05);
-        display: block;
-        padding-left: 2rem;
+
+        i.material-icons {
+          color: $color3;
+        }
+      }
+    }
+
+    .collapsible-body li.current {
+      background-color: rgba(0, 0, 0, 0.05);
+
+      &:before {
+        height: 44px;
+      }
+
+      > a {
+        color: #444;
+        font-weight: 500;
       }
     }
 
@@ -358,9 +421,8 @@ a.brand-logo {
   }
 }
 
+// sidenav-open = rail collapsed to icons. Click the hamburger to expand; no hover-peek.
 body.sidenav-open {
-
-
   .brand-logo {
     display: none;
   }
@@ -371,22 +433,27 @@ body.sidenav-open {
 
   .sidemenu {
     width: $sidemenuWidthCollapsed;
-  }
+    overflow: hidden;
 
-  .sidenav {
-    width: $sidemenuWidthCollapsed;
+    .sidenav {
+      width: $sidemenuWidthCollapsed !important;
+      overflow-x: hidden;
 
-    .collapsible-header span {
-      display: none;
+      > li > a span,
+      .collapsible-header span {
+        display: none;
+      }
+
+      .collapsible-body {
+        display: none !important;
+      }
+
+      > li > a,
+      > li > .collapsible-header {
+        padding: 0 16px;
+        overflow: hidden;
+      }
     }
-
-    .collapsible-body {
-      display: none !important;
-    }
-  }
-
-  .sidenav li>a {
-    padding: 0 16px;
   }
 
   .main {
@@ -987,6 +1054,16 @@ ul.tabs li a i {
     padding: 50px 0 0 $sidemenuWidthExpanded;
   }
 
+  body.sidenav-open {
+    .main-navbar .nav-wrapper {
+      margin-left: $sidemenuWidthCollapsed;
+    }
+
+    .main {
+      padding: 50px 0 0 $sidemenuWidthCollapsed;
+    }
+  }
+
   .menu-spand {
     display: none;
   }
@@ -1467,6 +1544,34 @@ i.material-icons.right.remove {
 
   .sidemenu {
     background-color: rgb(18, 20, 20);
+
+    .sidenav {
+      background-color: rgb(18, 20, 20);
+
+      > li > a,
+      > li > .collapsible-header {
+        color: #e0e0e0;
+      }
+
+      .collapsible-body li > a {
+        color: #aeadac;
+      }
+
+      li.current > a,
+      li.current > .collapsible-header,
+      .collapsible-body li.current {
+        background-color: rgba(255, 255, 255, 0.08);
+      }
+
+      .collapsible-body li.current > a {
+        color: #e0e0e0;
+      }
+
+      li.current > a i.material-icons,
+      li.current > .collapsible-header i.material-icons {
+        color: $color3;
+      }
+    }
   }
 
   a.brand-logo {
@@ -1604,6 +1709,11 @@ i.material-icons.right.remove {
 
   .sidemenu .sidenav i.material-icons {
     color: rgba(174, 173, 170, 0.54);
+  }
+
+  .sidemenu .sidenav li.current > a i.material-icons,
+  .sidemenu .sidenav li.current > .collapsible-header i.material-icons {
+    color: $color3;
   }
 
   .collapsible {

@@ -6,6 +6,9 @@ $lang['form_submited_message'] = 'We appreciate you contacting us. We will get b
 
 // Menu items
 $lang['menu_dashboard'] = 'Dashboard';
+$lang['menu_expand'] = 'Expand menu';
+$lang['menu_collapse'] = 'Collapse menu';
+$lang['menu_admin'] = 'Admin menu';
 $lang['menu_users'] = 'Users';
 $lang['menu_usergroups'] = 'Groups';
 $lang['menu_new'] = 'New';

@@ -188,7 +188,7 @@ Vue.component("configuration", {
         M.Tooltip.init(elems, {});
         elems = document.querySelectorAll(".dropdown-trigger");
         M.Dropdown.init(elems, {});
-        elems = document.querySelectorAll(".collapsible");
+        elems = document.querySelectorAll(".collapsible:not(#slide-out)");
         M.Collapsible.init(elems, {});
         elems = document.querySelectorAll("select");
         M.FormSelect.init(elems, {});

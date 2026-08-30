@@ -3,39 +3,143 @@ jQuery(document).ready(function ($) {
   // Each Vue component will handle its own Materialize initialization
   // M.AutoInit();
 
-  // Initialize only static elements present in the layout
-  var sidenavElems = document.querySelectorAll('.sidenav');
-  if (sidenavElems.length > 0) {
-    M.Sidenav.init(sidenavElems, {});
+  function isRailCollapsed() {
+    return $("body").hasClass("sidenav-open");
   }
 
-  var collapsibleElems = document.querySelectorAll('.collapsible');
+  function syncSidenavToggleLabel() {
+    var btn = document.querySelector("a.sidenav-trigger-lg");
+    if (!btn) {
+      return;
+    }
+    var collapsed = isRailCollapsed();
+    var expandLabel = btn.getAttribute("data-label-expand") || "Expand menu";
+    var collapseLabel = btn.getAttribute("data-label-collapse") || "Collapse menu";
+    btn.setAttribute("aria-expanded", collapsed ? "false" : "true");
+    btn.setAttribute("aria-label", collapsed ? expandLabel : collapseLabel);
+  }
+
+  function destroySidenavTooltips() {
+    var tips = document.querySelectorAll("#slide-out .sidemenu-tooltip");
+    var i;
+    for (i = 0; i < tips.length; i++) {
+      var instance = M.Tooltip.getInstance(tips[i]);
+      if (instance) {
+        instance.destroy();
+      }
+      tips[i].classList.remove("tooltipped", "sidemenu-tooltip");
+      tips[i].removeAttribute("data-tooltip");
+      tips[i].removeAttribute("data-position");
+    }
+  }
+
+  function syncSidenavTooltips() {
+    destroySidenavTooltips();
+    if (!isRailCollapsed()) {
+      return;
+    }
+    var items = document.querySelectorAll(
+      "#slide-out > li > a, #slide-out > li > .collapsible-header"
+    );
+    var i;
+    for (i = 0; i < items.length; i++) {
+      var el = items[i];
+      var label = el.querySelector("span");
+      var text = label
+        ? label.textContent.replace(/^\s+|\s+$/g, "")
+        : el.textContent.replace(/^\s+|\s+$/g, "");
+      if (!text) {
+        continue;
+      }
+      el.setAttribute("data-tooltip", text);
+      el.setAttribute("data-position", "right");
+      el.classList.add("tooltipped", "sidemenu-tooltip");
+    }
+    M.Tooltip.init(document.querySelectorAll("#slide-out .sidemenu-tooltip"), {
+      position: "right",
+    });
+  }
+
+  function setRailCollapsed(collapsed) {
+    $("body").toggleClass("sidenav-open", !!collapsed);
+    $("#slide-out").removeAttr("style");
+    if (collapsed) {
+      localStorage.setItem("sidenav-open", "sidenav-open");
+    } else {
+      localStorage.removeItem("sidenav-open");
+    }
+    syncSidenavToggleLabel();
+    syncSidenavTooltips();
+  }
+
+  function openSidenavSection(headerEl) {
+    var slideOut = document.getElementById("slide-out");
+    if (!slideOut || !headerEl) {
+      return;
+    }
+    var li = headerEl.parentNode;
+    var instance = M.Collapsible.getInstance(slideOut);
+    if (!instance || !li) {
+      return;
+    }
+    var items = slideOut.children;
+    var index = -1;
+    var i;
+    for (i = 0; i < items.length; i++) {
+      if (items[i] === li) {
+        index = i;
+        break;
+      }
+    }
+    if (index >= 0) {
+      instance.open(index);
+    }
+  }
+
+  // Initialize only static elements present in the layout
+  var sidenavElems = document.querySelectorAll(".sidenav");
+  if (sidenavElems.length > 0) {
+    M.Sidenav.init(sidenavElems, {});
+    $("#slide-out").removeAttr("style");
+  }
+
+  var collapsibleElems = document.querySelectorAll(".collapsible:not(#slide-out)");
   if (collapsibleElems.length > 0) {
     M.Collapsible.init(collapsibleElems, {});
   }
+  var slideOutEl = document.getElementById("slide-out");
+  if (slideOutEl && slideOutEl.classList.contains("collapsible")) {
+    M.Collapsible.init(slideOutEl, {});
+  }
 
   $("a.sidenav-trigger-lg").click(function (e) {
-    $("body").toggleClass("sidenav-open");
-    $("#slide-out").removeAttr("style");
-    if ($("body").hasClass("sidenav-open")) {
-      localStorage.setItem("sidenav-open", "sidenav-open");
-    } else {
-      localStorage.removeItem("sidenav-open", "sidenav-open");
-    }
+    e.preventDefault();
+    setRailCollapsed(!isRailCollapsed());
   });
 
-  $(".sidenav").hover(
-    function () {
-      // over
-      $this = $(this);
-      $this.addClass("animate-open");
-    },
-    function () {
-      // out
-      $this = $(this);
-      $this.removeClass("animate-open");
-    }
-  );
+  // Collapsed rail: click a section to expand, then open that accordion.
+  // Capture + stop so Materialize does not toggle (which would close the current section).
+  if (slideOutEl) {
+    slideOutEl.addEventListener(
+      "click",
+      function (e) {
+        if (!isRailCollapsed()) {
+          return;
+        }
+        var header = e.target.closest
+          ? e.target.closest(".collapsible-header")
+          : null;
+        if (!header || header.parentNode.parentNode !== slideOutEl) {
+          return;
+        }
+        e.preventDefault();
+        e.stopPropagation();
+        setRailCollapsed(false);
+        openSidenavSection(header);
+      },
+      true
+    );
+  }
 
   $("#darkmode-switch").change(function (e) {
     e.preventDefault();
@@ -43,7 +147,7 @@ jQuery(document).ready(function ($) {
     if ($(this).is(":checked")) {
       localStorage.setItem("dark-mode", "dark-mode");
     } else {
-      localStorage.removeItem("dark-mode", "dark-mode");
+      localStorage.removeItem("dark-mode");
     }
   });
 
@@ -55,9 +159,78 @@ jQuery(document).ready(function ($) {
   }
 
   if (localStorage.getItem("sidenav-open")) {
-    $("body").toggleClass("sidenav-open");
+    setRailCollapsed(true);
+  } else {
+    syncSidenavToggleLabel();
   }
 });
+
+function normalizePathname(pathname) {
+  return (pathname || "").replace(/\/+$/, "") || "/";
+}
+
+function queryParam(search, name) {
+  var query = (search || "").replace(/^\?/, "");
+  if (!query) {
+    return "";
+  }
+  var parts = query.split("&");
+  var i;
+  for (i = 0; i < parts.length; i++) {
+    var pair = parts[i].split("=");
+    if (decodeURIComponent(pair[0] || "") === name) {
+      return decodeURIComponent(pair[1] || "");
+    }
+  }
+  return "";
+}
+
+function markSidenavConfigLeaf(section, defaultSection) {
+  var here = normalizePathname(window.location.pathname);
+  var wanted = section || defaultSection || "";
+  var links = document.querySelectorAll("#slide-out .collapsible-body a");
+  var i;
+  for (i = 0; i < links.length; i++) {
+    var a = links[i];
+    var li = a.parentNode;
+    if (!li || !li.classList) {
+      continue;
+    }
+    if (normalizePathname(a.pathname || "") !== here) {
+      continue;
+    }
+    var linkSection = queryParam(a.search, "section") || defaultSection || "";
+    if (linkSection === wanted) {
+      li.classList.add("current");
+      a.setAttribute("aria-current", "page");
+    } else {
+      li.classList.remove("current");
+      a.removeAttribute("aria-current");
+    }
+  }
+}
+
+function bindSamePageSidenavSections(onSection) {
+  var root = document.getElementById("slide-out");
+  if (!root || root.getAttribute("data-config-section-bound") === "1") {
+    return;
+  }
+  root.setAttribute("data-config-section-bound", "1");
+  root.addEventListener("click", function (e) {
+    var a = e.target.closest ? e.target.closest("a") : null;
+    if (!a || !a.href || a.getAttribute("href") === "#") {
+      return;
+    }
+    if (normalizePathname(a.pathname || "") !== normalizePathname(window.location.pathname)) {
+      return;
+    }
+    e.preventDefault();
+    var section = queryParam(a.search, "section");
+    if (typeof onSection === "function") {
+      onSection(section, a);
+    }
+  });
+}
 
 // Función que resuelve un camino en un objeto
 function resolve(obj, path) {

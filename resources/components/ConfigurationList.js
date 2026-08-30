@@ -274,6 +274,9 @@ var ConfiguracionList = new Vue({
         "?section=" +
         section;
       window.history.pushState({ path: t }, "", t);
+      if (typeof markSidenavConfigLeaf === "function") {
+        markSidenavConfigLeaf(section, "home");
+      }
       this.$nextTick(function () {
         this.initPlugins();
       });
@@ -375,7 +378,7 @@ var ConfiguracionList = new Vue({
         M.Tooltip.init(e, {});
         e = document.querySelectorAll(".dropdown-trigger");
         M.Dropdown.init(e, {});
-        e = document.querySelectorAll(".collapsible");
+        e = document.querySelectorAll(".collapsible:not(#slide-out)");
         M.Collapsible.init(e, {});
         e = document.querySelectorAll("select");
         M.FormSelect.init(e, {});
@@ -544,6 +547,11 @@ var ConfiguracionList = new Vue({
         self.changeSectionActive(self.readSectionFromUrl());
       });
       self.changeSectionActive(self.readSectionFromUrl());
+      if (typeof bindSamePageSidenavSections === "function") {
+        bindSamePageSidenavSections(function (section) {
+          self.changeSectionActive(section || "home");
+        });
+      }
     });
   },
 });

@@ -100,6 +100,9 @@ var DataList = new Vue({
         "?section=" +
         section;
       window.history.pushState({ path: url }, "", url);
+      if (typeof markSidenavConfigLeaf === "function") {
+        markSidenavConfigLeaf(section, "backups");
+      }
       this.initPlugins();
     },
     initPlugins: function () {
@@ -108,7 +111,7 @@ var DataList = new Vue({
         M.Tooltip.init(e, {});
         e = document.querySelectorAll(".dropdown-trigger");
         M.Dropdown.init(e, {});
-        e = document.querySelectorAll(".collapsible");
+        e = document.querySelectorAll(".collapsible:not(#slide-out)");
         M.Collapsible.init(e, {});
         e = document.querySelectorAll("select");
         M.FormSelect.init(e, {});
@@ -389,6 +392,11 @@ var DataList = new Vue({
         self.changeSectionActive(self.readSectionFromUrl());
       });
       self.changeSectionActive(self.readSectionFromUrl());
+      if (typeof bindSamePageSidenavSections === "function") {
+        bindSamePageSidenavSections(function (section) {
+          self.changeSectionActive(section || "backups");
+        });
+      }
     });
   },
 });

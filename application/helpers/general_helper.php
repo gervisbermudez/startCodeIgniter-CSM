@@ -182,29 +182,143 @@ if (!function_exists('isDir')) {
 if (!function_exists('isSectionActive')) {
     function isSectionActive($path = '', $position = 2, $class = 'current')
     {
+        $matched = false;
+
         if ($position === 'match') {
-            if ($path == uri_string()) {
+            $matched = (trim($path, '/') == trim(uri_string(), '/'));
+        } else {
+            $ci = &get_instance();
+            $url_array = $ci->uri->segment_array();
+
+            if (count($url_array) == 0) {
+                return '';
+            }
+
+            if (count($url_array) < $position) {
+                $position = 1;
+            }
+
+            $matched = ($path == $url_array[$position]);
+        }
+
+        if (!$matched) {
+            return '';
+        }
+
+        if ($class === 'current') {
+            return 'current active';
+        }
+
+        return $class;
+    }
+}
+
+if (!function_exists('isNavItemActive')) {
+    /**
+     * Marks a sidenav leaf as current. Exact path, or prefix when the pattern ends with *.
+     * Example: isNavItemActive(array('admin/pages', 'admin/pages/edit*'))
+     */
+    function isNavItemActive($paths, $class = 'current')
+    {
+        $uri = trim(uri_string(), '/');
+        if ($uri === '') {
+            return '';
+        }
+        if (!is_array($paths)) {
+            $paths = array($paths);
+        }
+        foreach ($paths as $path) {
+            $path = trim($path, '/');
+            if ($path === '') {
+                continue;
+            }
+            $wildcard = substr($path, -1) === '*';
+            if ($wildcard) {
+                $prefix = rtrim(substr($path, 0, -1), '/');
+                if ($prefix === '') {
+                    continue;
+                }
+                if ($uri === $prefix || strpos($uri, $prefix . '/') === 0) {
+                    return $class;
+                }
+            } elseif ($uri === $path) {
                 return $class;
             }
-            return '';
         }
+        return '';
+    }
+}
 
+if (!function_exists('navCurrentAttr')) {
+    function navCurrentAttr($paths)
+    {
+        return isNavItemActive($paths) ? 'aria-current="page"' : '';
+    }
+}
+
+if (!function_exists('configNavCurrent')) {
+    /**
+     * Marks a Settings leaf in the main sidenav.
+     * $page: index | data | logs. $section: ?section= value, or null for the whole page.
+     */
+    function configNavCurrent($page, $section = null, $class = 'current')
+    {
         $ci = &get_instance();
-        $url_array = $ci->uri->segment_array();
-
-        if (count($url_array) == 0) {
+        if ($ci->uri->segment(2) !== 'configuration') {
             return '';
         }
 
-        if (count($url_array) < $position) {
-            $position = 1;
+        $seg3 = $ci->uri->segment(3);
+        if ($seg3 === false || $seg3 === null) {
+            $seg3 = '';
         }
 
-        if ($path == $url_array[$position]) {
+        $currentPage = 'index';
+        if ($seg3 === 'data' || $seg3 === 'import' || $seg3 === 'export') {
+            $currentPage = 'data';
+        } elseif ($seg3 === 'logs' || $seg3 === 'logger' || $seg3 === 'apilogger' || $seg3 === 'usertrackinglogger') {
+            $currentPage = 'logs';
+        } elseif ($seg3 !== '' && $seg3 !== 'index') {
+            $currentPage = $seg3;
+        }
+
+        $wantPage = ($page === 'home') ? 'index' : $page;
+        if ($currentPage !== $wantPage) {
+            return '';
+        }
+
+        if ($section === null) {
             return $class;
         }
 
-        return '';
+        $querySection = $ci->input->get('section');
+        if ($querySection === false || $querySection === null) {
+            $querySection = '';
+        }
+
+        if ($querySection === 'analytics' || $querySection === 'pixel') {
+            $querySection = 'integrations';
+        }
+        if ($wantPage === 'index' && $querySection === 'logger') {
+            $querySection = 'system';
+        }
+
+        $defaults = array(
+            'index' => 'home',
+            'data' => 'backups',
+        );
+        if ($querySection === '' && isset($defaults[$wantPage])) {
+            $querySection = $defaults[$wantPage];
+        }
+
+        return ($querySection === $section) ? $class : '';
+    }
+}
+
+if (!function_exists('configNavCurrentAttr')) {
+    function configNavCurrentAttr($page, $section = null)
+    {
+        return configNavCurrent($page, $section) ? 'aria-current="page"' : '';
     }
 }
 
