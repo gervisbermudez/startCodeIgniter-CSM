@@ -1,11 +1,19 @@
 <nav class="main-navbar">
     <div class="nav-wrapper">
-        <form method="GET" action="{{base_url('admin/search/')}}" class="input-field search-top">
-            <i class="material-icons prefix">search</i>
-            <input placeholder="Search..." name="q" type="text" class="validate">
-        </form>
-        <a href="#" data-target="slide-out" class="sidenav-trigger show-on-medium-and-down"><i
-                class="material-icons">menu</i></a>
+        <button
+            type="button"
+            class="search-top-trigger"
+            id="navbar-search-trigger"
+            data-search-palette-trigger
+            aria-label="{{ lang('search') }}"
+            aria-haspopup="dialog"
+        >
+            <i class="material-icons" aria-hidden="true">search</i>
+            <span class="search-top-trigger__label hide-on-small-only">{{ lang('search_placeholder') }}</span>
+            <kbd class="search-top-kbd hide-on-small-only">{{ lang('search_shortcut_hint') }}</kbd>
+        </button>
+        <a href="#" data-target="slide-out" class="sidenav-trigger show-on-medium-and-down" aria-label="{{ lang('menu_expand') }}"><i
+                class="material-icons" aria-hidden="true">menu</i></a>
         <a class='dropdown-trigger right' href='#' data-target='user_dropdown'>
             @if (userdata('avatar'))
             <img src="{{base_url(userdata('avatar'))}}" alt="" class="circle z-depth-1" />
