@@ -81,12 +81,17 @@ var SiteFormSubmitList = new Vue({
   mixins: [mixins],
   methods: {
     deleteItem: function (payload) {
+      var self = this;
       var item = payload.item;
       $.ajax({
         type: "DELETE",
         url: BASEURL + "api/v1/siteforms/submit/" + item.siteform_submit_id,
         dataType: "json",
         success: function () {
+          if (self.$refs.view && typeof self.$refs.view.getData === "function") {
+            self.$refs.view.getData();
+            return;
+          }
           window.location.reload();
         },
         error: function () {

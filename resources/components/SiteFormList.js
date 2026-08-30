@@ -58,8 +58,7 @@ var SiteFormList = new Vue({
         {
           label: i18n.exportCsv || "Export",
           icon: "file_download",
-          url: "admin/siteforms/export/",
-          url_param: "siteform_id",
+          handler: "exportCsv",
         },
         {
           label: i18n.copySnippet || "Copy",
@@ -81,6 +80,19 @@ var SiteFormList = new Vue({
     },
     editItem: function (data) {
       window.location = BASEURL + "admin/siteforms/editar/" + data.item.siteform_id;
+    },
+    exportCsv: function (payload) {
+      var item = payload && payload.item ? payload.item : payload;
+      var i18n = window.SITEFORMS_I18N || {};
+      if (!item || !item.siteform_id) {
+        return;
+      }
+      var count = parseInt(item.submissions_count, 10) || 0;
+      if (count < 1) {
+        M.toast({ html: i18n.exportEmpty || "There are no submissions to export" });
+        return;
+      }
+      window.location = BASEURL + "admin/siteforms/export/" + item.siteform_id;
     },
     copySnippet: function (payload) {
       var name = payload && payload.item ? payload.item.name : "";

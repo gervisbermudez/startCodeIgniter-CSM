@@ -17,9 +17,9 @@
         @include('admin.components.page_navbar', [
             'navbarIf' => 'search_input',
             'section' => 'empty',
-            'itemsExpr' => '(pagination ? data : filterData)',
+            'itemsExpr' => 'tableRows',
         ])
-        <div class="configurations" v-cloak v-if="!loader && data.length > 0">
+        <div class="configurations" v-cloak v-if="!loader && tableRows.length > 0">
             <div class="row">
                 <div class="col s12">
                     <table class="striped">
@@ -29,7 +29,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(item, index) in (pagination ? data : filterData)" :key="index">
+                            <tr v-for="(item, index) in tableRows" :key="index">
                                 <td v-for="(colum, i) in colums" :key="i" >
                                     <span v-if="colum.colum !== 'options'" v-html="getContent(item, colum)"></span>
                                     <span v-else>

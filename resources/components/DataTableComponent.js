@@ -99,6 +99,10 @@ var dataTable = Vue.component("dataTable", {
         return {};
       },
     },
+    client_search: {
+      type: Boolean,
+      default: false,
+    },
   },
   data: function () {
     return {
@@ -138,33 +142,21 @@ var dataTable = Vue.component("dataTable", {
   mixins: [mixins],
   computed: {
     filterData: function () {
-      if (!!this.filter) {
-        let filterTerm = this.filter.toLowerCase();
-        return this.data.filter((value, index) => {
-          return this.searchInObject(value, filterTerm);
-        });
-      } else {
+      if (!this.filter) {
         return this.data;
       }
-    },
-  },
-  watch: {
-    loader(newVal, oldVal) {
-      console.log('[DataTable WATCH] loader changed from', oldVal, 'to', newVal);
-      this.$nextTick(() => {
-        console.log('[DataTable WATCH] After nextTick, loader is:', this.loader);
-        const loaderEl = this.$el.querySelector('.col.s12.center');
-        if (loaderEl) {
-          console.log('[DataTable WATCH] Loader element style.display:', loaderEl.style.display);
-          console.log('[DataTable WATCH] Loader element computed display:', window.getComputedStyle(loaderEl).display);
-        } else {
-          console.log('[DataTable WATCH] Loader element NOT FOUND');
-        }
+      var filterTerm = this.filter.toLowerCase();
+      var self = this;
+      return this.data.filter(function (value) {
+        return self.searchInObject(value, filterTerm);
       });
     },
-    data(newVal, oldVal) {
-      console.log('[DataTable WATCH] data changed, new length:', newVal.length);
-    }
+    tableRows: function () {
+      if (this.client_search || !this.pagination) {
+        return this.filterData;
+      }
+      return this.data;
+    },
   },
   methods: {
     toggleView: function () {
@@ -186,7 +178,7 @@ var dataTable = Vue.component("dataTable", {
         var elems = document.querySelectorAll(".tooltipped");
         M.Tooltip.init(elems, {});
         var elems = document.querySelectorAll(".dropdown-trigger");
-        M.Dropdown.init(elems, {});
+        M.Dropdown.init(elems, { constrainWidth: false });
         var elems = document.querySelectorAll(".collapsible:not(#slide-out)");
         M.Collapsible.init(elems, {});
         var elems = document.querySelectorAll("select");
@@ -198,7 +190,6 @@ var dataTable = Vue.component("dataTable", {
       if (typeof page === "undefined") {
         page = this.currentPage || 1;
       }
-      console.log('[DataTable] getData called, setting loader=true');
       self.loader = true;
       var url = BASEURL + this.endpoint;
       if (this.pagination) {
@@ -209,52 +200,28 @@ var dataTable = Vue.component("dataTable", {
         });
         url += (url.indexOf("?") >= 0 ? "&" : "?") + params.join("&");
       }
-      console.log('[DataTable] Fetching from:', url);
       fetch(url)
-        .then((response) => {
-          console.log('[DataTable] Response received, status:', response.status);
+        .then(function (response) {
           return response.json();
         })
-        .then((response) => {
-          console.log('[DataTable] Response parsed:', response);
-          // Coerce response data to an array and handle missing pagination fields
-          let data = Array.isArray(response.data) ? response.data : (response && response.data ? [response.data] : []);
-          console.log('[DataTable] Data extracted:', data.length, 'items');
-          if (this.pagination) {
-            this.applyPaginatorFromResponse(response);
+        .then(function (response) {
+          var data = Array.isArray(response.data)
+            ? response.data
+            : response && response.data
+            ? [response.data]
+            : [];
+          if (self.pagination) {
+            self.applyPaginatorFromResponse(response);
           }
-          // Ensure loader is hidden even if preprocessing fails
           try {
-            console.log('[DataTable] Processing data...');
-            self.data = this.preProssesData(data);
-            console.log('[DataTable] Data processed successfully, items:', self.data.length);
+            self.data = self.preProssesData(data);
           } catch (e) {
-            console.error('[DataTable] preProssesData error:', e);
             self.data = Array.isArray(data) ? data : [];
           }
-          console.log('[DataTable] Setting loader=false');
           self.loader = false;
-          console.log('[DataTable] Loader set to:', self.loader);
-          self.$nextTick(() => {
-            console.log('[DataTable] After nextTick in getData, loader:', self.loader);
-            const loaderDiv = self.$el.querySelector('.col.s12.center');
-            const allLoaders = self.$el.querySelectorAll('.col.s12.center');
-            console.log('[DataTable] Total loader elements found:', allLoaders.length);
-            allLoaders.forEach((el, idx) => {
-              console.log(`[DataTable] Loader ${idx}: display="${el.style.display}", computed="${window.getComputedStyle(el).display}", visible="${el.offsetHeight > 0}"`);
-            });
-            if (loaderDiv) {
-              console.log('[DataTable] First loader div found, display:', loaderDiv.style.display);
-              console.log('[DataTable] First loader div computed display:', window.getComputedStyle(loaderDiv).display);
-              console.log('[DataTable] First loader div offsetHeight:', loaderDiv.offsetHeight, 'visible:', loaderDiv.offsetHeight > 0);
-            }
-            console.log('[DataTable] Data length:', self.data.length);
-            console.log('[DataTable] ShowPagination:', self.showPagination);
-          });
-          this.initPlugins();
+          self.initPlugins();
         })
-        .catch((error) => {
-          console.error('[DataTable] Fetch error:', error);
+        .catch(function () {
           self.loader = false;
           self.$forceUpdate();
         });
@@ -447,14 +414,12 @@ var dataTable = Vue.component("dataTable", {
         var elems = document.querySelectorAll(".tooltipped");
         var instances = M.Tooltip.init(elems, {});
         var elems = document.querySelectorAll(".dropdown-trigger");
-        var instances = M.Dropdown.init(elems, {});
+        var instances = M.Dropdown.init(elems, { constrainWidth: false });
       }, 3000);
     },
   },
   mounted: function () {
-    console.log('[DataTable] Component mounted, initial loader:', this.loader);
     this.$nextTick(function () {
-      console.log('[DataTable] In mounted nextTick, endpoint:', this.endpoint);
       if (this.endpoint) {
         this.getData();
       } else if (this.preset_data) {
@@ -464,8 +429,9 @@ var dataTable = Vue.component("dataTable", {
         this.loader = false;
       }
 
-      this.$root.$on("eventing", (data) => {
-        this.data[data.index] = data.item;
+      var self = this;
+      this.$root.$on("eventing", function (payload) {
+        self.data[payload.index] = payload.item;
       });
     });
   },

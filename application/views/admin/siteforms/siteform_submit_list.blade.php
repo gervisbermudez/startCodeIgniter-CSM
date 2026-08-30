@@ -5,10 +5,12 @@
 @section('content')
 <div id="root">
     <router-view
+        ref="view"
         :endpoint="endpoint"
         :colums="colums"
         :index_data="index_data"
         :pagination="true"
+        :client_search="true"
         :options="options"
         :show_fab="false"
         :query_params="queryParams"

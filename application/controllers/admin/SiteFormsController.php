@@ -89,8 +89,7 @@ class SiteFormsController extends MY_Controller
             return;
         }
 
-        $CI = &get_instance();
-        $submissions = $CI->db
+        $submissions = $this->db
             ->select('siteform_submit.siteform_submit_id, siteform_submit.date_create, user_tracking.client_ip')
             ->from('siteform_submit')
             ->join('user_tracking', 'user_tracking.user_tracking_id = siteform_submit.user_tracking_id', 'left')
@@ -100,33 +99,42 @@ class SiteFormsController extends MY_Controller
             ->get()
             ->result();
 
-        if (empty($submissions)) {
-            show_error(lang('siteforms_export_empty'), 400);
-            return;
-        }
-
-        $submitIds = array();
-        foreach ($submissions as $submission) {
-            $submitIds[] = (int) $submission->siteform_submit_id;
-        }
-
-        $dataRows = $CI->db
-            ->where_in('siteform_submit_id', $submitIds)
-            ->get('siteform_submit_data')
+        $allKeys = array();
+        $itemRows = $this->db
+            ->select('item_name')
+            ->from('siteform_items')
+            ->where('siteform_id', $siteform_id)
+            ->where('status !=', 0)
+            ->order_by('siteform_items.order', 'ASC')
+            ->get()
             ->result();
+        foreach ($itemRows as $item) {
+            if (!empty($item->item_name)) {
+                $allKeys[$item->item_name] = true;
+            }
+        }
 
         $bySubmit = array();
-        $allKeys = array();
-        foreach ($dataRows as $row) {
-            $sid = (int) $row->siteform_submit_id;
-            if (!isset($bySubmit[$sid])) {
-                $bySubmit[$sid] = array();
+        if (!empty($submissions)) {
+            $submitIds = array();
+            foreach ($submissions as $submission) {
+                $submitIds[] = (int) $submission->siteform_submit_id;
             }
-            $bySubmit[$sid][$row->_key] = $row->_value;
-            $allKeys[$row->_key] = true;
+            $dataRows = $this->db
+                ->where_in('siteform_submit_id', $submitIds)
+                ->get('siteform_submit_data')
+                ->result();
+            foreach ($dataRows as $row) {
+                $sid = (int) $row->siteform_submit_id;
+                if (!isset($bySubmit[$sid])) {
+                    $bySubmit[$sid] = array();
+                }
+                $bySubmit[$sid][$row->_key] = $row->_value;
+                $allKeys[$row->_key] = true;
+            }
         }
-        $allKeys = array_keys($allKeys);
 
+        $allKeys = array_keys($allKeys);
         $headers = array_merge(array('ID', 'Fecha', 'IP'), $allKeys);
         $csv_data = array($headers);
 
