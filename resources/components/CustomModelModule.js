@@ -15,6 +15,7 @@ var CustomModelModule = new Vue({
     formsElements: formsElements,
     configurable: true,
   },
+  mixins: [mixins],
   methods: {
     getInitialTab() {
       return {
@@ -77,14 +78,7 @@ var CustomModelModule = new Vue({
       this.tabs[this.getActiveTab()].custom_model_fields.push(
         JSON.parse(JSON.stringify(formField))
       );
-
-      setTimeout(() => {
-        var elems = document.querySelectorAll(".collapsible:not(#slide-out)");
-        M.Collapsible.init(elems, {});
-        var elems = document.querySelectorAll(".tooltipped");
-        var instances = M.Tooltip.init(elems, {});
-        M.AutoInit();
-      }, 2000);
+      this.initPlugins();
     },
     removeField(tabindex, fieldindex) {
       if (

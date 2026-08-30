@@ -387,7 +387,7 @@ var PageNewForm = new Vue({
         this.loader = true;
         this.runSaveData(callBack);
       } else {
-        M.toast({ html: "Verifique todos los campos del formulario" });
+        this.toast("toast_form_invalid");
       }
     },
     runSaveData(callBack) {
@@ -416,7 +416,7 @@ var PageNewForm = new Vue({
         },
         error: function (response) {
           self.loader = false;
-          M.toast({ html: "Ocurrió un error inesperado" });
+          self.toast("toast_error");
           self.debug ? console.error(response) : null;
         },
       });

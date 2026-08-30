@@ -20,9 +20,11 @@ var MenuNewForm = new Vue({
     user: null,
     realOrder: {},
     group: {},
-    targetItem: {}
+    targetItem: {},
+    formEndpoint: "api/v1/menus",
+    formIdField: "menu_id",
   },
-  mixins: [mixins],
+  mixins: [mixins, formMixin],
   computed: {
     btnEnable: function () {
       let enable =
@@ -59,45 +61,16 @@ var MenuNewForm = new Vue({
     },
     save() {
       var self = this;
-      var callBack = (response) => {
-        var toastHTML = "<span>Menu saved </span>";
-        M.toast({ html: toastHTML });
-        this.setCollapsibleEvent();
-      };
       this.loader = true;
-      this.runSaveData(callBack);
-    },
-    runSaveData(callBack) {
-      var self = this;
-      var url = BASEURL + "api/v1/menus";
-      $.ajax({
-        type: "POST",
-        url: url,
-        data: self.getData(),
-        dataType: "json",
-        success: function (response) {
-          self.debug ? console.log(url, response) : null;
-          setTimeout(() => {
-            self.loader = false;
-          }, 1500);
-          if (response.code == 200) {
-            self.editMode = true;
-            self.menu_id = response.data.menu_id;
-            self.menu_items = response.data.menu_items;
-            if (typeof callBack == "function") {
-              callBack(response);
-            }
-          } else {
-            M.toast({ html: response.error_message });
-            self.loader = false;
-          }
-        },
-        error: function (response) {
-          self.loader = false;
-          M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(response);
-        },
+      this.runSaveData(function () {
+        self.toast("toast_saved");
+        self.setCollapsibleEvent();
       });
+    },
+    afterSave: function (response) {
+      this.editMode = true;
+      this.menu_id = response.data.menu_id;
+      this.menu_items = response.data.menu_items;
     },
     getData: function () {
       this.setRealOrder();

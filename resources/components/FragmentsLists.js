@@ -7,129 +7,31 @@ var FragmentsLists = new Vue({
     filter: "",
     toDeleteItem: {},
     serverPagination: true,
+    listEndpoint: "api/v1/fragments",
+    listKey: "fragments",
+    listPk: "fragment_id",
   },
-  mixins: [mixins],
+  mixins: [mixins, listMixin],
   computed: {
     filterFragments: function () {
       if (this.serverPagination) {
         return this.fragments;
       }
-      if (!!this.filter) {
-        let filterTerm = this.filter.toLowerCase();
-        return this.fragments.filter((value, index) => {
+      if (this.filter) {
+        var filterTerm = this.filter.toLowerCase();
+        return this.fragments.filter(function (value) {
           return this.searchInObject(value, filterTerm);
-        });
-      } else {
-        return this.fragments;
+        }, this);
       }
+      return this.fragments;
     },
   },
   methods: {
-    getcontentText: function (fragment) {
-      return fragment.description.substring(0, 50) + "...";
-    },
-    toggleView: function () {
-      this.tableView = !this.tableView;
-      this.initPlugins();
-    },
-    resetFilter: function () {
-      this.filter = "";
-    },
-    reloadList: function (page) {
-      this.getFragments(page);
-    },
-    getPageImagePath(fragment) {
-      if (fragment.imagen_file) {
-        return (
-          BASEURL +
-          fragment.imagen_file.file_path.substr(2) +
-          fragment.imagen_file.file_name +
-          "." +
-          fragment.imagen_file.file_type
-        );
-      }
-      return BASEURL + "/public/img/default.jpg";
-    },
     getFragments: function (page) {
-      var self = this;
-      self.loader = true;
-      $.ajax({
-        type: "GET",
-        url: BASEURL + "api/v1/fragments/",
-        data: this.listQuery({}, page),
-        dataType: "json",
-        success: function (response) {
-          let fragments = response.data || [];
-          for (const key in fragments) {
-            if (fragments.hasOwnProperty(key) && fragments[key].user) {
-              fragments[key].user = new User(fragments[key].user);
-            }
-          }
-          self.fragments = fragments;
-          self.applyPaginatorFromResponse(response);
-          setTimeout(() => {
-            self.loader = false;
-            self.initPlugins();
-          }, 1000);
-        },
-        error: function (error) {
-          self.loader = false;
-          M.toast({ html: "An unexpected error occurred" });
-          console.error(error);
-        },
-      });
+      this.fetchList(page);
     },
     delete: function (fragment, index) {
-      var self = this;
-      self.loader = true;
-      $.ajax({
-        type: "DELETE",
-        url: BASEURL + "api/v1/fragments/" + fragment.fragment_id,
-        data: {},
-        dataType: "json",
-        success: function (response) {
-          if (response.code == 200) {
-            self.getFragments();
-          }
-          setTimeout(() => {
-            self.loader = false;
-            self.initPlugins();
-          }, 1000);
-        },
-        error: function (error) {
-          self.loader = false;
-          M.toast({ html: "An unexpected error occurred" });
-          console.error(error);
-        },
-      });
-    },
-    tempDelete: function (item, index) {
-      this.toDeleteItem.item = item;
-      this.toDeleteItem.index = index;
-    },
-    confirmCallback(data) {
-      if (data) {
-        this.delete(this.toDeleteItem.item, this.toDeleteItem.index);
-      }
-    },
-    base_url: function (path) {
-      return BASEURL + path;
-    },
-    initPlugins: function () {
-      setTimeout(() => {
-        var elems = document.querySelectorAll(".tooltipped");
-        if (elems.length > 0) {
-          M.Tooltip.init(elems, {});
-        }
-        var dropdowns = document.querySelectorAll(".dropdown-trigger");
-        if (dropdowns.length > 0) {
-          M.Dropdown.init(dropdowns, {});
-        }
-        var modals = document.querySelectorAll('.modal');
-        if (modals.length > 0) {
-          M.Modal.init(modals, {});
-        }
-      }, 3000);
+      this.deleteListItem(fragment, index);
     },
   },
   mounted: function () {

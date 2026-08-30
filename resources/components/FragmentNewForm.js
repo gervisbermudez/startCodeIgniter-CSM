@@ -33,7 +33,10 @@ var FragmentNewForm = new Vue({
     ],
     user_id: null,
     user: null,
+    formEndpoint: "api/v1/fragments/",
+    formIdField: "fragment_id",
   },
+  mixins: [mixins, formMixin],
   computed: {
     btnEnable: function () {
       let enable = !!this.form.fields.name.value || false;
@@ -72,47 +75,14 @@ var FragmentNewForm = new Vue({
     },
     save() {
       var self = this;
-      var callBack = (response) => {
-        var toastHTML = "<span>Fragment saved </span>";
-        M.toast({ html: toastHTML });
-      };
       if (self.validateForm()) {
         this.loader = true;
-        this.runSaveData(callBack);
+        this.runSaveData(function () {
+          self.toast("toast_saved");
+        });
       } else {
-        M.toast({ html: "Check all form fields" });
+        this.toast("toast_form_invalid");
       }
-    },
-    runSaveData(callBack) {
-      var self = this;
-      var url = BASEURL + "api/v1/fragments/";
-      $.ajax({
-        type: "POST",
-        url: url,
-        data: self.getData(),
-        dataType: "json",
-        success: function (response) {
-          self.debug ? console.log(url, response) : null;
-          setTimeout(() => {
-            self.loader = false;
-          }, 1500);
-          if (response.code == 200) {
-            self.editMode = true;
-            self.fragment_id = response.data.fragment_id;
-            if (typeof callBack == "function") {
-              callBack(response);
-            }
-          } else {
-            M.toast({ html: response.error_message });
-            self.loader = false;
-          }
-        },
-        error: function (response) {
-          self.loader = false;
-          M.toast({ html: "An unexpected error occurred" });
-          console.error(response);
-        },
-      });
     },
     getData: function () {
       return {

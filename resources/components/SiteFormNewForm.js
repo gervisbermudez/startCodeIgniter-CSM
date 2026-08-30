@@ -46,8 +46,10 @@ var SiteFormNewForm = new Vue({
     realOrder: {},
     group: {},
     targetItem: {},
+    formEndpoint: "api/v1/siteforms",
+    formIdField: "siteform_id",
   },
-  mixins: [mixins],
+  mixins: [mixins, formMixin],
   computed: {
     btnEnable: function () {
       let enable = this.name && this.template ? true : false;
@@ -83,46 +85,16 @@ var SiteFormNewForm = new Vue({
     },
     save() {
       var self = this;
-      var callBack = (response) => {
-        var toastHTML = "<span>Siteform saved </span>";
-        M.toast({ html: toastHTML });
-        this.setCollapsibleEvent();
-      };
       this.loader = true;
-      this.runSaveData(callBack);
-    },
-    runSaveData(callBack) {
-      this.debug ? console.log(`${getFuncName()} fired`) : null;
-
-      var self = this;
-      var url = BASEURL + "api/v1/siteforms";
-      $.ajax({
-        type: "POST",
-        url: url,
-        data: self.getData(),
-        dataType: "json",
-        success: function (response) {
-          self.debug ? console.log(url, response) : null;
-          setTimeout(() => {
-            self.loader = false;
-          }, 1500);
-          if (response.code == 200) {
-            self.editMode = true;
-            self.siteforms_id = response.data.siteform_id;
-            if (typeof callBack == "function") {
-              callBack(response);
-            }
-          } else {
-            M.toast({ html: response.error_message });
-            self.loader = false;
-          }
-        },
-        error: function (response) {
-          self.loader = false;
-          M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(response);
-        },
+      this.runSaveData(function () {
+        self.toast("toast_saved");
+        self.setCollapsibleEvent();
       });
+    },
+    afterSave: function (response) {
+      this.editMode = true;
+      this.siteform_id = response.data.siteform_id;
+      this.siteforms_id = response.data.siteform_id;
     },
     getData: function () {
       this.debug ? console.log(`${getFuncName()} fired`) : null;

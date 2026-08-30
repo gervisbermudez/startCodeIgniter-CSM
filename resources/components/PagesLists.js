@@ -7,10 +7,13 @@ var PagesLists = new Vue({
     loader: true,
     filter: "",
     tempPage: {},
-    currentStatus: null, // null means Published + Drafts
+    currentStatus: null,
     serverPagination: true,
+    listEndpoint: "api/v1/pages",
+    listKey: "pages",
+    listPk: "page_id",
   },
-  mixins: [mixins],
+  mixins: [mixins, listMixin],
   computed: {
     filterPages: function () {
       return this.filterAll.filter(function (value) {
@@ -50,80 +53,24 @@ var PagesLists = new Vue({
       if (text.length <= length) return text;
       return text.substring(0, length) + "...";
     },
-    toggleView: function () {
-      this.tableView = !this.tableView;
-      this.initPlugins();
-    },
-    resetFilter: function () {
-      this.filter = "";
+    listExtraQuery: function () {
+      if (this.currentStatus !== null) {
+        return { status: this.currentStatus };
+      }
+      return {};
     },
     reloadList: function (page) {
       this.getPages(this.currentStatus, page);
     },
     getPages: function (status, page) {
-      var self = this;
       if (typeof status === "undefined") {
         status = this.currentStatus;
       }
       if (status !== this.currentStatus) {
         page = 1;
       }
-      if (typeof page === "undefined") {
-        page = this.currentPage || 1;
-      }
-      self.loader = true;
-      self.currentStatus = status;
-      var extra = {};
-      if (status !== null) {
-        extra.status = status;
-      }
-      var data = this.listQuery(extra, page);
-
-      $.ajax({
-        type: "GET",
-        url: BASEURL + "api/v1/pages/",
-        data: data,
-        dataType: "json",
-        success: function (response) {
-          if (response && response.data) {
-            self.pages = response.data;
-            self.pages = self.pages.map((element) => {
-              if (element.user) {
-                element.user = new User(element.user);
-              }
-              return element;
-            });
-          } else {
-            self.pages = [];
-          }
-          self.applyPaginatorFromResponse(response);
-          self.loader = false;
-          self.$nextTick(() => {
-            self.initPlugins();
-          });
-        },
-        error: function (error) {
-          self.loader = false;
-          M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(error);
-        },
-      });
-    },
-    getPageImagePath(page) {
-      if (page.imagen_file && page.imagen_file.file_front_path) {
-        // Si file_front_path ya viene procesado desde el backend con /
-        return page.imagen_file.file_front_path;
-      }
-      if (page.imagen_file) {
-        return (
-          BASEURL +
-          page.imagen_file.file_path.substr(2) +
-          page.imagen_file.file_name +
-          "." +
-          page.imagen_file.file_type
-        );
-      }
-      return BASEURL + "/public/img/default.jpg";
+      this.currentStatus = status;
+      this.fetchList(page);
     },
     deletePage: function (page) {
       var self = this;
@@ -135,17 +82,16 @@ var PagesLists = new Vue({
         dataType: "json",
         success: function (response) {
           if (response.code == 200) {
-            M.toast({ html: "Page deleted successfully" });
+            self.toast("toast_deleted");
             self.getPages(self.currentStatus);
             return;
           }
           self.loader = false;
-          self.initPlugins();
+          self.toastError(null, response);
         },
-        error: function (error) {
+        error: function (xhr) {
           self.loader = false;
-          M.toast({ html: "An unexpected error occurred" });
-          console.error(error);
+          self.toastError(xhr);
         },
       });
     },
@@ -159,19 +105,18 @@ var PagesLists = new Vue({
         dataType: "json",
         success: function (response) {
           if (response.code == 200) {
-            M.toast({ html: "Page duplicated successfully" });
-            setTimeout(() => {
+            self.toast("toast_duplicated");
+            setTimeout(function () {
               window.location.href = BASEURL + "admin/pages/editar/" + response.data.page_id;
             }, 1000);
           } else {
-            M.toast({ html: "Could not duplicate page" });
+            self.toastError(null, response);
           }
           self.loader = false;
         },
-        error: function (error) {
+        error: function (xhr) {
           self.loader = false;
-          M.toast({ html: "An unexpected error occurred" });
-          console.error(error);
+          self.toastError(xhr);
         },
       });
     },
@@ -199,19 +144,16 @@ var PagesLists = new Vue({
         dataType: "json",
         success: function (response) {
           if (response.code == 200) {
-            M.toast({ html: "Page archived successfully" });
+            self.toast("toast_archived");
             self.getPages(self.currentStatus);
             return;
-          } else {
-            M.toast({ html: response.error_message });
           }
           self.loader = false;
-          self.initPlugins();
+          self.toastError(null, response);
         },
-        error: function (error) {
+        error: function (xhr) {
           self.loader = false;
-          M.toast({ html: "An unexpected error occurred" });
-          console.error(error);
+          self.toastError(xhr);
         },
       });
     },
@@ -225,31 +167,18 @@ var PagesLists = new Vue({
         dataType: "json",
         success: function (response) {
           if (response.code == 200) {
-            M.toast({ html: "Page restored as draft" });
+            self.toast("toast_restored");
             self.getPages(self.currentStatus);
             return;
-          } else {
-            M.toast({ html: response.error_message });
           }
           self.loader = false;
-          self.initPlugins();
+          self.toastError(null, response);
         },
-        error: function (error) {
+        error: function (xhr) {
           self.loader = false;
-          M.toast({ html: "An unexpected error occurred" });
-          console.error(error);
+          self.toastError(xhr);
         },
       });
-    },
-    initPlugins: function () {
-      setTimeout(() => {
-        var elems = document.querySelectorAll(".tooltipped");
-        M.Tooltip.init(elems, {});
-        var elems = document.querySelectorAll(".dropdown-trigger");
-        M.Dropdown.init(elems, {});
-        var modalElems = document.querySelectorAll(".modal");
-        M.Modal.init(modalElems, {});
-      }, 1000);
     },
   },
   mounted: function () {

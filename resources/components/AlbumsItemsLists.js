@@ -23,32 +23,23 @@ var AlbumsItemsLists = new Vue({
   mixins: [mixins],
   computed: {
     filterData: function () {
-      if (!!this.filter) {
+      if (this.filter) {
         var filterTerm = this.filter.toLowerCase();
-        return this.album.items.filter((value, index) => {
+        return this.album.items.filter(function (value) {
           return this.searchInObject(value, filterTerm);
-        });
-      } else {
-        return this.album.items;
+        }, this);
       }
+      return this.album.items;
     },
   },
   methods: {
-    toggleView: function () {
-      this.tableView = !this.tableView;
-      this.initPlugins();
-    },
-    resetFilter: function () {
-      this.filter = "";
-    },
-    getPageImagePath(item) {
+    getPageImagePath: function (item) {
       if (item.file && item.file.file_front_path) {
         return BASEURL + item.file.file_front_path;
       }
       return BASEURL + "/public/img/default.jpg";
     },
-    copyCallcack(selected) {
-    },
+    copyCallcack: function (selected) {},
     getPages: function () {
       var self = this;
       $.ajax({
@@ -58,19 +49,18 @@ var AlbumsItemsLists = new Vue({
         dataType: "json",
         success: function (response) {
           self.album = response.data;
-          self.album.user = new User(self.album.user);
+          if (self.album.user) {
+            self.album.user = new User(self.album.user);
+          }
           if (!self.album.items) {
             self.album.items = [];
           }
-          setTimeout(() => {
-            self.loader = false;
-            self.initPlugins();
-          }, 1000);
-        },
-        error: function (error) {
           self.loader = false;
-          M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(error);
+          self.initPlugins();
+        },
+        error: function (xhr) {
+          self.loader = false;
+          self.toastError(xhr);
         },
       });
     },
@@ -88,42 +78,24 @@ var AlbumsItemsLists = new Vue({
         success: function (response) {
           if (response.code == 200) {
             self.album.items.splice(index, 1);
+            self.toast("toast_deleted");
+          } else {
+            self.toastError(null, response);
           }
-          setTimeout(() => {
-            self.loader = false;
-            self.initPlugins();
-          }, 1000);
-        },
-        error: function (error) {
           self.loader = false;
-          M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(error);
+          self.initPlugins();
+        },
+        error: function (xhr) {
+          self.loader = false;
+          self.toastError(xhr);
         },
       });
-    },
-    initPlugins: function () {
-      setTimeout(() => {
-        var elems = document.querySelectorAll(".tooltipped");
-        M.Tooltip.init(elems, {});
-        var elems = document.querySelectorAll(".dropdown-trigger");
-        M.Dropdown.init(elems, {});
-        var elems = document.querySelectorAll(".materialboxed");
-        M.Materialbox.init(elems, {});
-      }, 3000);
     },
   },
   mounted: function () {
     this.$nextTick(function () {
       this.album_id = window.location.pathname.split("/").pop();
       this.getPages();
-      this.initPlugins();
     });
   },
-  updated: function () {
-    this.$nextTick(function () {
-      // Code that will run only after the
-      // entire view has been re-rendered
-      this.initPlugins();
-    })
-  }
 });

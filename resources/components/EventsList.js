@@ -51,15 +51,14 @@ var EventsList = new Vue({
         dataType: "json",
         success: function (response) {
           if (response.code == 200) {
-            M.toast({ html: "Done!" });
+            self.toast("toast_done");
             self.reloadEventsTable();
             return;
           }
-          M.toast({ html: response.error_message || "Ocurrió un error inesperado" });
+          self.toastError(null, response);
         },
         error: function (xhr) {
-          M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(xhr);
+          self.toastError(xhr);
         },
       });
     },
@@ -86,15 +85,14 @@ var EventsList = new Vue({
         dataType: "json",
         success: function (response) {
           if (response.code == 200) {
-            M.toast({ html: "Done!" });
+            self.toast("toast_done");
             self.reloadEventsTable();
             return;
           }
-          M.toast({ html: response.error_message || "Ocurrió un error inesperado" });
+          self.toastError(null, response);
         },
         error: function (xhr) {
-          M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(xhr);
+          self.toastError(xhr);
         },
       });
     },

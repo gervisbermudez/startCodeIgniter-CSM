@@ -24,7 +24,10 @@ var EventNewForm = new Vue({
     publishondate: true,
     datepublish: "",
     timepublish: "",
+    formEndpoint: "api/v1/events",
+    formIdField: "event_id",
   },
+  mixins: [mixins, formMixin],
   computed: {
     btnEnable: function () {
       let enable = !!this.name || false;
@@ -101,59 +104,17 @@ var EventNewForm = new Vue({
 
     save() {
       var self = this;
-      console.log('save() called');
-      var callBack = (response) => {
-        var toastHTML = "<span>Event saved </span>";
-        M.toast({ html: toastHTML });
-      };
-      // Capturar el contenido del editor TinyMCE antes de validar
       if (tinymce.editors["id_cazary"]) {
-        const editorContent = tinymce.editors["id_cazary"].getContent();
-        console.log('TinyMCE content captured:', editorContent ? editorContent.substring(0, 100) : 'empty');
-        this.content = editorContent;
-      } else {
-        console.warn('TinyMCE editor not found');
+        this.content = tinymce.editors["id_cazary"].getContent();
       }
       if (self.validateForm()) {
-        console.log('Validation passed, saving...');
         this.loader = true;
-        this.runSaveData(callBack);
+        this.runSaveData(function () {
+          self.toast("toast_saved");
+        });
       } else {
-        console.error('Validation failed');
-        M.toast({ html: "Check all form fields" });
+        this.toast("toast_form_invalid");
       }
-    },
-    runSaveData(callBack) {
-      this.debug ? console.log(`${getFuncName()} fired`) : null;
-      var self = this;
-      var url = BASEURL + "api/v1/events";
-      $.ajax({
-        type: "POST",
-        url: url,
-        data: self.getData(),
-        dataType: "json",
-        success: function (response) {
-          self.debug ? console.log(url, response) : null;
-          setTimeout(() => {
-            self.loader = false;
-          }, 1500);
-          if (response.code == 200) {
-            self.editMode = true;
-            self.event_id = response.data.event_id;
-            if (typeof callBack == "function") {
-              callBack(response);
-            }
-          } else {
-            M.toast({ html: response.error_message });
-            self.loader = false;
-          }
-        },
-        error: function (error) {
-          self.loader = false;
-          M.toast({ html: "An unexpected error occurred" });
-          console.error(error);
-        },
-      });
     },
     getData: function () {
       return {

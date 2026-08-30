@@ -76,7 +76,10 @@ var ConfigNewForm = new Vue({
     ],
     readonly: false,
     true_value: "",
+    formEndpoint: "api/v1/config",
+    formIdField: "site_config_id",
   },
+  mixins: [mixins, formMixin],
   computed: {
     btnEnable: function () {
       let enable =
@@ -116,47 +119,14 @@ var ConfigNewForm = new Vue({
     },
     save() {
       var self = this;
-      var callBack = (response) => {
-        var toastHTML = "<span>Config saved </span>";
-        M.toast({ html: toastHTML });
-      };
       if (self.validateForm()) {
         this.loader = true;
-        this.runSaveData(callBack);
+        this.runSaveData(function () {
+          self.toast("toast_saved");
+        });
       } else {
-        M.toast({ html: "Verifique todos los campos del formulario" });
+        this.toast("toast_form_invalid");
       }
-    },
-    runSaveData(callBack) {
-      var self = this;
-      var url = BASEURL + "api/v1/config";
-      $.ajax({
-        type: "POST",
-        url: url,
-        data: self.getData(),
-        dataType: "json",
-        success: function (response) {
-          self.debug ? console.log(url, response) : null;
-          setTimeout(() => {
-            self.loader = false;
-          }, 1500);
-          if (response.code == 200) {
-            self.editMode = true;
-            self.site_config_id = response.data.site_config_id;
-            if (typeof callBack == "function") {
-              callBack(response);
-            }
-          } else {
-            M.toast({ html: response.error_message });
-            self.loader = false;
-          }
-        },
-        error: function (response) {
-          self.loader = false;
-          M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(response);
-        },
-      });
     },
     getData: function () {
       return {

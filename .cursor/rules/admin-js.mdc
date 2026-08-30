@@ -45,8 +45,7 @@ var PagesLists = new Vue({
 });
 ```
 
-- Globals: `BASEURL`, `DEBUGMODE`, `mixins` (`resources/js/start.js`).
+- Globals: `BASEURL`, `DEBUGMODE`, `mixins`, `listMixin`, `formMixin` (`resources/js/start.js`).
+- Listas: `mixins: [mixins, listMixin]` con `listEndpoint`, `listKey`, `listPk`. `initPlugins` vive en el mixin (`$nextTick`, `.collapsible:not(#slide-out)`). No `setTimeout` 1–3s ni `initPlugins` en `updated`.
+- Forms (no PageNewForm): `mixins: [mixins, formMixin]` con `formEndpoint`, `formIdField`. Status `1|2`. Toasts: `this.toast('toast_saved')` / `lang()` via `ADMIN_LANG`.
 - Éxito API: `response.code == 200` y `response.data`.
-- Status de contenido: `1` publicado, `2` borrador. `0` es soft-delete.
-- Materialize: inicializa plugins en `$nextTick`. No `M.AutoInit()` global.
-- SCSS del admin: `resources/scss/admin/`. Compilar con `npm run build` / `npm run watch`.
