@@ -107,10 +107,7 @@
                             <div>
                                 <span class="card-title"><a
                                         :href="base_url('/admin/videos/ver/' + (video.id || video.video_id))">@{{ video.nam || video.nombre || video.video_id }}</a>
-                                    <i v-if="video.status == 1" class="material-icons tooltipped" data-position="left"
-                                        data-delay="50" data-tooltip="<?= lang('videos_public') ?>">public</i>
-                                    <i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
-                                        data-tooltip="<?= lang('videos_private') ?>">lock</i>
+                                    @include('admin.components.entity_card_badges', ['item' => 'video'])
                                 </span>
                                 <div class="card-info">
                                     <p>@{{ getcontentText(video.description || video.descripcion) }}</p>

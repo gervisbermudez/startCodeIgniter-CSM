@@ -1,6 +1,6 @@
 Vue.component("userCard", {
   template: "#user-card-template",
-  props: ["user"],
+  props: ["user", "index"],
   data: function () {
     return {
       debug: DEBUGMODE,
@@ -10,6 +10,9 @@ Vue.component("userCard", {
   methods: {
     getUserUrl() {
       return BASEURL + "admin/users/ver/" + this.user.user_id;
+    },
+    requestDelete: function () {
+      this.$emit("tempDelete", this.user, this.index);
     },
   },
   mounted: function () {

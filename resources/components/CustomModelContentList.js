@@ -61,7 +61,12 @@ var CustomModelContentList = new Vue({
         data: this.listQuery({}, page),
         dataType: "json",
         success: function (response) {
-          self.contents = response.data || [];
+          self.contents = (response.data || []).map(function (element) {
+            if (element.user) {
+              element.user = new User(element.user);
+            }
+            return element;
+          });
           self.applyPaginatorFromResponse(response);
           setTimeout(() => {
             self.loader = false;

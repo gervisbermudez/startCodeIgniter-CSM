@@ -29,7 +29,7 @@
             </ul>
         </div>
     </nav>
-    <div class="categories" v-cloak v-if="!loader && menus.length > 0">
+    <div class="pages categories" v-cloak v-if="!loader && menus.length > 0">
         <div class="row" v-if="tableView">
             <div class="col s12">
                 <table>
@@ -90,22 +90,13 @@
                     </div>
                     <div class="card-content">
                         <div>
-                            <span class="card-title"><a :href="base_url(menu.name)" target="_blank">@{{menu.name}}</a> <i v-if="menu.visibility == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Publico">public</i>
-                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Privado">lock</i>
+                            <span class="card-title"><a :href="base_url(menu.name)" target="_blank">@{{menu.name}}</a>
+                                @include('admin.components.entity_card_badges', ['item' => 'menu'])
                             </span>
                             <div class="card-info">
-                                <p>
-                                    
-                                </p>
+                                <p></p>
                                 <span class="activator right"><i class="material-icons">more_vert</i></span>
-                                <ul>
-                                    <li>
-                                        Type: @{{menu.template}}
-                                    </li>
-                                    <li class="truncate">
-                                        Author: <a :href="base_url('admin/users/ver/' + menu.user_id)">@{{menu.user.user_data.nombre}} @{{menu.user.user_data.apellido}}</a>
-                                    </li>
-                                </ul>
+                                <user-info v-if="menu.user" :user="menu.user" />
                             </div>
                         </div>
                     </div>

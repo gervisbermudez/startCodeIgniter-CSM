@@ -102,23 +102,15 @@
                     </div>
                     <div class="card-content">
                         <div>
-                            <span class="card-title">@{{content.custom_model.form_name}} <i
-                                        v-if="content.visibility == 1" class="material-icons tooltipped"
-                                        data-position="left" data-delay="50" :data-tooltip="'<?= lang('custommodels_content_public') ?>'">public</i>
-                                    <i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
-                                        :data-tooltip="'<?= lang('custommodels_content_private') ?>'">lock</i>
+                            <span class="card-title">@{{content.custom_model.form_name}}
+                                @include('admin.components.entity_card_badges', ['item' => 'content'])
                             </span>
                             <div class="card-info">
                                 <p>
                                     @{{getcontentText(content)}}
                                 </p>
                                 <span class="activator right"><i class="material-icons">more_vert</i></span>
-                                <ul>
-                                    <li class="truncate">
-                                            <?= lang('custommodels_content_table_author') ?> <a
-                                                :href="base_url('admin/users/ver/' + content.user_id)">@{{content.user.username}}</a>
-                                        </li>
-                                </ul>
+                                <user-info v-if="content.user" :user="content.user" />
                             </div>
                         </div>
                     </div>

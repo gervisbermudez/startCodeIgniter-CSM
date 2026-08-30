@@ -2,94 +2,6 @@
 
 @section('title', $title)
 
-@section('header')
-<style>
-    .custom-badge {
-        padding: 2px 10px;
-        border-radius: 15px;
-        font-size: 0.75rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        color: #fff;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    .status-published { background: linear-gradient(45deg, #43a047, #66bb6a); box-shadow: 0 2px 5px rgba(76, 175, 80, 0.3); }
-    .status-draft { background: linear-gradient(45deg, #757575, #9e9e9e); box-shadow: 0 2px 5px rgba(158, 158, 158, 0.3); }
-    .visibility-public { background: linear-gradient(45deg, #1e88e5, #42a5f5); box-shadow: 0 2px 5px rgba(33, 150, 243, 0.3); }
-    .visibility-private { background: linear-gradient(45deg, #e53935, #ef5350); box-shadow: 0 2px 5px rgba(244, 67, 54, 0.3); }
-    .custom-badge i { font-size: 0.9rem; }
-    
-    .page-card {
-        border-radius: 12px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        margin-bottom: 20px;
-    }
-    .page-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
-    }
-    .page-card .card-content {
-        padding: 15px !important;
-    }
-    .page-card .card-title {
-        font-size: 1.2rem !important;
-        margin-bottom: 8px !important;
-    }
-    .page-card .card-title a {
-        color: #212121;
-    }
-    .page-card .card-info p {
-        font-size: 0.9rem;
-        color: #616161;
-        margin-bottom: 10px;
-        line-height: 1.4;
-    }
-    .card-image-container img {
-        height: 200px;
-        width: 100%;
-        object-fit: cover;
-    }
-    .pages-grid {
-        display: flex;
-        flex-wrap: wrap;
-    }
-    .status-filters {
-        display: flex;
-        gap: 8px;
-        margin-top: 10px;
-        margin-bottom: 10px;
-        overflow-x: auto;
-        padding: 5px 0;
-    }
-    .status-chip {
-        cursor: pointer;
-        padding: 0 15px;
-        height: 32px;
-        line-height: 32px;
-        border-radius: 16px;
-        background-color: #e4e4e4;
-        font-size: 13px;
-        color: rgba(0, 0, 0, 0.6);
-        display: inline-block;
-        transition: all 0.2s ease;
-        border: none;
-    }
-    .status-chip:hover {
-        background-color: #d8d8d8;
-    }
-    .status-chip.active {
-        background-color: #26a69a;
-        color: white;
-        font-weight: 500;
-    }
-    .status-deleted { background: linear-gradient(45deg, #212121, #424242); box-shadow: 0 2px 5px rgba(33, 33, 33, 0.3); }
-    .status-archived { background: linear-gradient(45deg, #ff9800, #ffb74d); box-shadow: 0 2px 5px rgba(255, 152, 0, 0.3); }
-</style>
-@endsection
-
 @section('content')
 <div id="root">
     <div class="col s12 center" v-show="loader">
@@ -243,26 +155,7 @@
                         <div>
                             <span class="card-title"><a
                                     :href="base_url('admin/pages/view/' + page.page_id)">@{{truncate(page.title, 50)}}</a>
-                                <div style="margin-top: 8px; display: flex; gap: 5px;">
-                                    <span v-if="page.status == 1" class="custom-badge status-published">
-                                        <i class="material-icons tiny">check_circle</i> Published
-                                    </span>
-                                    <span v-else-if="page.status == 2" class="custom-badge status-draft">
-                                        <i class="material-icons tiny">edit</i> Draft
-                                    </span>
-                                    <span v-else-if="page.status == 3" class="custom-badge status-archived">
-                                        <i class="material-icons tiny">archive</i> Archived
-                                    </span>
-                                    <span v-else-if="page.status == 0" class="custom-badge status-deleted">
-                                        <i class="material-icons tiny">delete_outline</i> Deleted
-                                    </span>
-                                    <span v-if="page.visibility == 1" class="custom-badge visibility-public">
-                                        <i class="material-icons tiny">public</i> Public
-                                    </span>
-                                    <span v-else class="custom-badge visibility-private">
-                                        <i class="material-icons tiny">lock</i> Private
-                                    </span>
-                                </div>
+                                @include('admin.components.entity_card_badges', ['item' => 'page'])
                             </span>
                             <div class="card-info">
                                 <p>
@@ -409,20 +302,7 @@
                         <div>
                             <span class="card-title"><a
                                     :href="base_url('admin/pages/view/' + page.page_id)">@{{truncate(page.title, 50)}}</a>
-                                <div style="margin-top: 8px; display: flex; gap: 5px;">
-                                    <span v-if="page.status == 1" class="custom-badge status-published">
-                                        <i class="material-icons tiny">check_circle</i> Published
-                                    </span>
-                                    <span v-else class="custom-badge status-draft">
-                                        <i class="material-icons tiny">edit</i> Draft
-                                    </span>
-                                    <span v-if="page.visibility == 1" class="custom-badge visibility-public">
-                                        <i class="material-icons tiny">public</i> Public
-                                    </span>
-                                    <span v-else class="custom-badge visibility-private">
-                                        <i class="material-icons tiny">lock</i> Private
-                                    </span>
-                                </div>
+                                @include('admin.components.entity_card_badges', ['item' => 'page'])
                             </span>
                             <div class="card-info">
                                 <p>
@@ -569,20 +449,7 @@
                         <div>
                             <span class="card-title"><a
                                     :href="base_url('admin/pages/view/' + page.page_id)">@{{truncate(page.title, 50)}}</a>
-                                <div style="margin-top: 8px; display: flex; gap: 5px;">
-                                    <span v-if="page.status == 1" class="custom-badge status-published">
-                                        <i class="material-icons tiny">check_circle</i> Published
-                                    </span>
-                                    <span v-else class="custom-badge status-draft">
-                                        <i class="material-icons tiny">edit</i> Draft
-                                    </span>
-                                    <span v-if="page.visibility == 1" class="custom-badge visibility-public">
-                                        <i class="material-icons tiny">public</i> Public
-                                    </span>
-                                    <span v-else class="custom-badge visibility-private">
-                                        <i class="material-icons tiny">lock</i> Private
-                                    </span>
-                                </div>
+                                @include('admin.components.entity_card_badges', ['item' => 'page'])
                             </span>
                             <div class="card-info">
                                 <p>

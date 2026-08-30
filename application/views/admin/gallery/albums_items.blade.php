@@ -116,23 +116,21 @@
         </div>
         <div class="row" v-else>
             <div class="col s12 m4" v-for="(album, index) in filterData" :key="index">
-                <div class="card">
+                <div class="card page-card">
                     <div class="card-image">
                         <div class="card-image-container">
                             <img class="materialboxed" :src="getPageImagePath(album)" />
                         </div>
                     </div>
                     <div class="card-content">
-                        <span class="card-title activator">@{{album.name}}
-                            <i v-if="album.status == 1" class="material-icons tooltipped" data-position="left"
-                                data-delay="50" data-tooltip="Publico">public</i>
-                            <i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
-                                data-tooltip="Privado">lock</i>
+                        <span class="card-title">@{{album.name}}
+                            @include('admin.components.entity_card_badges', ['item' => 'album'])
                         </span>
-                        <div class="card-info activator">
+                        <div class="card-info">
                             <p>
                                 @{{getcontentText(album.description)}}
                             </p>
+                            <span class="activator right"><i class="material-icons">more_vert</i></span>
                         </div>
                     </div>
                     <div class="card-reveal">
