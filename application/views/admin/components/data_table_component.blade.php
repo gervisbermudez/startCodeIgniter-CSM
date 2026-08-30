@@ -36,14 +36,14 @@
                                         <a class='dropdown-trigger' :data-target='"dropdown" + index'><i class="material-icons">more_vert</i></a>
                                         <ul v-if="!options" :id='"dropdown" + index' class='dropdown-content'>
                                             <li><a v-on:click="editItem(item, index);">Edit</a></li>
-                                            <li><a class="modal-trigger" href="#deleteModal" v-on:click="setToDeleteItem(item, index);">Delete</a></li>
+                                            <li><a href="#!" v-on:click.prevent="openDeleteModal(item, index);">Delete</a></li>
                                             <li><a v-on:click="archiveItem(item, index);">Archive</a></li>
                                         </ul>
                                         <ul v-else :id='"dropdown" + index' class='dropdown-content'>
                                             <li
                                                 v-for="(option, option_index) in options"
                                                 :key="option_index">
-                                                <a v-if="option.action === 'delete'" class="modal-trigger" href="#deleteModal" @click="setToDeleteItem(item, index)">
+                                                <a v-if="option.action === 'delete'" href="#!" @click.prevent="openDeleteModal(item, index)">
                                                     <i v-if="option.icon" class="material-icons left">@{{option.icon}}</i>
                                                     @{{option.label}}
                                                 </a>

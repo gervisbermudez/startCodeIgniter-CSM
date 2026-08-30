@@ -188,6 +188,7 @@ $lang['loading_system_configs'] = 'Cargando configuraciones de sistema';
 $lang['archive'] = 'Archivo';
 $lang['view_in_site'] = 'Ver sitio';
 $lang['toast_saved'] = 'Guardado';
+$lang['toast_error'] = 'Ocurrió un error inesperado';
 $lang['toast_form_invalid'] = 'Revisa todos los campos del formulario';
 $lang['toast_deleted'] = 'Eliminado';
 $lang['toast_archived'] = 'Archivado';

@@ -128,6 +128,7 @@ $lang['loading_system_configs'] = 'Loading system configurations';
 $lang['archive'] = 'Archive';
 $lang['view_in_site'] = 'View in site';
 $lang['toast_saved'] = 'Saved';
+$lang['toast_error'] = 'An unexpected error occurred';
 $lang['toast_form_invalid'] = 'Check all form fields';
 $lang['toast_deleted'] = 'Deleted';
 $lang['toast_archived'] = 'Archived';

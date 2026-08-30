@@ -1,15 +1,5 @@
 var SiteFormList = new Vue({
   el: "#root",
-  router: new VueRouter({
-    routes: [
-      {
-        name: "table",
-        path: "/",
-        component: dataTable,
-        props: true,
-      },
-    ],
-  }),
   data: function () {
     var i18n = window.SITEFORMS_I18N || {};
     return {
@@ -108,16 +98,24 @@ var SiteFormList = new Vue({
     },
     deleteItem: function (payload) {
       var self = this;
-      var item = payload.item;
+      var item = payload && payload.item ? payload.item : payload;
+      if (!item || !item.siteform_id) {
+        return;
+      }
       $.ajax({
         type: "DELETE",
         url: BASEURL + "api/v1/siteforms/" + item.siteform_id,
         dataType: "json",
-        success: function () {
-          window.location.reload();
+        success: function (response) {
+          if (response && response.code == 200) {
+            self.toast("toast_deleted");
+            window.location.reload();
+            return;
+          }
+          self.toastError(null, response);
         },
-        error: function () {
-          M.toast({ html: (window.SITEFORMS_I18N && window.SITEFORMS_I18N.error) || "Error" });
+        error: function (xhr) {
+          self.toastError(xhr);
         },
       });
     },

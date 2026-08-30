@@ -390,15 +390,31 @@ var dataTable = Vue.component("dataTable", {
       }
     },
     deleteItem(item, index) {
+      var payload = {
+        item: item,
+        index: index,
+      };
       if (this.$listeners && this.$listeners.delete) {
-        this.$emit("delete", {
-          item: item,
-          index: index,
-        });
-      } else {
-        this.tempDelete(item, index);
+        this.$emit("delete", payload);
+        return;
       }
-      return;
+      if (this.$root && this.$root !== this && typeof this.$root.deleteItem === "function") {
+        this.$root.deleteItem(payload);
+        return;
+      }
+      this.tempDelete(item, index);
+    },
+    openDeleteModal(item, index) {
+      this.setToDeleteItem(item, index);
+      var el = document.getElementById("deleteModal");
+      if (!el || !window.M || !M.Modal) {
+        return;
+      }
+      var inst = M.Modal.getInstance(el);
+      if (!inst) {
+        inst = M.Modal.init(el, {});
+      }
+      inst.open();
     },
     setToDeleteItem(item, index) {
       this.toDeleteItem = {

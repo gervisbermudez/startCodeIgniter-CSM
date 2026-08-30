@@ -43,7 +43,7 @@ class SiteformsController extends REST_Controller
             return;
         }
 
-        $this->respond_index_list($siteform, array('status_in' => array(0, 1)));
+        $this->respond_index_list($siteform, array('status_in' => array(1, 2)));
     }
 
     /**
@@ -66,16 +66,19 @@ class SiteformsController extends REST_Controller
 
         $siteform = new SiteFormModel();
         $isUpdate = (bool) $this->input->post('siteform_id');
+        $now = date("Y-m-d H:i:s");
         if ($isUpdate) {
             $siteform->find($this->input->post('siteform_id'));
         } else {
-            $siteform->date_create = date("Y-m-d H:i:s");
+            $siteform->date_create = $now;
+            $siteform->date_delete = $now;
         }
         $siteform->name = $this->input->post('name');
         $siteform->template = $this->input->post('template');
         $siteform->properties = $this->input->post('properties');
         $siteform->user_id = userdata('user_id');
         $siteform->status = $this->input->post('status');
+        $siteform->date_update = $now;
 
         if ($siteform->save()) {
             $siteform_items = $this->input->post('siteform_items');
@@ -102,8 +105,12 @@ class SiteformsController extends REST_Controller
                 $siteform_item->data = $item->data;
                 $siteform_item->status = $item->status;
                 if (empty($siteform_item->date_create) || $siteform_item->date_create === '0000-00-00 00:00:00') {
-                    $siteform_item->date_create = date("Y-m-d H:i:s");
+                    $siteform_item->date_create = $now;
                 }
+                if (empty($siteform_item->date_publish) || $siteform_item->date_publish === '0000-00-00 00:00:00') {
+                    $siteform_item->date_publish = $now;
+                }
+                $siteform_item->date_update = $now;
                 $siteform_item->save();
                 if (!empty($siteform_item->siteform_item_id)) {
                     $keepIds[] = (int) $siteform_item->siteform_item_id;

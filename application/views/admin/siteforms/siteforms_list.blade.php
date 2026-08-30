@@ -4,7 +4,7 @@
 @endsection
 @section('content')
 <div id="root">
-    <router-view
+    <data-table
         :endpoint="endpoint"
         :colums="colums"
         :index_data="index_data"
@@ -20,7 +20,7 @@
         :confirm_body="confirmBody"
         v-on:edit="editItem"
         v-on:delete="deleteItem"
-        v-on:new="newItem"></router-view>
+        v-on:new="newItem"></data-table>
 </div>
 @endsection
 

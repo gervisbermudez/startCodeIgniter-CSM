@@ -22,6 +22,9 @@ window.SITEFORMS_I18N = {
     snippetCopied: {!! json_encode(lang('siteforms_snippet_copied')) !!},
     saved: {!! json_encode(lang('siteforms_saved')) !!},
     error: {!! json_encode(lang('siteforms_error')) !!},
+    toast_saved: {!! json_encode(lang('siteforms_saved')) !!},
+    toast_error: {!! json_encode(lang('siteforms_error')) !!},
+    toast_deleted: {!! json_encode(lang('siteforms_deleted')) !!},
     empty: {!! json_encode(lang('siteforms_empty')) !!},
     emptyCta: {!! json_encode(lang('siteforms_empty_cta')) !!},
     inboxEmpty: {!! json_encode(lang('siteforms_inbox_empty')) !!},
@@ -29,6 +32,11 @@ window.SITEFORMS_I18N = {
     confirmDeleteBody: {!! json_encode(lang('siteforms_confirm_delete')) !!},
     newTooltip: {!! json_encode(lang('siteforms_new_tooltip')) !!}
 };
+window.ADMIN_LANG = Object.assign({}, window.ADMIN_LANG || {}, {
+    toast_saved: window.SITEFORMS_I18N.toast_saved,
+    toast_error: window.SITEFORMS_I18N.toast_error,
+    toast_deleted: window.SITEFORMS_I18N.toast_deleted
+});
 if (typeof window.lang !== 'function') {
     window.lang = function (key) {
         if (window.SITEFORMS_I18N && window.SITEFORMS_I18N[key]) {
