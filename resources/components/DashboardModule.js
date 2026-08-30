@@ -27,10 +27,17 @@ var DashboardModule = new Vue({
       uniqueVisitors: 0,
       bounceRate: 0,
       pagesPerSession: 0,
-      dailyGrowth: 0
+      dailyGrowth: 0,
+      todayVisits: 0,
+      yesterdayVisits: 0,
+      sessions: 0,
+      totalVisits: 0,
     },
-    topPages: [],
-    referrers: [],
+    topPages: {},
+    referrers: { labels: [], datasets: [{ data: [] }] },
+    canViewAnalytics: true,
+    hasAnalyticsData: false,
+    analyticsUrl: (typeof BASEURL !== "undefined" ? BASEURL : "/") + "admin/analytics",
     timeline: [],
     creator: {
       modes: ["page", "album", "categorie", "fragment"],
@@ -59,6 +66,13 @@ var DashboardModule = new Vue({
             link: `${BASEURL}admin/pages/editar/${page.page_id}`,
           };
         });
+    },
+    hasReferrers: function () {
+      return !!(
+        this.referrers &&
+        this.referrers.labels &&
+        this.referrers.labels.length
+      );
     },
   },
   methods: {
@@ -90,14 +104,15 @@ var DashboardModule = new Vue({
       const content = this.creator.content;
       const title = content.substring(0, 40);
       const path = this.string_to_slug(title);
-      const currentUser = new User(
-        JSON.parse(localStorage.getItem("userdata"))
-      );
+      const raw =
+        typeof CURRENT_USER !== "undefined" && CURRENT_USER
+          ? CURRENT_USER
+          : {};
       return {
         content,
         title,
         path,
-        currentUser,
+        currentUser: new User(raw),
       };
     },
     getPageObject: function () {
@@ -281,23 +296,27 @@ var DashboardModule = new Vue({
         dataType: "json",
         success: (response) => {
           self.debug ? console.log(url, response) : null;
-          if (response.code == 200) {
-            switch (this.creator.mode) {
+          if (response && response.code == 200 && response.data) {
+            switch (self.creator.mode) {
               case "page":
-                window.location.href = `${BASEURL}admin/pages/editar/${response.data.page_id}`;
+                window.location.href = `${BASEURL}admin/pages/edit/${response.data.page_id}`;
                 break;
               case "album":
-                window.location.href = `${BASEURL}admin/gallery/editar/${response.data.album_id}`;
+                window.location.href = `${BASEURL}admin/gallery/edit/${response.data.album_id}`;
                 break;
               case "categorie":
-                window.location.href = `${BASEURL}admin/categories/editar/${response.data.categorie_id}`;
+                window.location.href = `${BASEURL}admin/categories/edit/${response.data.categorie_id}`;
                 break;
               case "fragment":
-                window.location.href = `${BASEURL}admin/Fragments/editar/${response.data.fragment_id}`;
+                window.location.href = `${BASEURL}admin/fragments/edit/${response.data.fragment_id}`;
                 break;
               default:
+                self.creator.saving = false;
                 break;
             }
+          } else {
+            self.creator.saving = false;
+            M.toast({ html: "An unexpected error occurred" });
           }
         },
         error: function (response) {
@@ -307,6 +326,16 @@ var DashboardModule = new Vue({
           console.error(response);
         },
       });
+    },
+    initStaticPlugins() {
+      var fabs = document.querySelectorAll(".fixed-action-btn");
+      if (fabs.length && typeof M.FloatingActionButton !== "undefined") {
+        M.FloatingActionButton.init(fabs, {});
+      }
+      var fabTips = document.querySelectorAll(".fixed-action-btn .tooltipped");
+      if (fabTips.length) {
+        M.Tooltip.init(fabTips, {});
+      }
     },
     init() {
       setTimeout(() => {
@@ -318,30 +347,46 @@ var DashboardModule = new Vue({
         M.Tooltip.init(elems, {});
       }, 500);
     },
-    createChart: (id, chartData) => {
-      // Function that creates a new chart with the provided data
-      const ctx = document.getElementById(id); // Gets the DOM element with the provided id
-      new Chart(ctx, {
-        // Creates a new instance of the Chart class
-        type: chartData.type, // Type of chart to be created (line, bar, pie, etc)
-        data: chartData.data, // Data to be used to create the chart
+    createChart: function (id, chartData) {
+      if (typeof Chart === "undefined") {
+        return;
+      }
+      var canvas = document.getElementById(id);
+      if (
+        !canvas ||
+        !chartData ||
+        !chartData.data ||
+        !chartData.data.labels ||
+        !chartData.data.labels.length
+      ) {
+        return;
+      }
+      if (typeof Chart.getChart === "function") {
+        var existing = Chart.getChart(canvas);
+        if (existing) {
+          existing.destroy();
+        }
+      }
+      new Chart(canvas, {
+        type: chartData.type,
+        data: chartData.data,
         options: {
           plugins: {
             legend: {
-              display: false, // Hides the chart legend
+              display: false,
             },
           },
           scales: {
             x: {
-              display: chartData.displayX || false, // Determines whether to show the X axis or not
+              display: chartData.displayX || false,
               grid: {
-                display: chartData.displayGrid || false, // Determines whether to show the grid lines on the X axis or not
+                display: chartData.displayGrid || false,
               },
             },
             y: {
-              display: chartData.displayY || false, // Determines whether to show the Y axis or not
+              display: chartData.displayY || false,
               grid: {
-                display: chartData.displayGrid || false, // Determines whether to show the grid lines on the Y axis or not
+                display: chartData.displayGrid || false,
               },
             },
           },
@@ -349,13 +394,19 @@ var DashboardModule = new Vue({
       });
     },
     calcularPorcentajeMayor: function (input) {
+      if (!input || !input.labels || !input.datasets || !input.datasets[0]) {
+        return { porcentajeMayor: "0", labelMayor: "", valorMasAlto: "" };
+      }
       const { labels, datasets } = input;
-      const data = datasets[0].data;
-      const total = data.reduce((acc, curr) => acc + curr, 0);
-      const mayor = Math.max(...data);
+      const data = datasets[0].data || [];
+      if (!data.length) {
+        return { porcentajeMayor: "0", labelMayor: "", valorMasAlto: "" };
+      }
+      const total = data.reduce((acc, curr) => acc + curr, 0) || 1;
+      const mayor = Math.max.apply(null, data);
       const indexMayor = data.indexOf(mayor);
       const porcentajeMayor = ((mayor / total) * 100).toFixed(0);
-      const labelMayor = labels[indexMayor];
+      const labelMayor = labels[indexMayor] || "";
       const valorMasAlto = data[indexMayor];
       return { porcentajeMayor, labelMayor, valorMasAlto };
     },
@@ -377,10 +428,16 @@ var DashboardModule = new Vue({
         .filter((e) => e && e.status == "1");
     },
     getDashboardData() {
-      fetch(this.api_data.dashboard)
+      fetch(this.api_data.dashboard, {
+        credentials: "same-origin",
+        headers: {
+          Accept: "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+        },
+      })
         .then((response) => response.json())
         .then((response) => {
-          let data = response.data;
+          let data = response.data || {};
           this.users = data.users
             ? data.users.map((user) => new User(user))
             : [];
@@ -410,84 +467,109 @@ var DashboardModule = new Vue({
             })
             : [];
           this.events = data.events ? data.events : [];
-          
-          // Procesar estadísticas
+
+          if (typeof data.can_view_analytics !== "undefined") {
+            this.canViewAnalytics = !!data.can_view_analytics;
+          }
+          this.hasAnalyticsData = !!data.has_analytics_data || !!data.has_data;
+
           if (data.stats) {
             this.stats = data.stats;
           }
-          
-          // Procesar KPIs
+
           if (data.kpis) {
-            this.kpis = data.kpis;
+            this.kpis = Object.assign({}, this.kpis, data.kpis);
           }
-          
-          // Procesar páginas más visitadas
-          if (data.topPages) {
+
+          if (data.topPages && !Array.isArray(data.topPages)) {
             this.topPages = data.topPages;
+          } else if (data.topPages && Array.isArray(data.topPages)) {
+            var mapped = {};
+            data.topPages.forEach(function (row) {
+              if (row && row.page_name) {
+                mapped[row.page_name] = row.visits;
+              }
+            });
+            this.topPages = mapped;
+          } else {
+            this.topPages = {};
           }
-          
-          // Procesar referrers (fuentes de tráfico)
+
           if (data.referrers) {
             this.referrers = data.referrers;
           }
-          
+
           this.loader = false;
 
-          // Validar y procesar gráficos solo si existen los datos
-          if (data.chart3 && data.chart3.labels && data.chart3.datasets) {
-            this.graphs.devices = this.calcularPorcentajeMayor(data.chart3);
-            this.createChart("myChart3", {
-              type: "bar",
-              data: data.chart3,
-              displayX: false,
-              displayY: false,
-            });
-          }
-          
-          if (data.chart4 && data.chart4.labels && data.chart4.datasets) {
-            this.graphs.urlFrecuentes = this.calcularPorcentajeMayor(data.chart4);
-            this.createChart("myChart4", {
-              type: "doughnut",
-              data: data.chart4,
-              displayX: false,
-              displayY: false,
-            });
-          }
-          
-          if (data.timeline) {
-            this.timeline = this.getTimeLine(data.timeline);
-          }
-          
-          if (data.chart1 && data.chart1.labels && data.chart1.datasets) {
-            this.createChart("myChart1", {
-              type: "line",
-              data: data.chart1,
-              displayGrid: false,
-            });
-          }
-          
-          if (data.chart2 && data.chart2.labels && data.chart2.datasets) {
-            this.createChart("myChart2", {
-              type: "bar",
-              data: data.chart2,
-              displayGrid: false,
-            });
-          }
+          var self = this;
+          this.$nextTick(function () {
+            if (data.chart3 && data.chart3.labels && data.chart3.labels.length) {
+              self.graphs.devices = self.calcularPorcentajeMayor(data.chart3);
+              self.createChart("myChart3", {
+                type: "bar",
+                data: data.chart3,
+                displayX: false,
+                displayY: false,
+              });
+            }
 
-          this.init();
+            if (data.chart4 && data.chart4.labels && data.chart4.labels.length) {
+              self.graphs.urlFrecuentes = self.calcularPorcentajeMayor(data.chart4);
+              self.createChart("myChart4", {
+                type: "doughnut",
+                data: data.chart4,
+                displayX: false,
+                displayY: false,
+              });
+            }
+
+            if (data.timeline) {
+              self.timeline = self.getTimeLine(data.timeline);
+            }
+
+            if (data.chart1 && data.chart1.labels && data.chart1.labels.length) {
+              self.createChart("myChart1", {
+                type: "line",
+                data: data.chart1,
+                displayGrid: false,
+              });
+            }
+
+            if (data.chart2 && data.chart2.labels && data.chart2.labels.length) {
+              self.createChart("myChart2", {
+                type: "bar",
+                data: data.chart2,
+                displayGrid: false,
+              });
+            }
+
+            if (data.referrers && data.referrers.labels && data.referrers.labels.length) {
+              self.createChart("myChartReferrers", {
+                type: "doughnut",
+                data: data.referrers,
+                displayX: false,
+                displayY: false,
+              });
+            }
+
+            self.init();
+          });
         })
         .catch((error) => {
-          console.error('Dashboard data error:', error);
+          console.error("Dashboard data error:", error);
           this.loader = false;
-          M.toast({ 
-            html: '<i class="material-icons">error</i> Error loading dashboard data. Please refresh the page.',
-            classes: 'red'
-          });
+          if (typeof M !== "undefined") {
+            M.toast({
+              html: "Error loading dashboard data. Please refresh the page.",
+              classes: "red",
+            });
+          }
         });
     },
   },
   mounted: function () {
     this.$nextTick(() => {
+      this.initStaticPlugins();
       this.getDashboardData();
     });
   },

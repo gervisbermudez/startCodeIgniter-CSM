@@ -121,6 +121,11 @@ $route['admin/events'] = 'admin/EventsController';
 $route['admin/categories/(.+)'] = 'admin/CategoriesController/$1';
 $route['admin/categories'] = 'admin/CategoriesController';
 
+// Analytics module (canonical URL). Class name differs from api/v1/AnalyticsController.
+$route['admin/analytics'] = 'admin/AnalyticsAdminController';
+$route['admin/analytics/(.+)'] = 'admin/AnalyticsAdminController/$1';
+$route['admin/configuration/analytics'] = 'admin/AnalyticsAdminController/legacy_redirect';
+
 // Cache routes
 $route['admin/cache/clear-page/(:num)'] = 'admin/Cache/clear_page/$1';
 $route['admin/cache/clear-blog/(:num)'] = 'admin/Cache/clear_blog/$1';
@@ -141,7 +146,9 @@ $route['admin/siteforms/stats/(.+)'] = 'admin/SiteFormsController/stats/$1';
 $route['admin/siteforms/(.+)'] = 'admin/SiteFormsController/$1';
 $route['admin/siteforms'] = 'admin/SiteFormsController';
 
-// API v1 routes
+// API v1 routes — hyphenated aliases before the catch-all (REST _remap does not convert dashes)
+$route['api/v1/analytics/popular-pages'] = 'api/v1/AnalyticsController/popular_pages';
+$route['api/v1/analytics/traffic-sources'] = 'api/v1/AnalyticsController/traffic_sources';
 $route['api/v1/analytics/(.+)'] = 'api/v1/AnalyticsController/$1';
 $route['api/v1/analytics'] = 'api/v1/AnalyticsController';
 $route['api/v1/dashboard/(.+)'] = 'api/v1/DashboardController/$1';

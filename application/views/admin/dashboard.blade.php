@@ -67,13 +67,72 @@
         font-size: 0.85rem;
     }
     
-    /* KPI Cards */
     .kpi-cards {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 15px;
         margin: 20px;
     }
+    @media only screen and (max-width: 1200px) {
+        .kpi-cards {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+    @media only screen and (max-width: 600px) {
+        .kpi-cards {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+    a.kpi-card,
+    .kpi-card-link {
+        display: block;
+        min-width: 0;
+        color: inherit;
+        text-decoration: none;
+        cursor: pointer;
+        box-sizing: border-box;
+    }
+    .overview-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 20px;
+        gap: 12px;
+    }
+    .overview-row .overview {
+        margin: 0;
+    }
+    .panel-title-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+    }
+    .panel-title-row h5 {
+        margin: 0;
+    }
+    .dashboard-empty {
+        text-align: center;
+        padding: 28px 16px;
+        color: #757575;
+    }
+    .dashboard-empty i.material-icons {
+        font-size: 36px;
+        display: block;
+        margin-bottom: 8px;
+        color: #9e9e9e;
+    }
+    .charts-grid {
+        display: contents;
+    }
+    .tracking-notice {
+        margin: 0 20px 16px;
+        padding: 12px 16px;
+        background: #fff8e1;
+        border-radius: 8px;
+        color: #5D5D5D;
+    }
+
     .kpi-card {
         background: white;
         border-radius: 8px;
@@ -205,46 +264,63 @@
         </div>
     </div>
     <div class="col-left" v-show="!loader">
-        <div class="overview">
-            <span>{{ lang('dashboard_overview') }}</span>
+        <div class="overview-row">
+            <div class="overview">
+                <span>{{ lang('dashboard_overview') }}</span>
+            </div>
+            @if(has_permisions('SELECT_ANALYTICS'))
+            <a href="{{ base_url('admin/analytics') }}" class="btn-flat waves-effect teal-text">
+                <i class="material-icons left">assessment</i>{{ lang('dashboard_view_analytics') }}
+            </a>
+            @endif
         </div>
-        
-        <!-- KPI Cards -->
+
+        @if(has_permisions('SELECT_ANALYTICS') && config('SITEM_TRACK_VISITORS') != 'Si')
+        <div class="tracking-notice">
+            {{ lang('dashboard_tracking_disabled') }}
+            <a href="{{ base_url('admin/configuration') }}">{{ lang('dashboard_enable_tracking') }}</a>
+        </div>
+        @endif
+
+        <!-- KPI Cards (same source as /admin/analytics) -->
+        @if(has_permisions('SELECT_ANALYTICS'))
         <div class="kpi-cards">
-            <div class="kpi-card">
+            <a class="kpi-card kpi-card-link" href="{{ base_url('admin/analytics') }}">
                 <i class="material-icons kpi-icon">people</i>
                 <div class="kpi-value">@{{kpis.uniqueVisitors}}</div>
-                <div class="kpi-label">Unique Visitors</div>
+                <div class="kpi-label">{{ lang('dashboard_unique_visitors') }}</div>
                 <div class="kpi-change" :class="{positive: kpis.dailyGrowth >= 0, negative: kpis.dailyGrowth < 0}">
                     <i class="material-icons tiny">@{{kpis.dailyGrowth >= 0 ? 'trending_up' : 'trending_down'}}</i>
-                    @{{Math.abs(kpis.dailyGrowth)}}% vs yesterday
+                    @{{Math.abs(kpis.dailyGrowth)}}% {{ lang('dashboard_vs_yesterday') }}
                 </div>
-            </div>
-            <div class="kpi-card">
+            </a>
+            <a class="kpi-card kpi-card-link" href="{{ base_url('admin/analytics') }}">
                 <i class="material-icons kpi-icon">visibility</i>
                 <div class="kpi-value">@{{kpis.todayVisits}}</div>
-                <div class="kpi-label">Today's Visits</div>
+                <div class="kpi-label">{{ lang('dashboard_today_visits') }}</div>
                 <div class="kpi-change">
-                    Yesterday: @{{kpis.yesterdayVisits}}
+                    {{ lang('dashboard_yesterday') }}: @{{kpis.yesterdayVisits}}
                 </div>
-            </div>
-            <div class="kpi-card">
+            </a>
+            <a class="kpi-card kpi-card-link" href="{{ base_url('admin/analytics') }}">
                 <i class="material-icons kpi-icon">pages</i>
                 <div class="kpi-value">@{{kpis.pagesPerSession}}</div>
-                <div class="kpi-label">Pages/Session</div>
+                <div class="kpi-label">{{ lang('dashboard_pages_per_session') }}</div>
                 <div class="kpi-change">
-                    Engagement metric
+                    {{ lang('dashboard_engagement') }}
                 </div>
-            </div>
-            <div class="kpi-card">
+            </a>
+            <a class="kpi-card kpi-card-link" href="{{ base_url('admin/analytics') }}">
                 <i class="material-icons kpi-icon">exit_to_app</i>
                 <div class="kpi-value">@{{kpis.bounceRate}}%</div>
-                <div class="kpi-label">Bounce Rate</div>
+                <div class="kpi-label">{{ lang('dashboard_bounce_rate') }}</div>
                 <div class="kpi-change" :class="{positive: kpis.bounceRate < 50, negative: kpis.bounceRate >= 50}">
-                    @{{kpis.bounceRate < 50 ? 'Good' : 'Needs improvement'}}
+                    <span v-if="kpis.bounceRate < 50">{{ lang('dashboard_bounce_good') }}</span>
+                    <span v-else>{{ lang('dashboard_bounce_improve') }}</span>
                 </div>
-            </div>
+            </a>
         </div>
+        @endif
         
         <div class="welcome">
             <div class="welcome_container">
@@ -300,10 +376,21 @@
                 <div class="row">
                     <div class="col s12">
                         <div class="panel">
-                            <div class="title">
+                            <div class="title panel-title-row">
                                 <h5>{{ lang('dashboard_statistics') }}</h5>
+                                @if(has_permisions('SELECT_ANALYTICS'))
+                                <a href="{{ base_url('admin/analytics') }}" class="btn-flat waves-effect teal-text">
+                                    {{ lang('dashboard_view_analytics') }}
+                                </a>
+                                @endif
                             </div>
                             <div class="charts">
+                                <div class="dashboard-empty" v-if="canViewAnalytics && !hasAnalyticsData && !loader">
+                                    <i class="material-icons">insights</i>
+                                    <p>{{ lang('dashboard_no_analytics_data') }}</p>
+                                    <a href="{{ base_url('admin/analytics') }}">{{ lang('dashboard_view_analytics') }}</a>
+                                </div>
+                                <div class="charts-grid" v-show="hasAnalyticsData">
                                 <div class="chart chart-1">
                                     <div class="chart-header">
                                         {{ lang('dashboard_visits_per_day') }}
@@ -313,9 +400,9 @@
                                             <canvas id="myChart1"></canvas>
                                         </div>
                                         <div class="col2">
-                                            <span class="chart-title">VISITORS</span>
+                                            <span class="chart-title">{{ lang('dashboard_visitors') }}</span>
                                             <div class="chart-big-number">@{{stats.totalVisitors.toLocaleString()}}</div>
-                                            <div class="chart-description" :class="{'text-green': stats.visitorGrowth >= 0, 'text-red': stats.visitorGrowth < 0}">Growth @{{stats.visitorGrowth}}%</div>
+                                            <div class="chart-description" :class="{'text-green': stats.visitorGrowth >= 0, 'text-red': stats.visitorGrowth < 0}">{{ lang('dashboard_growth') }} @{{stats.visitorGrowth}}%</div>
                                         </div>
                                     </div>
                                 </div>
@@ -325,9 +412,9 @@
                                     </div>
                                     <div class="chart-body">
                                         <div class="col2">
-                                            <span class="chart-title">REQUESTS</span>
+                                            <span class="chart-title">{{ lang('dashboard_requests') }}</span>
                                             <div class="chart-big-number">@{{stats.totalRequests.toLocaleString()}}</div>
-                                            <div class="chart-description" :class="{'text-green': stats.requestGrowth >= 0, 'text-red': stats.requestGrowth < 0}">Growth @{{stats.requestGrowth}}%</div>
+                                            <div class="chart-description" :class="{'text-green': stats.requestGrowth >= 0, 'text-red': stats.requestGrowth < 0}">{{ lang('dashboard_growth') }} @{{stats.requestGrowth}}%</div>
                                         </div>
                                         <div class="col1 ">
                                             <canvas id="myChart2"></canvas>
@@ -368,40 +455,48 @@
                                         </div>
                                     </div>
                                 </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Top Pages & Referrers -->
+                @if(has_permisions('SELECT_ANALYTICS'))
                 <div class="row">
                     <div class="col s12 m6">
                         <div class="panel">
-                            <div class="title">
-                                <h5><i class="material-icons tiny">trending_up</i> Top Pages</h5>
+                            <div class="title panel-title-row">
+                                <h5><i class="material-icons tiny">trending_up</i> {{ lang('dashboard_top_pages') }}</h5>
+                                <a href="{{ base_url('admin/analytics') }}" class="btn-flat waves-effect teal-text">{{ lang('dashboard_view_analytics') }}</a>
                             </div>
                             <ul class="collection" style="border: 0; margin: 0;">
                                 <li class="collection-item" v-for="(count, url) in topPages" :key="url">
-                                    <span class="truncate" style="max-width: 70%; display: inline-block;">@{{url}}</span>
-                                    <span class="badge">@{{count}} visits</span>
+                                    <a :href="analyticsUrl" class="truncate teal-text" style="max-width: 70%; display: inline-block;">@{{url}}</a>
+                                    <span class="badge">@{{count}} {{ lang('analytics_visits') }}</span>
                                 </li>
-                                <li v-if="Object.keys(topPages).length === 0" class="collection-item center-align" style="color: #999;">
-                                    No data available
+                                <li v-if="Object.keys(topPages).length === 0" class="collection-item dashboard-empty">
+                                    {{ lang('dashboard_no_analytics_data') }}
                                 </li>
                             </ul>
                         </div>
                     </div>
                     <div class="col s12 m6">
                         <div class="panel">
-                            <div class="title">
-                                <h5><i class="material-icons tiny">share</i> Traffic Sources</h5>
+                            <div class="title panel-title-row">
+                                <h5><i class="material-icons tiny">share</i> {{ lang('dashboard_traffic_sources') }}</h5>
+                                <a href="{{ base_url('admin/analytics') }}" class="btn-flat waves-effect teal-text">{{ lang('dashboard_view_analytics') }}</a>
                             </div>
-                            <div style="padding: 20px;">
+                            <div class="dashboard-empty" v-if="!hasReferrers">
+                                {{ lang('dashboard_no_analytics_data') }}
+                            </div>
+                            <div v-show="hasReferrers" style="padding: 20px;">
                                 <canvas id="myChartReferrers" style="max-height: 200px;"></canvas>
                             </div>
                         </div>
                     </div>
                 </div>
+                @endif
             </div>
             <div class="col m6 l6 xl4 s12">
                 <users-collection :users="users"></users-collection>
@@ -490,22 +585,22 @@
     </div>
 </div>
 <div class="fixed-action-btn">
-    <a data-position="left" data-delay="50" :data-tooltip="'{{ lang('tooltip_new_form') }}'"
-        class="btn-floating btn-large tooltipped red" href="{{base_url('admin/custommodels/nuevo')}}">
+    <a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_form') }}"
+        class="btn-floating btn-large tooltipped red" href="{{base_url('admin/custommodels/new')}}">
         <i class="large material-icons">add</i>
     </a>
     <ul>
         @if(has_permisions('CREATE_USER'))
-        <li><a data-position="left" data-delay="50" :data-tooltip="'{{ lang('tooltip_new_user') }}'" class="btn-floating tooltipped red"
-                href="{{base_url('admin/users/agregar')}}"><i class="material-icons">perm_identity</i></a></li>
+        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_user') }}" class="btn-floating tooltipped red"
+                href="{{base_url('admin/users/add')}}"><i class="material-icons">perm_identity</i></a></li>
         @endif
-        <li><a data-position="left" data-delay="50" :data-tooltip="'{{ lang('tooltip_new_page') }}'"
-                class="btn-floating tooltipped yellow darken-1" href="{{base_url('admin/pages/nueva/')}}"><i
+        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_page') }}"
+                class="btn-floating tooltipped yellow darken-1" href="{{base_url('admin/pages/new/')}}"><i
                     class="material-icons">web</i></a></li>
-        <li><a data-position="left" data-delay="50" :data-tooltip="'{{ lang('tooltip_new_album') }}'" class="btn-floating tooltipped green"
-                href="{{base_url('admin/gallery/nuevo/')}}"><i class="material-icons">publish</i></a></li>
-        <li><a data-position="left" data-delay="50" :data-tooltip="'{{ lang('tooltip_new_event') }}'" class="btn-floating tooltipped blue"
-                href="{{ base_url('admin/events/agregar/') }}"><i class="material-icons">assistant</i></a></li>
+        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_album') }}" class="btn-floating tooltipped green"
+                href="{{base_url('admin/gallery/new/')}}"><i class="material-icons">publish</i></a></li>
+        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_event') }}" class="btn-floating tooltipped blue"
+                href="{{ base_url('admin/events/add/') }}"><i class="material-icons">assistant</i></a></li>
     </ul>
 </div>
 @include('admin.components.page_card_component')
@@ -517,7 +612,19 @@
 @endsection
 
 @section('footer_includes')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+window.CURRENT_USER = <?= json_encode(array(
+    'user_id' => userdata('user_id'),
+    'username' => userdata('username'),
+    'email' => userdata('email'),
+    'user_data' => array(
+        'nombre' => userdata('nombre'),
+        'apellido' => userdata('apellido'),
+        'avatar' => userdata('avatar'),
+    ),
+), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS) ?>;
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="<?=base_url('resources/components/widget/AlbumsWidgetComponent.js?v=' . ADMIN_VERSION)?>"></script>
 <script src="<?=base_url('resources/components/widget/CreateContents.js?v=' . ADMIN_VERSION)?>"></script>
 <script src="<?=base_url('resources/components/widget/FileExplorerCollection.js?v=' . ADMIN_VERSION)?>"></script>

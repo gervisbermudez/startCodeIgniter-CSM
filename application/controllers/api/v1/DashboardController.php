@@ -52,10 +52,10 @@ class DashboardController extends REST_Controller
      */
     public function index_get()
     {
-        // Intentar obtener datos del caché
-        $cache_key = 'dashboard_data_' . userdata('user_id');
+        // Intentar obtener datos del caché (v2 = analytics snapshot, not UserTrackingModel::all)
+        $cache_key = 'dashboard_data_v2_' . userdata('user_id');
         $cached_data = $this->cache->get($cache_key);
-        
+
         if ($cached_data !== FALSE) {
             $this->response($cached_data, REST_Controller::HTTP_OK);
             return;
@@ -97,22 +97,43 @@ class DashboardController extends REST_Controller
         $event = new EventModel();
         $result['events'] = $event->all();
 
-        $this->load->model('Admin/UserTrackingModel');
-        $User_tracking = new UserTrackingModel();
-        $tempResult = $User_tracking->all();
-        $tempData = $tempResult ? $tempResult->toArray() : [];
+        $empty_chart = array(
+            'labels' => array(),
+            'datasets' => array(array('tension' => 0.5, 'data' => array())),
+        );
+        $result['chart1'] = $empty_chart;
+        $result['chart2'] = $empty_chart;
+        $result['chart3'] = $empty_chart;
+        $result['chart4'] = $empty_chart;
+        $result['stats'] = array(
+            'totalVisitors' => 0,
+            'visitorGrowth' => 0,
+            'totalRequests' => 0,
+            'requestGrowth' => 0,
+        );
+        $result['kpis'] = array(
+            'uniqueVisitors' => 0,
+            'totalVisits' => 0,
+            'pagesPerSession' => 0,
+            'bounceRate' => 0,
+            'todayVisits' => 0,
+            'yesterdayVisits' => 0,
+            'dailyGrowth' => 0,
+            'sessions' => 0,
+        );
+        $result['referrers'] = $empty_chart;
+        $result['topPages'] = array();
+        $result['has_analytics_data'] = false;
+        $result['can_view_analytics'] = function_exists('has_permisions') && has_permisions('SELECT_ANALYTICS');
 
-        $result['chart1'] = $this->generateTrafficChart($tempData);
-        $result['chart2'] = $this->getRequestByMont($tempData);
-        $result['chart3'] = $this->getTraficByDevice($tempData);
-        $result['chart4'] = $this->getTopVisitedUrls($tempData, 7);
-
-        // Calcular estadísticas generales
-        $result['stats'] = $this->calculateStats($tempData);
-        $result['kpis'] = $this->calculateKPIs($tempData);
-        $result['referrers'] = $this->getTopReferrers($tempData, 5);
-        $result['topPages'] = $this->getTopPages($tempData, 5);
-        $result['hourlyHeatmap'] = $this->getHourlyHeatmap($tempData);
+        if ($result['can_view_analytics']) {
+            $this->load->model('Admin/UserTrackingModelEnhanced', 'analytics_model');
+            $snapshot = $this->analytics_model->get_home_snapshot(30);
+            foreach ($snapshot as $key => $value) {
+                $result[$key] = $value;
+            }
+            $result['has_analytics_data'] = !empty($snapshot['has_data']);
+        }
 
         $response = array(
             'code' => 200,
@@ -125,338 +146,6 @@ class DashboardController extends REST_Controller
         $this->response($response, REST_Controller::HTTP_OK);
     }
 
-    private function getRequestByMont($tempData)
-    {
-
-        // Recopilar los datos del objeto de entrada en un array
-
-        // Inicializar arrays para las etiquetas (meses) y los datos (número de visitas)
-        $labels = array();
-        $data = array();
-        $visits = array();
-
-        // Iterar a través de los datos y contar las visitas por mes
-        foreach ($tempData as $entry) {
-            // Obtener el mes y año de la fecha del objeto de entrada
-            $monthYear = date('Y-m', strtotime($entry->date_create));
-            $month = date('F', strtotime($entry->date_create));
-
-            // Si ya se contaron visitas para este mes, agregar una al recuento existente
-            if (isset($visits[$monthYear])) {
-                $visits[$monthYear]['count']++;
-            }
-            // De lo contrario, crear una nueva entrada en el array de recuento de visitas
-            else {
-                $visits[$monthYear] = array(
-                    'count' => 1,
-                    'label' => $month
-                );
-            }
-        }
-
-        // Eliminar los meses sin visitas del array de datos
-        $visits = array_filter($visits);
-
-        // Ordenar los datos por mes-año cronológicamente
-        ksort($visits);
-
-        // Crear arrays separados para las etiquetas (meses) y los datos (número de visitas)
-        foreach ($visits as $monthData) {
-            $labels[] = $monthData['label'];
-            $data[] = $monthData['count'];
-        }
-
-        // Crear el array de salida en el formato deseado
-        $output = array(
-            'labels' => $labels,
-            'datasets' => array(
-                array(
-                    "tension" => 0.5,
-                    'data' => $data,
-                ),
-            ),
-        );
-
-        return $output;
-    }
-
-    private function getTopVisitedUrls($data, $topCount = 5)
-    {
-        $ignoredUrls = [
-            '/favicon.ico', 
-            '/robots.txt', 
-            '/', 
-            '/sitemap.xml',
-            '/manifest.json',
-            '/service-worker.js',
-            '/sw.js',
-            '/apple-touch-icon.png',
-            '/browserconfig.xml'
-        ];
-        $filteredData = array_filter($data, function ($item) use ($ignoredUrls) {
-            return !in_array($item->requested_url, $ignoredUrls);
-        });
-
-        // Obtener un array con la cuenta de visitas de cada requested_url
-        $visitsCount = array_count_values(array_column($filteredData, 'requested_url'));
-
-        // Ordenar el array de mayor a menor visitas
-        arsort($visitsCount);
-
-        // Tomar los primeros $topCount elementos del array
-        $topUrls = array_slice($visitsCount, 0, $topCount);
-
-        // Crear los arrays para la salida del gráfico
-        $labels = array_keys($topUrls);
-        $data = array_values($topUrls);
-
-        return [
-            'labels' => $labels,
-            'datasets' => [
-                [
-                    'data' => $data,
-                ],
-            ],
-        ];
-    }
-
-    private function generateTrafficChart($data)
-    {
-        $visits = array();
-        foreach ($data as $item) {
-            $date = new DateTime($item->date_create);
-            $day = $date->format('M j');
-            $month = $date->format('M');
-
-            if (!isset($visits[$month])) {
-                $visits[$month] = array();
-            }
-
-            if (!isset($visits[$month][$day])) {
-                $visits[$month][$day] = 0;
-            }
-            $visits[$month][$day]++;
-        }
-
-        $topDays = array();
-        foreach ($visits as $month => $monthVisits) {
-            arsort($monthVisits);
-            $topDays[$month] = array_slice($monthVisits, 0, 5, true);
-        }
-
-        $labels = array();
-        $chartData = array();
-
-        foreach ($topDays as $month => $monthTopDays) {
-            foreach ($monthTopDays as $day => $visitsCount) {
-                $labels[] = "$day";
-                $chartData[] = $visitsCount;
-            }
-        }
-
-        $chart = array(
-            'labels' => $labels,
-            'datasets' => array(
-                array(
-                    "tension" => 0.5,
-                    'data' => $chartData,
-                ),
-            ),
-        );
-
-        return $chart;
-    }
-
-    private function getTraficByDevice($data)
-    {
-        $this->load->library('user_agent');
-
-        // array para almacenar la cantidad de visitas por dispositivo
-        $visitas_por_dispositivo = array(
-            'smartphone' => 0,
-            'tablet' => 0,
-            'desktop' => 0,
-            'others' => 0,
-            'robot' => 0,
-        );
-
-        $Parser = new CI_User_agent();
-
-        // recorrer las visitas
-        foreach ($data as $visita) {
-            // obtener el user_agent de la visita
-
-            $user_agent = $visita->user_agent;
-            //$this->agent->parse($user_agent);
-            $Parser->parse($user_agent);
-            // detectar el tipo de dispositivo
-            if ($Parser->is_mobile()) {
-                $visitas_por_dispositivo['smartphone']++;
-            } else if ($Parser->is_robot()) {
-                $visitas_por_dispositivo['robot']++;
-            } else {
-                $visitas_por_dispositivo['desktop']++;
-            }
-        }
-
-        // generar el gráfico
-        $data = array(
-            'labels' => array_keys($visitas_por_dispositivo),
-            'datasets' => array(
-                array(
-                    'data' => array_values($visitas_por_dispositivo),
-                ),
-            ),
-        );
-
-        return $data;
-    }
-
-    private function calculateStats($data)
-    {
-        $totalVisitors = count($data);
-        $uniqueIPs = array_unique(array_column($data, 'ip_address'));
-        $uniqueVisitors = count($uniqueIPs);
-        
-        // Calcular crecimiento comparando últimos 7 días vs 7 días anteriores
-        $now = time();
-        $lastWeek = [];
-        $previousWeek = [];
-        
-        foreach ($data as $item) {
-            $timestamp = strtotime($item->date_create);
-            $daysAgo = floor(($now - $timestamp) / 86400);
-            
-            if ($daysAgo <= 7) {
-                $lastWeek[] = $item;
-            } elseif ($daysAgo > 7 && $daysAgo <= 14) {
-                $previousWeek[] = $item;
-            }
-        }
-        
-        $lastWeekCount = count($lastWeek);
-        $previousWeekCount = count($previousWeek) ?: 1;
-        $visitorGrowth = round((($lastWeekCount - $previousWeekCount) / $previousWeekCount) * 100);
-        
-        return array(
-            'totalVisitors' => $uniqueVisitors,
-            'visitorGrowth' => $visitorGrowth,
-            'totalRequests' => $totalVisitors,
-            'requestGrowth' => $visitorGrowth
-        );
-    }
-
-    private function calculateKPIs($data)
-    {
-        $totalVisits = count($data);
-        $uniqueIPs = array_unique(array_column($data, 'ip_address'));
-        $uniqueVisitors = count($uniqueIPs);
-        
-        // Calcular páginas por sesión (promedio)
-        $pagesPerSession = $uniqueVisitors > 0 ? round($totalVisits / $uniqueVisitors, 2) : 0;
-        
-        // Calcular bounce rate (visitantes con solo 1 página vista)
-        $ipCounts = array_count_values(array_column($data, 'ip_address'));
-        $singlePageVisits = count(array_filter($ipCounts, function($count) { return $count == 1; }));
-        $bounceRate = $uniqueVisitors > 0 ? round(($singlePageVisits / $uniqueVisitors) * 100, 1) : 0;
-        
-        // Visitas hoy
-        $today = date('Y-m-d');
-        $todayVisits = count(array_filter($data, function($item) use ($today) {
-            return date('Y-m-d', strtotime($item->date_create)) == $today;
-        }));
-        
-        // Visitas ayer para comparación
-        $yesterday = date('Y-m-d', strtotime('-1 day'));
-        $yesterdayVisits = count(array_filter($data, function($item) use ($yesterday) {
-            return date('Y-m-d', strtotime($item->date_create)) == $yesterday;
-        }));
-        
-        $dailyGrowth = $yesterdayVisits > 0 ? round((($todayVisits - $yesterdayVisits) / $yesterdayVisits) * 100, 1) : 0;
-        
-        return array(
-            'uniqueVisitors' => $uniqueVisitors,
-            'totalVisits' => $totalVisits,
-            'pagesPerSession' => $pagesPerSession,
-            'bounceRate' => $bounceRate,
-            'todayVisits' => $todayVisits,
-            'yesterdayVisits' => $yesterdayVisits,
-            'dailyGrowth' => $dailyGrowth
-        );
-    }
-    
-    private function getTopReferrers($data, $topCount = 5)
-    {
-        $referrers = array();
-        
-        foreach ($data as $item) {
-            if (isset($item->referer) && !empty($item->referer) && $item->referer != '-') {
-                $host = parse_url($item->referer, PHP_URL_HOST);
-                if ($host) {
-                    $referrers[] = $host;
-                }
-            } else {
-                $referrers[] = 'Direct';
-            }
-        }
-        
-        $referrerCounts = array_count_values($referrers);
-        arsort($referrerCounts);
-        $topReferrers = array_slice($referrerCounts, 0, $topCount, true);
-        
-        return array(
-            'labels' => array_keys($topReferrers),
-            'datasets' => array(
-                array('data' => array_values($topReferrers))
-            )
-        );
-    }
-    
-    private function getTopPages($data, $topCount = 5)
-    {
-        $ignoredUrls = [
-            '/favicon.ico', '/robots.txt', '/', '/sitemap.xml',
-            '/manifest.json', '/service-worker.js', '/sw.js'
-        ];
-        
-        $pages = array();
-        foreach ($data as $item) {
-            if (!in_array($item->requested_url, $ignoredUrls)) {
-                $pages[] = $item->requested_url;
-            }
-        }
-        
-        $pageCounts = array_count_values($pages);
-        arsort($pageCounts);
-        
-        return array_slice($pageCounts, 0, $topCount, true);
-    }
-    
-    private function getHourlyHeatmap($data)
-    {
-        $heatmap = array();
-        $days = array('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun');
-        
-        // Inicializar matriz
-        foreach ($days as $day) {
-            for ($hour = 0; $hour < 24; $hour++) {
-                $heatmap[$day][$hour] = 0;
-            }
-        }
-        
-        // Llenar con datos
-        foreach ($data as $item) {
-            $timestamp = strtotime($item->date_create);
-            $day = date('D', $timestamp);
-            $hour = (int)date('G', $timestamp);
-            
-            if (isset($heatmap[$day][$hour])) {
-                $heatmap[$day][$hour]++;
-            }
-        }
-        
-        return $heatmap;
-    }
 
     /**
      * Get All Data from this method.

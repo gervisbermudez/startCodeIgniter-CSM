@@ -360,3 +360,90 @@ if (!function_exists('analytics_widget')) {
         return $html;
     }
 }
+
+if (!function_exists('is_first_party_tracking_enabled')) {
+    function is_first_party_tracking_enabled()
+    {
+        return config('SITEM_TRACK_VISITORS') == 'Si';
+    }
+}
+
+if (!function_exists('is_google_analytics_active')) {
+    /**
+     * GA4 (gtag) is on when ANALYTICS_ACTIVE is truthy (typically "On").
+     */
+    function is_google_analytics_active()
+    {
+        $value = config('ANALYTICS_ACTIVE');
+        if ($value === null || $value === false || $value === '') {
+            return false;
+        }
+        $normalized = strtolower(trim((string) $value));
+        return in_array($normalized, array('on', '1', 'true', 'si', 'yes'), true);
+    }
+}
+
+if (!function_exists('analytics_ga_measurement_id')) {
+    /**
+     * GA4 measurement ID (G-XXXX). Universal Analytics IDs are ignored.
+     */
+    function analytics_ga_measurement_id()
+    {
+        $id = config('ANALYTICS_ID');
+        if (!$id) {
+            return null;
+        }
+        $id = trim($id);
+        if (preg_match('/^G-[A-Z0-9]+$/i', $id)) {
+            return $id;
+        }
+        return null;
+    }
+}
+
+if (!function_exists('analytics_gtag_snippet')) {
+    /**
+     * Head snippet: gtag.js from ANALYTICS_ID plus optional admin-saved ANALYTICS_CODE.
+     */
+    function analytics_gtag_snippet()
+    {
+        if (!is_google_analytics_active()) {
+            return '';
+        }
+
+        $html = '';
+        $measurement_id = analytics_ga_measurement_id();
+        if ($measurement_id) {
+            $id_js = json_encode($measurement_id);
+            $html .= '<script async src="https://www.googletagmanager.com/gtag/js?id=' . htmlspecialchars($measurement_id, ENT_QUOTES, 'UTF-8') . '"></script>' . "\n";
+            $html .= '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config",' . $id_js . ');</script>' . "\n";
+        }
+
+        $code = config('ANALYTICS_CODE');
+        if ($code && stripos($code, '<?') === false) {
+            $is_ua_placeholder = (stripos($code, 'UA-XXXXX-Y') !== false);
+            $is_classic_ga = (stripos($code, 'google-analytics.com/analytics.js') !== false);
+            if (!($measurement_id && ($is_ua_placeholder || $is_classic_ga)) && !$is_ua_placeholder) {
+                $html .= $code . "\n";
+            }
+        }
+
+        return $html;
+    }
+}
+
+if (!function_exists('analytics_client_script')) {
+    /**
+     * First-party analytics-client.js (independent of Google Analytics).
+     */
+    function analytics_client_script()
+    {
+        if (!is_first_party_tracking_enabled()) {
+            return '';
+        }
+
+        $src = base_url('public/js/analytics-client.min.js?v=' . ADMIN_VERSION);
+        return '<script src="' . htmlspecialchars($src, ENT_QUOTES, 'UTF-8') . '"></script>' . "\n";
+    }
+}
+

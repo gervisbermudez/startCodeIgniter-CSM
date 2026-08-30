@@ -72,10 +72,12 @@
             <a class="waves-effect" href="{{ base_url('admin/calendar') }}"><i class="material-icons">event_note</i>
                 {{ lang('menu_calendar') }}</a>
         </li>
+        @if(has_permisions('SELECT_ANALYTICS'))
         <li class="{{isSectionActive('analytics')}}">
-            <a class="waves-effect" href="{{ base_url('admin/configuration/analytics') }}"><i class="material-icons">assessment</i>
+            <a class="waves-effect" href="{{ base_url('admin/analytics') }}"><i class="material-icons">assessment</i>
                 {{ lang('menu_analytics') }}</a>
         </li>
+        @endif
         <li class="{{isSectionActive('fragments')}}">
         <li class="{{isSectionActive('fragments')}}">
             <div class="collapsible-header">

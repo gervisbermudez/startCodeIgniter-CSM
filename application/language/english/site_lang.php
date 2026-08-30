@@ -85,7 +85,9 @@ $lang['config_logger'] = 'Logger';
 $lang['system_logger'] = 'System logger';
 $lang['google_analytics'] = 'Google Analytics';
 $lang['activate_tracking'] = 'Activate tracking';
-$lang['ga_tracking_id'] = 'GA Tracking ID';
+$lang['ga_tracking_id'] = 'GA4 Measurement ID';
+$lang['analytics_head_code'] = 'Head code (snippet)';
+$lang['analytics_ga4_placeholder'] = 'G-XXXXXXXX';
 
 // Menu
 $lang['menu_new_menu'] = 'New Menu';

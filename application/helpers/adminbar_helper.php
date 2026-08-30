@@ -15,8 +15,9 @@ if (!function_exists('detect_page_forms')) {
         $CI =& get_instance();
         
         // Verificar si hay variable $siteform en la vista
-        if (isset($CI->load->get_var('siteform'))) {
-            return $CI->load->get_var('siteform');
+        $siteform = $CI->load->get_var('siteform');
+        if ($siteform) {
+            return $siteform;
         }
         
         return null;
@@ -53,24 +54,51 @@ if (!function_exists('get_page_analytics_summary')) {
     function get_page_analytics_summary($page_id) {
         $CI =& get_instance();
         $CI->load->database();
-        
-        // Obtener estadísticas de los últimos 30 días
-        $query = $CI->db->query("
-            SELECT 
+
+        $page_id = (int) $page_id;
+        $path = '';
+        $page_query = $CI->db->select('path')->from('page')->where('page_id', $page_id)->get();
+        if ($page_query->num_rows() > 0) {
+            $path = $page_query->row()->path;
+        }
+        $trimmed = trim($path, '/');
+        $slash = $trimmed === '' ? '/' : ('/' . $trimmed);
+        $variants = array($path, $trimmed, $slash);
+
+        $bindings = array();
+        $sql = "
+            SELECT
                 COUNT(DISTINCT session_id) as visits,
                 COUNT(*) as pageviews,
                 AVG(time_on_page) as avg_time
             FROM user_tracking
-            WHERE page_id = ?
-            AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-        ", [$page_id]);
-        
-        $result = $query->row_array();
-        return [
-            'visits' => $result['visits'] ?? 0,
-            'pageviews' => $result['pageviews'] ?? 0,
-            'avg_time' => round($result['avg_time'] ?? 0)
-        ];
+            WHERE status = 1
+            AND date_create >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+            AND (
+        ";
+        $clauses = array();
+        if ($CI->db->field_exists('page_id', 'user_tracking')) {
+            $clauses[] = 'page_id = ?';
+            $bindings[] = $page_id;
+        }
+        $clauses[] = 'page_name IN (?, ?, ?)';
+        $clauses[] = 'requested_url IN (?, ?, ?)';
+        foreach ($variants as $variant) {
+            $bindings[] = $variant;
+        }
+        foreach ($variants as $variant) {
+            $bindings[] = $variant;
+        }
+        $sql .= implode(' OR ', $clauses) . ')';
+
+        $query = $CI->db->query($sql, $bindings);
+        $result = $query ? $query->row_array() : array();
+
+        return array(
+            'visits' => isset($result['visits']) ? $result['visits'] : 0,
+            'pageviews' => isset($result['pageviews']) ? $result['pageviews'] : 0,
+            'avg_time' => round(isset($result['avg_time']) ? $result['avg_time'] : 0)
+        );
     }
 }
 

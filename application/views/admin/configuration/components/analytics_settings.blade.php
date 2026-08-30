@@ -20,24 +20,20 @@
                         </label>
                     </div>
                     </p>
-                    <!-- Switch -->
                     <div class="row">
                         <div class="input-field col s6">
-                            <input :value="getConfigValue('ANALYTICS_ID')" placeholder="UA-XXXXX-Y" type="text"
+                            <input :value="getConfigValue('ANALYTICS_ID')" placeholder="<?= lang('analytics_ga4_placeholder') ?>" type="text"
                                 class="validate" v-on:change="updateConfig($event, 'ANALYTICS_ID')">
                             <label class="active"><?= lang('ga_tracking_id') ?></label>
                         </div>
                     </div>
                     <div class="row">
-                        <form class="col s12">
-                            <div class="row">
-                                <div class="input-field col s6">
-                                    <input :value="getConfigValue('ANALYTICS_CODE')" placeholder="" type="text"
-                                        class="validate" v-on:change="updateConfig($event, 'ANALYTICS_CODE')">
-                                    <label>Head Code</label>
-                                </div>
-                            </div>
-                        </form>
+                        <div class="input-field col s12">
+                            <textarea :value="getConfigValue('ANALYTICS_CODE')" class="materialize-textarea"
+                                v-on:change="updateConfig($event, 'ANALYTICS_CODE')"
+                                placeholder="<!-- gtag snippet -->"></textarea>
+                            <label class="active"><?= lang('analytics_head_code') ?></label>
+                        </div>
                     </div>
                 </div>
             </div>

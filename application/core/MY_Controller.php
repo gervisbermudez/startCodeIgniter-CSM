@@ -137,13 +137,22 @@ class MY_Controller extends CI_Controller
             'admin.videos.videos_list' => 'VideosLists.js',
             'admin.configuracion.all_logger' => ['DataTableComponent.js', 'dataEdit.component.js'],
             'admin.configuracion.all_apilogger' => ['DataTableComponent.js', 'dataEdit.component.js', 'ApiLoggerDataComponent.js'],
-            'admin.analytics.dashboard' => 'AnalyticsDashboard.js',
+            'admin.analytics.dashboard' => [
+                'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js',
+                'AnalyticsDashboard.js',
+            ],
         ];
         
         if (isset($viewComponentMap[$view])) {
             $components = is_array($viewComponentMap[$view]) ? $viewComponentMap[$view] : [$viewComponentMap[$view]];
             foreach ($components as $component) {
-                $includes[] = "<script src=\"" . base_url("resources/components/{$component}?v=" . ADMIN_VERSION) . "\"></script>";
+                if (strpos($component, '<script') === 0) {
+                    $includes[] = $component;
+                } elseif (strpos($component, 'http://') === 0 || strpos($component, 'https://') === 0) {
+                    $includes[] = '<script src="' . htmlspecialchars($component, ENT_QUOTES, 'UTF-8') . '"></script>';
+                } else {
+                    $includes[] = "<script src=\"" . base_url("resources/components/{$component}?v=" . ADMIN_VERSION) . "\"></script>";
+                }
             }
         }
         

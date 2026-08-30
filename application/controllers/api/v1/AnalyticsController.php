@@ -4,232 +4,216 @@ defined('BASEPATH') or exit('No direct script access allowed');
 require APPPATH . 'libraries/REST_Controller.php';
 
 /**
- * Analytics API Controller
- * 
- * Provides comprehensive analytics endpoints for user tracking data
- * 
- * @version 2.0
+ * Analytics API
+ *
+ * Authenticated GETs. Public POST /event and /conversion (no PII in responses).
  */
 class AnalyticsController extends REST_Controller
 {
     public function __construct()
     {
         parent::__construct();
+        $this->output->enable_profiler(false);
+        $this->lang->load('rest_lang', 'english');
+
+        if ($this->is_public_tracking_post()) {
+            if (!$this->validate_public_tracking_request()) {
+                $this->response(array('code' => REST_Controller::HTTP_FORBIDDEN), REST_Controller::HTTP_FORBIDDEN);
+                exit();
+            }
+        } elseif (!$this->verify_request()) {
+            $this->response(array(
+                'code' => REST_Controller::HTTP_UNAUTHORIZED,
+            ), REST_Controller::HTTP_UNAUTHORIZED);
+            exit();
+        }
+
         $this->load->model('Admin/UserTrackingModelEnhanced', 'analytics');
-    }
-    
-    /**
-     * Test endpoint to check if API is working
-     */
-    public function index_get()
-    {
-        $this->response_ok([
-            'status' => 'ok',
-            'message' => 'Analytics API is working',
-            'version' => '2.0',
-            'timestamp' => date('Y-m-d H:i:s')
-        ]);
     }
 
     /**
-     * GET /api/v1/analytics/overview
-     * Get overview statistics
-     * 
-     * Query params: start_date, end_date
+     * REST _remap does not convert hyphens. Accept popular-pages and popular_pages.
      */
+    public function _remap($object_called, $arguments = [])
+    {
+        $object_called = str_replace('-', '_', $object_called);
+        parent::_remap($object_called, $arguments);
+    }
+
+    public function index_get()
+    {
+        $this->response_ok(array(
+            'status' => 'ok',
+            'message' => 'Analytics API is working',
+            'version' => '2.1',
+            'timestamp' => date('Y-m-d H:i:s')
+        ));
+    }
+
     public function overview_get()
     {
         $start_date = $this->get('start_date');
         $end_date = $this->get('end_date');
-        
-        $stats = $this->analytics->get_overview_stats($start_date, $end_date);
-        
+        $page_id = $this->get('page_id');
+
+        $stats = $this->analytics->get_overview_stats($start_date, $end_date, $page_id);
+
         $this->response_ok($stats);
     }
 
-    /**
-     * GET /api/v1/analytics/trend
-     * Get daily trend data
-     * 
-     * Query params: days (default: 30)
-     */
     public function trend_get()
     {
-        $days = $this->get('days') ?: 30;
-        
-        $trend = $this->analytics->get_daily_trend($days);
-        
-        $this->response_ok($trend);
+        $start_date = $this->get('start_date');
+        $end_date = $this->get('end_date');
+        $page_id = $this->get('page_id');
+        $days = $this->get('days');
+
+        if ($start_date || $end_date) {
+            $trend = $this->analytics->get_daily_trend($start_date, $end_date, $page_id);
+        } else {
+            $trend = $this->analytics->get_daily_trend($days ? $days : 30, null, $page_id);
+        }
+
+        $this->response_ok($trend ? $trend : array());
     }
 
-    /**
-     * GET /api/v1/analytics/popular-pages
-     * Get most popular pages
-     * 
-     * Query params: limit, start_date, end_date
-     */
     public function popular_pages_get()
     {
         $limit = $this->get('limit') ?: 10;
         $start_date = $this->get('start_date');
         $end_date = $this->get('end_date');
-        
-        $pages = $this->analytics->get_popular_pages($limit, $start_date, $end_date);
-        
-        $this->response_ok($pages);
+        $page_id = $this->get('page_id');
+
+        $pages = $this->analytics->get_popular_pages($limit, $start_date, $end_date, $page_id);
+
+        $this->response_ok($pages ? $pages : array());
     }
 
-    /**
-     * GET /api/v1/analytics/traffic-sources
-     * Get traffic sources
-     * 
-     * Query params: start_date, end_date
-     */
     public function traffic_sources_get()
     {
         $start_date = $this->get('start_date');
         $end_date = $this->get('end_date');
-        
-        $sources = $this->analytics->get_traffic_sources($start_date, $end_date);
-        
-        $this->response_ok($sources);
+        $page_id = $this->get('page_id');
+
+        $sources = $this->analytics->get_traffic_sources($start_date, $end_date, $page_id);
+
+        $this->response_ok($sources ? $sources : array());
     }
 
-    /**
-     * GET /api/v1/analytics/devices
-     * Get device statistics
-     * 
-     * Query params: start_date, end_date
-     */
     public function devices_get()
     {
         $start_date = $this->get('start_date');
         $end_date = $this->get('end_date');
-        
-        $devices = $this->analytics->get_device_stats($start_date, $end_date);
-        
-        $this->response_ok($devices);
+        $page_id = $this->get('page_id');
+
+        $devices = $this->analytics->get_device_stats($start_date, $end_date, $page_id);
+
+        $this->response_ok($devices ? $devices : array());
     }
 
-    /**
-     * GET /api/v1/analytics/browsers
-     * Get browser statistics
-     * 
-     * Query params: limit
-     */
     public function browsers_get()
     {
         $limit = $this->get('limit') ?: 10;
-        
-        $browsers = $this->analytics->get_browser_stats($limit);
-        
-        $this->response_ok($browsers);
+        $start_date = $this->get('start_date');
+        $end_date = $this->get('end_date');
+        $page_id = $this->get('page_id');
+
+        $browsers = $this->analytics->get_browser_stats($limit, $start_date, $end_date, $page_id);
+
+        $this->response_ok($browsers ? $browsers : array());
     }
 
-    /**
-     * GET /api/v1/analytics/geographic
-     * Get geographic distribution
-     * 
-     * Query params: limit
-     */
     public function geographic_get()
     {
         $limit = $this->get('limit') ?: 10;
-        
+
         $locations = $this->analytics->get_geographic_stats($limit);
-        
-        $this->response_ok($locations);
+
+        $this->response_ok($locations ? $locations : array());
     }
 
-    /**
-     * GET /api/v1/analytics/realtime
-     * Get real-time visitors (last 30 minutes)
-     */
     public function realtime_get()
     {
-        $realtime = $this->analytics->get_realtime_visitors();
-        
-        $this->response_ok($realtime);
+        $page_id = $this->get('page_id');
+        $realtime = $this->analytics->get_realtime_visitors($page_id);
+
+        $this->response_ok($realtime ? $realtime : array());
     }
 
-    /**
-     * GET /api/v1/analytics/hourly
-     * Get hourly distribution for a specific date
-     * 
-     * Query params: date (YYYY-MM-DD)
-     */
     public function hourly_get()
     {
         $date = $this->get('date') ?: date('Y-m-d');
-        
-        $hourly = $this->analytics->get_hourly_distribution($date);
-        
-        $this->response_ok($hourly);
+        $page_id = $this->get('page_id');
+
+        $hourly = $this->analytics->get_hourly_distribution($date, $page_id);
+
+        $this->response_ok($hourly ? $hourly : array());
     }
 
-    /**
-     * POST /api/v1/analytics/funnel
-     * Get conversion funnel data
-     * 
-     * Body: { "pages": ["page1", "page2", "page3"] }
-     */
+    public function events_get()
+    {
+        $start_date = $this->get('start_date');
+        $end_date = $this->get('end_date');
+        $limit = $this->get('limit') ?: 20;
+
+        $events = $this->analytics->get_event_stats($start_date, $end_date, $limit);
+
+        $this->response_ok($events ? $events : array());
+    }
+
     public function funnel_post()
     {
         $pages = $this->post('pages');
-        
+
         if (empty($pages) || !is_array($pages)) {
             $this->response_error('Invalid pages array');
             return;
         }
-        
+
         $funnel = $this->analytics->get_conversion_funnel($pages);
-        
+
         $this->response_ok($funnel);
     }
 
-    /**
-     * GET /api/v1/analytics/export
-     * Export data to CSV
-     * 
-     * Query params: start_date, end_date, device_type, page_name, etc.
-     */
     public function export_get()
     {
+        if (!function_exists('has_permisions') || !has_permisions('SELECT_ANALYTICS')) {
+            $this->response(array(
+                'code' => REST_Controller::HTTP_UNAUTHORIZED,
+            ), REST_Controller::HTTP_UNAUTHORIZED);
+            return;
+        }
+
         $filters = array(
             'start_date' => $this->get('start_date'),
             'end_date' => $this->get('end_date'),
             'device_type' => $this->get('device_type'),
             'page_name' => $this->get('page_name'),
+            'page_id' => $this->get('page_id'),
             'country_code' => $this->get('country_code'),
             'conversion' => $this->get('conversion'),
             'limit' => $this->get('limit') ?: 1000
         );
-        
-        // Remove null values
-        $filters = array_filter($filters, function($value) {
-            return $value !== null;
+
+        $filters = array_filter($filters, function ($value) {
+            return $value !== null && $value !== '';
         });
-        
+
         $csv = $this->analytics->export_to_csv($filters);
-        
-        if (empty($csv)) {
+
+        if ($csv === '') {
             $this->response_error('No data to export');
             return;
         }
-        
-        // Set headers for CSV download
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename="analytics_export_' . date('Y-m-d') . '.csv"');
-        echo $csv;
-        exit;
+
+        $filename = 'analytics_export_' . date('Y-m-d') . '.csv';
+        $this->output
+            ->set_status_header(200)
+            ->set_content_type('text/csv', 'utf-8')
+            ->set_header('Content-Disposition: attachment; filename="' . $filename . '"')
+            ->set_output($csv);
     }
 
-    /**
-     * GET /api/v1/analytics/search
-     * Search tracking data with filters
-     * 
-     * Query params: various filters
-     */
     public function search_get()
     {
         $filters = array(
@@ -237,91 +221,154 @@ class AnalyticsController extends REST_Controller
             'end_date' => $this->get('end_date'),
             'device_type' => $this->get('device_type'),
             'page_name' => $this->get('page_name'),
+            'page_id' => $this->get('page_id'),
             'country_code' => $this->get('country_code'),
             'conversion' => $this->get('conversion'),
             'limit' => $this->get('limit') ?: 100
         );
-        
-        // Remove null values
-        $filters = array_filter($filters, function($value) {
-            return $value !== null;
+
+        $filters = array_filter($filters, function ($value) {
+            return $value !== null && $value !== '';
         });
-        
+
         $results = $this->analytics->search_with_filters($filters);
-        
-        $this->response_ok($results);
+
+        $this->response_ok($results ? $results : array());
     }
 
-    /**
-     * GET /api/v1/analytics/dashboard
-     * Get all data needed for dashboard in one call
-     * 
-     * Query params: start_date, end_date
-     */
     public function dashboard_get()
     {
         $start_date = $this->get('start_date');
         $end_date = $this->get('end_date');
-        
+        $page_id = $this->get('page_id');
+
         $dashboard = array(
-            'overview' => $this->analytics->get_overview_stats($start_date, $end_date),
-            'trend' => $this->analytics->get_daily_trend(30),
-            'popular_pages' => $this->analytics->get_popular_pages(10, $start_date, $end_date),
-            'devices' => $this->analytics->get_device_stats($start_date, $end_date),
-            'traffic_sources' => $this->analytics->get_traffic_sources($start_date, $end_date),
-            'realtime' => $this->analytics->get_realtime_visitors(),
-            'hourly' => $this->analytics->get_hourly_distribution(date('Y-m-d'))
+            'overview' => $this->analytics->get_overview_stats($start_date, $end_date, $page_id),
+            'trend' => $this->analytics->get_daily_trend($start_date, $end_date, $page_id),
+            'popular_pages' => $this->analytics->get_popular_pages(10, $start_date, $end_date, $page_id),
+            'devices' => $this->analytics->get_device_stats($start_date, $end_date, $page_id),
+            'browsers' => $this->analytics->get_browser_stats(10, $start_date, $end_date, $page_id),
+            'traffic_sources' => $this->analytics->get_traffic_sources($start_date, $end_date, $page_id),
+            'events' => $this->analytics->get_event_stats($start_date, $end_date),
+            'realtime' => $this->analytics->get_realtime_visitors($page_id),
+            'hourly' => $this->analytics->get_hourly_distribution(date('Y-m-d'), $page_id)
         );
-        
+
         $this->response_ok($dashboard);
     }
 
-    /**
-     * POST /api/v1/analytics/event
-     * Track custom event
-     * 
-     * Body: { "category": "Form", "action": "Submit", "label": "Contact", "value": 1 }
-     */
     public function event_post()
     {
-        $category = $this->post('category');
-        $action = $this->post('action');
-        $label = $this->post('label');
-        $value = $this->post('value');
-        $metadata = $this->post('metadata');
-        
+        $payload = $this->read_tracking_payload();
+        $category = isset($payload['category']) ? $payload['category'] : null;
+        $action = isset($payload['action']) ? $payload['action'] : null;
+        $label = isset($payload['label']) ? $payload['label'] : null;
+        $value = isset($payload['value']) ? $payload['value'] : null;
+        $metadata = isset($payload['metadata']) ? $payload['metadata'] : null;
+
         if (empty($category) || empty($action)) {
             $this->response_error('Category and action are required');
             return;
         }
-        
-        // Load tracking library
+
         $this->load->library('Track_Visitor_Enhanced', null, 'tracker');
-        
         $result = $this->tracker->track_event($category, $action, $label, $value, $metadata);
-        
+
         if ($result) {
-            $this->response_ok(['message' => 'Event tracked successfully']);
+            $this->response_ok(array('message' => 'Event tracked'));
         } else {
-            $this->response_error('Failed to track event');
+            $this->response_ok(array('message' => 'Event ignored'));
         }
     }
 
-    /**
-     * POST /api/v1/analytics/conversion
-     * Track conversion
-     */
     public function conversion_post()
     {
-        // Load tracking library
         $this->load->library('Track_Visitor_Enhanced', null, 'tracker');
-        
-        $result = $this->tracker->track_conversion();
-        
-        if ($result) {
-            $this->response_ok(['message' => 'Conversion tracked successfully']);
-        } else {
-            $this->response_error('Failed to track conversion');
+        $this->tracker->track_conversion();
+        $this->response_ok(array('message' => 'Conversion tracked'));
+    }
+
+    private function is_public_tracking_post()
+    {
+        $method = strtolower($this->input->method(true));
+        if ($method !== 'post') {
+            return false;
         }
+
+        $uri = strtolower(str_replace('-', '_', $this->uri->uri_string()));
+        return (bool) preg_match('#analytics/(event|conversion)/?$#', $uri);
+    }
+
+    /**
+     * Same-origin (or missing Origin) + simple per-IP rate limit.
+     */
+    private function validate_public_tracking_request()
+    {
+        $allowed_host = parse_url(base_url(), PHP_URL_HOST);
+        $origin = $this->input->get_request_header('Origin', true);
+        if ($origin) {
+            $origin_host = parse_url($origin, PHP_URL_HOST);
+            if ($origin_host && strcasecmp($origin_host, $allowed_host) !== 0) {
+                return false;
+            }
+        }
+
+        $referer = $this->input->get_request_header('Referer', true);
+        if (!$origin && $referer) {
+            $referer_host = parse_url($referer, PHP_URL_HOST);
+            if ($referer_host && strcasecmp($referer_host, $allowed_host) !== 0) {
+                return false;
+            }
+        }
+
+        $ip = $this->input->ip_address();
+        $xff = $this->input->server('HTTP_X_FORWARDED_FOR');
+        if ($xff) {
+            $parts = explode(',', $xff);
+            $ip = trim($parts[0]);
+        }
+        $cache_key = 'analytics_rl_' . md5($ip);
+        $hits = get_cached($cache_key, 0);
+        if ($hits >= 300) {
+            return false;
+        }
+        set_cached($cache_key, (int) $hits + 1, 60);
+
+        return true;
+    }
+
+    /**
+     * JSON body, including sendBeacon text/plain via php://input.
+     */
+    private function read_tracking_payload()
+    {
+        $payload = array(
+            'category' => $this->post('category'),
+            'action' => $this->post('action'),
+            'label' => $this->post('label'),
+            'value' => $this->post('value'),
+            'metadata' => $this->post('metadata'),
+        );
+
+        if (!empty($payload['category']) && !empty($payload['action'])) {
+            return $payload;
+        }
+
+        $raw = $this->input->raw_input_stream;
+        if (!$raw) {
+            $raw = @file_get_contents('php://input');
+        }
+        if ($raw) {
+            $decoded = json_decode($raw, true);
+            if (is_array($decoded)) {
+                foreach ($payload as $key => $value) {
+                    if (($value === null || $value === '') && isset($decoded[$key])) {
+                        $payload[$key] = $decoded[$key];
+                    }
+                }
+            }
+        }
+
+        return $payload;
     }
 }

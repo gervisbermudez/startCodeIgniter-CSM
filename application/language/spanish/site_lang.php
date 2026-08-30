@@ -82,7 +82,9 @@ $lang['config_logger'] = 'Logger';
 $lang['system_logger'] = 'Logger del sistema';
 $lang['google_analytics'] = 'Google Analytics';
 $lang['activate_tracking'] = 'Activar seguimiento';
-$lang['ga_tracking_id'] = 'ID de seguimiento de GA';
+$lang['ga_tracking_id'] = 'ID de medición GA4';
+$lang['analytics_head_code'] = 'Código en el head (snippet)';
+$lang['analytics_ga4_placeholder'] = 'G-XXXXXXXX';
 
 // Menú
 $lang['menu_new_menu'] = 'Nuevo Menú';
