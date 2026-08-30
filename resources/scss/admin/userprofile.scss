@@ -1,21 +1,23 @@
+@import "components/palette";
+
 .bg-color1 {
-  background: #68d8df !important;
+  background: var(--st-color1) !important;
 }
 
 .bg-color2 {
-  background: #98e4e4 !important;
+  background: var(--st-color2) !important;
 }
 
 .bg-color3 {
-  background: #fb9678 !important;
+  background: var(--st-accent) !important;
 }
 
 .bg-color4 {
-  background: #646b7f !important;
+  background: var(--st-chrome) !important;
 }
 
 .bg-color5 {
-  background: #edf0f5 !important;
+  background: var(--st-canvas) !important;
 }
 
 .card.banner .dropdown-trigger.right {

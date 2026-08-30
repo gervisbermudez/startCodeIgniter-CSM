@@ -1,33 +1,105 @@
-$color1: #68d8df;
-$color2: #98e4e4;
-$color3: #fb9678;
-$color4: #646b7f;
-$color5: #edf0f5;
+@import "tokens";
 
-$teal: #26A69A;
-$pink: #FB9678;
+// Runtime tokens. html.dark-mode redefines these — paint surfaces with var(--st-*), not hex.
 
-$white: #fff;
-$black: #000;
-$gray-text: #5D5D5D;
+:root {
+  --st-chrome: #{$color-chrome};
+  --st-accent: #{$color-accent};
+  --st-accent-hover: #{$color-accent-hover};
+  --st-interactive: #{$color-interactive};
+  --st-canvas: #{$color-canvas};
+  --st-page: #{$page-bg};
+  --st-surface: #{$surface};
+  --st-surface-elevated: #{$surface};
+  --st-text: #{$text-primary};
+  --st-text-secondary: #{$gray-text};
+  --st-on-chrome: #{$white};
+  --st-on-accent: #{$white};
+  --st-danger: #{$color-danger};
+  --st-success: #{$color-success};
+  --st-warning: #{$color-warning};
+  --st-neutral: #{$color-neutral};
+  --st-trash: #{$color-trash};
+  --st-border: #{$grayLight};
+  --st-border-subtle: #e0e0e0;
+  --st-hover: rgba(0, 0, 0, 0.05);
+  --st-icon: rgba(0, 0, 0, 0.54);
+  --st-overlay: rgba(0, 0, 0, 0.43);
+  --st-scrollbar: #b0b0b0;
+  --st-color1: #{$color1};
+  --st-color2: #{$color2};
+  --st-navbar-height: #{$navbar-height-admin};
+  --st-sidenav-expanded: #{$sidemenuWidthExpanded};
+  --st-sidenav-collapsed: #{$sidemenuWidthCollapsed};
+  --st-radius-sm: #{$radius-sm};
+  --st-radius-md: #{$radius-md};
+  --st-duration: #{$duration-ui};
+  --st-easing: ease;
+}
 
-$gray: #5D5D5D;
-$grayLight: #E5E5E5;
+html.dark-mode {
+  --st-chrome: #{$dark-chrome};
+  --st-page: #{$dark-page};
+  --st-surface: #{$dark-surface};
+  --st-surface-elevated: #{$dark-elevated};
+  --st-canvas: #{$dark-elevated};
+  --st-text: #{$dark-text};
+  --st-text-secondary: #{$dark-text-secondary};
+  --st-border: #{$dark-border};
+  --st-border-subtle: #{$dark-border};
+  --st-hover: #{$dark-hover};
+  --st-icon: rgba(174, 173, 170, 0.54);
+  --st-scrollbar: #5a5a5a;
+  --st-on-chrome: #{$white};
+}
 
-$colors: ("teal": $teal,
-    "pink" : $pink,
-    "white" : $white,
-    "black": $black,
-    "gray" : $gray, "gray-light" : $grayLight);
+.st-surface {
+  background-color: var(--st-surface);
+  color: var(--st-text);
+}
 
+.status-published {
+  background-color: var(--st-success);
+  color: var(--st-on-accent);
+}
 
-@each $colorname,
-$color in $colors {
-    .st-#{$colorname} {
-        background-color: $color;
-    }
+.status-draft {
+  background-color: var(--st-neutral);
+  color: var(--st-on-accent);
+}
 
-    .text-st-#{$colorname} {
-        color: $color;
-    }
+.status-archived {
+  background-color: var(--st-warning);
+  color: var(--st-on-accent);
+}
+
+.status-deleted,
+.status-trash {
+  background-color: var(--st-trash);
+  color: var(--st-on-accent);
+}
+
+$colors: (
+  "teal": $teal,
+  "pink": $pink,
+  "white": $white,
+  "black": $black,
+  "gray": $gray,
+  "gray-light": $grayLight,
+  "chrome": $color-chrome,
+  "accent": $color-accent,
+  "canvas": $color-canvas,
+  "danger": $color-danger,
+  "success": $color-success,
+  "warning": $color-warning,
+);
+
+@each $colorname, $color in $colors {
+  .st-#{$colorname} {
+    background-color: $color;
+  }
+
+  .text-st-#{$colorname} {
+    color: $color;
+  }
 }

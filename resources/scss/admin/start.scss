@@ -4,9 +4,6 @@
 @import "components/search-palette";
 @import "configuration";
 
-$sidemenuWidthExpanded: 210px;
-$sidemenuWidthCollapsed: 70px;
-
 html {
   scroll-behavior: smooth;
 }
@@ -14,31 +11,43 @@ html {
 body {
   overflow-x: hidden;
   font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  background: #f9f9f9;
-  color: #444;
+  background: var(--st-page);
+  color: var(--st-text);
 }
 
-/* ===== Scrollbar CSS ===== */
-/* Firefox */
 * {
   scrollbar-width: auto;
-  scrollbar-color: #b0b0b0 #ffffff;
+  scrollbar-color: var(--st-scrollbar) var(--st-surface);
 }
 
-/* Chrome, Edge, and Safari */
 *::-webkit-scrollbar {
   width: 10px;
 }
 
 *::-webkit-scrollbar-track {
-  background: #ffffff;
+  background: var(--st-surface);
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: #b0b0b0;
+  background-color: var(--st-scrollbar);
   border-radius: 10px;
-  border: 3px solid #ffffff;
+  border: 3px solid var(--st-surface);
   max-height: 10%;
+}
+
+// Surfaces use tokens so html.dark-mode is a var swap, not a second palette.
+.card,
+.card-panel,
+.sidenav,
+.dropdown-content,
+.tabs,
+.collection .collection-item,
+.collection.with-header .collection-header,
+.collapsible-header,
+.collapsible-body,
+.generic-card {
+  background-color: var(--st-surface);
+  color: var(--st-text);
 }
 
 .material-icons {
@@ -57,7 +66,7 @@ body {
 }
 
 .main {
-  background: #f9f9f9;
+  background: var(--st-page);
 }
 
 span.current-folder {
@@ -69,11 +78,11 @@ span.current-folder {
 
 .dropdown-content li>a,
 .dropdown-content li>span {
-  color: #444;
+  color: var(--st-text);
 }
 
 .page-header {
-  color: #444;
+  color: var(--st-text);
 }
 
 .dropdown-trigger.right {
@@ -189,7 +198,7 @@ a.brand-logo {
   transition: 0.3s ease all;
   z-index: 999;
   height: 100%;
-  background-color: $white;
+  background-color: var(--st-surface);
 
   @media all and (max-width: 992px) {
     width: 0px;
@@ -204,7 +213,7 @@ a.brand-logo {
     height: calc(100vh - 50px);
     overflow-y: auto;
     box-shadow: none;
-    background-color: $white;
+    background-color: var(--st-surface);
 
     li.active {
       background-color: transparent;
@@ -219,7 +228,7 @@ a.brand-logo {
     }
 
     i.material-icons {
-      color: rgba(0, 0, 0, 0.54);
+      color: var(--st-icon);
       width: 2rem;
       font-size: 1.6rem;
       display: inline-block;
@@ -239,10 +248,10 @@ a.brand-logo {
         padding: 0 16px;
         font-size: 14px;
         font-weight: 500;
-        color: rgba(0, 0, 0, 0.87);
+        color: var(--st-text);
 
         &:hover {
-          background-color: rgba(0, 0, 0, 0.05);
+          background-color: var(--st-hover);
         }
 
         i.material-icons {
@@ -278,7 +287,7 @@ a.brand-logo {
         color: $gray-text;
 
         &:hover {
-          background-color: rgba(0, 0, 0, 0.05);
+          background-color: var(--st-hover);
         }
       }
     }
@@ -287,7 +296,7 @@ a.brand-logo {
       background-color: transparent;
 
       &:before {
-        background-color: $color3;
+        background-color: var(--st-accent);
         content: "";
         width: 5px;
         height: 48px;
@@ -301,23 +310,23 @@ a.brand-logo {
 
       > a,
       > .collapsible-header {
-        background-color: rgba(0, 0, 0, 0.05);
+        background-color: var(--st-hover);
 
         i.material-icons {
-          color: $color3;
+          color: var(--st-accent);
         }
       }
     }
 
     .collapsible-body li.current {
-      background-color: rgba(0, 0, 0, 0.05);
+      background-color: var(--st-hover);
 
       &:before {
         height: 44px;
       }
 
       > a {
-        color: #444;
+        color: var(--st-text);
         font-weight: 500;
       }
     }
@@ -334,12 +343,12 @@ a.brand-logo {
     line-height: 50px;
     height: 50px;
     line-height: 50px;
-    background-color: #fb9678;
+    background-color: var(--st-accent);
     border-radius: 50px;
     height: 40px;
     width: 40px;
     display: none;
-    color: #fff;
+    color: var(--st-on-accent);
     position: relative;
     overflow: hidden;
     z-index: 1;
@@ -575,10 +584,11 @@ i.material-icons.circle.cyan.medium {
 }
 
 .tabs .tab a {
-  color: #03a9f4;
+  color: var(--st-interactive);
 
   &:hover {
-    color: #b1dcfb;
+    color: var(--st-interactive);
+    opacity: 0.7;
   }
 }
 
@@ -724,11 +734,11 @@ span.level {
   padding: 0px;
   position: fixed;
   z-index: 999;
-  background-color: $color4;
+  background-color: var(--st-chrome);
   top: 0;
   margin: 0px;
-  height: 50px;
-  line-height: 50px;
+  height: var(--st-navbar-height);
+  line-height: var(--st-navbar-height);
 
   @media all and (max-width: 992px) {
     margin: 0px;
@@ -749,7 +759,7 @@ span.level {
 blockquote {
   margin: 20px 0;
   padding-left: 1.5rem;
-  border-left: 5px solid #03a9f4;
+  border-left: 5px solid var(--st-interactive);
 }
 
 .header {
@@ -789,7 +799,7 @@ blockquote {
 
   a,
   span {
-    color: #444;
+    color: var(--st-text);
   }
 }
 
@@ -822,11 +832,12 @@ div.row.main-page .card-content {
 }
 
 .card .card-action a:not(.btn):not(.btn-large):not(.btn-floating) {
-  color: #03a9f4;
+  color: var(--st-interactive);
   margin: 0;
 
   &:hover {
-    color: #009688;
+    color: var(--st-interactive);
+    opacity: 0.85;
   }
 }
 
@@ -875,7 +886,7 @@ textarea#id_cazary {
 .card .btn.btn-floating.btn-large {
   position: absolute;
   right: 30px;
-  background-color: #03a9f4;
+  background-color: var(--st-accent);
   top: 60px;
 }
 
@@ -941,7 +952,7 @@ ul.tabs li a i {
     overflow-y: hidden;
     height: 48px;
     width: 100%;
-    background-color: #fff;
+    background-color: var(--st-surface);
     margin: 0 auto;
     white-space: nowrap;
 
@@ -962,7 +973,7 @@ ul.tabs li a i {
         left: 0px;
         width: 100%;
         height: 2px;
-        background-color: #03a9f4;
+        background-color: var(--st-interactive);
       }
 
       .material-icons.right {
@@ -996,7 +1007,7 @@ ul.tabs li a i {
   .component {
     padding-top: 20px;
     border-bottom: dotted 1px #777;
-    background-color: #fafafa;
+    background-color: var(--st-canvas);
   }
 
   .component:first {
@@ -1010,7 +1021,7 @@ ul.tabs li a i {
   border: 0;
 
   & * {
-    color: #444;
+    color: var(--st-text);
   }
 }
 
@@ -1070,15 +1081,15 @@ ul.tabs li a i {
 }
 
 .invalid .select-wrapper>input.select-dropdown {
-  border-bottom: 1px solid #f44336;
-  -webkit-box-shadow: 0 1px 0 0 #f44336;
-  box-shadow: 0 1px 0 0 #f44336;
+  border-bottom: 1px solid var(--st-danger);
+  -webkit-box-shadow: 0 1px 0 0 var(--st-danger);
+  box-shadow: 0 1px 0 0 var(--st-danger);
 }
 
 .valid .select-wrapper>input.select-dropdown {
-  border-bottom: 1px solid #4caf50;
-  -webkit-box-shadow: 0 1px 0 0 #4caf50;
-  box-shadow: 0 1px 0 0 #4caf50;
+  border-bottom: 1px solid var(--st-success);
+  -webkit-box-shadow: 0 1px 0 0 var(--st-success);
+  box-shadow: 0 1px 0 0 var(--st-success);
 }
 
 .collection {
@@ -1130,7 +1141,7 @@ ul.tabs li a i {
 
   &.active,
   &:hover {
-    border-left: 3px solid #039be5;
+    border-left: 3px solid var(--st-interactive);
   }
 }
 
@@ -1150,7 +1161,7 @@ ul.tabs li a i {
   .card {
     border-radius: 0;
     box-shadow: none;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--st-border-subtle);
     border-left: 0;
     min-height: 500px;
   }
@@ -1158,7 +1169,7 @@ ul.tabs li a i {
 
 .folders {
   min-height: 500px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--st-border-subtle);
   margin: 0.5rem 0 1rem 0;
 
   a {
@@ -1275,7 +1286,7 @@ div#dropnotify {
 
 #codeigniter_profiler {
   clear: both;
-  background-color: #fff;
+  background-color: var(--st-surface);
   padding: 10px;
   z-index: 999;
   position: absolute;
@@ -1301,7 +1312,7 @@ div#dropnotify {
 
   .card-info {
     padding: 5px 0px 5px 40px;
-    color: #444;
+    color: var(--st-text);
     position: relative;
   }
 
@@ -1368,13 +1379,13 @@ div#dropnotify {
       padding-top: 10px;
 
       .card-title a {
-        color: #646b7f;
+        color: var(--st-chrome);
       }
     }
 
     .card-info {
       padding: 5px 0px 5px 0px;
-      color: #444;
+      color: var(--st-text);
       position: relative;
 
       .activator {
@@ -1528,227 +1539,63 @@ i.material-icons.right.remove {
   cursor: pointer;
 }
 
-.dark-mode {
-  * {
-    color: #c2c2c2;
-  }
-
-  .form {
-    background-color: rgb(18, 20, 20);
-    border-color: rgb(47, 51, 53);
-  }
-
-  .sidenav {
-    background-color: rgb(18, 20, 20);
-  }
-
-  .sidemenu {
-    background-color: rgb(18, 20, 20);
-
-    .sidenav {
-      background-color: rgb(18, 20, 20);
-
-      > li > a,
-      > li > .collapsible-header {
-        color: #e0e0e0;
-      }
-
-      .collapsible-body li > a {
-        color: #aeadac;
-      }
-
-      li.current > a,
-      li.current > .collapsible-header,
-      .collapsible-body li.current {
-        background-color: rgba(255, 255, 255, 0.08);
-      }
-
-      .collapsible-body li.current > a {
-        color: #e0e0e0;
-      }
-
-      li.current > a i.material-icons,
-      li.current > .collapsible-header i.material-icons {
-        color: $color3;
-      }
-    }
-  }
-
-  a.brand-logo {
-    color: #fff;
-  }
-
-  nav i,
-  nav [class^="mdi-"],
-  nav [class*="mdi-"],
-  nav i.material-icons {
-    color: #fff;
-  }
-
-  .main-navbar {
-    background-color: rgb(64, 70, 72);
-  }
-
-  .main,
-  html,
-  body {
-    background-image: initial;
-    background-color: rgb(20, 22, 23);
-  }
-
-  .dashboard .panel {
-    box-shadow: rgba(41, 44, 46, 0.08) 0px 1px 15px 1px;
-    background-color: rgb(18, 20, 20);
-  }
-
-  .page-widget {
-    box-shadow: rgba(41, 44, 46, 0.08) 0px 1px 15px 1px;
-    background-color: rgb(18, 20, 20);
-  }
-
-  .page-widget .m-portlet {
-    box-shadow: rgba(41, 44, 46, 0.08) 0px 1px 15px 1px;
-    background-color: rgb(18, 20, 20);
-  }
-
-  .dashboard h5 {
-    color: #fff;
-  }
-
-  .collection .collection-item {
-    background-color: rgb(18, 20, 20);
-    color: rgba(174, 173, 170, 0.87);
-  }
-
-  .timeline>li>.timeline-item {
-    background: #121414;
-  }
-
-  .collection.with-header .collection-header {
-    background-color: rgb(18, 20, 20);
-    color: rgba(174, 173, 170, 0.87);
-  }
-
-  .page-widget .btn.btn-secondary {
-    background-image: initial;
-    background-color: rgb(18, 20, 20);
-    border-color: rgb(40, 43, 44);
+// Dark mode is html.dark-mode vars in palette.scss. Do not paint with * { color }.
+html.dark-mode {
+  .form,
+  .explorer,
+  .dashboard .panel,
+  .page-widget,
+  .page-widget .m-portlet,
+  .timeline > li > .timeline-item,
+  .formModule .component,
+  .formModule .vtabs,
+  .card .card-reveal {
+    background-color: var(--st-surface);
+    border-color: var(--st-border);
+    color: var(--st-text);
   }
 
   .dropdown-content {
-    background-color: #2a2a2a;
+    background-color: var(--st-surface-elevated);
   }
 
-  .select-wrapper {
-
-    .dropdown-content li>a,
-    .dropdown-content li>span {
-      color: #e0e0e0;
-    }
+  .page-widget .btn.btn-secondary {
+    background-color: var(--st-surface);
+    border-color: var(--st-border);
+    color: var(--st-text);
   }
 
-  .sidenav li>a {
-    color: #ffffffde;
+  .dashboard h5,
+  .card .card-reveal .card-title {
+    color: var(--st-text) !important;
   }
 
-  .explorer .tree .sidenav i {
-    color: #ffffffde;
-  }
-
-  .btn {
-    color: #fff;
+  .collapsible {
+    border-color: var(--st-border);
   }
 
   .collapsible-header,
   .collapsible-body {
-    -webkit-tap-highlight-color: transparent;
-    background-color: rgb(18, 20, 20);
-    border-bottom-color: rgb(44, 47, 49);
-    color: rgba(174, 173, 170, 0.87);
+    border-bottom-color: var(--st-border);
   }
 
-  .main::before {
-    background-color: #404648;
+  .input-field input[type="search"]:focus:not(.browser-default) {
+    background-color: var(--st-surface);
+    color: var(--st-text-secondary);
   }
 
-  .tabs,
-  .formModule .vtabs {
-    background-color: rgb(18, 20, 20);
-  }
-
-  .card {
-    background-color: rgb(18, 20, 20);
-  }
-
-  .formModule .component {
-    background-color: rgb(18, 20, 20);
-  }
-
-  .card .card-reveal {
-    background: #121414;
-  }
-
-  .card .card-reveal .card-title {
-    color: #ccc !important;
-  }
-
-  .z-depth-1,
-  .card-panel,
-  .card,
-  .toast,
-  .btn,
-  .btn-large,
-  .btn-small,
-  .btn-floating,
-  .dropdown-content,
-  .collapsible,
-  .sidenav {
-    box-shadow: rgba(0, 0, 0, 0.14) 0px 2px 2px 0px,
-      rgba(0, 0, 0, 0.12) 0px 3px 1px -2px, rgba(0, 0, 0, 0.2) 0px 1px 5px 0px;
+  .explorer nav {
+    background-color: var(--st-surface);
+    box-shadow: none;
   }
 
   .sidemenu .sidenav i.material-icons {
-    color: rgba(174, 173, 170, 0.54);
+    color: var(--st-icon);
   }
 
   .sidemenu .sidenav li.current > a i.material-icons,
   .sidemenu .sidenav li.current > .collapsible-header i.material-icons {
-    color: $color3;
-  }
-
-  .collapsible {
-    border-top-color: rgb(44, 47, 49);
-    border-right-color: rgb(44, 47, 49);
-    border-left-color: rgb(44, 47, 49);
-  }
-
-  .explorer {
-    background-color: rgb(18, 20, 20);
-    border-color: rgb(47, 51, 53);
-  }
-
-  .explorer nav {
-    background-color: rgb(18, 20, 20);
-    box-shadow: none;
-  }
-
-  .card-panel {
-    background-color: rgb(18, 20, 20);
-  }
-
-  .input-field input[type="search"]:focus:not(.browser-default) {
-    background-color: rgb(18, 20, 20);
-    border-color: initial;
-    box-shadow: none;
-    color: rgb(142, 137, 131);
-  }
-
-  .explorer nav i {
-    color: #fff;
-  }
-
-  .explorer nav .input-field label.label-icon i {
-    color: #fff;
+    color: var(--st-accent);
   }
 }
 
@@ -1933,7 +1780,7 @@ body.dragging * {
 }
 
 .files.files-selector nav {
-  background-color: #fb9678;
+  background-color: var(--st-accent);
   height: 50px;
 
   i.material-icons,
@@ -1949,7 +1796,7 @@ body.dragging * {
   .input-field input[type="search"]:focus:not(.browser-default)+label i,
   .input-field input[type="search"]:focus:not(.browser-default)~.mdi-navigation-close,
   .input-field input[type="search"]:focus:not(.browser-default)~.material-icons {
-    color: #444;
+    color: var(--st-text);
   }
 
   .col.s12.breadcrumb-nav {
@@ -2049,7 +1896,7 @@ th.sort_desc {
   top: 0px;
   left: 0px;
   z-index: 999999999999;
-  background: #fff !important;
+  background: var(--st-surface) !important;
   height: 100vh;
   width: 100%;
 
@@ -2107,7 +1954,7 @@ iframe.components-sandbox {
   }
 
   .preview-options {
-    background: #fff;
+    background: var(--st-surface);
     height: 32px;
     position: absolute;
     z-index: 10;
@@ -2204,7 +2051,7 @@ iframe.components-sandbox {
     display: none;
     width: 30px;
     height: 30px;
-    background: #26a69a;
+    background: var(--st-interactive);
     border-radius: 50%;
     line-height: 31px;
     text-align: center;
@@ -2279,8 +2126,8 @@ iframe.components-sandbox {
 
 // === Generic Card Styles ===
 .generic-card {
-  background: #fff;
-  border-radius: 8px;
+  background: var(--st-surface);
+  border-radius: var(--st-radius-md);
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   margin-bottom: 24px;
   transition: box-shadow 0.2s;

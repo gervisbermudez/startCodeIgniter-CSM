@@ -21,31 +21,38 @@ Stack visual: Materialize CSS + Vue 2 + Blade + SCSS en `resources/scss/admin/`.
 
 ## Tokens
 
-Definidos en `resources/scss/admin/components/palette.scss`. Materialize (`_variables.scss`) se alinea a estos valores; no al revés.
+Definidos en `resources/scss/admin/components/_tokens.scss` (SCSS compile-time) y emitidos como custom properties en `resources/scss/admin/components/palette.scss`. Materialize (`_variables.scss`) se alinea a estos valores; no al revés.
 
-| Token | Valor | Uso |
-|---|---|---|
-| `$color4` / chrome | `#646b7f` | Navbar, rail del sidenav, barra `::before` de formularios |
-| `$color3` / accent | `#fb9678` | FAB, ítem de menú actual (barra 5px), CTA de login, indicadores |
-| `$teal` / interactive | `#26A69A` | Focus, switch, chip activo, enlace, success suave de formularios |
-| `$color5` / canvas | `#edf0f5` | Fondos de widgets / dashboard |
-| Page background | `#f9f9f9` | `body`, `.main` |
-| Surface | `#fff` | Cards, sidenav, formularios |
-| `$gray-text` | `#5D5D5D` | Texto secundario |
-| Texto primario | `#444` | Cuerpo |
-| Danger | `#F44336` | Borrar, error, validación |
-| Success | `#4CAF50` | Publicado, KPI positivo |
-| Warning | `#ff9800` | Archivado |
-| Neutral / draft | `#757575` | Borrador |
+Usar `var(--st-*)` en SCSS del admin. Dark mode es `html.dark-mode` redefiniendo las mismas vars — no un segundo set de hex ni `* { color }`.
+
+| Token SCSS | CSS var | Light | Dark | Uso |
+|---|---|---|---|---|
+| `$color4` / `$color-chrome` | `--st-chrome` | `#646b7f` | `#404648` | Navbar, rail, barra `::before` de formularios |
+| `$color3` / `$color-accent` | `--st-accent` | `#fb9678` | igual | FAB, ítem de menú actual, CTA de login |
+| `$teal` / `$color-interactive` | `--st-interactive` | `#26A69A` | igual | Focus, switch, chip activo, enlace, tabs |
+| `$color5` / `$color-canvas` | `--st-canvas` | `#edf0f5` | `#1c1f20` | Fondos de widgets / hover muted |
+| `$page-bg` | `--st-page` | `#f9f9f9` | `#141617` | `body`, `.main` |
+| `$surface` | `--st-surface` | `#fff` | `#121414` | Cards, sidenav, formularios |
+| `$text-primary` | `--st-text` | `#444` | `#e0e0e0` | Cuerpo |
+| `$gray-text` | `--st-text-secondary` | `#5D5D5D` | `#aeadac` | Texto secundario |
+| `$color-danger` | `--st-danger` | `#F44336` | igual | Borrar, error |
+| `$color-success` | `--st-success` | `#4CAF50` | igual | Publicado, KPI positivo |
+| `$color-warning` | `--st-warning` | `#ff9800` | igual | Archivado |
+| `$color-neutral` | `--st-neutral` | `#757575` | igual | Borrador |
+| `$color-trash` | `--st-trash` | `#424242` | igual | Papelera |
+| `$navbar-height-admin` | `--st-navbar-height` | `50px` | igual | Navbar |
+| `$sidemenuWidthExpanded` | `--st-sidenav-expanded` | `210px` | igual | Sidenav |
+| `$radius-md` | `--st-radius-md` | `8px` | igual | Cards nuevas |
+
+Clases utilitarias: `.st-teal`, `.st-pink`, `.st-chrome`, `.st-accent`, `.st-surface`, `.status-published` / `draft` / `archived` / `deleted`. Preferirlas a hex en Blade.
 
 **No usar** (legado a retirar cuando se toque el archivo):
 
-- `$primary-color` Materialize red (`#ee6e73`) — no es la marca.
+- `$primary-color` Materialize red (`#ee6e73`) — el admin ya lo apunta a `$color-accent`.
 - Light blue `#03a9f4` / `#039be5` en tabs, blockquotes y `card-action`.
 - Gradientes en badges de estado (`pages_list.blade.php`).
-- `btn-large red` en FABs: usar `$color3`.
-
-Clases utilitarias ya existentes: `.st-teal`, `.st-pink`, `.text-st-white`, `.text-st-gray`. Preferirlas a hex en Blade.
+- `btn-large red` en FABs: usar `$color3` / `var(--st-accent)`.
+- `page-new.scss` es un dump de Bootstrap; no es la paleta del admin.
 
 ### Tipografía
 
@@ -112,10 +119,9 @@ El switch escribe `html.dark-mode` + `localStorage`. **No** uses `body.dark-mode
 
 Reglas:
 
-- Pintar **superficies** (`.card`, `.sidenav`, `.main`, `.collection-item`), no `* { color }`.
-- Texto: `#e0e0e0` primario, `#aeadac` secundario.
-- Acento y CTA **siguen** `$color3` / `$teal`.
-- Contraste mínimo 4.5:1 en texto de cuerpo. El `* { color: #c2c2c2 }` actual **no** cumple sobre fondos `#121414` para texto pequeño — no copiarlo.
+- Pintar **superficies** con `var(--st-surface)` / `var(--st-page)` / `var(--st-text)`. Las vars se redefinen en `html.dark-mode` (`palette.scss`).
+- No `* { color }`. Contraste mínimo 4.5:1 en texto de cuerpo (`--st-text` `#e0e0e0` sobre `--st-surface` `#121414`).
+- Acento y CTA **siguen** `--st-accent` / `--st-interactive`.
 - Prefer `prefers-color-scheme` como default si no hay localStorage (hoy no existe).
 
 ---
@@ -261,8 +267,8 @@ Prioridad para trabajo de UX, no un backlog de features. Detalle y archivos en e
 
 **P1 — duele cada día**
 
-6. Tres paletas en paralelo (Materialize red/teal, `palette.scss`, hex `#03a9f4`).
-7. Dark mode con `* { color }` — contraste y marca rotos.
+6. Tres paletas en paralelo (Materialize red/teal, `palette.scss`, hex `#03a9f4`) — tokens CSS en curso; tabs/links del admin ya usan `--st-interactive`.
+7. Dark mode con `* { color }` — contraste y marca rotos. Corregido: vars en `html.dark-mode`, sin `* { color }`.
 8. ES/EN mezclados (toasts, navbar, listas, “Guardar Borrador” junto a “Preview”).
 9. Editor de página: save al final, sin sticky, sin feedback de dirty state.
 10. Lista de páginas triplicada e inconsistente (restore/archive según el bloque).
