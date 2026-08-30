@@ -49,7 +49,7 @@
                                     <li><a :href="base_url('admin/menus/editar/' + menu.menu_id)"><?php echo lang('edit'); ?></a></li>
                                     <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(menu, index);">Borrar</a></li>
                                     <li v-if="menu.status == 2"><a :href="base_url('admin/menus/preview?menu_id=' + menu.menu_id)" target="_blank">Preview</a></li>
-                                    <li><a :href="base_url(menu.path)" target="_blank">Archivar</a></li>
+                                    <li v-if="menu.path"><a :href="base_url(menu.path)" target="_blank"><?php echo lang('view_in_site'); ?></a></li>
                                 </ul>
                             </td>
                         </tr>
@@ -70,7 +70,7 @@
                         <ul :id='"dropdown" + menu.menu_id' class='dropdown-content'>
                             <li><a :href="base_url('admin/menus/editar/' + menu.menu_id)">Editar</a></li>
                             <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(menu, index);">Borrar</a></li>
-                            <li><a :href="base_url(menu.path)" target="_blank">Archivar</a></li>
+                            <li v-if="menu.path"><a :href="base_url(menu.path)" target="_blank"><?php echo lang('view_in_site'); ?></a></li>
                         </ul>
                     </div>
                     <div class="card-content">

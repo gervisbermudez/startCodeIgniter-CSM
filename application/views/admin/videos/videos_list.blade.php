@@ -84,7 +84,7 @@
                                 <li><a class="modal-trigger" href="#deleteModal"
                                         v-on:click="tempDelete(video, index);">{{ lang('delete') }}</a></li>
                                 <li><a :href="base_url('/admin/videos/ver/' + (video.id || video.video_id))"
-                                        target="_blank">{{ lang('archive') }}</a></li>
+                                        target="_blank">{{ lang('videos_view') }}</a></li>
                             </ul>
                         </div>
                         <div class="card-content">

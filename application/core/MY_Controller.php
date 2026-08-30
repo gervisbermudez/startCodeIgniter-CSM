@@ -119,25 +119,18 @@ class MY_Controller extends CI_Controller
     {
         $includes = [];
         
-        // Mapeo de vistas a componentes JS
+        // Only views that do not already load their page script in Blade.
+        // Wrong filenames here become 404s on top of the real script.
         $viewComponentMap = [
             'admin.user.users' => 'UserComponent.js',
-            'admin.user.edit' => 'UserEditComponent.js',
-            'admin.user.new' => 'UserFormComponent.js',
-            'admin.user.permissions' => 'PermissionsComponent.js',
             'admin.search_results' => 'SearchComponent.js',
             'admin.pages.pages_list' => 'PagesLists.js',
-            'admin.pages.new' => 'PageForm.js',
-            'admin.pages.view' => 'PageView.js',
             'admin.menu.menu_list' => 'MenuLists.js',
             'admin.notes.list' => 'NotesLists.js',
             'admin.gallery.albums_list' => 'AlbumsLists.js',
             'admin.events.events_list' => ['DataTableComponent.js', 'EventsList.js'],
-            'admin.fragmentos.fragments_list' => 'FragmentsLists.js',
             'admin.categories.categories_list' => 'CategoriesLists.js',
             'admin.videos.videos_list' => 'VideosLists.js',
-            'admin.configuracion.all_logger' => ['DataTableComponent.js', 'dataEdit.component.js'],
-            'admin.configuracion.all_apilogger' => ['DataTableComponent.js', 'dataEdit.component.js', 'ApiLoggerDataComponent.js'],
             'admin.analytics.dashboard' => [
                 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js',
                 'AnalyticsDashboard.js',

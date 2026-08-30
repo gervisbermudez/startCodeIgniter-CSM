@@ -73,7 +73,7 @@ var UserPermissionsForm = new Vue({
         error: function (response) {
           self.loader = false;
           M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(error);
+          console.error(response);
         },
       });
     },
@@ -86,7 +86,7 @@ var UserPermissionsForm = new Vue({
         name: this.name || "",
         level: this.level || "",
         description: this.description || "",
-        status: this.status ? 1 : 0,
+        status: this.status ? 1 : 2,
         parent_id: this.parent_id,
         permissions: this.checkedPermissions,
       };
@@ -172,7 +172,7 @@ var UserPermissionsForm = new Vue({
               this.level = data.level;
               this.date_create = data.date_create;
               this.date_update = data.date_update;
-              this.status = data.status;
+              this.status = data.status == 1 || data.status == "1";
               this.user_id = data.user_id;
               this.level = data.level;
               this.usergroup_permisions = data.usergroup_permisions;

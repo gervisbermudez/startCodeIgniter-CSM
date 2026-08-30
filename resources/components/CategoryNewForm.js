@@ -60,7 +60,7 @@ var CategoriaNewForm = new Vue({
       }
     },
     validateField(field) {
-      let self = UserNewForm;
+      let self = this;
       if (self.form.validateField(field)) {
         self.serverValidation(field);
         return;
@@ -112,7 +112,7 @@ var CategoriaNewForm = new Vue({
         error: function (response) {
           self.loader = false;
           M.toast({ html: "An unexpected error occurred" });
-          console.error(error);
+          console.error(response);
         },
       });
     },
@@ -123,7 +123,7 @@ var CategoriaNewForm = new Vue({
         description: this.description || "",
         type: this.type || "",
         parent_id: this.parent_id || 0,
-        status: this.status ? 1 : 0,
+        status: this.status ? 1 : 2,
         date_publish: this.date_publish,
         date_create: this.date_create,
         date_update: this.date_update,
@@ -196,7 +196,7 @@ var CategoriaNewForm = new Vue({
               self.description = response.data.description;
               self.form.fields.name.value = response.data.name;
               self.parent_id = response.data.parent_id;
-              self.status = response.data.status;
+              self.status = response.data.status == 1 || response.data.status == "1";
               self.type = response.data.type;
               self.user_id = response.data.user_id;
               self.parent = response.data.parent;

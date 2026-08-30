@@ -263,18 +263,17 @@ var PageNewForm = new Vue({
       this.setMetaContent(BASEURL + slug, "og:url");
     },
     validateField(field) {
-      let self = UserNewForm;
-      if (self.form.validateField(field)) {
-        self.serverValidation(field);
+      if (this.form.validateField(field)) {
+        this.serverValidation(field);
         return;
       }
-      return self.form.fields[field].valid;
+      return this.form.fields[field].valid;
     },
     validateForm() {
       this.form.validate();
       let errors = true;
       if (!this.publishondate && !this.datepublish && !this.timepublish) {
-        error = false;
+        errors = false;
       }
 
       return this.form.errors.length == 0 && errors;
@@ -332,7 +331,7 @@ var PageNewForm = new Vue({
         error: function (response) {
           self.loader = false;
           M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(error);
+          console.error(response);
         },
       });
     },

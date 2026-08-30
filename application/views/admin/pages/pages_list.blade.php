@@ -138,7 +138,9 @@
                             @if(has_permisions('CREATE_PAGE'))
                             <li><a href="#!" @click.prevent="duplicatePage(page)">Duplicate</a></li>
                             @endif
-                            <li><a :href="base_url(page.path)" target="_blank">Archive</a></li>
+                            <li v-if="page.status != 3"><a class="modal-trigger" href="#archiveModal"
+                                    v-on:click="setTempPage(page, index);"><?php echo lang('archive'); ?></a></li>
+                            <li v-if="page.path"><a :href="base_url(page.path)" target="_blank"><?php echo lang('view_in_site'); ?></a></li>
                         </ul>
                     </div>
                     <div class="card-content">
@@ -285,7 +287,9 @@
                             @if(has_permisions('CREATE_PAGE'))
                             <li><a href="#!" @click.prevent="duplicatePage(page)">Duplicate</a></li>
                             @endif
-                            <li><a :href="base_url(page.path)" target="_blank">Archive</a></li>
+                            <li v-if="page.status != 3"><a class="modal-trigger" href="#archiveModal"
+                                    v-on:click="setTempPage(page, index);"><?php echo lang('archive'); ?></a></li>
+                            <li v-if="page.path"><a :href="base_url(page.path)" target="_blank"><?php echo lang('view_in_site'); ?></a></li>
                         </ul>
                     </div>
                     <div class="card-content">
@@ -432,7 +436,9 @@
                             @if(has_permisions('CREATE_PAGE'))
                             <li><a href="#!" @click.prevent="duplicatePage(page)">Duplicate</a></li>
                             @endif
-                            <li><a :href="base_url(page.path)" target="_blank">Archive</a></li>
+                            <li v-if="page.status != 3"><a class="modal-trigger" href="#archiveModal"
+                                    v-on:click="setTempPage(page, index);"><?php echo lang('archive'); ?></a></li>
+                            <li v-if="page.path"><a :href="base_url(page.path)" target="_blank"><?php echo lang('view_in_site'); ?></a></li>
                         </ul>
                     </div>
                     <div class="card-content">

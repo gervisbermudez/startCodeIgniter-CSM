@@ -24,8 +24,30 @@ var NotesLists = new Vue({
     },
   },
   methods: {
-    getcontentText: function (fragment) {
-      return fragment.description.substring(0, 50) + "...";
+    getcontentText: function (note) {
+      var source = "";
+      if (!note) {
+        return "";
+      }
+      if (note.json_content != null && note.json_content !== "") {
+        if (typeof note.json_content === "string") {
+          source = note.json_content;
+        } else if (typeof note.json_content === "object") {
+          source =
+            note.json_content.text ||
+            note.json_content.content ||
+            note.json_content.title ||
+            "";
+        }
+      }
+      if (!source && note.title) {
+        source = note.title;
+      }
+      source = String(source || "");
+      if (!source) {
+        return "";
+      }
+      return source.length > 50 ? source.substring(0, 50) + "..." : source;
     },
     toggleView: function () {
       this.tableView = !this.tableView;
@@ -78,12 +100,15 @@ var NotesLists = new Vue({
         },
       });
     },
-    delete: function (fragment, index) {
+    delete: function (note, index) {
       var self = this;
+      if (!note || !note.note_id) {
+        return;
+      }
       self.loader = true;
       $.ajax({
         type: "DELETE",
-        url: BASEURL + "api/v1/notes/" + fragment.fragment_id,
+        url: BASEURL + "api/v1/notes/" + note.note_id,
         data: {},
         dataType: "json",
         success: function (response) {

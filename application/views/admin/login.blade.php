@@ -34,7 +34,7 @@
                             </div>
                         </div>
                     </div>
-                    <form v-cloak class="" role="form" method="post" v-show="!loader">
+                    <form v-cloak class="" role="form" method="post" v-show="!loader" @submit.prevent="login">
                         <div class="center-align">
                             <span class="title"><?php echo lang('login'); ?></span>
                         </div>
@@ -74,8 +74,8 @@
                             </div>
                         </div>
                         <div class="action">
-                            <button class="btn light-blue waves-effect waves-light" type="button"
-                                :class="{disabled: !btnEnable}" @click="login">Login</button>
+                            <button class="btn light-blue waves-effect waves-light" type="submit"
+                                :class="{disabled: !btnEnable}">Login</button>
                         </div>
                     </form>
                 </div>

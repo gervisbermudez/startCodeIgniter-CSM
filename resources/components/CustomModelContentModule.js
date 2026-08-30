@@ -118,7 +118,7 @@ var CustomModelContentModule = new Vue({
         form_description: this.form_description,
         date_create: this.date_create,
         date_update: this.date_update,
-        status: this.status ? 1 : 0,
+        status: this.status ? 1 : 2,
         user: this.user,
         tabs: this.tabs,
       };

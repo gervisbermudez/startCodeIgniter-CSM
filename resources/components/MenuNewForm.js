@@ -45,7 +45,7 @@ var MenuNewForm = new Vue({
       }
     },
     validateField(field) {
-      let self = UserNewForm;
+      let self = this;
       if (self.form.validateField(field)) {
         self.serverValidation(field);
         return;
@@ -95,7 +95,7 @@ var MenuNewForm = new Vue({
         error: function (response) {
           self.loader = false;
           M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(error);
+          console.error(response);
         },
       });
     },
@@ -106,7 +106,7 @@ var MenuNewForm = new Vue({
         name: this.name || "",
         position: this.position || "",
         template: this.template || "",
-        status: this.status ? 1 : 0,
+        status: this.status ? 1 : 2,
         menu_items: this.realOrder,
       };
     },
@@ -173,7 +173,7 @@ var MenuNewForm = new Vue({
               self.position = response.data.position;
               self.date_create = response.data.date_create;
               self.date_publish = response.data.date_publish;
-              self.status = response.data.status;
+              self.status = response.data.status == 1 || response.data.status == "1";
               self.user_id = response.data.user_id;
               self.menu_items = response.data.menu_items;
               self.user = new User(response.data.user);

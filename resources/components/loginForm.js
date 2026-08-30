@@ -17,6 +17,9 @@ var loginForm = new Vue({
   methods: {
     login() {
       var self = this;
+      if (!this.btnEnable) {
+        return;
+      }
       this.loader = true;
       $.ajax({
         type: "POST",
@@ -41,7 +44,7 @@ var loginForm = new Vue({
         error: function (response) {
           self.loader = false;
           M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(error);
+          console.error(response);
         },
       });
     },

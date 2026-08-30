@@ -48,7 +48,7 @@
                                     <li><a :href="base_url('admin/Fragments/editar/' + fragment.fragment_id)">{{ lang('edit') }}</a></li>
                                     <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(fragment, index);">{{ lang('delete') }}</a></li>
                                     <li v-if="fragment.status == 2"><a :href="base_url('admin/Fragments/preview?fragment_id=' + fragment.fragment_id)" target="_blank">{{ lang('preview') }}</a></li>
-                                    <li><a :href="base_url(fragment.path)" target="_blank">{{ lang('archive') }}</a></li>
+                                    <li v-if="fragment.path"><a :href="base_url(fragment.path)" target="_blank">{{ lang('view_in_site') }}</a></li>
                                 </ul>
                             </td>
                         </tr>
@@ -70,7 +70,7 @@
                             <li><a :href="base_url('admin/Fragments/editar/' + fragment.fragment_id)"><?php echo lang('edit'); ?></a></li>
                             <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(fragment, index);"><?php echo lang('delete'); ?></a></li>
                             <li v-if="fragment.status == 2"><a :href="base_url('admin/Fragments/preview?fragment_id=' + fragment.fragment_id)" target="_blank"><?php echo lang('preview'); ?></a></li>
-                            <li><a :href="base_url(fragment.path)" target="_blank"><?php echo lang('archive'); ?></a></li>
+                            <li v-if="fragment.path"><a :href="base_url(fragment.path)" target="_blank"><?php echo lang('view_in_site'); ?></a></li>
                         </ul>
                     </div>
                     <div class="card-content">

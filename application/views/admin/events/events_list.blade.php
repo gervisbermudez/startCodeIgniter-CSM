@@ -6,6 +6,7 @@
 @include('admin.components.data_table_component')
 <div id="root">
   <data-table
+    ref="eventsTable"
     :endpoint="endpoint"
     :module="'admin/events'"
     :colums="colums"
@@ -14,6 +15,7 @@
     v-on:new="newEvent"
     v-on:edit="editEvent"
     v-on:delete="deleteItem"
+    v-on:archive="archiveItem"
   ></data-table>
 </div>
 @endsection

@@ -94,7 +94,7 @@ var AlbumNewForm = new Vue({
       }
     },
     validateField(field) {
-      let self = UserNewForm;
+      let self = this;
       if (self.form.validateField(field)) {
         self.serverValidation(field);
         return;
@@ -170,7 +170,7 @@ var AlbumNewForm = new Vue({
         error: function (response) {
           self.loader = false;
           M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(error);
+          console.error(response);
         },
       });
     },
@@ -179,7 +179,7 @@ var AlbumNewForm = new Vue({
         album_id: this.album_id || "",
         name: this.form.fields.name.value || "",
         description: this.description || "",
-        status: this.status ? 1 : 0,
+        status: this.status ? 1 : 2,
         date_publish: this.date_publish,
         date_create: this.date_create,
         date_update: this.date_update,
@@ -234,7 +234,7 @@ var AlbumNewForm = new Vue({
               self.date_publish = response.data.date_publish;
               self.date_update = response.data.date_update;
               self.description = response.data.description;
-              self.status = response.data.status == "0" ? false : true;
+              self.status = response.data.status == 1 || response.data.status == "1";
               self.user_id = response.data.user_id;
               self.items = response.data.items.map((item) => {
                 item.file = new ExplorerFile(item.file);

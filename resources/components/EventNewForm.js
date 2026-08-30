@@ -81,7 +81,7 @@ var EventNewForm = new Vue({
       }
     },
     validateField(field) {
-      let self = UserNewForm;
+      let self = this;
       if (self.form.validateField(field)) {
         self.serverValidation(field);
         return;
@@ -164,7 +164,7 @@ var EventNewForm = new Vue({
         address: this.address || "",
         mainImage: this.getMainImagenPath,
         categorie_id: this.categorie_id || 0,
-        status: this.status ? 1 : 0,
+        status: this.status ? 1 : 2,
         visibility: this.visibility ? 1 : 0,
         date_publish: this.getDateTimePublish,
         date_create: this.date_create,
@@ -240,7 +240,7 @@ var EventNewForm = new Vue({
               self.name = response.data.name;
               self.subtitle = response.data.subtitle;
               self.categorie_id = response.data.categorie_id;
-              self.status = response.data.status;
+              self.status = response.data.status == 1 || response.data.status == "1";
               self.visibility = response.data.visibility;
               self.address = response.data.address;
               self.type = response.data.type;

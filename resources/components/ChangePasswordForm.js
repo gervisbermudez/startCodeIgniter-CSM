@@ -44,7 +44,7 @@ var changePassword = new Vue({
   },
   methods: {
     validateField(field) {
-      let self = UserNewForm;
+      let self = this;
       if (self.form.validateField(field)) {
         self.serverValidation(field);
         return;
@@ -72,7 +72,7 @@ var changePassword = new Vue({
           error: function (response) {
             self.loader = false;
             M.toast({ html: "Ocurrió un error inesperado" });
-            console.error(error);
+            console.error(response);
           },
         });
       } else {
@@ -119,7 +119,7 @@ var changePassword = new Vue({
   },
   mounted: function () {
     this.$nextTick(function () {
-      self.debug ? console.log("mounted UserNewForm") : null;
+      this.debug ? console.log("mounted UserNewForm") : null;
       this.checkEditMode();
     });
   },

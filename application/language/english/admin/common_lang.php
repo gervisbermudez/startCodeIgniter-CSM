@@ -126,6 +126,7 @@ $lang['no_configurations'] = 'No configurations';
 $lang['last_maintenance'] = 'Last maintenance performed';
 $lang['loading_system_configs'] = 'Loading system configurations';
 $lang['archive'] = 'Archive';
+$lang['view_in_site'] = 'View in site';
 $lang['upload_file'] = 'Upload File';
 $lang['your_files'] = 'Your Files';
 $lang['search_files'] = 'Search Files';

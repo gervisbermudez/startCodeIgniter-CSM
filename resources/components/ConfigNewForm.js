@@ -102,7 +102,7 @@ var ConfigNewForm = new Vue({
       }
     },
     validateField(field) {
-      let self = UserNewForm;
+      let self = this;
       if (self.form.validateField(field)) {
         self.serverValidation(field);
         return;
@@ -154,7 +154,7 @@ var ConfigNewForm = new Vue({
         error: function (response) {
           self.loader = false;
           M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(error);
+          console.error(response);
         },
       });
     },
@@ -170,7 +170,7 @@ var ConfigNewForm = new Vue({
             .join("_") || "",
         config_description: this.config_description || "",
         config_type: this.config_type || "",
-        status: this.status ? 1 : 0,
+        status: this.status ? 1 : 2,
         readonly: this.readonly ? 1 : 0,
         date_publish: this.date_publish,
         date_create: this.date_create,
@@ -261,7 +261,7 @@ var ConfigNewForm = new Vue({
               self.date_update = response.data.date_update;
               self.config_description = response.data.config_description;
               self.form.fields.config_name.value = response.data.config_name;
-              self.status = response.data.status;
+              self.status = response.data.status == 1 || response.data.status == "1";
               self.config_type = response.data.config_type;
               self.user_id = response.data.user_id;
               self.user = new User(response.data.user);

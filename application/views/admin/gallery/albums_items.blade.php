@@ -20,10 +20,7 @@
                         class="material-icons">more_vert</i></a>
                 <ul :id='"album" + album.album_id' class='dropdown-content'>
                     <li><a :href="base_url('admin/gallery/editar/' + album.album_id)"><?php echo lang('edit'); ?></a></li>
-                    <li><a href="#!" v-on:click="deletePage(album, index);">Borrar</a></li>
-                    <li v-if="album.status == 2"><a :href="base_url('admin/pages/preview?album_id=' + album.album_id)"
-                            target="_blank">Preview</a></li>
-                    <li><a :href="base_url(album.path)" target="_blank">Archivar</a></li>
+                    <li v-if="album.path"><a :href="base_url(album.path)" target="_blank"><?php echo lang('view_in_site'); ?></a></li>
                 </ul>
             </div>
             <div class="col s12">
@@ -75,29 +72,25 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(album, index) in filterData" :key="index">
-                            <td>@{{album.name}}</td>
-                            <td>@{{getcontentText(album.description)}}</td>
+                        <tr v-for="(item, index) in filterData" :key="item.album_item_id || index">
+                            <td>@{{item.name}}</td>
+                            <td>@{{getcontentText(item.description || '')}}</td>
                             <td>
-                                @{{album.date_publish ? album.date_publish : album.date_create}}
+                                @{{item.date_publish ? item.date_publish : item.date_create}}
                             </td>
                             <td>
-                                <i v-if="album.status == 1" class="material-icons tooltipped" data-position="left"
+                                <i v-if="item.status == 1" class="material-icons tooltipped" data-position="left"
                                     data-delay="50" data-tooltip="Publicado">publish</i>
                                 <i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
                                     data-tooltip="Borrador">edit</i>
                             </td>
                             <td>
-                                <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + album.album_item_id'><i
+                                <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + item.album_item_id'><i
                                         class="material-icons">more_vert</i></a>
-                                <ul :id='"dropdown" + album.album_item_id' class='dropdown-content'>
-                                    <li><a :href="base_url('admin/pages/editar/' + album.album_item_id)"><?php echo lang('edit'); ?></a>
-                                    </li>
-                                    <li><a href="#!" v-on:click="deletePage(album, index);">Borrar</a></li>
-                                    <li v-if="album.status == 2"><a
-                                            :href="base_url('admin/pages/preview?album_item_id=' + album.album_item_id)"
-                                            target="_blank">Preview</a></li>
-                                    <li><a :href="base_url(album.path)" target="_blank">Archivar</a></li>
+                                <ul :id='"dropdown" + item.album_item_id' class='dropdown-content'>
+                                    <li><a href="#!" v-on:click="deletePage(item, index);"><?php echo lang('delete'); ?></a></li>
+                                    <li v-if="item.file && item.file.file_front_path"><a :href="base_url(item.file.file_front_path)"
+                                            target="_blank"><?php echo lang('view_in_site'); ?></a></li>
                                 </ul>
                             </td>
                         </tr>
@@ -106,20 +99,28 @@
             </div>
         </div>
         <div class="row" v-else>
-            <div class="col s12 m4" v-for="(album, index) in filterData" :key="index">
+            <div class="col s12 m4" v-for="(item, index) in filterData" :key="item.album_item_id || index">
                 <div class="card page-card">
                     <div class="card-image">
                         <div class="card-image-container">
-                            <img class="materialboxed" :src="getPageImagePath(album)" />
+                            <img class="materialboxed" :src="getPageImagePath(item)" />
                         </div>
+                        <a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href='#!'
+                            :data-target='"dropdown-card" + item.album_item_id'>
+                            <i class="material-icons">more_vert</i></a>
+                        <ul :id='"dropdown-card" + item.album_item_id' class='dropdown-content'>
+                            <li><a href="#!" v-on:click="deletePage(item, index);"><?php echo lang('delete'); ?></a></li>
+                            <li v-if="item.file && item.file.file_front_path"><a :href="base_url(item.file.file_front_path)"
+                                    target="_blank"><?php echo lang('view_in_site'); ?></a></li>
+                        </ul>
                     </div>
                     <div class="card-content">
-                        <span class="card-title">@{{album.name}}
-                            @include('admin.components.entity_card_badges', ['item' => 'album'])
+                        <span class="card-title">@{{item.name}}
+                            @include('admin.components.entity_card_badges', ['item' => 'item'])
                         </span>
                         <div class="card-info">
                             <p>
-                                @{{getcontentText(album.description)}}
+                                @{{getcontentText(item.description)}}
                             </p>
                             <span class="activator right"><i class="material-icons">more_vert</i></span>
                         </div>
@@ -127,16 +128,16 @@
                     <div class="card-reveal">
                         <span class="card-title grey-text text-darken-4">
                             <i class="material-icons right">close</i>
-                            @{{album.name}}
+                            @{{item.name}}
                         </span>
                         <span class="subtitle">
-                            @{{getcontentText(album.description)}}
+                            @{{getcontentText(item.description)}}
                         </span>
                         <ul>
                             <li><b>Fecha de publicacion:</b> <br>
-                                @{{album.date_publish ? album.date_publish : album.date_create}}</li>
+                                @{{item.date_publish ? item.date_publish : item.date_create}}</li>
                             <li><b>Estado:</b>
-                                <span v-if="album.status == 1">
+                                <span v-if="item.status == 1">
                                     Publicado
                                 </span>
                                 <span v-else>

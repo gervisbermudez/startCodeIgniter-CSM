@@ -69,7 +69,7 @@ var SiteFormNewForm = new Vue({
       }
     },
     validateField(field) {
-      let self = UserNewForm;
+      let self = this;
       if (self.form.validateField(field)) {
         self.serverValidation(field);
         return;
@@ -120,7 +120,7 @@ var SiteFormNewForm = new Vue({
         error: function (response) {
           self.loader = false;
           M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(error);
+          console.error(response);
         },
       });
     },
@@ -132,7 +132,7 @@ var SiteFormNewForm = new Vue({
         name: this.name || "",
         template: this.template || "",
         properties: JSON.stringify(this.properties),
-        status: this.status ? 1 : 0,
+        status: this.status ? 1 : 2,
         siteform_items: this.siteform_items.map((item) => {
           return {
             ...item,
@@ -185,7 +185,7 @@ var SiteFormNewForm = new Vue({
               self.properties = response.data.properties;
               self.date_create = response.data.date_create;
               self.date_publish = response.data.date_publish;
-              self.status = response.data.status;
+              self.status = response.data.status == 1 || response.data.status == "1";
               self.user_id = response.data.user_id;
               self.siteform_items = response.data.siteform_items;
               self.user = new User(response.data.user);

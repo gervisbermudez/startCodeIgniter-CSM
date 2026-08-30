@@ -1,4 +1,4 @@
-var AlbumsLists = new Vue({
+var AlbumsItemsLists = new Vue({
   el: "#root",
   data: {
     debug: DEBUGMODE,
@@ -42,7 +42,7 @@ var AlbumsLists = new Vue({
       this.filter = "";
     },
     getPageImagePath(item) {
-      if (item.file.file_front_path) {
+      if (item.file && item.file.file_front_path) {
         return BASEURL + item.file.file_front_path;
       }
       return BASEURL + "/public/img/default.jpg";
@@ -59,6 +59,9 @@ var AlbumsLists = new Vue({
         success: function (response) {
           self.album = response.data;
           self.album.user = new User(self.album.user);
+          if (!self.album.items) {
+            self.album.items = [];
+          }
           setTimeout(() => {
             self.loader = false;
             self.initPlugins();
@@ -73,15 +76,18 @@ var AlbumsLists = new Vue({
     },
     deletePage: function (item, index) {
       var self = this;
+      if (!item || !item.album_item_id) {
+        return;
+      }
       self.loader = true;
       $.ajax({
-        type: "DELETE",
-        url: BASEURL + "api/v1/albumes/" + item.page_id,
+        type: "GET",
+        url: BASEURL + "api/v1/albumes/delete_album_item/" + item.album_item_id,
         data: {},
         dataType: "json",
         success: function (response) {
           if (response.code == 200) {
-            self.items.splice(index, 1);
+            self.album.items.splice(index, 1);
           }
           setTimeout(() => {
             self.loader = false;

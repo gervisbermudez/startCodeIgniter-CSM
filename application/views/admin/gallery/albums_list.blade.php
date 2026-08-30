@@ -52,7 +52,7 @@
                                     <li><a :href="base_url('admin/pages/editar/' + album.album_id)">{{ lang('edit') }}</a></li>
                                     <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(album, index);">{{ lang('delete') }}</a></li>
                                     <li v-if="album.status == 2"><a :href="base_url('admin/pages/preview?album_id=' + album.album_id)" target="_blank">{{ lang('preview') }}</a></li>
-                                    <li><a :href="base_url('/admin/gallery/items/' + album.album_id)" target="_blank">{{ lang('archive') }}</a></li>
+                                    <li><a :href="base_url('/admin/gallery/items/' + album.album_id)" target="_blank">{{ lang('view_in_site') }}</a></li>
                                 </ul>
                             </td>
                         </tr>
@@ -75,7 +75,7 @@
                             <li><a :href="base_url('admin/gallery/editar/' + album.album_id)">{{ lang('edit') }}</a></li>
                             <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(album, index);">{{ lang('delete') }}</a></li>
                             <li v-if="album.status == 2"><a :href="base_url('admin/pages/preview?album_id=' + album.album_id)" target="_blank">{{ lang('preview') }}</a></li>
-                            <li><a :href="base_url('/admin/gallery/items/' + album.album_id)" target="_blank">{{ lang('archive') }}</a></li>
+                            <li><a :href="base_url('/admin/gallery/items/' + album.album_id)" target="_blank">{{ lang('view_in_site') }}</a></li>
                         </ul>
                     </div>
                     <div class="card-content">

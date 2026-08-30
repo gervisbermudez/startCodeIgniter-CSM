@@ -48,7 +48,7 @@
                                     <li><a :href="base_url('admin/sitenotes/editar/' + note.note_id)"><?php echo lang('edit'); ?></a></li>
                                     <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(note, index);">Borrar</a></li>
                                     <li v-if="note.status == 2"><a :href="base_url('admin/sitenotes/preview?note_id=' + note.note_id)" target="_blank">Preview</a></li>
-                                    <li><a :href="base_url(note.path)" target="_blank">Archivar</a></li>
+                                    <li v-if="note.path"><a :href="base_url(note.path)" target="_blank"><?php echo lang('view_in_site'); ?></a></li>
                                 </ul>
                             </td>
                         </tr>
@@ -70,12 +70,12 @@
                             <li><a :href="base_url('admin/sitenotes/editar/' + note.note_id)">Editar</a></li>
                             <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(note, index);">Borrar</a></li>
                             <li v-if="note.status == 2"><a :href="base_url('admin/sitenotes/preview?note_id=' + note.note_id)" target="_blank">Preview</a></li>
-                            <li><a :href="base_url(note.path)" target="_blank">Archivar</a></li>
+                            <li v-if="note.path"><a :href="base_url(note.path)" target="_blank"><?php echo lang('view_in_site'); ?></a></li>
                         </ul>
                     </div>
                     <div class="card-content">
                         <div>
-                            <span class="card-title"><a :href="base_url(note.title)" target="_blank">@{{note.title}}</a>
+                            <span class="card-title"><a :href="base_url('admin/sitenotes/editar/' + note.note_id)">@{{note.title}}</a>
                                 @include('admin.components.entity_card_badges', ['item' => 'note'])
                             </span>
                             <div class="card-info">
