@@ -23,5 +23,11 @@ chown -R www-data:www-data /var/www/html/application/logs
 chown -R www-data:www-data /var/www/html/themes
 chown -R www-data:www-data /var/www/html/uploads
 
+# El volumen monta el proyecto del host y oculta el vendor de la imagen
+if [ ! -f /var/www/html/vendor/autoload.php ]; then
+    echo "Instalando dependencias de Composer..."
+    composer install --no-interaction --prefer-dist
+fi
+
 # Ejecutar Apache
 exec apache2-foreground
