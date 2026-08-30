@@ -54,7 +54,7 @@
  * NOTE: If you change these, also change the error_reporting() code below
  */
 
-include "DevCoder.php";
+include __DIR__ . '/application/third_party/DevCoder.php';
 (new DotEnv(__DIR__ . '/.env'))->load();
 
 define('ENVIRONMENT', getenv('APP_ENV'));

@@ -2,11 +2,10 @@
   "name": "startcodeigneitercsm",
   "version": "2.0.0",
   "description": "A simple CSM building with codeigneiter",
-  "main": "index.js",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "bash copy-js.sh && vite build",
+    "build": "bash bin/copy-js.sh && vite build",
     "watch": "vite build --watch",
     "validate": "./bin/validate-env.sh",
     "backup-db": "./bin/backup-db.sh",

@@ -95,20 +95,26 @@ docker compose restart
 ```
 startCodeIgniter-CSM/
 ├── application/          # CodeIgniter application files
-│   ├── config/          # Configuration files
-│   ├── controllers/      # Application controllers
-│   ├── models/          # Database models
-│   ├── views/           # View templates
-│   ├── database/        # Database schema and dumps
-│   └── core/            # Core classes
-├── public/              # Static assets (CSS, JS, images)
-├── themes/              # Theme templates
-├── uploads/             # User uploaded files
-├── vendor/              # Composer dependencies
-├── Dockerfile           # Docker configuration
-├── docker-compose.yml   # Docker Compose configuration
-└── .env                 # Environment variables
+├── public/               # Static assets (CSS, JS, images)
+├── resources/            # SCSS and frontend sources
+├── themes/               # Theme templates
+├── uploads/              # User uploaded files
+├── bin/                  # Utility scripts
+├── docs/                 # Project documentation
+├── backups/              # Database backups
+├── index.php             # Front controller
+├── Dockerfile            # Docker image
+├── docker-compose.yml    # Docker Compose
+├── package.json          # Frontend build (Vite)
+└── composer.json         # PHP dependencies
 ```
+
+### Documentation
+
+- [Docker](docs/DOCKER.md)
+- [Build (Vite)](docs/BUILD.md)
+- [Automatic backups](docs/AUTOMATIC_BACKUPS.md)
+- [Changelog](CHANGELOG.md)
 
 ## Available Scripts
 
@@ -127,11 +133,20 @@ npm run dev
 ### Shell Scripts
 
 ```bash
+# Docker install helper
+./bin/install.sh
+
 # Validate development environment
 ./bin/validate-env.sh
 
-# Backup database
+# Backup database (mysqldump via Docker)
 ./bin/backup-db.sh
+
+# Automatic backup (cron wrapper)
+./bin/auto_backup.sh
+
+# Docker backup menu
+./bin/docker_backup.sh
 
 # Start development server
 ./bin/server.sh
@@ -202,7 +217,7 @@ docker exec -i ci_mysql57 mysql -u ci_user -pci_pass start_cms_db < backup.sql
 
 The application includes a REST API. Check the API documentation at:
 - http://localhost:8081/api/v1 (API endpoints)
-- See `Start CMS API.postman_collection.json` for Postman collection
+- See `docs/api/postman-collection.json` for Postman collection
 
 ## Support
 

@@ -2,12 +2,15 @@
 Options -Indexes
 
 # block files which needs to be hidden, specify .example extension of the file
-<Files ~ "\.(env|config.js|md|gitignore|gitattributes|lock)$">
+<Files ~ "\.(env|config.js|md|gitignore|gitattributes|lock|sh)$">
     Order allow,deny
     Deny from all
 </Files>
 
 RewriteEngine On
+
+# No servir scripts ni dumps por HTTP
+RewriteRule ^(bin|backups)/ - [F,L]
 
 # No reescribir peticiones a archivos y directorios existentes
 RewriteCond %{REQUEST_FILENAME} !-f

@@ -22,7 +22,7 @@
 ```bash
 crontab -e
 # Agregar:
-0 3 * * * cd /ruta/proyecto && ./auto_backup.sh >> /var/log/backup.log 2>&1
+0 3 * * * cd /ruta/proyecto && ./bin/auto_backup.sh >> /var/log/backup.log 2>&1
 ```
 
 ---

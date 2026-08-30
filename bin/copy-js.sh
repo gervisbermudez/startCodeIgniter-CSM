@@ -1,5 +1,8 @@
 #!/bin/bash
-# Script para copiar y minificar JavaScript sin cambiar su naturaleza
+# Script para copiar JavaScript sin cambiar su naturaleza
+
+ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+cd "$ROOT_DIR"
 
 echo "=== Copiando archivos JS sin modificar ==="
 
