@@ -82,7 +82,7 @@ function render_form(string $siteform_name): string
     $ci = &get_instance();
     $ci->load->model('Admin/SiteFormModel');
     $siteform = new SiteFormModel();
-    $result = $siteform->find_with(['name' => $siteform_name]);
+    $result = $siteform->find_with(['name' => $siteform_name, 'status' => 1]);
     if (!$result) {
         return '';
     }
@@ -536,6 +536,65 @@ function get_string_between($string, $start, $end)
     $ini += strlen($start);
     $len = strpos($string, $end, $ini) - $ini;
     return substr($string, $ini, $len);
+}
+
+/**
+ * Replace Blade-style helper calls in stored page HTML.
+ * Admin snippets use {!! render_form('Name') !!}; the old expander only handled {{ }}.
+ */
+function expand_content_helpers($content)
+{
+    if (!is_string($content) || $content === '') {
+        return $content;
+    }
+
+    $callback = function ($matches) {
+        $fn = $matches[1];
+        if (!is_callable($fn)) {
+            return $matches[0];
+        }
+        $args = parse_helper_args($matches[2]);
+        $result = call_user_func_array($fn, $args);
+        if ($result === null || is_scalar($result)) {
+            return (string) $result;
+        }
+        return $matches[0];
+    };
+
+    $content = preg_replace_callback(
+        '/\{!!\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\((.*?)\)\s*!!\}/s',
+        $callback,
+        $content
+    );
+    $content = preg_replace_callback(
+        '/\{\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\((.*?)\)\s*\}\}/s',
+        $callback,
+        $content
+    );
+
+    return $content;
+}
+
+function parse_helper_args($raw)
+{
+    $raw = trim($raw);
+    if ($raw === '') {
+        return array();
+    }
+    $parts = str_getcsv($raw, ',', "'");
+    $args = array();
+    foreach ($parts as $part) {
+        $part = trim($part);
+        if ($part === '') {
+            continue;
+        }
+        $len = strlen($part);
+        if ($len >= 2 && $part[0] === '"' && $part[$len - 1] === '"') {
+            $part = substr($part, 1, -1);
+        }
+        $args[] = $part;
+    }
+    return $args;
 }
 
 function system_logger($type, $type_id, $token, $comment = '')

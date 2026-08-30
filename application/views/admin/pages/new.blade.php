@@ -61,7 +61,7 @@
                         <div class="card mainPageImage">
                             <div class="card-image">
                                 <i class="material-icons right close tooltipped" data-position="left" data-delay="50"
-                                    :data-tooltip="lang('pages_remove_image')" v-on:click="removeImage(index);">close</i>
+                                    :data-tooltip="'<?= lang('pages_remove_image') ?>'" v-on:click="removeImage(index);">close</i>
                                 <img class="materialboxed" :src="getFileImagenPath(image)" />
                             </div>
                             <span class="card-title truncate"><span>@{{ getFileImagenName(image) }}</span></span>
