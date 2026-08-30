@@ -55,7 +55,7 @@ var UserTrackingLoggerData = new Vue({
         label: "Options",
       },
     ],
-    index_data: "api_log_id",
+    index_data: "user_tracking_id",
   },
   mixins: [mixins],
   computed: {},

@@ -135,7 +135,11 @@ Vue.component("configuration", {
         form.validate();
         if (form.errors.length > 0) {
           configuration.validate = false;
-          M.toast({ html: "Verificar la configuracion del campo" });
+          M.toast({
+            html:
+              (window.CONFIG_I18N && window.CONFIG_I18N.fieldInvalid) ||
+              "Verificar la configuracion del campo",
+          });
         } else {
           configuration.validate = true;
           this.runSave();
@@ -164,7 +168,11 @@ Vue.component("configuration", {
             if (typeof callBack == "function") {
               callBack(response);
             }
-            M.toast({ html: "Config Saved!" });
+            M.toast({
+              html:
+                (window.CONFIG_I18N && window.CONFIG_I18N.saved) ||
+                "Config Saved!",
+            });
           } else {
             M.toast({ html: response.error_message });
           }
@@ -175,16 +183,16 @@ Vue.component("configuration", {
       });
     },
     initPlugins: function () {
-      setTimeout(() => {
+      this.$nextTick(function () {
         var elems = document.querySelectorAll(".tooltipped");
         M.Tooltip.init(elems, {});
-        var elems = document.querySelectorAll(".dropdown-trigger");
+        elems = document.querySelectorAll(".dropdown-trigger");
         M.Dropdown.init(elems, {});
-        var elems = document.querySelectorAll(".collapsible");
+        elems = document.querySelectorAll(".collapsible");
         M.Collapsible.init(elems, {});
-        var elems = document.querySelectorAll("select");
+        elems = document.querySelectorAll("select");
         M.FormSelect.init(elems, {});
-      }, 3000);
+      });
     },
   },
   mounted: function () {

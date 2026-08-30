@@ -1,66 +1,56 @@
         <div v-show="sectionActive == 'addConfig'" class="container form">
-            <div class="row">
-                <div class="col s12">
-                    <h4>Agregar Entrada de Configuracion</h4>
-                </div>
+            <div class="config-section-header">
+                <h2 class="page-header">{{ lang('config_add_entry') }}</h2>
             </div>
             <div class="row">
-                <div class="col s12">
+                <form class="col s12" @submit.prevent="saveNewConfig()">
                     <div class="row">
-                        <form class="col s12">
-                            <div class="row">
-                                <div class="input-field col s6">
-                                    <input v-model="newConfig.config_name" placeholder="Config Name" type="text"
-                                        class="validate">
-                                    <label>Config Name</label>
-                                </div>
-                                <div class="input-field col s6">
-                                    <input v-model="newConfig.config_label" placeholder="Config Label" type="text"
-                                        class="validate">
-                                    <label>Config Label (Human Friendly)</label>
-                                </div>
-                                <div class="input-field col s6">
-                                    <input v-model="newConfig.config_value" placeholder="Config Value" type="text"
-                                        class="validate">
-                                    <label>Config Value</label>
-                                </div>
-                                <div class="input-field col s12">
-                                    <input v-model="newConfig.config_description" placeholder="Config Description"
-                                        type="text" class="validate">
-                                    <label>Config Description</label>
-                                </div>
-                                <div class="input-field col s12">
-                                    <select name="config_type" v-model="newConfig.config_type">
-                                        <option value="" disabled selected>Choose your option</option>
-                                        <option value="general">general</option>
-                                        <option value="seo">seo</option>
-                                        <option value="theme">theme</option>
-                                        <option value="analytics">analytics</option>
-                                        <option value="updater">updater</option>
-                                        <option value="logger">logger</option>
-                                    </select>
-                                    <label>Config Type</label>
-                                </div>
-                                <div class="input-field col s12">
-                                    Activar
-                                    <div class="switch">
-                                        <label>
-                                            No activo
-                                            <input type="checkbox" name="visible_form" value="1"
-                                                v-model="newConfig.status">
-                                            <span class="lever"></span>
-                                            Activo
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="input-field col s12">
-                                    <button type="button" class="btn btn-primary" @click="saveNewConfig()">
-                                        <span><i class="material-icons right">edit</i> Guardar</span>
-                                    </button>
-                                </div>
+                        <div class="input-field col s12 m6">
+                            <input id="new-config-name" v-model="newConfig.config_name" type="text" class="validate">
+                            <label for="new-config-name">{{ lang('config_name') }}</label>
+                        </div>
+                        <div class="input-field col s12 m6">
+                            <input id="new-config-label" v-model="newConfig.config_label" type="text" class="validate">
+                            <label for="new-config-label">{{ lang('config_label') }}</label>
+                        </div>
+                        <div class="input-field col s12 m6">
+                            <input id="new-config-value" v-model="newConfig.config_value" type="text" class="validate">
+                            <label for="new-config-value">{{ lang('config_value') }}</label>
+                        </div>
+                        <div class="input-field col s12">
+                            <input id="new-config-description" v-model="newConfig.config_description" type="text" class="validate">
+                            <label for="new-config-description">{{ lang('description') }}</label>
+                        </div>
+                        <div class="input-field col s12">
+                            <select id="new-config-type" name="config_type" v-model="newConfig.config_type">
+                                <option value="" disabled>{{ lang('config_choose_option') }}</option>
+                                <option value="general">{{ lang('config_general') }}</option>
+                                <option value="seo">{{ lang('config_seo') }}</option>
+                                <option value="theme">{{ lang('config_appearance') }}</option>
+                                <option value="analytics">{{ lang('config_analytics') }}</option>
+                                <option value="updater">{{ lang('config_updates') }}</option>
+                                <option value="logger">{{ lang('config_logger') }}</option>
+                                <option value="system">{{ lang('config_system') }}</option>
+                            </select>
+                            <label for="new-config-type">{{ lang('config_type') }}</label>
+                        </div>
+                        <div class="input-field col s12">
+                            <div class="switch">
+                                <label>
+                                    {{ lang('config_not_active') }}
+                                    <input type="checkbox" name="visible_form" value="1" v-model="newConfig.status">
+                                    <span class="lever"></span>
+                                    {{ lang('config_active') }}
+                                </label>
                             </div>
-                        </form>
+                        </div>
+                        <div class="col s12">
+                            <button type="button" class="btn-flat" @click="changeSectionActive('general')">{{ lang('cancel') }}</button>
+                            <button type="submit" class="btn waves-effect waves-light btn-accent">
+                                <i class="material-icons left">save</i> {{ lang('save') }}
+                            </button>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>

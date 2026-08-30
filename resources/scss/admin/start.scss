@@ -2,6 +2,7 @@
 @import "components/palette";
 @import "fonts";
 @import "components/search-palette";
+@import "configuration";
 
 $sidemenuWidthExpanded: 210px;
 $sidemenuWidthCollapsed: 70px;
@@ -1420,57 +1421,12 @@ div#dropnotify {
   opacity: 0;
 }
 
-.configuration-root {
-  .card-panel {
-    display: block;
-    cursor: pointer;
-  }
-}
-
 input.input-search::placeholder {
   color: #fff;
 }
 
 .configurations {
   margin-top: 20px;
-}
-
-.configuration-root {
-  .config-card {
-    .info {
-      padding-top: 44px;
-
-      label {
-        color: #fff;
-      }
-    }
-  }
-}
-
-.collapsible.configuration-component+.configuration-component {
-  border-bottom: 0;
-}
-
-.collapsible.configuration-component {
-  margin: 0;
-
-  li {
-    position: relative;
-  }
-
-  .switch {
-    position: absolute;
-    right: 20px;
-  }
-
-  .collapsible-header .current {
-    position: absolute;
-    right: 20px;
-  }
-
-  .collapsible-body-hidden {
-    display: none !important;
-  }
 }
 
 .collapsible .collapsible-header .arrow {
@@ -1955,8 +1911,8 @@ body.dragging * {
 
 .configuration-root .subtitle {
   font-size: 17px;
-  font-weight: bold;
-  margin: 0px 0px 15px;
+  font-weight: 500;
+  margin: 0 0 15px;
 }
 
 label.label-icon[for="search"] {
