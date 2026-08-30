@@ -191,6 +191,8 @@ $lang['no_files'] = 'No hay archivos';
 $lang['upload_files'] = 'Subir Archivos';
 
 // Settings / configuration
+$lang['config_general'] = 'General';
+$lang['config_seo'] = 'SEO';
 $lang['config_appearance'] = 'Apariencia';
 $lang['config_integrations'] = 'Integraciones';
 $lang['config_system'] = 'Sistema';
@@ -307,3 +309,4 @@ $lang['config_col_referer'] = 'Referer';
 $lang['config_col_page'] = 'Página';
 $lang['config_col_query'] = 'Query';
 $lang['config_max_upload'] = 'Subida máxima';
+$lang['pagination_page_of'] = 'Página';

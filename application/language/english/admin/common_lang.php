@@ -131,6 +131,8 @@ $lang['no_files'] = 'No files';
 $lang['upload_files'] = 'Upload Files';
 
 // Settings / configuration
+$lang['config_general'] = 'General';
+$lang['config_seo'] = 'SEO';
 $lang['config_appearance'] = 'Appearance';
 $lang['config_integrations'] = 'Integrations';
 $lang['config_system'] = 'System';
@@ -247,3 +249,4 @@ $lang['config_col_referer'] = 'Referer';
 $lang['config_col_page'] = 'Page';
 $lang['config_col_query'] = 'Query';
 $lang['config_max_upload'] = 'Max upload';
+$lang['pagination_page_of'] = 'Page';
