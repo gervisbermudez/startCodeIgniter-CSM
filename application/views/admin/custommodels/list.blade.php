@@ -88,23 +88,15 @@
                     <div class="card-content">
                         <div>
                             <span class="card-title"><a :href="base_url(model.path)"
-                                    target="_blank">@{{model.form_name}}</a> <i v-if="model.visibility == 1"
-                                    class="material-icons tooltipped" data-position="left" data-delay="50"
-                                    :data-tooltip="'<?= lang('custommodels_published') ?>'">public</i>
-                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
-                                    :data-tooltip="'<?= lang('custommodels_draft') ?>'">lock</i>
+                                    target="_blank">@{{model.form_name}}</a>
+                                @include('admin.components.entity_card_badges', ['item' => 'model'])
                             </span>
                             <div class="card-info">
                                 <p>
                                     @{{getcontentText(model.form_description)}}
                                 </p>
                                 <span class="activator right"><i class="material-icons">more_vert</i></span>
-                                <ul>
-                                    <li class="truncate" v-if="model.user">
-                                        <?= lang('custommodels_author') ?> <a
-                                            :href="base_url('admin/users/ver/' + model.user_id)">@{{model.user.get_fullname()}}</a>
-                                    </li>
-                                </ul>
+                                <user-info v-if="model.user" :user="model.user" />
                             </div>
                         </div>
                     </div>

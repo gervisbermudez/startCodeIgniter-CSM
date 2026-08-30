@@ -18,9 +18,9 @@ compose-msg-body {
 
 .compose-msg-cont {
   position: relative;
-  background: white;
+  background: var(--st-surface);
   right: 10px;
-  border: solid 1px #e0e0e0;
+  border: solid 1px var(--st-border-subtle);
   padding: 0;
   z-index: 999;
   height: auto;
@@ -35,7 +35,7 @@ compose-msg-body {
 }
 
 .compose-msg-head {
-  color: #fff;
+  color: var(--st-on-chrome);
   padding: 5px;
   height: 38px;
   line-height: 30px;
@@ -53,13 +53,13 @@ compose-msg-body {
 
 .chip {
   &.selected {
-    background-color: #26a69a;
-    color: #fff;
+    background-color: var(--st-interactive);
+    color: var(--st-on-chrome);
   }
 
   &.wrong {
-    background-color: #f44336;
-    color: #fff;
+    background-color: var(--st-danger);
+    color: var(--st-on-chrome);
   }
 }
 

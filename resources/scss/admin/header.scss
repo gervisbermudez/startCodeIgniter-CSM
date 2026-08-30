@@ -11,7 +11,7 @@ $headerHeight: 280px;
   width: 100%;
   height: $headerHeight;
   display: block;
-  background-color: #646b7f;
+  background-color: var(--st-chrome);
 }
 
 .container {
@@ -27,7 +27,7 @@ $headerHeight: 280px;
   padding: 0 10px;
 
   & * {
-    color: #fff;
+    color: var(--st-on-chrome);
     font-weight: 300;
     font-size: 16px;
   }

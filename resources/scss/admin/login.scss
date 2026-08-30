@@ -48,7 +48,7 @@ body {
 }
 
 i.material-icons.prefix {
-  color: #646b7f;
+  color: var(--st-chrome);
 }
 
 .img-container.brand-logo {
@@ -133,17 +133,17 @@ i.material-icons.prefix {
   }
 
   form.card.hoverable {
-    border-radius: 8px;
-    background: #eeeeee8c;
-    color: #444 !important;
+    border-radius: var(--st-radius-md);
+    background: var(--st-canvas);
+    color: var(--st-text) !important;
 
     label {
       color: $gray-text;
     }
 
     input {
-      border-bottom: 1px solid #5a5a5a !important;
-      color: #5a5a5a !important;
+      border-bottom: 1px solid var(--st-text-secondary) !important;
+      color: var(--st-text) !important;
     }
 
     .input-field > label {
@@ -155,12 +155,12 @@ i.material-icons.prefix {
     box-shadow: none;
     border-radius: 0;
     margin: 0.5rem 0 0rem 0;
-    background-color: $color3 !important;
+    background-color: var(--st-accent) !important;
   }
 
   .btn {
-    background-color: $color3 !important;
-    color: white !important;
+    background-color: var(--st-accent) !important;
+    color: var(--st-on-accent) !important;
   }
 }
 

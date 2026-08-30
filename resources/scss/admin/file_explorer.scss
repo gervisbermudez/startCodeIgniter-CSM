@@ -9,16 +9,16 @@
   width: 100%;
   height: 120px;
   display: block;
-  background-color: #646b7f;
+  background-color: var(--st-chrome);
 }
 
 .explorer {
   padding: 0px 10px;
   width: 95%;
-  background-color: $white;
+  background-color: var(--st-surface);
   margin-top: 20px;
-  border-radius: 5px;
-  border: solid 1px #ccc;
+  border-radius: var(--st-radius-sm);
+  border: solid 1px var(--st-border);
   overflow: hidden;
   top: -120px;
   position: relative;
@@ -31,11 +31,11 @@
 
   .sidenav li>.subheader {
     font-weight: 600;
-    color: #444;
+    color: var(--st-text);
   }
 
   h5 {
-    color: #444;
+    color: var(--st-text);
   }
 
   li.uploadbtn a.waves-effect.waves-teal.btn.btn-default {
@@ -48,7 +48,7 @@
 
   nav {
     position: relative;
-    background-color: $white;
+    background-color: var(--st-surface);
     z-index: auto;
     box-shadow: none;
 
@@ -89,7 +89,7 @@
     }
 
     .breadcrumb:last-child {
-      color: #009688;
+      color: var(--st-interactive);
     }
 
     form {
@@ -199,7 +199,7 @@
     }
 
     ul.collapsible li a {
-      color: #444;
+      color: var(--st-text);
     }
 
     ul.collapsible .collapsible-body {
@@ -276,7 +276,7 @@
 
       .secondary-content {
         float: right;
-        color: #444;
+        color: var(--st-text);
       }
 
       .file_options {

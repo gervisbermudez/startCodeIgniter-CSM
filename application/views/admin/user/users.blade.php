@@ -60,10 +60,11 @@
                         </table>
                     </div>
                 </div>
-                <div class="row" v-else v-cloak v-show="!loader">
-                    <div class="col s12 m4" v-for="user in filterUsers">
+                <div class="row pages" v-else v-cloak v-show="!loader">
+                    <div class="col s12 m4" v-for="(user, index) in filterUsers" :key="user.user_id">
                         <user-card
                         :user="user"
+                        :index="index"
                         v-on:tempDelete="tempDelete"
                         />
                     </div>
@@ -87,30 +88,39 @@
     </a>
 </div>
 <script type="text/x-template" id="user-card-template">
-    <div class="card user-card">
+    <div class="card page-card user-card">
 		<div class="card-image">
 			<div class="card-image-container">
-				<img :src="user.get_avatarurl()">
+				<img :src="user.get_avatarurl()" :alt="user.user_data.nombre + ' ' + user.user_data.apellido">
 			</div>
-			<span class="card-title"><a :href="base_url('admin/users/ver/' + user.user_id)" class="white-text">@{{user.user_data.nombre + ' ' + user.user_data.apellido}}</a></span>
-				<a class='btn-floating halfway-fab waves-effect waves-light dropdown-trigger' href='#!' :data-target='"dropdown" + user.user_id'>
-					<i class="material-icons">more_vert</i></a>
-				<ul :id='"dropdown" + user.user_id' class='dropdown-content'>
+			<a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href="#!" :data-target="'dropdown' + user.user_id" aria-label="<?= lang('options') ?>">
+				<i class="material-icons">more_vert</i>
+			</a>
+			<ul :id="'dropdown' + user.user_id" class="dropdown-content">
                     @if(has_permisions('UPDATE_USER'))
 					<li><a :href="base_url('admin/users/edit/' + user.user_id)">{{ lang('btn_edit') }}</a></li>
                     @endif
                     @if(has_permisions('DELETE_USER'))
-                    <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(user, index);">{{ lang('btn_delete') }}</a></li>
+                    <li><a class="modal-trigger" href="#deleteModal" v-on:click="requestDelete">{{ lang('btn_delete') }}</a></li>
                     @endif
-				</ul>
-			</a>
+			</ul>
 		</div>
 		<div class="card-content">
-			<div>
-				<div class="card-info"><i class="material-icons">account_box</i> @{{user.role}}<br></div>
-				<div class="card-info"><i class="material-icons">access_time</i> @{{user.lastseen}}<br>
-				</div>
-				<div class="card-info"><i class="material-icons">local_phone</i> @{{user.user_data.telefono}}</div>
+            <span class="card-title">
+                <a :href="base_url('admin/users/ver/' + user.user_id)">@{{user.user_data.nombre + ' ' + user.user_data.apellido}}</a>
+                <div class="entity-card-badges">
+                    <span v-if="user.status == 1" class="custom-badge visibility-public">
+                        <i class="material-icons tiny">public</i> <?= lang('public') ?>
+                    </span>
+                    <span v-else class="custom-badge visibility-private">
+                        <i class="material-icons tiny">lock</i> <?= lang('private') ?>
+                    </span>
+                </div>
+            </span>
+			<div class="card-info">
+				<div class="card-info-row"><i class="material-icons">account_box</i> @{{user.role}}</div>
+				<div class="card-info-row"><i class="material-icons">access_time</i> @{{user.lastseen}}</div>
+				<div class="card-info-row"><i class="material-icons">local_phone</i> @{{user.user_data.telefono}}</div>
 			</div>
 		</div>
 	</div>

@@ -4,7 +4,7 @@
             </div>
             <div class="row pages">
                 <div class="col s12 m4" v-for="(theme, index) in themes" :key="index">
-                    <div class="card z-depth-1 theme-card">
+                    <div class="card z-depth-1 page-card theme-card">
                         <div class="card-image">
                             <div class="card-image-container">
                                 <img :src="getThemePreviewUrl(index, theme)" :alt="theme.name" />

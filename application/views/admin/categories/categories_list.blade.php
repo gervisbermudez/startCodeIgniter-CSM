@@ -13,7 +13,7 @@
         'refreshMethod' => 'getCategories()',
         'itemsExpr' => 'filterCategories',
     ])
-    <div class="categories" v-cloak v-if="!loader && categories.length > 0">
+    <div class="pages categories" v-cloak v-if="!loader && categories.length > 0">
         <div class="row" v-if="tableView">
             <div class="col s12">
                 <table>
@@ -75,22 +75,15 @@
                     </div>
                     <div class="card-content">
                         <div>
-                            <span class="card-title"><a :href="base_url(categorie.name)" target="_blank">@{{categorie.name}}</a> <i v-if="categorie.visibility == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Public">public</i>
-                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="Private">lock</i>
+                            <span class="card-title"><a :href="base_url(categorie.name)" target="_blank">@{{categorie.name}}</a>
+                                @include('admin.components.entity_card_badges', ['item' => 'categorie'])
                             </span>
                             <div class="card-info">
                                 <p>
                                     @{{getcontentText(categorie)}}
                                 </p>
                                 <span class="activator right"><i class="material-icons">more_vert</i></span>
-                                <ul>
-                                    <li>
-                                        Type: @{{categorie.type}}
-                                    </li>
-                                    <li class="truncate">
-                                        Author: <a :href="base_url('admin/users/ver/' + categorie.user_id)">@{{categorie.user.user_data.nombre}} @{{categorie.user.user_data.apellido}}</a>
-                                    </li>
-                                </ul>
+                                <user-info v-if="categorie.user" :user="categorie.user" />
                             </div>
                         </div>
                     </div>

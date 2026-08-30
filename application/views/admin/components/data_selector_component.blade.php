@@ -27,8 +27,8 @@
                         </div>
                         <div class="card-content">
                             <div>
-                                <span class="card-title"><a :href="base_url(page.path)" target="_blank">@{{page.title}}</a> <i v-if="page.visibility == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('public'); ?>">public</i>
-                                    <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('private'); ?>">lock</i>
+                                <span class="card-title"><a :href="base_url(page.path)" target="_blank">@{{page.title}}</a>
+                                    @include('admin.components.entity_card_badges', ['item' => 'page'])
                                 </span>
                                 <div class="card-info">
                                     <p>

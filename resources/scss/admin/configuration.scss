@@ -1,19 +1,11 @@
 @import "components/palette";
 
-$config-danger: #F44336;
-$config-success: #4CAF50;
-$config-warning: #ff9800;
-$config-info: $teal;
-$config-surface-dark: #121414;
-$config-text-dark: #e0e0e0;
-$config-text-dark-secondary: #aeadac;
-
 .btn-accent {
-  background-color: $color3 !important;
+  background-color: var(--st-accent) !important;
 
   &:hover,
   &:focus {
-    background-color: darken($color3, 6%) !important;
+    background-color: var(--st-accent-hover) !important;
   }
 }
 
@@ -23,9 +15,9 @@ $config-text-dark-secondary: #aeadac;
 
 .config-sidebar {
   padding-top: 8px;
-  border-right: 1px solid $grayLight;
-  min-height: calc(100vh - 50px);
-  background: $white;
+  border-right: 1px solid var(--st-border);
+  min-height: calc(100vh - var(--st-navbar-height));
+  background: var(--st-surface);
 
   .collection {
     border: none;
@@ -36,7 +28,7 @@ $config-text-dark-secondary: #aeadac;
     border-bottom: none;
     padding: 10px 16px;
     cursor: pointer;
-    color: $gray-text;
+    color: var(--st-text-secondary);
     display: flex;
     align-items: center;
     position: relative;
@@ -44,16 +36,16 @@ $config-text-dark-secondary: #aeadac;
     i {
       margin-right: 10px;
       font-size: 1.35rem;
-      color: $color4;
+      color: var(--st-chrome);
     }
 
     &:hover {
-      background-color: $color5;
+      background-color: var(--st-canvas);
     }
 
     &.active {
-      background-color: $color5;
-      color: #444;
+      background-color: var(--st-canvas);
+      color: var(--st-text);
       font-weight: 500;
 
       &::before {
@@ -75,7 +67,7 @@ $config-text-dark-secondary: #aeadac;
 
 .config-content {
   padding: 20px 24px 40px;
-  background-color: #f9f9f9;
+  background-color: var(--st-page);
   min-height: calc(100vh - 50px);
 }
 
@@ -116,7 +108,7 @@ $config-text-dark-secondary: #aeadac;
   .widget-title {
     font-size: 1rem;
     font-weight: 500;
-    color: #444;
+      color: var(--st-text);
     margin-bottom: 16px;
     display: flex;
     align-items: center;
@@ -138,21 +130,21 @@ $config-text-dark-secondary: #aeadac;
     padding: 10px 12px;
     margin-bottom: 8px;
     align-items: flex-start;
-    background: $white;
-    border-left: 4px solid $color4;
+    background: var(--st-surface);
+    border-left: 4px solid var(--st-chrome);
     border-radius: 0 4px 4px 0;
   }
 
   .alert-warning {
-    border-left-color: $config-warning;
+    border-left-color: var(--st-warning);
   }
 
   .alert-info {
-    border-left-color: $config-info;
+    border-left-color: var(--st-interactive);
   }
 
   .alert-success {
-    border-left-color: $config-success;
+    border-left-color: var(--st-success);
   }
 
   .alert-content {
@@ -175,7 +167,7 @@ $config-text-dark-secondary: #aeadac;
   color: $gray-text;
 
   i {
-    color: $config-success;
+    color: var(--st-success);
   }
 }
 
@@ -211,7 +203,7 @@ $config-text-dark-secondary: #aeadac;
 
   .detail-val {
     font-weight: 600;
-    color: #444;
+      color: var(--st-text);
     font-size: 1rem;
   }
 
@@ -408,7 +400,7 @@ $config-text-dark-secondary: #aeadac;
     padding: 3px 8px;
     border-radius: 4px;
     font-size: 0.8rem;
-    color: #444;
+      color: var(--st-text);
   }
 
   .action-buttons {
@@ -517,68 +509,22 @@ $config-text-dark-secondary: #aeadac;
 }
 
 html.dark-mode {
-  .config-sidebar {
-    background: $config-surface-dark;
-    border-right-color: #2f3335;
+  .health-check-list .alert-item,
+  .database-manager .stats-icon,
+  .database-manager .path-code,
+  .database-manager .date-badge,
+  .database-manager .size-badge {
+    background: var(--st-surface-elevated);
   }
 
-  .config-content {
-    background: #141617;
-  }
-
-  .config-sidebar .collection-item {
-    color: $config-text-dark-secondary;
-
-    i {
-      color: $config-text-dark-secondary;
-    }
-
-    &:hover,
-    &.active {
-      background: #1c1f20;
-      color: $config-text-dark;
-    }
-  }
-
-  .configuration-root .card,
-  .configuration-root .card-panel,
-  .dashboard-widget,
-  .database-manager .card {
-    background: $config-surface-dark;
-  }
-
-  .configuration-root .widget-title,
-  .config-section-header .page-header,
-  .detail-val,
-  .activity-name,
-  .stats-value {
-    color: $config-text-dark;
-  }
-
-  .health-check-list .alert-item {
-    background: #1c1f20;
-  }
-
-  .quick-settings-list li,
-  .collapsible.configuration-component .config-key {
-    border-color: #2f3335;
-  }
-
-  .database-manager {
-    .stats-icon {
-      background: #1c1f20;
-    }
-
-    .path-code,
-    .date-badge,
-    .size-badge {
-      background: #1c1f20;
-      color: $config-text-dark-secondary;
-    }
+  .database-manager .path-code,
+  .database-manager .date-badge,
+  .database-manager .size-badge {
+    color: var(--st-text-secondary);
   }
 
   .activity-dot {
-    border-color: $config-surface-dark;
+    border-color: var(--st-surface);
   }
 }
 

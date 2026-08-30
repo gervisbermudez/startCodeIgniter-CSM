@@ -1,0 +1,53 @@
+// Compile-time tokens. No CSS output — import from palette.scss and _variables.scss.
+
+// Brand (historical names — do not rename)
+$color1: #68d8df;
+$color2: #98e4e4;
+$color3: #fb9678;
+$color4: #646b7f;
+$color5: #edf0f5;
+
+$teal: #26A69A;
+$pink: $color3;
+
+// Semantic aliases
+$color-chrome: $color4;
+$color-accent: $color3;
+$color-interactive: $teal;
+$color-canvas: $color5;
+
+$white: #fff;
+$black: #000;
+$gray-text: #5D5D5D;
+$gray: $gray-text;
+$grayLight: #E5E5E5;
+
+$text-primary: #444;
+$page-bg: #f9f9f9;
+$surface: $white;
+
+$color-danger: #F44336;
+$color-success: #4CAF50;
+$color-warning: #ff9800;
+$color-neutral: #757575;
+$color-trash: #424242;
+
+// Dark surfaces
+$dark-page: #141617;
+$dark-surface: #121414;
+$dark-chrome: #404648;
+$dark-text: #e0e0e0;
+$dark-text-secondary: #aeadac;
+$dark-border: #2f3335;
+$dark-elevated: #1c1f20;
+$dark-hover: rgba(255, 255, 255, 0.08);
+$dark-dropdown: #2a2a2a;
+
+// Layout
+$navbar-height-admin: 50px;
+$sidemenuWidthExpanded: 210px;
+$sidemenuWidthCollapsed: 70px;
+$radius-sm: 4px;
+$radius-md: 8px;
+$duration-ui: 0.3s;
+$color-accent-hover: #fa7e5a;

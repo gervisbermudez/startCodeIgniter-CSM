@@ -13,7 +13,7 @@
         'refreshMethod' => 'getFragments()',
         'itemsExpr' => 'filterFragments',
     ])
-    <div class="fragments" v-cloak v-if="!loader && fragments.length > 0">
+    <div class="pages fragments" v-cloak v-if="!loader && fragments.length > 0">
         <div class="row" v-if="tableView">
             <div class="col s12">
                 <table>
@@ -75,22 +75,15 @@
                     </div>
                     <div class="card-content">
                         <div>
-                            <span class="card-title"><a :href="base_url(fragment.name)" target="_blank">@{{fragment.name}}</a> <i v-if="fragment.visibility == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('public'); ?>">public</i>
-                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('private'); ?>">lock</i>
+                            <span class="card-title"><a :href="base_url(fragment.name)" target="_blank">@{{fragment.name}}</a>
+                                @include('admin.components.entity_card_badges', ['item' => 'fragment'])
                             </span>
                             <div class="card-info">
                                 <p>
                                     @{{getcontentText(fragment)}}
                                 </p>
                                 <span class="activator right"><i class="material-icons">more_vert</i></span>
-                                <ul>
-                                    <li>
-                                        <?php echo lang('type'); ?>: @{{fragment.type}}
-                                    </li>
-                                    <li class="truncate">
-                                        <?php echo lang('author'); ?>: <a :href="base_url('admin/users/ver/' + fragment.user_id)">@{{fragment.user.user_data.nombre}} @{{fragment.user.user_data.apellido}}</a>
-                                    </li>
-                                </ul>
+                                <user-info v-if="fragment.user" :user="fragment.user" />
                             </div>
                         </div>
                     </div>

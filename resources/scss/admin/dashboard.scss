@@ -2,23 +2,19 @@
 @import "mixins.scss";
 @import "skeleton-loader.scss";
 
-$grayDark: #5D5D5D;
-$grayLight: #E5E5E5;
-$main: #F6F6F6;
-
 body {
-  background-color: $main;
+  background-color: var(--st-page);
 }
 
 .main {
-  background-color: $main;
+  background-color: var(--st-page);
 }
 
 .overview {
   font-family: 'Roboto';
   font-weight: 600;
   font-size: 18px;
-  color: $grayDark;
+  color: $gray-text;
   margin: 20px;
 }
 
@@ -64,10 +60,10 @@ body {
 
   .welcome {
     margin: 20px;
-    background: #fff;
+    background: var(--st-surface);
     border: solid 1px;
-    border-color: #E5E5E5;
-    border-radius: 4px;
+    border-color: var(--st-border);
+    border-radius: var(--st-radius-sm);
     padding: 20px;
     position: relative;
 
@@ -151,10 +147,10 @@ body {
 
 
   h5 {
-    color: $grayDark;
+    color: $gray-text;
 
     a {
-      color: $grayDark;
+      color: $gray-text;
     }
   }
 
@@ -184,7 +180,7 @@ body {
       }
 
       a.secondary-content {
-        color: $grayDark;
+        color: $gray-text;
       }
 
       &.collection-header {
@@ -228,7 +224,7 @@ body {
       a.dropdown-trigger.btn.right.btn-floating.halfway-fab.waves-effect.waves-light {
         bottom: auto;
         top: 50px;
-        background-color: #fb9678;
+        background-color: var(--st-accent);
       }
     }
 
@@ -499,13 +495,13 @@ body {
 
   .btn-brand {
     color: #fff;
-    background-color: #716aca;
-    border-color: #716aca;
+    background-color: var(--st-chrome);
+    border-color: var(--st-chrome);
 
     &:hover {
       color: #fff;
-      background-color: #564ec0;
-      border-color: #4d44bd;
+      background-color: var(--st-chrome);
+      border-color: var(--st-chrome);
     }
 
     &:focus {
@@ -515,8 +511,8 @@ body {
 
     &:disabled {
       color: #fff;
-      background-color: #716aca;
-      border-color: #716aca;
+      background-color: var(--st-chrome);
+      border-color: var(--st-chrome);
     }
   }
 
@@ -526,7 +522,7 @@ body {
   }
 
   .m--font-brand {
-    color: #716aca !important;
+    color: var(--st-chrome) !important;
   }
 
   .m--font-light {
@@ -588,9 +584,9 @@ body {
       &:hover,
       &:active,
       &:focus {
-        border-color: #716aca !important;
+        border-color: var(--st-chrome) !important;
         color: #fff !important;
-        background-color: #716aca !important;
+        background-color: var(--st-chrome) !important;
       }
     }
 
@@ -836,7 +832,7 @@ body {
 
 .creator {
   .creator-container {
-    background: $main;
+    background: var(--st-page);
     border-radius: 6px;
     border: solid 1px $grayLight;
     padding: 10px;
@@ -847,7 +843,7 @@ body {
     display: flex;
 
     span {
-      color: $grayDark;
+      color: $gray-text;
       line-height: 30px;
     }
 
@@ -872,7 +868,7 @@ body {
       margin: 0 5px;
 
       &.active {
-        color: #26a69a;
+        color: var(--st-interactive);
       }
     }
   }
