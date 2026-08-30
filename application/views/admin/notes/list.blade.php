@@ -30,7 +30,7 @@
             </ul>
         </div>
     </nav>
-    <div class="notes" v-cloak v-if="!loader && notes.length > 0">
+    <div class="pages notes" v-cloak v-if="!loader && notes.length > 0">
         <div class="row" v-if="tableView">
             <div class="col s12">
                 <table>
@@ -92,22 +92,15 @@
                     </div>
                     <div class="card-content">
                         <div>
-                            <span class="card-title"><a :href="base_url(note.title)" target="_blank">@{{note.title}}</a> <i v-if="note.visibility == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('public'); ?>">public</i>
-                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('private'); ?>">lock</i>
+                            <span class="card-title"><a :href="base_url(note.title)" target="_blank">@{{note.title}}</a>
+                                @include('admin.components.entity_card_badges', ['item' => 'note'])
                             </span>
                             <div class="card-info">
                                 <p>
                                     @{{getcontentText(note)}}
                                 </p>
                                 <span class="activator right"><i class="material-icons">more_vert</i></span>
-                                <ul>
-                                    <li>
-                                        Type: @{{note.type}}
-                                    </li>
-                                    <li class="truncate">
-                                        Author: <a :href="base_url('admin/users/ver/' + note.user_id)">@{{note.user.user_data.nombre}} @{{note.user.user_data.apellido}}</a>
-                                    </li>
-                                </ul>
+                                <user-info v-if="note.user" :user="note.user" />
                             </div>
                         </div>
                     </div>

@@ -1,0 +1,279 @@
+// Canonical entity cards — pages list is the reference (rounded, inset image, coral FAB).
+
+$entity-card-radius: 12px;
+$entity-card-image-radius: 8px;
+
+.pages:not(.row),
+.categories:not(.row),
+.notes:not(.row),
+.fragments:not(.row) {
+  max-width: 96%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.row.pages {
+  max-width: 96%;
+}
+
+.pages .col,
+.categories .col,
+.notes .col,
+.fragments .col {
+  min-width: 0;
+}
+
+.pages-grid > .col {
+  min-width: 0;
+}
+
+.custom-badge {
+  padding: 2px 10px;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: $white;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  i {
+    font-size: 0.9rem;
+  }
+}
+
+.entity-card-badges {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.status-published,
+.status-draft,
+.status-archived,
+.status-deleted {
+  box-shadow: none;
+}
+
+.visibility-public {
+  background-color: var(--st-interactive);
+  color: var(--st-on-accent);
+}
+
+.visibility-private {
+  background-color: var(--st-danger);
+  color: var(--st-on-accent);
+}
+
+.status-filters {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  overflow-x: auto;
+  padding: 5px 0;
+}
+
+.status-chip {
+  cursor: pointer;
+  padding: 0 15px;
+  height: 32px;
+  line-height: 32px;
+  border-radius: 16px;
+  background-color: var(--st-border);
+  font-size: 13px;
+  color: var(--st-text-secondary);
+  display: inline-block;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  border: none;
+
+  &:hover {
+    background-color: var(--st-canvas);
+  }
+
+  &.active {
+    background-color: var(--st-interactive);
+    color: var(--st-on-accent);
+    font-weight: 500;
+  }
+}
+
+.page-card,
+.user-card,
+.theme-card {
+  border-radius: $entity-card-radius;
+  // Top: hanging image (top: -20px) must clear the page-navbar.
+  // Bottom: next row's hanging image needs room so rows don't collide.
+  margin: 28px 0 48px;
+  min-height: 410px;
+
+  .card-image {
+    max-width: 90%;
+    margin: auto;
+    top: -20px;
+    position: relative;
+
+    .indicator {
+      position: absolute;
+      top: 10px;
+      right: 0;
+      z-index: 9;
+    }
+  }
+
+  .card-image:after {
+    background-color: rgba(0, 0, 0, 0.43);
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    top: 0;
+    border-radius: $entity-card-image-radius;
+    pointer-events: none;
+  }
+
+  .card-image-container {
+    height: 180px;
+    overflow: hidden;
+    border-radius: $entity-card-image-radius;
+
+    img {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  }
+
+  .card-content {
+    top: -20px;
+    position: relative;
+    padding: 15px 24px 10px;
+  }
+
+  .card-title {
+    font-size: 1.2rem;
+    font-weight: 300;
+    margin-bottom: 8px;
+    line-height: 1.3;
+    color: var(--st-chrome);
+
+    a {
+      color: var(--st-chrome);
+    }
+  }
+
+  .card-info {
+    padding: 5px 0 0;
+    color: var(--st-text);
+    position: relative;
+
+    .activator {
+      cursor: pointer;
+      color: $color3;
+    }
+
+    p {
+      min-height: 70px;
+      font-size: 0.9rem;
+      color: var(--st-text-secondary);
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    ul {
+      margin: 0;
+    }
+
+    .material-icons {
+      color: $color3;
+    }
+
+    .btn .material-icons {
+      color: $white;
+      position: static;
+    }
+  }
+
+  .card-reveal {
+    z-index: 9999;
+    border-radius: $entity-card-radius;
+
+    ul {
+      margin: 0;
+    }
+  }
+
+  .user-info-inline {
+    display: block;
+    width: calc(100% - 36px);
+  }
+}
+
+.card.page-card .card-image .btn-floating,
+.card.user-card .card-image .btn-floating,
+.card.theme-card .card-image .btn-floating,
+.card.page-card .card-image .btn-floating.halfway-fab,
+.card.user-card .card-image .btn-floating.halfway-fab,
+.card.theme-card .card-image .btn-floating.halfway-fab {
+  position: absolute;
+  background: $color3;
+  z-index: 3;
+  right: 10px;
+  top: 10px;
+  bottom: auto;
+}
+
+.user-card {
+  min-height: 0;
+
+  .card-title {
+    color: var(--st-chrome);
+
+    a {
+      color: var(--st-chrome);
+    }
+  }
+
+  .card-info {
+    padding: 5px 0;
+  }
+
+  .card-info-row {
+    padding: 5px 0 5px 32px;
+    color: var(--st-text);
+    position: relative;
+    font-size: 0.95rem;
+
+    .material-icons {
+      color: $color3;
+      position: absolute;
+      left: 0;
+      font-size: 20px;
+    }
+  }
+}
+
+.theme-card {
+  min-height: 0;
+}
+
+html.dark-mode {
+  .status-chip {
+    background-color: var(--st-surface-elevated);
+    color: var(--st-text-secondary);
+
+    &:hover {
+      background-color: var(--st-canvas);
+    }
+
+    &.active {
+      background-color: var(--st-interactive);
+      color: var(--st-on-accent);
+    }
+  }
+}

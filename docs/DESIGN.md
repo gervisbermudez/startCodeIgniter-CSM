@@ -76,7 +76,7 @@ Un icon set: **Material Icons**. File explorer mezcla Font Awesome; en pantallas
 | Contenido desktop | `padding-top: 50px` + padding-left = ancho sidenav |
 | Container | `width: 90%` — listas de cards usan `.pages { max-width: 96% }` |
 | Gutter Materialize | 1.5rem |
-| Radio de card | 8px (listas nuevas) / 4px (dashboard welcome) |
+| Radio de card | **12px** en listas de contenido (`.page-card`) · 4px dashboard welcome |
 | FAB | `bottom: 45px; right: 24px` |
 
 Breakpoints a respetar (los de `mixins.scss` + el corte real del sidenav):
@@ -164,7 +164,7 @@ Estructura canónica:
 7. FAB `btn-floating btn-large` accent + tooltip `lang(...)`.
 8. `confirm-modal` para delete/archive.
 
-Acciones por ítem: un solo `more_vert`. No FAB + activator de `card-reveal` a la vez (páginas tiene los dos).
+Acciones por ítem: FAB coral `more_vert` en la imagen (esquina superior derecha), criterio de las cards de páginas. Estilos compartidos en `resources/scss/admin/components/_entity-cards.scss` (`.page-card`, `.custom-badge`). Pills de status/visibilidad: `admin.components.entity_card_badges`. Grid: wrapper `.pages`.
 
 ### Formulario de edición
 
@@ -278,8 +278,8 @@ Prioridad para trabajo de UX, no un backlog de features. Detalle y archivos en e
 **P2 — pulido**
 
 13. FABs rojos vs accent coral.
-14. Dos `more_vert` por card de página.
-15. Estilos inline en Blade (páginas, dashboard).
+14. Dos `more_vert` por card de página (FAB + activator); es el patrón visual de listado.
+15. ~~Estilos inline de cards en `pages_list`~~ (pasados a `_entity-cards.scss`). Quedan inline en dashboard.
 16. Login `type="button"`; `html lang="en"` fijo; `alt` vacíos.
 17. Filtros de status como `<div>`, no botones.
 18. Widget creator y FAB del dashboard con destino poco obvio.

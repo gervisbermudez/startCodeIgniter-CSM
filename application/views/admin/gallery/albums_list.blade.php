@@ -96,8 +96,8 @@
                     </div>
                     <div class="card-content">
                         <div>
-                            <span class="card-title"><a :href="base_url('/admin/gallery/items/' + album.album_id)">@{{album.name}}</a> <i v-if="album.status == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('public'); ?>">public</i>
-                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('private'); ?>">lock</i>
+                            <span class="card-title"><a :href="base_url('/admin/gallery/items/' + album.album_id)">@{{album.name}}</a>
+                                @include('admin.components.entity_card_badges', ['item' => 'album'])
                             </span>
                             <div class="card-info">
                                 <p>
