@@ -3,17 +3,28 @@
 $entity-card-radius: 12px;
 $entity-card-image-radius: 8px;
 
-.pages,
-.categories,
-.notes,
-.fragments {
+.pages:not(.row),
+.categories:not(.row),
+.notes:not(.row),
+.fragments:not(.row) {
   max-width: 96%;
-  margin: 0 auto;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.pages-grid {
-  display: flex;
-  flex-wrap: wrap;
+.row.pages {
+  max-width: 96%;
+}
+
+.pages .col,
+.categories .col,
+.notes .col,
+.fragments .col {
+  min-width: 0;
+}
+
+.pages-grid > .col {
+  min-width: 0;
 }
 
 .custom-badge {
@@ -107,7 +118,9 @@ $entity-card-image-radius: 8px;
 .user-card,
 .theme-card {
   border-radius: $entity-card-radius;
-  margin: 0 0 20px;
+  // Top: hanging image (top: -20px) must clear the page-navbar.
+  // Bottom: next row's hanging image needs room so rows don't collide.
+  margin: 28px 0 48px;
   min-height: 410px;
 
   .card-image {
