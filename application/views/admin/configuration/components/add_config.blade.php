@@ -1,7 +1,9 @@
-        <div v-show="sectionActive == 'addConfig'" class="container form">
+        <div v-show="sectionActive == 'addConfig'">
             <div class="config-section-header">
                 <h2 class="page-header">{{ lang('config_add_entry') }}</h2>
             </div>
+            <div class="card z-depth-1">
+                <div class="card-content">
             <div class="row">
                 <form class="col s12" @submit.prevent="saveNewConfig()">
                     <div class="row">
@@ -44,7 +46,7 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="col s12">
+                        <div class="col s12 config-actions">
                             <button type="button" class="btn-flat" @click="changeSectionActive('general')">{{ lang('cancel') }}</button>
                             <button type="submit" class="btn waves-effect waves-light btn-accent">
                                 <i class="material-icons left">save</i> {{ lang('save') }}
@@ -52,5 +54,7 @@
                         </div>
                     </div>
                 </form>
+            </div>
+                </div>
             </div>
         </div>

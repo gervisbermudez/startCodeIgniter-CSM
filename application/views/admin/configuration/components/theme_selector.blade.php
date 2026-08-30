@@ -1,4 +1,4 @@
-        <div v-show="sectionActive == 'theme'" class="container form">
+        <div v-show="sectionActive == 'theme'">
             <div class="config-section-header">
                 <h2 class="page-header">{{ lang('config_manage_themes') }}</h2>
             </div>

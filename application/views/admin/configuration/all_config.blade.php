@@ -4,7 +4,7 @@
 @section('content')
 <div id="root" class="configuration-root">
     <div class="row configuration-layout">
-        <div class="col s12 config-content">
+        <div class="col s12 config-content" :class="{ 'config-content--toolbar': sectionActive == 'general' || sectionActive == 'seo' }">
             @include('admin.configuration.components.home_dashboard')
             @include('admin.configuration.components.general_settings')
             @include('admin.configuration.components.analytics_settings')

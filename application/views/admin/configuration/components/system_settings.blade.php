@@ -1,7 +1,7 @@
-<div v-show="sectionActive == 'system'" class="col s12">
+<div v-show="sectionActive == 'system'">
     <div class="config-section-header">
         <h2 class="page-header">
-            <i class="material-icons left" aria-hidden="true">build</i> <?php echo lang('config_system_maintenance'); ?>
+            <i class="material-icons" aria-hidden="true">build</i> <?php echo lang('config_system_maintenance'); ?>
         </h2>
         <p class="section-description"><?php echo lang('config_system_maintenance_desc'); ?></p>
     </div>

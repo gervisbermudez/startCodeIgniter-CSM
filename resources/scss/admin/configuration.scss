@@ -65,14 +65,23 @@
   }
 }
 
-.config-content {
-  padding: 20px 24px 40px;
+// Beat Materialize `.row .col { padding: 0 .75rem }` or the title sits on the navbar.
+.row .config-content {
+  padding: 32px 32px 48px;
   background-color: var(--st-page);
-  min-height: calc(100vh - 50px);
+  min-height: calc(100vh - var(--st-navbar-height));
+  box-sizing: border-box;
 }
 
+// Keep list search bars flush to the admin navbar and full-bleed via `.page-navbar` gutters.
 .row .config-content.config-content--toolbar {
-  padding-top: 0;
+  padding: 0 0.75rem 40px;
+}
+
+.row .config-content.config-content--toolbar .configurations,
+.row .config-content.config-content--toolbar .page-search-empty,
+.row .config-content.config-content--toolbar .config-empty {
+  padding-top: 16px;
 }
 
 .config-mobile-nav {
@@ -80,25 +89,38 @@
 }
 
 .config-section-header {
-  margin: 0 0 20px;
+  margin: 0 0 24px;
 
   .page-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-size: 20px;
     font-weight: 400;
-    margin: 0 0 4px;
+    margin: 0 0 6px;
     line-height: 1.3;
+    color: var(--st-text);
+
+    i.material-icons {
+      float: none;
+      margin: 0;
+      font-size: 22px;
+      line-height: 1;
+      color: var(--st-chrome);
+    }
   }
 
   .section-description {
     margin: 0;
-    color: $gray-text;
+    color: var(--st-text-secondary);
     font-size: 0.9rem;
+    line-height: 1.45;
   }
 }
 
 .config-section-header--split {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px;
@@ -106,21 +128,60 @@
 
 .configuration-root {
   .card {
-    border-radius: 8px;
+    border-radius: var(--st-radius-md);
+    margin-top: 0;
+  }
+
+  .card .card-content {
+    padding: 24px;
   }
 
   .widget-title {
     font-size: 1rem;
     font-weight: 500;
-      color: var(--st-text);
+    color: var(--st-text);
     margin-bottom: 16px;
     display: flex;
     align-items: center;
+    gap: 8px;
 
     i {
-      margin-right: 8px;
-      color: $color4;
+      margin-right: 0;
+      color: var(--st-chrome);
     }
+  }
+
+  .btn,
+  .btn-flat {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    vertical-align: middle;
+
+    i.material-icons,
+    i.left,
+    i.right {
+      float: none;
+      margin: 0;
+      font-size: 20px;
+      line-height: 1;
+      height: auto;
+      width: auto;
+    }
+  }
+
+  .btn {
+    height: 40px;
+    line-height: 40px;
+    padding: 0 20px;
+  }
+
+  .btn-flat.btn-small {
+    height: 36px;
+    line-height: 36px;
+    padding: 0 8px;
+    min-width: 36px;
   }
 }
 
@@ -295,8 +356,8 @@
 
   i {
     font-size: 3.5rem;
-    color: $color4;
-    opacity: 0.45;
+    color: var(--st-chrome);
+    opacity: 1;
     margin-bottom: 12px;
   }
 
@@ -330,19 +391,28 @@
     align-items: center;
     justify-content: center;
     margin-right: 14px;
-    background: $color5;
+    background: var(--st-chrome);
+    flex-shrink: 0;
 
     i {
-      color: $color4;
+      color: var(--st-on-chrome);
       font-size: 1.5rem;
     }
 
-    &.teal i {
-      color: $teal;
+    &.teal {
+      background: var(--st-interactive);
+
+      i {
+        color: var(--st-on-accent);
+      }
     }
 
-    &.accent i {
-      color: $color3;
+    &.accent {
+      background: var(--st-accent);
+
+      i {
+        color: var(--st-on-accent);
+      }
     }
   }
 
@@ -464,16 +534,19 @@
 }
 
 .config-log-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   margin: 12px 0 16px;
 
   .chip {
     cursor: pointer;
-    background: $color5;
-    color: $gray-text;
+    background: var(--st-canvas);
+    color: var(--st-text-secondary);
 
     &.active {
-      background: $teal;
-      color: $white;
+      background: var(--st-interactive);
+      color: var(--st-on-accent);
     }
   }
 }
@@ -483,20 +556,34 @@
 }
 
 .collapsible.configuration-component {
-  margin: 0;
+  margin: 0 0 8px;
+  border-color: var(--st-border);
 
   li {
     position: relative;
   }
 
+  .collapsible-header {
+    align-items: center;
+    min-height: 52px;
+    padding-right: 120px;
+  }
+
   .switch {
     position: absolute;
     right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
   }
 
   .collapsible-header .current {
     position: absolute;
     right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--st-text-secondary);
+    font-size: 0.85rem;
   }
 
   .collapsible-body-hidden {
@@ -505,16 +592,124 @@
 
   .config-key {
     font-size: 0.8rem;
-    color: $gray-text;
-    border-top: 1px solid $grayLight;
+    color: var(--st-text-secondary);
+    border-top: 1px solid var(--st-border);
     padding-top: 10px;
     margin-top: 10px;
   }
 }
 
+.config-pick {
+  border: 1px solid var(--st-border);
+  border-radius: var(--st-radius-md);
+  margin: 0 0 20px;
+  box-shadow: none;
+  overflow: hidden;
+
+  li {
+    position: relative;
+  }
+}
+
+.config-pick-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 8px 16px;
+  line-height: 1.3;
+
+  i.material-icons {
+    width: auto;
+    margin-right: 0;
+    font-size: 22px;
+    color: var(--st-icon);
+  }
+}
+
+.config-pick-header__label {
+  flex: 1;
+  font-weight: 500;
+  color: var(--st-text);
+}
+
+.config-pick-body {
+  padding: 0;
+  background: var(--st-surface);
+}
+
+.config-pick-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--st-border);
+}
+
+.config-pick-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--st-border-subtle);
+  min-height: 56px;
+  box-sizing: border-box;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: var(--st-hover);
+  }
+}
+
+.config-pick-row__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.config-pick-row__title {
+  font-weight: 500;
+  color: var(--st-text);
+  font-size: 0.95rem;
+  line-height: 1.3;
+}
+
+.config-pick-row__meta {
+  color: var(--st-text-secondary);
+  font-size: 0.8rem;
+  line-height: 1.35;
+  word-break: break-all;
+}
+
+.config-pick-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+  cursor: pointer;
+
+  [type="checkbox"].filled-in + span:not(.lever) {
+    padding-left: 20px;
+    height: 20px;
+    line-height: 20px;
+  }
+}
+
+.config-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
 html.dark-mode {
   .health-check-list .alert-item,
-  .database-manager .stats-icon,
   .database-manager .path-code,
   .database-manager .date-badge,
   .database-manager .size-badge {
@@ -533,8 +728,12 @@ html.dark-mode {
 }
 
 @media only screen and (max-width: 600px) {
-  .config-content {
-    padding: 16px 12px 32px;
+  .row .config-content {
+    padding: 24px 16px 32px;
+  }
+
+  .row .config-content.config-content--toolbar {
+    padding: 0 0.75rem 32px;
   }
 
   .config-section-header--split {

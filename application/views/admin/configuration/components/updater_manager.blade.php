@@ -1,7 +1,9 @@
-<div v-show="sectionActive == 'updater'" class="container form">
+<div v-show="sectionActive == 'updater'">
             <div class="config-section-header">
                 <h2 class="page-header">{{ lang('config_updater_manager') }}</h2>
             </div>
+            <div class="card z-depth-1">
+                <div class="card-content">
             <div class="row" v-if="getConfig('UPDATER_LAST_CHECK_UPDATE')">
                 <div class="col s12">
                     <p>
@@ -69,6 +71,8 @@
                             <i class="material-icons left">system_update_alt</i> {{ lang('config_install_package') }}
                         </a>
                     </p>
+                </div>
+            </div>
                 </div>
             </div>
         </div>

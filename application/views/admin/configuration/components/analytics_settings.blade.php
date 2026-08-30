@@ -1,4 +1,4 @@
-        <div v-show="sectionActive == 'integrations'" class="container form">
+        <div v-show="sectionActive == 'integrations'">
             <div class="config-section-header">
                 <h2 class="page-header"><?= lang('config_integrations') ?></h2>
             </div>
