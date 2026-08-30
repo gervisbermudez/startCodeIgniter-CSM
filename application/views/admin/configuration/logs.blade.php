@@ -5,22 +5,20 @@
 @include('admin.configuration.components.i18n')
 <div id="root" class="configuration-root">
     <div class="row configuration-layout">
-        <div class="col s12 config-content">
-            <div class="config-section-header">
-                <h2 class="page-header">{{ lang('menu_logs') }}</h2>
-            </div>
-            <div class="config-log-tabs">
-                <a href="#!" class="chip" :class="{active: activeTab == 'system'}" @click.prevent="changeTab('system')">{{ lang('config_logs_system') }}</a>
-                <a href="#!" class="chip" :class="{active: activeTab == 'api'}" @click.prevent="changeTab('api')">{{ lang('config_logs_api') }}</a>
-                <a href="#!" class="chip" :class="{active: activeTab == 'tracking'}" @click.prevent="changeTab('tracking')">{{ lang('config_logs_tracking') }}</a>
-            </div>
+        <div class="col s12 config-content config-content--toolbar">
             <data-table
                 :key="activeTab"
                 :endpoint="endpoint"
                 :colums="colums"
                 :index_data="index_data"
                 :pagination="true"
-            ></data-table>
+            >
+                <div slot="filters" class="config-log-tabs">
+                    <a href="#!" class="chip" :class="{active: activeTab == 'system'}" @click.prevent="changeTab('system')">{{ lang('config_logs_system') }}</a>
+                    <a href="#!" class="chip" :class="{active: activeTab == 'api'}" @click.prevent="changeTab('api')">{{ lang('config_logs_api') }}</a>
+                    <a href="#!" class="chip" :class="{active: activeTab == 'tracking'}" @click.prevent="changeTab('tracking')">{{ lang('config_logs_tracking') }}</a>
+                </div>
+            </data-table>
         </div>
     </div>
 </div>

@@ -71,6 +71,10 @@
   min-height: calc(100vh - 50px);
 }
 
+.row .config-content.config-content--toolbar {
+  padding-top: 0;
+}
+
 .config-mobile-nav {
   margin-bottom: 8px;
 }
@@ -460,7 +464,7 @@
 }
 
 .config-log-tabs {
-  margin-bottom: 16px;
+  margin: 12px 0 16px;
 
   .chip {
     cursor: pointer;

@@ -1,6 +1,6 @@
 {{--
     Barra de búsqueda interna de listas admin.
-    Params: $searchInputId, $refreshMethod, $showViewToggle, $navbarShow, $navbarIf, $resetMethod, $placeholder, $itemsExpr
+    Params: $searchInputId, $refreshMethod, $showViewToggle, $navbarShow, $navbarIf, $resetMethod, $placeholder, $itemsExpr, $section (nav|empty|all)
 --}}
 <?php
 if (!isset($searchInputId) || $searchInputId === '') {
@@ -21,8 +21,14 @@ if (!isset($resetMethod) || $resetMethod === '') {
 if (!isset($placeholder) || $placeholder === '') {
     $placeholder = lang('search_placeholder');
 }
+if (!isset($section) || $section === '') {
+    $section = 'all';
+}
 $noResultsPrefix = trim(preg_replace('/%s|"/', '', lang('search_no_results')));
+$renderNav = ($section === 'nav' || $section === 'all');
+$renderEmpty = ($section === 'empty' || $section === 'all');
 ?>
+<?php if ($renderNav): ?>
 <nav class="page-navbar" v-cloak<?php if (!empty($navbarIf)): ?> v-if="<?php echo $navbarIf; ?>"<?php endif; ?> v-show="<?php echo $navbarShow; ?>">
     <div class="nav-wrapper">
         <form v-on:submit.prevent="onNavbarSearch">
@@ -69,7 +75,8 @@ $noResultsPrefix = trim(preg_replace('/%s|"/', '', lang('search_no_results')));
         </ul>
     </div>
 </nav>
-<?php if (!empty($itemsExpr)): ?>
+<?php endif; ?>
+<?php if ($renderEmpty && !empty($itemsExpr)): ?>
 <div class="page-search-empty" v-cloak v-if="!loader && filter && <?php echo $itemsExpr; ?>.length === 0<?php if (!empty($navbarIf)): ?> && <?php echo $navbarIf; ?><?php endif; ?>">
     <p class="page-header"><?php echo htmlspecialchars($noResultsPrefix, ENT_QUOTES, 'UTF-8'); ?> «<strong>@{{ filter }}</strong>»</p>
     <a href="#!" class="btn-flat" v-on:click.prevent="<?php echo $resetMethod; ?>"><?php echo lang('search_empty_cta'); ?></a>

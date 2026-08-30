@@ -9,6 +9,14 @@
             'refreshMethod' => 'getData()',
             'showViewToggle' => false,
             'navbarIf' => 'search_input',
+            'section' => 'nav',
+        ])
+        <div class="data-table-filters" v-if="$slots.filters">
+            <slot name="filters"></slot>
+        </div>
+        @include('admin.components.page_navbar', [
+            'navbarIf' => 'search_input',
+            'section' => 'empty',
             'itemsExpr' => '(pagination ? data : filterData)',
         ])
         <div class="configurations" v-cloak v-if="!loader && data.length > 0">

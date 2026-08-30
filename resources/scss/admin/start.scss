@@ -1309,16 +1309,41 @@ div#dropnotify {
 
 .page-navbar {
   background: $color3;
+  width: 100%;
+  box-sizing: border-box;
+
+  .nav-wrapper {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+  }
 
   form {
+    float: none;
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
     height: 100%;
-    float: left;
-    width: 80%;
+  }
+
+  ul.page-navbar-actions {
+    float: none;
+    flex: 0 0 auto;
+    margin: 0;
+    position: relative;
   }
 
   .page-navbar-actions a {
     cursor: pointer;
   }
+}
+
+// Cancel Materialize .col gutters so the bar uses the full .main column.
+.col .page-navbar,
+.config-content .page-navbar {
+  margin-left: -0.75rem;
+  margin-right: -0.75rem;
+  width: calc(100% + 1.5rem);
 }
 
 .page-search-empty {
