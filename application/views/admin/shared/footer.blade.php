@@ -14,6 +14,7 @@ const DEBUGMODE = <?php echo json_encode($ci->config->item('debug_mode')) ?>;
 <script src="{{base_url(JSPATH . 'jquery.js?v=' . ADMIN_VERSION)}}"></script>
 <script src="{{base_url('public/js/start.js?v=' . ADMIN_VERSION)}}"></script>
 <script src="{{base_url('resources/components/NotificationsComponent.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/SearchPalette.js?v=' . ADMIN_VERSION)}}"></script>
 @isset($footer_includes)
 @foreach($footer_includes as $include)
 <?php echo $include ?>

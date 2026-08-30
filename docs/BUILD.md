@@ -41,5 +41,5 @@ Migrado de Gulp a Vite (diciembre 2025) para compilación de SCSS:
 - ✅ Menos dependencias
 - ✅ JavaScript sin cambios (mantiene compatibilidad)
 
-El archivo `gulpfile.js.backup` se mantiene como referencia.
+El JavaScript se copia a `public/` con `bin/copy-js.sh` (incluido en `npm run build`).
 

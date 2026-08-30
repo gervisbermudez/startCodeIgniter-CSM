@@ -1,0 +1,9 @@
+node_modules
+.git
+application/logs/*
+application/cache/*
+uploads/*
+backups/database/*
+graphify-out
+application/graphify-out
+*.md

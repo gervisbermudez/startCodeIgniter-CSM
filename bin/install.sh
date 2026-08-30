@@ -3,6 +3,8 @@
 # startCodeIgniter CSM - Quick Installation Script
 # This script sets up the application with Docker
 
+cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+
 echo "=========================================="
 echo "startCodeIgniter CSM - Docker Setup"
 echo "=========================================="

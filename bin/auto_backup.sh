@@ -3,8 +3,8 @@
 # Automatic Database Backup Script
 # This script runs the CodeIgniter cron controller for automatic backups
 
-# Get the directory where this script is located
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# Get the project root (parent of bin/)
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
 # Change to the project directory
 cd "$SCRIPT_DIR"

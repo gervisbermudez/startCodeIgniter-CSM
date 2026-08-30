@@ -20,7 +20,7 @@ var loginForm = new Vue({
       this.loader = true;
       $.ajax({
         type: "POST",
-        url: BASEURL + "/api/v1/login/",
+        url: BASEURL + "api/v1/login/",
         data: {
           username: this.username,
           password: this.password,

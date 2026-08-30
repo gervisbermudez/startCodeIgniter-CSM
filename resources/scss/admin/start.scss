@@ -1,6 +1,7 @@
 @import "mixins";
 @import "components/palette";
 @import "fonts";
+@import "components/search-palette";
 
 $sidemenuWidthExpanded: 210px;
 $sidemenuWidthCollapsed: 70px;
@@ -2082,94 +2083,6 @@ iframe.components-sandbox {
 
 .collapsible.expandable .btn i.material-icons.right {
   position: static;
-}
-
-.input-field.search-top {
-  display: inline-block;
-  position: relative;
-  margin-left: 10px;
-}
-
-.input-field.search-top i.material-icons.prefix {
-  position: absolute;
-  width: 27px;
-  top: 10px;
-  line-height: 30px;
-  height: 30px;
-  color: #d1d1d1;
-  left: 5px;
-  font-size: 24px;
-}
-
-.input-field.search-top i.material-icons.prefix.active {
-  color: #26a69a;
-}
-
-.input-field.search-top input {
-  max-width: 300px;
-  background: #fff;
-  border: none;
-  border-radius: 30px;
-  margin-left: 0;
-  padding-left: 30px;
-  margin-top: 7px;
-  height: 35px;
-  font-size: 15px;
-  width: 200px;
-
-  @include phone-only {
-    & {
-      width: 110px;
-    }
-  }
-
-}
-
-.search_results {
-  .card-image.card-image-container {
-    height: 200px;
-    overflow: hidden;
-  }
-
-  .card-image.card-image-container img {
-    position: absolute;
-    z-index: 9;
-  }
-
-  .card-content {
-    min-height: 180px;
-  }
-
-  ul.tabs li a span.badge {
-    font-weight: 300;
-    font-size: 0.8rem;
-    color: #fff;
-    background-color: #26a69a;
-    border-radius: 2px;
-    margin: 0;
-    line-height: 24px;
-    display: initial;
-    margin: 10px 10px;
-
-    &:after {
-      content: " results";
-    }
-  }
-
-  .file .card-content {
-    min-height: 0;
-  }
-
-  .file.icon i {
-    font-size: 40px;
-  }
-
-  .file.icon {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 70px;
-  }
 }
 
 .card.mainPageImage {

@@ -14,6 +14,7 @@
         @yield('header')
         @yield('content')
         </div>
+        @include('admin.components.search_palette')
         @include('admin.shared.footer')
         @yield('footer_includes')
     </body>

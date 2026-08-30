@@ -33,6 +33,10 @@ application/logs/*
 # Development notes
 /devnotes.txt
 
+# Generated analysis output
+/graphify-out/
+/application/graphify-out/
+
 ### CodeIgniter Patch ###
 
 ### Composer ###

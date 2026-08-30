@@ -30,8 +30,8 @@ cd startCodeIgniter-CSM
 
 ```bash
 # On Linux/Mac
-chmod +x install.sh
-./install.sh
+chmod +x bin/install.sh
+./bin/install.sh
 
 # Or manually start Docker
 docker compose up -d

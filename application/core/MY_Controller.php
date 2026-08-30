@@ -125,6 +125,7 @@ class MY_Controller extends CI_Controller
             'admin.user.edit' => 'UserEditComponent.js',
             'admin.user.new' => 'UserFormComponent.js',
             'admin.user.permissions' => 'PermissionsComponent.js',
+            'admin.search_results' => 'SearchComponent.js',
             'admin.pages.pages_list' => 'PagesLists.js',
             'admin.pages.new' => 'PageForm.js',
             'admin.pages.view' => 'PageView.js',

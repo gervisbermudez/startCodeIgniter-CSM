@@ -1,367 +1,125 @@
 var SearchComponent = new Vue({
   el: "#root",
   data: {
-    items: [],
-    tableView: false,
     loader: true,
-    filter: "",
-    toDeleteItem: {},
-    searchTerm: null,
-    searchResults: false,
-    categoriesColumns: [
-      {
-        colum: "name",
-        label: "name",
-      },
-      {
-        colum: "type",
-        label: "Type",
-      },
-      {
-        colum: "description",
-        label: "description",
-        format: (item, colum) => {
-          var span = document.createElement("span");
-          span.innerHTML = item.description;
-          let text = span.textContent || span.innerText;
-          return text.substring(0, 50) + "...";
-        },
-      },
-      {
-        colum: "user",
-        label: "Author",
-      },
-      {
-        colum: "date_create",
-        label: "Creado",
-      },
-      {
-        colum: "status",
-        label: "Status",
-        handler: "publish",
-      },
-      {
-        colum: "user_id",
-        label: "Options",
-        format: (item, colum) => {
-          return `<a href="${
-            BASEURL + "admin/categories/editar/" + item.categorie_id
-          }">Edit</a>`;
-        },
-      },
-    ],
-    form_customsColumns: [
-      {
-        colum: "form_name",
-        label: "name",
-      },
-      {
-        colum: "model_type",
-        label: "Type",
-      },
-      {
-        colum: "form_description",
-        label: "Description",
-        format: (item, colum) => {
-          var span = document.createElement("span");
-          span.innerHTML = item.form_description;
-          let text = span.textContent || span.innerText;
-          return text.substring(0, 50) + "...";
-        },
-      },
-      {
-        colum: "user",
-        label: "Author",
-      },
-      {
-        colum: "date_create",
-        label: "Creado",
-      },
-      {
-        colum: "status",
-        label: "Status",
-        handler: "publish",
-      },
-      {
-        colum: "user_id",
-        label: "Options",
-        format: (item, colum) => {
-          return `<a href="${
-            BASEURL + "admin/custommodels/editForm/" + item.custom_model_id
-          }">Edit</a>`;
-        },
-      },
-    ],
-    form_contentsColumns: [
-      {
-        colum: "model_type",
-        label: "type",
-      },
-      {
-        colum: "user",
-        label: "Author",
-      },
-      {
-        colum: "date_create",
-        label: "Creado",
-      },
-      {
-        colum: "status",
-        label: "Status",
-        handler: "publish",
-      },
-      {
-        colum: "user_id",
-        label: "Options",
-        format: (item, colum) => {
-          return `<a href="${
-            BASEURL +
-            "admin/custommodels/editData/" +
-            item.custom_model_id +
-            "/" +
-            item.custom_model_content_id
-          }">Edit</a>`;
-        },
-      },
-    ],
-    siteformsColumns: [
-      {
-        colum: "name",
-        label: "Name",
-      },
-      {
-        colum: "template",
-        label: "Template",
-      },
-      {
-        colum: "user",
-        label: "Author",
-      },
-      {
-        colum: "date_create",
-        label: "Creado",
-      },
-      {
-        colum: "status",
-        label: "Status",
-        handler: "publish",
-      },
-      {
-        colum: "user_id",
-        label: "Options",
-        format: (item, colum) => {
-          return `<a href="${
-            BASEURL + "admin/siteforms/editar/" + item.siteform_id
-          }">Edit</a>`;
-        },
-      },
-    ],
-    menusColumns: [
-      {
-        colum: "name",
-        label: "Name",
-      },
-      {
-        colum: "template",
-        label: "Template",
-      },
-      {
-        colum: "position",
-        label: "Position",
-      },
-      {
-        colum: "user",
-        label: "Author",
-      },
-      {
-        colum: "date_create",
-        label: "Creado",
-      },
-      {
-        colum: "status",
-        label: "Status",
-        handler: "publish",
-      },
-      {
-        colum: "user_id",
-        label: "Options",
-        format: (item, colum) => {
-          return `<a href="${
-            BASEURL + "admin/siteforms/editar/" + item.siteform_id
-          }">Edit</a>`;
-        },
-      },
-    ],
+    searchTerm: "",
+    typeFilter: "all",
+    hits: [],
+    i18n: window.SEARCH_I18N || {},
   },
   mixins: [mixins],
   computed: {
-    filterMenus: function () {
-      if (!!this.filter) {
-        let filterTerm = this.filter.toLowerCase();
-        return this.items.filter((value, index) => {
-          return this.searchInObject(value, filterTerm);
-        });
-      } else {
-        return this.items;
-      }
+    queryTrimmed: function () {
+      return (this.searchTerm || "").trim();
     },
-    websiteCountResults: function () {
-      if (this.searchResults === false) {
-        return 0;
+    visibleHits: function () {
+      if (this.typeFilter === "all") {
+        return this.hits;
       }
-      return (
-        this.searchResults.pages.length +
-        this.searchResults.form_customs.length +
-        this.searchResults.form_contents.length +
-        this.searchResults.siteforms.length +
-        this.searchResults.menus.length +
-        this.searchResults.categories.length +
-        this.searchResults.albumes.length
-      );
+      var self = this;
+      return this.hits.filter(function (hit) {
+        return hit.type === self.typeFilter;
+      });
+    },
+    chipTypes: function () {
+      var counts = {};
+      this.hits.forEach(function (hit) {
+        counts[hit.type] = (counts[hit.type] || 0) + 1;
+      });
+      var chips = [
+        {
+          id: "all",
+          label: this.i18n.type_all || "All",
+          count: this.hits.length,
+        },
+      ];
+      var self = this;
+      Object.keys(counts).forEach(function (type) {
+        chips.push({
+          id: type,
+          label: self.i18n["type_" + type] || type,
+          count: counts[type],
+        });
+      });
+      return chips;
+    },
+    showIdle: function () {
+      return this.queryTrimmed.length === 0;
+    },
+    showMinChars: function () {
+      return this.queryTrimmed.length === 1;
+    },
+    showNoResults: function () {
+      return this.queryTrimmed.length >= 2 && this.visibleHits.length === 0;
+    },
+    noResultsLabel: function () {
+      var tpl = this.i18n.noResults || "%s";
+      return tpl.replace("%s", this.queryTrimmed);
+    },
+    resultsCountLabel: function () {
+      var tpl = this.i18n.resultsCount || "%s";
+      return tpl.replace("%s", String(this.visibleHits.length));
     },
   },
   methods: {
-    toggleView: function () {
-      this.tableView = !this.tableView;
-      this.initPlugins();
+    setTypeFilter: function (id) {
+      this.typeFilter = id;
     },
-    resetFilter: function () {
-      this.filter = "";
-    },
-    getPageImagePath(item) {
-      if (item.imagen_file) {
-        return BASEURL + item.imagen_file.file_front_path;
+    clearSearch: function () {
+      this.searchTerm = "";
+      this.hits = [];
+      this.typeFilter = "all";
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState({}, "", BASEURL + "admin/search/");
       }
-      return BASEURL + "/public/img/default.jpg";
-    },
-    getFullFilePath(file) {
-      return BASEURL + file.file_path + this.getFullFileName(file);
-    },
-    getIcon(file) {
-      let icon = "far fa-file";
-      switch (file.file_type) {
-        case "folder":
-          icon = "far fa-folder";
-          break;
-        case "jpg":
-        case "jpeg":
-        case "png":
-        case "gif":
-          icon = "fas fa-file-image";
-          break;
-        case "html":
-          icon = "fab fa-html5";
-          break;
-        case "scss":
-          icon = "fab fa-sass";
-          break;
-        case "css":
-        case "min.css":
-          icon = "fab fa-css3-alt";
-          break;
-        case "txt":
-          icon = "far fa-file-alt";
-          break;
-        case "php":
-        case "blade.php":
-          icon = "fab fa-php";
-          break;
-        case "js":
-        case "json":
-        case "min.js":
-          icon = "fab fa-js";
-          break;
-        case "eot":
-        case "otf":
-        case "woff2":
-          icon = "fas fa-font";
-          break;
-      }
-      return icon;
-    },
-    getExtention(file) {
-      if (file.file_type == "folder") {
-        return "";
-      } else {
-        return "." + file.file_type;
-      }
-    },
-    isImage(file) {
-      if (
-        file.file_type == "jpg" ||
-        file.file_type == "jpeg" ||
-        file.file_type == "png" ||
-        file.file_type == "gif"
-      ) {
-        return true;
-      }
-      return false;
-    },
-    getImagePath(file) {
-      if (this.isImage(file)) {
-        return (
-          BASEURL +
-          file.file_path.substr(2) +
-          file.file_name +
-          "." +
-          file.file_type
-        );
-      }
-    },
-    getAlbumImagePath(album) {
-      if (album.items.length) {
-        return BASEURL + album.items[0].file.file_front_path;
-      }
-      return BASEURL + "/public/img/default.jpg";
     },
     performSearch: function () {
       var self = this;
-      self.loader = true;
+      var term = this.queryTrimmed;
+      if (term.length < 2) {
+        this.hits = [];
+        this.loader = false;
+        return;
+      }
+      this.loader = true;
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState(
+          {},
+          "",
+          BASEURL + "admin/search/?q=" + encodeURIComponent(term)
+        );
+      }
       $.ajax({
         type: "GET",
-        url: BASEURL + "api/v1/search/?q=" + this.searchTerm,
-        data: {},
+        url: BASEURL + "api/v1/search/?q=" + encodeURIComponent(term),
         dataType: "json",
         success: function (response) {
-          self.searchResults = response.data;
-          self.searchResults.users = response.data.users.map((element) => {
-            return new User(element);
-          });
+          var data =
+            response && response.data
+              ? response.data
+              : window.SearchMapper.emptyPayload();
+          self.hits = window.SearchMapper.flatten(data, self.i18n);
           self.loader = false;
-          self.initPlugins();
+          self.typeFilter = "all";
         },
         error: function (error) {
           self.loader = false;
-          M.toast({ html: "Ocurrió un error inesperado" });
+          M.toast({ html: self.i18n.error || "Error" });
           console.error(error);
         },
       });
     },
-    base_url: function (path) {
-      return BASEURL + path;
-    },
-    initPlugins: function () {
-      setTimeout(() => {
-        var elems = document.querySelectorAll(".materialboxed");
-        M.Materialbox.init(elems, {});
-        var elems = document.querySelectorAll(".tooltipped");
-        M.Tooltip.init(elems, {});
-        var elems = document.querySelectorAll(".dropdown-trigger");
-        M.Dropdown.init(elems, {});
-        var elems = document.querySelectorAll(".tabs");
-        M.Tabs.init(elems, {});
-      }, 100);
-    },
   },
   mounted: function () {
+    var self = this;
     this.$nextTick(function () {
-      const urlParams = new URLSearchParams(window.location.search);
-      const q = urlParams.get("q");
+      var urlParams = new URLSearchParams(window.location.search);
+      var q = urlParams.get("q");
       if (q) {
-        this.searchTerm = q;
-        this.performSearch();
+        self.searchTerm = q;
+        self.performSearch();
       } else {
-        this.loader = false;
+        self.loader = false;
       }
     });
   },

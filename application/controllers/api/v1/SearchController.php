@@ -68,6 +68,22 @@ class SearchController extends REST_Controller
      *     "data": []
      * }
      */
+    private function empty_payload()
+    {
+        return array(
+            'pages' => array(),
+            'users' => array(),
+            'files' => array(),
+            'form_customs' => array(),
+            'form_contents' => array(),
+            'siteforms' => array(),
+            'siteform_submits' => array(),
+            'menus' => array(),
+            'categories' => array(),
+            'albumes' => array(),
+        );
+    }
+
     public function index_get()
     {
         $str_term = $this->input->get('q');
@@ -113,7 +129,7 @@ class SearchController extends REST_Controller
             $data['albumes'] = $album->search($str_term);
 
         } else {
-            $data = [];
+            $data = $this->empty_payload();
         }
         $this->response_ok($data);
     }
