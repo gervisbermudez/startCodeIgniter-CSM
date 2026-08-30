@@ -78,9 +78,30 @@ span.current-folder {
   font-size: 20px;
 }
 
+.dropdown-content:not(.select-dropdown) {
+  min-width: 13rem;
+  overflow-x: hidden;
+}
+
 .dropdown-content li>a,
 .dropdown-content li>span {
   color: var(--st-text);
+}
+
+.dropdown-content:not(.select-dropdown):not(.notifications-dropdown) li>a,
+.dropdown-content:not(.select-dropdown):not(.notifications-dropdown) li>span {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.dropdown-content:not(.select-dropdown):not(.notifications-dropdown) li>a>i {
+  float: none !important;
+  margin: 0 12px 0 0 !important;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  flex-shrink: 0;
 }
 
 .page-header {
