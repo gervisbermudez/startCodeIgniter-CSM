@@ -7,7 +7,7 @@ alwaysApply: true
 
 PHP 7.4 + CodeIgniter 3.1. No uses PHP 8+. Front admin: Vue 2 global + jQuery + Materialize. Plantillas: BladeOne (`.blade.php`). Persistencia: API REST `/api/v1`, no POST de formularios admin.
 
-Lee `AGENTS.md` para el mapa y el flujo de una feature. Fuentes de verdad:
+Lee `AGENTS.md` para el mapa y el flujo de una feature. Features en paralelo: `/worktree` local (nunca Cloud Agents). Fuentes de verdad:
 
 - PHP app: `application/`
 - JS admin: `resources/components/` y `resources/js/` (no `public/js/`)

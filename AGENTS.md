@@ -12,6 +12,14 @@ npm run watch                 # recompila SCSS
 
 Credenciales por defecto: `gerber` / `admin123`. `.env` desde `.env.example` (MySQL suele ser `host.docker.internal`, no el servicio `db` — el compose actual solo levanta `web`).
 
+## Worktrees (features en paralelo)
+
+Aislamiento **local** (sin Cloud Agents). Al crear un worktree, Cursor corre `.cursor/setup-worktree-unix.sh` (vía `.cursor/worktrees.json`): copia `.env`, `vendor/`, `node_modules/` y `themes/` desde el checkout principal.
+
+- Una feature = un chat = `/worktree`. No Cloud, no `/in-cloud`, no `/best-of-n` salvo que se pida.
+- No `docker compose up` en el worktree: el stack es el del checkout principal (`ci_php56`, puerto 8081).
+- Verificar UI en `http://localhost:8081` tras merge o `/apply-worktree`.
+
 ## Mapa del repo
 
 | Ruta | Rol |

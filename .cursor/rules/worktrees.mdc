@@ -1,0 +1,26 @@
+---
+description: Features en paralelo con worktrees locales; nunca Cloud Agents
+alwaysApply: true
+---
+
+# Worktrees locales
+
+Este repo aísla features con **Git worktrees locales**. No uses Cloud Agents: cuestan extra (API/on-demand) y no ven el Docker/MySQL de esta máquina.
+
+## Al empezar una feature
+
+- Un chat por feature. Empieza con `/worktree` y trabaja solo en ese checkout.
+- No edites `master` (ni el checkout principal) si otra feature ya corre en paralelo.
+- No uses Cloud, `/in-cloud`, ni `/best-of-n` salvo que el usuario lo pida explícitamente.
+
+## Qué no hacer en un worktree
+
+- No `docker compose up` / `down` / `restart`. El único stack es el del checkout principal: contenedor `ci_php56`, puerto **8081**. Un segundo compose pisa nombre y puerto.
+- No `composer install` en el host (PHP 8+ rompe el lock de PHP 7.4). `vendor/` lo copia `.cursor/setup-worktree-unix.sh` desde el checkout principal.
+- No symlinkees `vendor/` ni `node_modules/` al árbol principal.
+
+## Cómo entregar
+
+- Commit y PR **desde la rama del worktree**.
+- Verificar UI en `http://localhost:8081` después de merge o `/apply-worktree`.
+- No apliques dos worktrees sobre un working tree sucio.
