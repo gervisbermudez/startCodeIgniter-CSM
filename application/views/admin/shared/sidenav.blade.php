@@ -59,25 +59,29 @@
                 </ul>
             </div>
         </li>
+        @if(has_permisions('SELECT_SITEFORMS'))
         <li class="{{ isSectionActive('siteforms') }}">
             <div class="collapsible-header waves-effect">
-                <i class="material-icons" aria-hidden="true">assistant</i>
+                <i class="material-icons" aria-hidden="true">assignment</i>
                 <span>{{ lang('menu_siteforms') }}</span>
             </div>
             <div class="collapsible-body">
                 <ul>
                     <li class="{{ isNavItemActive(array('admin/siteforms', 'admin/siteforms/edit*', 'admin/siteforms/stats*', 'admin/siteforms/export*')) }}">
-                        <a class="waves-effect" href="{{ base_url('admin/siteforms') }}" {!! navCurrentAttr(array('admin/siteforms', 'admin/siteforms/edit*', 'admin/siteforms/stats*', 'admin/siteforms/export*')) !!}>{{ lang('menu_all') }}</a>
+                        <a class="waves-effect" href="{{ base_url('admin/siteforms') }}" {!! navCurrentAttr(array('admin/siteforms', 'admin/siteforms/edit*', 'admin/siteforms/stats*', 'admin/siteforms/export*')) !!}>{{ lang('menu_siteforms_all') }}</a>
                     </li>
+                    @if(has_permisions('CREATE_SITEFORM'))
                     <li class="{{ isNavItemActive('admin/siteforms/new') }}">
-                        <a class="waves-effect" href="{{ base_url('admin/siteforms/new/') }}" {!! navCurrentAttr('admin/siteforms/new') !!}>{{ lang('menu_new') }}</a>
+                        <a class="waves-effect" href="{{ base_url('admin/siteforms/new/') }}" {!! navCurrentAttr('admin/siteforms/new') !!}>{{ lang('menu_siteforms_new') }}</a>
                     </li>
+                    @endif
                     <li class="{{ isNavItemActive('admin/siteforms/submit*') }}">
-                        <a class="waves-effect" href="{{ base_url('admin/siteforms/submit/') }}" {!! navCurrentAttr('admin/siteforms/submit*') !!}>{{ lang('menu_submissions') }}</a>
+                        <a class="waves-effect" href="{{ base_url('admin/siteforms/submit/') }}" {!! navCurrentAttr('admin/siteforms/submit*') !!}>{{ lang('menu_siteforms_submissions') }}</a>
                     </li>
                 </ul>
             </div>
         </li>
+        @endif
         <li class="{{ isSectionActive('calendar') }}">
             <a class="waves-effect" href="{{ base_url('admin/calendar') }}" {!! navCurrentAttr('admin/calendar*') !!}>
                 <i class="material-icons" aria-hidden="true">event_note</i>

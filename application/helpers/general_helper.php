@@ -68,8 +68,12 @@ function init_form(string $siteform_name): void
 {
     $ci = &get_instance();
     $siteforms = $ci->session->userdata('siteforms');
-    if (!$siteforms && !isset($siteforms[$siteform_name])) {
-        $ci->session->set_userdata('siteforms', [$siteform_name => ['submited' => 0]]);
+    if (!is_array($siteforms)) {
+        $siteforms = array();
+    }
+    if (!isset($siteforms[$siteform_name])) {
+        $siteforms[$siteform_name] = array('submited' => 0);
+        $ci->session->set_userdata('siteforms', $siteforms);
     }
 }
 
@@ -88,6 +92,7 @@ function render_form(string $siteform_name): string
     }
 
     init_form($siteform_name);
+    $ci->load->vars(array('siteform' => $siteform));
 
     return $ci->blade->view("site.templates.forms." . $siteform->template, ['siteform' => $siteform], true);
 }
@@ -126,8 +131,14 @@ function set_notification(string $title, string $description, string $type = 'in
     $notification->description = $description;
     $notification->type = $type;
     $notification->url = $url;
-    $notification->date_create = date("Y-m-d H:i:s");
+    $now = date("Y-m-d H:i:s");
+    $notification->date_create = $now;
+    $notification->date_update = $now;
+    $notification->date_delete = $now;
     $notification->status = "1";
+    if (function_exists('userdata') && userdata('user_id')) {
+        $notification->user_id = userdata('user_id');
+    }
     return $notification->save();
 }
 
@@ -335,7 +346,10 @@ if (!function_exists('has_permisions')) {
     {
         $ci = &get_instance();
         $usergroup_permisions = $ci->session->userdata('usergroup_permisions');
-        return in_array($permision, $usergroup_permisions);
+        if (!is_array($usergroup_permisions)) {
+            return false;
+        }
+        return in_array($permision, $usergroup_permisions, true);
     }
 }
 

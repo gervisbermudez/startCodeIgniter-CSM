@@ -122,13 +122,13 @@ Activa o desactiva el modo debug del sistema.
 
 Se agregaron dos nuevos métodos al controlador existente.
 
-### **GET** `/admin/siteforms/export/{form_name}`
+### **GET** `/admin/siteforms/export/{siteform_id}`
 Exporta los envíos de un formulario a archivo CSV.
 
 **Permisos requeridos**: `SELECT_SITEFORMS`
 
 **Parámetros**:
-- `form_name`: Nombre del formulario (URL encoded)
+- `siteform_id`: ID numérico del formulario
 
 **Respuesta**:
 - Descarga directa de archivo CSV
@@ -150,7 +150,7 @@ ID;Fecha de Envío;IP;campo1;campo2;campo3
 
 ---
 
-### **GET** `/admin/siteforms/stats/{form_name}`
+### **GET** `/admin/siteforms/stats/{siteform_id}`
 Obtiene estadísticas de un formulario.
 
 **Permisos requeridos**: `SELECT_SITEFORMS`
@@ -160,7 +160,8 @@ Obtiene estadísticas de un formulario.
 {
   "success": true,
   "data": {
-    "form_name": "contacto",
+    "siteform_id": 2,
+    "form_name": "contact_form",
     "total_submissions": 245,
     "unique_ips": 182,
     "first_submission": "2025-11-15 08:30:00",
@@ -199,9 +200,9 @@ $route['admin/config/toggle-debug'] = 'admin/ConfigurationController/toggle_debu
 $route['admin/config/(.+)'] = 'admin/ConfigurationController/$1';
 $route['admin/config'] = 'admin/ConfigurationController';
 
-// Siteforms routes
-$route['admin/siteforms/export/(.+)'] = 'admin/SiteFormsController/export/$1';
-$route['admin/siteforms/stats/(.+)'] = 'admin/SiteFormsController/stats/$1';
+// Siteforms routes (export/stats above the catch-all)
+$route['admin/siteforms/export/(:num)'] = 'admin/SiteFormsController/export/$1';
+$route['admin/siteforms/stats/(:num)'] = 'admin/SiteFormsController/stats/$1';
 $route['admin/siteforms/(.+)'] = 'admin/SiteFormsController/$1';
 $route['admin/siteforms'] = 'admin/SiteFormsController';
 ```
@@ -273,12 +274,12 @@ curl -X POST http://localhost/admin/config/toggle-debug \
 ### 3. Probar Export Forms
 ```bash
 # Exportar formulario
-curl http://localhost/admin/siteforms/export/contacto \
+curl http://localhost/admin/siteforms/export/2 \
   -H "Cookie: ci_session=xxx" \
-  -o contacto.csv
+  -o contact_form.csv
 
 # Ver estadísticas
-curl http://localhost/admin/siteforms/stats/contacto \
+curl http://localhost/admin/siteforms/stats/2 \
   -H "Cookie: ci_session=xxx"
 ```
 

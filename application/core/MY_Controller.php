@@ -21,10 +21,33 @@ class MY_Controller extends CI_Controller
             redirect('admin/login/?redirect=' . $uri);
         }
 
+        if ($this->session->userdata('logged_in')) {
+            $this->refreshUsergroupPermisions();
+        }
+
         // Si el perfilador está habilitado, lo activa para la salida
         if ($this->config->item('enable_profiler')) {
             $this->output->enable_profiler(true);
         }
+    }
+
+    /**
+     * Reload group permissions when the session predates a new permision row.
+     */
+    private function refreshUsergroupPermisions()
+    {
+        $perms = $this->session->userdata('usergroup_permisions');
+        if (is_array($perms) && in_array('SELECT_SITEFORMS', $perms, true)) {
+            return;
+        }
+        $usergroup_id = $this->session->userdata('usergroup_id');
+        if (!$usergroup_id) {
+            return;
+        }
+        $this->load->model('Admin/UsergroupModel');
+        $usergroup = new UsergroupModel();
+        $usergroup->usergroup_id = $usergroup_id;
+        $this->session->set_userdata('usergroup_permisions', $usergroup->usergroup_permisions());
     }
 
     // Verifica los permisos requeridos para la ruta actual
@@ -99,26 +122,26 @@ class MY_Controller extends CI_Controller
     {
         $data = $this->prepareAdminData($title, $h1, $additionalData);
         $data['header'] = $this->load->view('admin/header', $data, true);
-        
+
         // Auto-include de scripts basado en el nombre de la vista
         if (!isset($data['footer_includes'])) {
             $data['footer_includes'] = $this->getAutoFooterIncludes($view);
         }
-        
+
         echo $this->blade->view($view, $data);
     }
 
     /**
      * Genera automáticamente los footer_includes basados en la vista
      * Busca archivos JS correspondientes en resources/components/
-     * 
+     *
      * @param string $view Nombre de la vista
      * @return array Scripts a incluir
      */
     protected function getAutoFooterIncludes($view)
     {
         $includes = [];
-        
+
         // Mapeo de vistas a componentes JS
         $viewComponentMap = [
             'admin.user.users' => 'UserComponent.js',
@@ -143,7 +166,7 @@ class MY_Controller extends CI_Controller
                 'AnalyticsDashboard.js',
             ],
         ];
-        
+
         if (isset($viewComponentMap[$view])) {
             $components = is_array($viewComponentMap[$view]) ? $viewComponentMap[$view] : [$viewComponentMap[$view]];
             foreach ($components as $component) {
@@ -156,7 +179,7 @@ class MY_Controller extends CI_Controller
                 }
             }
         }
-        
+
         return $includes;
     }
 

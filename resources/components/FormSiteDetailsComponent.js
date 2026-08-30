@@ -22,6 +22,13 @@ var FormSiteDetails = Vue.component("FormSiteDetails", {
     };
   },
   mixins: [mixins],
+  filters: {
+    capitalize: function (value) {
+      if (!value) return "";
+      value = value.toString();
+      return value.charAt(0).toUpperCase() + value.slice(1);
+    },
+  },
   computed: {
     keys: function () {
       if (this.data.siteform_submit_data) {
@@ -31,39 +38,52 @@ var FormSiteDetails = Vue.component("FormSiteDetails", {
     },
   },
   methods: {
+    t: function (key, fallback) {
+      if (window.SITEFORMS_I18N && window.SITEFORMS_I18N[key]) {
+        return window.SITEFORMS_I18N[key];
+      }
+      return fallback || key;
+    },
     back: function () {
       this.$router.push({
         name: "table",
       });
     },
     initPlugins: function () {
-      setTimeout(() => {
+      var self = this;
+      this.$nextTick(function () {
         M.Tabs.init(document.getElementById("formTabs"), {});
-        var elems = document.querySelectorAll(".tooltipped");
-        M.Tooltip.init(elems, {});
-        var elems = document.querySelectorAll(".dropdown-trigger");
-        M.Dropdown.init(elems, {});
-        this.loader = false;
-      }, 100);
+        M.Tooltip.init(document.querySelectorAll(".tooltipped"), {});
+        M.Dropdown.init(document.querySelectorAll(".dropdown-trigger"), {});
+        self.loader = false;
+      });
     },
     getData: function () {
+      var self = this;
       this.loader = true;
       var url = BASEURL + this.endpoint + this.$route.params.siteform_submit_id;
       fetch(url)
-        .then((response) => response.json())
-        .then((response) => {
-          let data = response.data;
-          this.data = data;
-          this.user = new User(data.siteform.user);
-          this.loader = false;
-          this.initPlugins();
+        .then(function (response) {
+          return response.json();
         })
-        .catch((response) => {
+        .then(function (response) {
+          var data = response.data;
+          self.data = data;
+          if (data.siteform && data.siteform.user) {
+            self.user = new User(data.siteform.user);
+          } else {
+            self.user = new User({});
+          }
           self.loader = false;
-          M.toast({ html: "Ocurrió un error inesperado" });
+          self.initPlugins();
+        })
+        .catch(function () {
+          self.loader = false;
+          M.toast({ html: self.t("error", "Error") });
         });
     },
     setArchive: function () {
+      var self = this;
       var url =
         BASEURL +
         "api/v1/siteforms/submit_archive/" +
@@ -71,36 +91,29 @@ var FormSiteDetails = Vue.component("FormSiteDetails", {
       fetch(url, {
         method: "POST",
       })
-        .then((response) => response.json())
-        .then((response) => {
-          console.log(response);
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (response) {
           if (response.data) {
-            this.data.status = 2;
-            M.toast({ html: "Se marcó como leido" });
+            self.data.status = 2;
+            M.toast({ html: self.t("statusSeen", "Seen") });
           }
         })
-        .catch((error) => {
+        .catch(function (error) {
           self.loader = false;
-          M.toast({ html: "Ocurrió un error inesperado" });
+          M.toast({ html: self.t("error", "Error") });
           console.error(error);
         });
     },
-    save: function () {
-      this.$router.push({
-        name: "table",
-        params: {
-          data: this.data,
-        },
-      });
-      this.$root.$emit("eventing", this.data);
-    },
   },
   mounted: function () {
+    var self = this;
     this.$nextTick(function () {
-      if (this.$route.params.siteform_submit_id) {
-        this.getData();
+      if (self.$route.params.siteform_submit_id) {
+        self.getData();
       } else {
-        this.$router.push({
+        self.$router.push({
           name: "table",
         });
       }

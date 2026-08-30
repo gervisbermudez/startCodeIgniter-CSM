@@ -43,7 +43,14 @@
                                             <li
                                                 v-for="(option, option_index) in options"
                                                 :key="option_index">
-                                                <a @click="routerPush({option, index, item} )">@{{option.label}}</a>
+                                                <a v-if="option.action === 'delete'" class="modal-trigger" href="#deleteModal" @click="setToDeleteItem(item, index)">
+                                                    <i v-if="option.icon" class="material-icons left">@{{option.icon}}</i>
+                                                    @{{option.label}}
+                                                </a>
+                                                <a v-else @click="runOption(option, index, item)">
+                                                    <i v-if="option.icon" class="material-icons left">@{{option.icon}}</i>
+                                                    @{{option.label}}
+                                                </a>
                                             </li>
                                         </ul>
                                     </span>
@@ -55,22 +62,25 @@
             </div>
         </div>
         <div class="container" v-if="!loader && !filter && data.length == 0 && show_empty_input" v-cloak>
-            <h4>No hay datos para mostrar</h4>
+            <h4 class="page-header">@{{ empty_title || 'No hay datos para mostrar' }}</h4>
+            <a v-if="empty_cta && empty_href" class="btn waves-effect" :href="empty_href" style="background-color: var(--st-accent);">@{{ empty_cta }}</a>
         </div>
         @include('admin.components.pagination')
         <confirm-modal
                 id="deleteModal"
-                title="Confirmar Borrar"
+                :title="confirm_title || 'Confirmar Borrar'"
                 v-on:notify="confirmCallback"
             >
             <p>
-                ¿Desea borrar este item?
+                @{{ confirm_body || '¿Desea borrar este item?' }}
             </p>
         </confirm-modal>
-        <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-            <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped"
+        <div class="fixed-action-btn" v-if="show_fab" style="bottom: 45px; right: 24px;">
+            <a class="btn-floating btn-large waves-effect new tooltipped"
+            v-bind:class="fab_accent ? 'st-fab' : 'red'"
+            v-bind:style="fab_accent ? { backgroundColor: 'var(--st-accent)' } : {}"
             v-on:click="createItem()"
-            data-position="left" data-delay="50" data-tooltip="Add item">
+            data-position="left" data-delay="50" :data-tooltip="fab_tooltip || 'Add item'">
                 <i class="large material-icons">add</i>
             </a>
         </div>

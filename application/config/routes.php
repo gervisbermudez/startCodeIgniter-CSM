@@ -78,6 +78,8 @@ $route['admin/pages/new(/?|)'] = 'admin/PagesController/nueva';
 $route['admin/pages/edit/(:num)(/?|)'] = 'admin/PagesController/editar/$1';
 $route['admin/siteforms/new(/?|)'] = 'admin/SiteFormsController/nuevo';
 $route['admin/siteforms/edit/(:num)(/?|)'] = 'admin/SiteFormsController/editar/$1';
+$route['admin/siteforms/export/(:num)'] = 'admin/SiteFormsController/export/$1';
+$route['admin/siteforms/stats/(:num)'] = 'admin/SiteFormsController/stats/$1';
 $route['admin/menus/new(/?|)'] = 'admin/MenusController/nuevo';
 $route['admin/menus/edit/(:num)(/?|)'] = 'admin/MenusController/editar/$1';
 $route['admin/categories/new(/?|)'] = 'admin/CategoriesController/nueva';
@@ -139,12 +141,6 @@ $route['admin/config/(.+)'] = 'admin/ConfigurationController/$1';
 $route['admin/config'] = 'admin/ConfigurationController';
 $route['admin/configuration/(.+)'] = 'admin/ConfigurationController/$1';
 $route['admin/configuration'] = 'admin/ConfigurationController';
-
-// Siteforms routes
-$route['admin/siteforms/export/(.+)'] = 'admin/SiteFormsController/export/$1';
-$route['admin/siteforms/stats/(.+)'] = 'admin/SiteFormsController/stats/$1';
-$route['admin/siteforms/(.+)'] = 'admin/SiteFormsController/$1';
-$route['admin/siteforms'] = 'admin/SiteFormsController';
 
 // API v1 routes — hyphenated aliases before the catch-all (REST _remap does not convert dashes)
 $route['api/v1/analytics/popular-pages'] = 'api/v1/AnalyticsController/popular_pages';

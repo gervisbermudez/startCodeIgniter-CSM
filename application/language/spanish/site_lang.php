@@ -42,7 +42,16 @@ $lang['videos_private'] = 'Privado';
 $lang['videos_publish_date'] = 'Fecha de publicación';
 $lang['videos_create'] = 'Crear video';
 
+$lang['siteforms_submit'] = 'Enviar';
+$lang['siteforms_wait'] = 'Espera unos minutos antes de volver a enviar el formulario.';
+$lang['siteforms_notification_title'] = 'Envío de formulario recibido';
+$lang['siteforms_notification_body'] = 'Se recibió un registro en el formulario %s';
 $lang['form_submited_title'] = '¡Gracias por completar nuestro formulario!';
+$lang['form_wait_title'] = 'Espera un momento';
+$lang['siteforms_adminbar'] = 'Formulario';
+$lang['siteforms_adminbar_submissions'] = 'Ver envíos';
+$lang['siteforms_adminbar_edit'] = 'Editar formulario';
+$lang['siteforms_adminbar_export'] = 'Exportar datos';
 $lang['form_submited_message'] = '<p>
     Agradecemos que se haya puesto en contacto con nosotros. ¡Nos pondremos en contacto con usted pronto! <br /> Mientras tanto, puede consultar la sección de preguntas frecuentes, revisar nuestra nueva colección de productos o navegar por nuestras últimas publicaciones en el blog. <a href="'.base_url().'">Ir al inicio</a>. <br><br> ¡Que tenga un gran día!</p>';
 

@@ -61,6 +61,44 @@ var dataTable = Vue.component("dataTable", {
       required: false,
       default: null,
     },
+    show_fab: {
+      type: Boolean,
+      default: true,
+    },
+    fab_accent: {
+      type: Boolean,
+      default: false,
+    },
+    fab_tooltip: {
+      type: String,
+      default: "",
+    },
+    empty_title: {
+      type: String,
+      default: "",
+    },
+    empty_cta: {
+      type: String,
+      default: "",
+    },
+    empty_href: {
+      type: String,
+      default: "",
+    },
+    confirm_title: {
+      type: String,
+      default: "",
+    },
+    confirm_body: {
+      type: String,
+      default: "",
+    },
+    query_params: {
+      type: Object,
+      default: function () {
+        return {};
+      },
+    },
   },
   data: function () {
     return {
@@ -164,7 +202,7 @@ var dataTable = Vue.component("dataTable", {
       self.loader = true;
       var url = BASEURL + this.endpoint;
       if (this.pagination) {
-        var query = this.listQuery({}, page);
+        var query = this.listQuery(this.query_params || {}, page);
         var params = [];
         Object.keys(query).forEach(function (key) {
           params.push(encodeURIComponent(key) + "=" + encodeURIComponent(query[key]));
@@ -291,6 +329,31 @@ var dataTable = Vue.component("dataTable", {
         //window.location = BASEURL + "admin/" + this.module + "edit/" + (this.index_data ? item[this.index_data] : index);
       }
       return;
+    },
+    runOption(option, index, item) {
+      if (option.action === "delete") {
+        this.setToDeleteItem(item, index);
+        return;
+      }
+      if (option.action === "archive") {
+        this.archiveItem(item, index);
+        return;
+      }
+      if (option.handler && this.$root && typeof this.$root[option.handler] === "function") {
+        this.$root[option.handler]({ item: item, index: index, option: option });
+        return;
+      }
+      if (option.url) {
+        var url = option.url;
+        if (option.url_param && item[option.url_param] !== undefined) {
+          url += item[option.url_param];
+        }
+        window.location = url.indexOf("http") === 0 ? url : BASEURL + url;
+        return;
+      }
+      if (option.href) {
+        this.routerPush({ option: option, index: index, item: item });
+      }
     },
     routerPush({ option, index, item }) {
       let params = {};
