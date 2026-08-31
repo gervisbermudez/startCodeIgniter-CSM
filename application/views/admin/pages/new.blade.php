@@ -296,12 +296,16 @@
                 <li class="tab">
                     <a href="#page-embed-menu"><?php echo lang('pages_embed_menu'); ?></a>
                 </li>
+                @if(has_permisions('SELECT_GALLERY'))
                 <li class="tab">
                     <a href="#page-embed-album"><?php echo lang('pages_embed_album'); ?></a>
                 </li>
+                @endif
+                @if(has_permisions('SELECT_VIDEOS'))
                 <li class="tab">
                     <a href="#page-embed-video"><?php echo lang('pages_embed_video'); ?></a>
                 </li>
+                @endif
                 <li class="tab">
                     <a href="#page-embed-event"><?php echo lang('pages_embed_event'); ?></a>
                 </li>
@@ -366,6 +370,7 @@
                     <p><?php echo lang('pages_embed_empty'); ?></p>
                 </div>
             </div>
+            @if(has_permisions('SELECT_GALLERY'))
             <div id="page-embed-album" class="page-embed-pane">
                 <div class="page-embed-empty" v-if="embedLoading.album">
                     <div class="preloader-wrapper small active">
@@ -378,14 +383,16 @@
                 </div>
                 <ul class="collection page-embed-list" v-else-if="embedLists.album.length">
                     <li class="collection-item" tabindex="0" v-for="item in embedLists.album" :key="'album-' + item.album_id"
-                        @click="insertEmbedToken('render_album', item.name)"
-                        @keydown.enter.prevent="insertEmbedToken('render_album', item.name)">@{{ item.name }}</li>
+                        @click="insertEmbedToken('render_album', item.album_id)"
+                        @keydown.enter.prevent="insertEmbedToken('render_album', item.album_id)">@{{ item.name }}</li>
                 </ul>
                 <div class="page-embed-empty" v-else>
                     <i class="material-icons" aria-hidden="true">inbox</i>
                     <p><?php echo lang('pages_embed_empty'); ?></p>
                 </div>
             </div>
+            @endif
+            @if(has_permisions('SELECT_VIDEOS'))
             <div id="page-embed-video" class="page-embed-pane">
                 <div class="page-embed-empty" v-if="embedLoading.video">
                     <div class="preloader-wrapper small active">
@@ -398,14 +405,15 @@
                 </div>
                 <ul class="collection page-embed-list" v-else-if="embedLists.video.length">
                     <li class="collection-item" tabindex="0" v-for="item in embedLists.video" :key="'video-' + item.video_id"
-                        @click="insertEmbedToken('render_video', item.nam)"
-                        @keydown.enter.prevent="insertEmbedToken('render_video', item.nam)">@{{ item.nam }}</li>
+                        @click="insertEmbedToken('render_video', item.video_id)"
+                        @keydown.enter.prevent="insertEmbedToken('render_video', item.video_id)">@{{ item.nam }}</li>
                 </ul>
                 <div class="page-embed-empty" v-else>
                     <i class="material-icons" aria-hidden="true">inbox</i>
                     <p><?php echo lang('pages_embed_empty'); ?></p>
                 </div>
             </div>
+            @endif
             <div id="page-embed-event" class="page-embed-pane">
                 <div class="page-embed-empty" v-if="embedLoading.event">
                     <div class="preloader-wrapper small active">

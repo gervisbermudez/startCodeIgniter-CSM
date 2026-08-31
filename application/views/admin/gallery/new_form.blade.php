@@ -101,22 +101,22 @@
             </div>
             <br><br>
             <div class="input-field" id="buttons">
-                <a href="<?php echo base_url('admin/categories/'); ?>" class="btn-flat"><?php echo lang('cancel'); ?></a>
+                <a href="<?php echo base_url('admin/gallery/'); ?>" class="btn-flat"><?php echo lang('cancel'); ?></a>
                 <button type="submit" class="btn btn-primary" @click="save()" :class="{disabled: !btnEnable}">
-                    <span><i class="material-icons right">edit</i> Guardar</span>
+                    <span><i class="material-icons right">edit</i> <?php echo lang('albums_save'); ?></span>
                 </button>
             </div>
         </div>
         <div class="col s12" v-bind:class="{'m2': user_id}" v-cloak v-if="user_id" v-show="!loader">
-            <span class="header grey-text text-darken-2">Adicional <i class="material-icons left">description</i></span>
+            <span class="header grey-text text-darken-2"><?php echo lang('albums_additional'); ?> <i class="material-icons left">description</i></span>
             <p>
-                <b>Creado por</b>:
+                <b><?php echo lang('albums_created_by'); ?></b>:
                 <user-info :user="user" />
             </p>
             <p>
-                <b>Creado</b>: <br>
+                <b><?php echo lang('albums_created'); ?></b>: <br>
                 <span>@{{date_create}}</span> <br><br>
-                <b>Modificado</b>: <br>
+                <b><?php echo lang('albums_modified'); ?></b>: <br>
                 <span>@{{date_update}}</span> <br><br>
                 <b><?php echo lang('published'); ?></b>: <br>
                 <span>@{{date_publish}}</span>

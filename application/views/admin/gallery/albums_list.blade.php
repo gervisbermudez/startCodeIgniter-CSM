@@ -13,10 +13,31 @@
     </div>
     @include('admin.components.page_navbar', [
         'searchInputId' => 'albums-search',
-        'refreshMethod' => 'getAlbums()',
+        'refreshMethod' => 'getAlbums(currentStatus)',
         'navbarShow' => '!loader && albums.length > 0',
         'itemsExpr' => 'filterData',
     ])
+    <div class="row">
+        <div class="col s12">
+            <div class="status-filters" v-cloak v-show="!loader">
+                <div class="status-chip" :class="{active: currentStatus === null}" @click="getAlbums(null)">
+                    <?php echo lang('menu_all'); ?>
+                </div>
+                <div class="status-chip" :class="{active: currentStatus === 1}" @click="getAlbums(1)">
+                    <?php echo lang('published'); ?>
+                </div>
+                <div class="status-chip" :class="{active: currentStatus === 2}" @click="getAlbums(2)">
+                    <?php echo lang('draft'); ?>
+                </div>
+                <div class="status-chip" :class="{active: currentStatus === 3}" @click="getAlbums(3)">
+                    <?php echo lang('archived'); ?>
+                </div>
+                <div class="status-chip" :class="{active: currentStatus === 0}" @click="getAlbums(0)">
+                    <?php echo lang('deleted'); ?>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="pages" v-cloak v-if="!loader && albums.length > 0">
         <div class="row" v-if="tableView">
             <div class="col s12">
@@ -44,15 +65,15 @@
                             </td>
                             <td>
                                 <i v-if="album.status == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('published'); ?>">publish</i>
-                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('draft'); ?>">edit</i>
+                                <i v-else-if="album.status == 2" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('draft'); ?>">edit</i>
+                                <i v-else-if="album.status == 3" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('archived'); ?>">archive</i>
+                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('deleted'); ?>">delete_outline</i>
                             </td>
                             <td>
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + album.album_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + album.album_id' class='dropdown-content'>
-                                    <li><a :href="base_url('admin/pages/editar/' + album.album_id)">{{ lang('edit') }}</a></li>
+                                    <li><a :href="base_url('admin/gallery/editar/' + album.album_id)">{{ lang('edit') }}</a></li>
                                     <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(album, index);">{{ lang('delete') }}</a></li>
-                                    <li v-if="album.status == 2"><a :href="base_url('admin/pages/preview?album_id=' + album.album_id)" target="_blank">{{ lang('preview') }}</a></li>
-                                    <li><a :href="base_url('/admin/gallery/items/' + album.album_id)" target="_blank">{{ lang('view_in_site') }}</a></li>
                                 </ul>
                             </td>
                         </tr>
@@ -74,8 +95,6 @@
                         <ul :id='"dropdown" + album.album_id' class='dropdown-content'>
                             <li><a :href="base_url('admin/gallery/editar/' + album.album_id)">{{ lang('edit') }}</a></li>
                             <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(album, index);">{{ lang('delete') }}</a></li>
-                            <li v-if="album.status == 2"><a :href="base_url('admin/pages/preview?album_id=' + album.album_id)" target="_blank">{{ lang('preview') }}</a></li>
-                            <li><a :href="base_url('/admin/gallery/items/' + album.album_id)" target="_blank">{{ lang('view_in_site') }}</a></li>
                         </ul>
                     </div>
                     <div class="card-content">
@@ -106,8 +125,14 @@
                                 <span v-if="album.status == 1">
                                     <?php echo lang('published'); ?>
                                 </span>
-                                <span v-else>
+                                <span v-else-if="album.status == 2">
                                     <?php echo lang('draft'); ?>
+                                </span>
+                                <span v-else-if="album.status == 3">
+                                    <?php echo lang('archived'); ?>
+                                </span>
+                                <span v-else>
+                                    <?php echo lang('deleted'); ?>
                                 </span>
                             </li>
                         </ul>
@@ -116,8 +141,10 @@
             </div>
         </div>
     </div>
-    <div class="container" v-if="!loader && albums.length == 0" v-cloak>
-        <h4><?php echo lang('no_albums'); ?></h4>
+    <div class="container center" v-if="!loader && albums.length == 0" v-cloak>
+        <i class="material-icons large grey-text">perm_media</i>
+        <p class="page-header"><?php echo lang('albums_empty'); ?></p>
+        <a href="{{ base_url('admin/gallery/new') }}" class="btn"><?php echo lang('albums_empty_cta'); ?></a>
     </div>
     <confirm-modal 
         id="deleteModal" 
@@ -129,11 +156,13 @@
         </p>
     </confirm-modal>
 </div>
+@if(has_permisions('CREATE_GALLERY'))
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('new_album'); ?>" href="{{base_url('admin/gallery/nuevo/')}}">
+    <a class="btn-floating btn-large waves-effect st-accent tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('new_album'); ?>" href="{{base_url('admin/gallery/nuevo/')}}">
         <i class="large material-icons">add</i>
     </a>
 </div>
+@endif
 @endsection
 
 @section('footer_includes')

@@ -68,7 +68,6 @@ var AlbumNewForm = new Vue({
           };
 
           this.items.forEach((element) => {
-            debugger;
             if (element.file.file_id == item.file_id) {
               album_item = element;
             }

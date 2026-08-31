@@ -6,6 +6,7 @@ var AlbumsLists = new Vue({
     tableView: false,
     loader: true,
     filter: "",
+    currentStatus: null,
     toDeleteItem: { item: {}, index: null },
     listEndpoint: "api/v1/albumes",
     listKey: "albums",
@@ -24,6 +25,12 @@ var AlbumsLists = new Vue({
     },
   },
   methods: {
+    listExtraQuery: function () {
+      if (this.currentStatus !== null) {
+        return { status: this.currentStatus };
+      }
+      return {};
+    },
     getPageImagePath: function (album, index) {
       var item = album.items && album.items[index] ? album.items[index] : { file: {} };
       if (item.file && item.file.file_front_path) {
@@ -31,8 +38,11 @@ var AlbumsLists = new Vue({
       }
       return BASEURL + "/public/img/default.jpg";
     },
-    getAlbums: function (page) {
-      this.fetchList(page);
+    getAlbums: function (status) {
+      if (typeof status !== "undefined") {
+        this.currentStatus = status;
+      }
+      this.fetchList();
     },
     delete: function (album, index) {
       this.deleteListItem(album, index);

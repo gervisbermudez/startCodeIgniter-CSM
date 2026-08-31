@@ -68,8 +68,7 @@ var VideosNewForm = new Vue({
         youtubeid: document.getElementById('youtubeid') ? document.getElementById('youtubeid').value : '',
         preview: this.preview || '',
         paypal: document.getElementById('paypal') ? document.getElementById('paypal').value : '',
-        categorias: Array.from(document.querySelectorAll('select[name="categorias[]"] option:checked')).map(o => o.value),
-        status: document.querySelector('input[name="status"]') && document.querySelector('input[name="status"]').checked ? '1' : '0'
+        status: document.querySelector('input[name="status"]') && document.querySelector('input[name="status"]').checked ? '1' : '2'
       };
     },
     runSaveData(callBack) {
@@ -106,6 +105,11 @@ var VideosNewForm = new Vue({
     },
   },
   mounted: function () {
+    var imgInput = document.getElementById('imagen');
+    var existingPreview = imgInput ? imgInput.getAttribute('data-preview') : '';
+    if (existingPreview && !this.preview) {
+      this.preview = existingPreview;
+    }
     this.$nextTick(() => {
       setTimeout(() => {
         this.initPlugins();

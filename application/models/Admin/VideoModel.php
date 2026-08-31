@@ -38,7 +38,14 @@ class VideoModel extends MY_Model
         if (isset($data['preview'])) $insert['preview'] = $data['preview'];
         if (isset($data['payinfo'])) $insert['payinfo'] = $data['payinfo'];
         if (isset($data['fecha'])) $insert['date_publish'] = $data['fecha'];
-        if (isset($data['status'])) $insert['status'] = $data['status'];
+        if (isset($data['status'])) {
+            $insert['status'] = $data['status'];
+        } else {
+            $insert['status'] = 2;
+        }
+        if (!isset($insert['payinfo'])) {
+            $insert['payinfo'] = '';
+        }
 
         // Use MY_Model helper to insert data so behaviour is consistent across models
         $result = $this->set_data($insert);
