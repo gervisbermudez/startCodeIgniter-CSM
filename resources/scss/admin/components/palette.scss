@@ -103,3 +103,8 @@ $colors: (
     color: $color;
   }
 }
+
+.btn-floating.st-accent,
+.btn-floating.btn-large.st-accent {
+  background-color: var(--st-accent);
+}

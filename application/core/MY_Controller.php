@@ -396,21 +396,8 @@ class Base_Controller extends CI_Controller
         // Se obtiene el template de la página
         $data['template'] = $pageInfo->template == 'default' ? 'templates.default' : $pageInfo->template;
 
-        // Se obtiene una cadena de texto a ejecutar desde el contenido de la página
-        $excute_string = get_string_between($data['page']->content, "{{", "}}");
-        // Se obtiene el nombre de la función a ejecutar desde la cadena anterior
-        $excute_fn_name = explode("(", $excute_string)[0];
-
-        // Se obtienen los parámetros de la función a ejecutar
-        $list_params = get_string_between($excute_string, "(", ")");
-        $list_params = $list_params ? explode(",", $list_params) : [];
-
-        // Se verifica si la función es ejecutable
-        if (is_callable($excute_fn_name)) {
-            // Se ejecuta la función con los parámetros obtenidos anteriormente
-            $excute_fn_name_result = call_user_func_array($excute_fn_name, $list_params);
-            // Se reemplaza la cadena anterior por el resultado de la función en el contenido de la página
-            $data['page']->content = str_replace("{{" . $excute_string . "}}", $excute_fn_name_result, $data['page']->content);
+        if (!empty($data['page']->content)) {
+            $data['page']->content = expand_helper_snippets($data['page']->content);
         }
 
         // Se devuelve el array con la información de la página

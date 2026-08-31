@@ -53,7 +53,7 @@ class DashboardController extends REST_Controller
     public function index_get()
     {
         // Intentar obtener datos del caché (v2 = analytics snapshot, not UserTrackingModel::all)
-        $cache_key = 'dashboard_data_v2_' . userdata('user_id');
+        $cache_key = 'dashboard_data_v3_' . userdata('user_id');
         $cached_data = $this->cache->get($cache_key);
 
         if ($cached_data !== FALSE) {
@@ -73,10 +73,13 @@ class DashboardController extends REST_Controller
         $result = array();
 
         $Form_conten = new CustomModelContentModel();
-        $result['content'] = $Form_conten->all();
+        $content = $Form_conten->where(array('status !=' => '0'), array(5), array('custom_model_content_id', 'DESC'));
+        $result['content'] = $content ? $content : array();
 
         $form = new CustomModelModel();
-        $result['forms_types'] = $form->all();
+        $types = $form->all();
+        $result['forms_types'] = $types ? $types : array();
+        $result['collections'] = $result['forms_types'];
 
         $dashboard = new CategorieModel();
         $result['dashboards'] = $dashboard->where(array('parent_id' => '0'));

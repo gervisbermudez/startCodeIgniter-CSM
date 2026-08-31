@@ -4,18 +4,22 @@ var CustomModelContentModule = new Vue({
     debug: DEBUGMODE,
     editMode: false,
     loader: true,
-    form_name: "Nuevo Contenido de Modelo",
+    form_name: "",
     form_description: "",
     date_create: null,
     date_update: null,
     user: {},
     status: true,
+    featured: false,
+    sort_order: 0,
     tabs: [],
     custom_model_id: null,
     custom_model_content_id: null,
     formsElements: formsElements,
     configurable: false,
+    i18n: window.COLLECTIONS_I18N || {},
   },
+  mixins: [mixins],
   methods: {
     getInitialTab() {
       return {
@@ -79,10 +83,10 @@ var CustomModelContentModule = new Vue({
         JSON.parse(JSON.stringify(formField))
       );
 
-      setTimeout(() => {
+      this.$nextTick(function () {
         var elems = document.querySelectorAll(".collapsible:not(#slide-out)");
         M.Collapsible.init(elems, {});
-      }, 2000);
+      });
     },
     getfieldsData() {
       this.debug ? console.log("getfieldsData trigger") : null;
@@ -119,6 +123,8 @@ var CustomModelContentModule = new Vue({
         date_create: this.date_create,
         date_update: this.date_update,
         status: this.status ? 1 : 2,
+        featured: this.featured ? 1 : 0,
+        sort_order: this.sort_order || 0,
         user: this.user,
         tabs: this.tabs,
       };
@@ -135,22 +141,33 @@ var CustomModelContentModule = new Vue({
         type: "POST",
         url: url,
         data: {
-          data: data,
+          data: JSON.stringify(data),
         },
         dataType: "json",
         success: function (response) {
           self.debug ? console.log(url, response) : null;
           if (response.data) {
-            self.custom_model_id = response.data.custom_model_id;
+            if (response.data.custom_model_content_id) {
+              self.custom_model_content_id = response.data.custom_model_content_id;
+            }
+            if (response.data.custom_model_id) {
+              self.custom_model_id = response.data.custom_model_id;
+            }
             self.editMode = true;
             self.loader = false;
-            M.toast({ html: "Datos Guardados" });
+            M.toast({ html: self.i18n.itemSaved || "" });
+            var modelId = self.custom_model_id;
+            var contentId = self.custom_model_content_id;
+            if (modelId && contentId && window.location.href.indexOf("/editData/") === -1) {
+              window.location.href =
+                BASEURL + "admin/custommodels/editData/" + modelId + "/" + contentId;
+            }
           }
         },
         error: function (response) {
           self.loader = false;
           console.log(response);
-          M.toast({ html: "Ocurrió un error" });
+          M.toast({ html: self.i18n.error || "" });
         },
       });
     },
@@ -176,7 +193,8 @@ var CustomModelContentModule = new Vue({
             self.debug ? console.log(url, response) : null;
             if (response.code == "200") {
               if (custom_model_content_id) {
-                self.updateFormData(response.data[0].custom_model);
+                var row = response.data[0] || response.data;
+                self.updateFormData(row.custom_model, row);
               } else {
                 self.updateFormData(response.data);
               }
@@ -184,20 +202,28 @@ var CustomModelContentModule = new Vue({
           },
           error: function (response) {
             self.loader = false;
-            M.toast({ html: "Ocurrió un error" });
+            M.toast({ html: self.i18n.error || "" });
           },
         });
       } else {
         this.loader = false;
       }
     },
-    updateFormData(data) {
+    updateFormData(data, contentRow) {
       this.serverdata = data;
       this.form_name = data.form_name;
       this.form_description = data.form_description;
       this.date_create = data.date_create;
       this.date_update = data.date_update;
-      this.status = data.status == "1";
+      if (contentRow) {
+        this.status = contentRow.status == "1" || contentRow.status == 1;
+        this.featured = contentRow.featured == "1" || contentRow.featured == 1;
+        this.sort_order = contentRow.sort_order ? Number(contentRow.sort_order) : 0;
+      } else {
+        this.status = true;
+        this.featured = false;
+        this.sort_order = 0;
+      }
       this.user = data.user;
       this.tabs = data.tabs.map((element, index) => {
         return {
@@ -214,13 +240,14 @@ var CustomModelContentModule = new Vue({
       });
 
       this.tabs[0].active = true;
-      setTimeout(() => {
+      var self = this;
+      this.$nextTick(function () {
         var elems = document.querySelectorAll(".collapsible:not(#slide-out)");
         M.Collapsible.init(elems, {});
-        var elems = document.querySelectorAll(".modal");
-        var instances = M.Modal.init(elems, {});
-        this.loader = false;
-      }, 2000);
+        elems = document.querySelectorAll(".modal");
+        M.Modal.init(elems, {});
+        self.loader = false;
+      });
     },
   },
   mounted: function () {

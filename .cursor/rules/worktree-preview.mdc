@@ -1,0 +1,55 @@
+---
+description: Preview Docker aislado por worktree; no tocar ci_php56 ni puerto 8081
+alwaysApply: true
+---
+
+# Preview aislado por worktree
+
+Arrancá un Apache **solo** si el usuario pide probar/verificar UI y el cwd es un worktree (`.git` es archivo, o `git rev-parse --git-dir` ≠ `--git-common-dir`). No lo arranques al crear el worktree. En el checkout principal usá `http://localhost:8081`.
+
+## Prohibido
+
+- `docker compose up|down|restart` (cualquier cwd de worktree)
+- `docker stop|rm ci_php56` y cualquier `-p 8081:80`
+- Verificar el worktree en `:8081` (ahí corre **otro** árbol)
+- MySQL extra, clonar `start_cms_db` por defecto, `composer install` en el host, Cloud Agents
+
+## Receta (`docker run`, misma DB, otra imagen montada)
+
+El `.env` copiado ya apunta a `start_cms_db`. Dejalo así. Lo que hay que aislar es **código + puerto + cookie**, no los datos.
+
+```bash
+# cwd = raíz del worktree
+SLUG=$(git branch --show-current | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/_/g' | cut -c1-24 | sed 's/_$//')
+NAME="ci_php_${SLUG}"
+IMAGE=$(docker inspect -f '{{.Config.Image}}' ci_php56)
+```
+
+Si `ci_php56` no existe, pedí al usuario que levante el principal (`docker compose up -d` **en el checkout principal**). No construyas la imagen desde el worktree.
+
+1. Si `docker ps -q -f name=^${NAME}$` ya tiene contenedor, reutilizalo y leé su puerto (`docker port "$NAME" 80`).
+2. Puerto: el primero libre en **8082–8099**. Nunca 8081.
+3. En el `.env` **del worktree** (no el del principal):
+
+```
+APP_BASE_URL=http://localhost:<PORT>/
+SESS_COOKIE_NAME=ci_session_<SLUG>
+```
+
+No cambies `DATABASE_*`. `SESS_COOKIE_NAME` evita que el login en la preview desloguee `:8081` (las cookies de localhost no distinguen puerto).
+4. Apache:
+
+```bash
+docker run -d --name "$NAME" -p "${PORT}:80" \
+  -v "$PWD:/var/www/html" \
+  --add-host host.docker.internal:host-gateway \
+  "$IMAGE"
+```
+
+5. Si tocaste SCSS o `resources/js/`: `npm run build` (o `watch`) **en el worktree**.
+6. Probá `http://localhost:<PORT>/` (admin `/admin/login`, `gerber` / `admin123`). Ejercé el flujo. Si no hay browser, `curl -I` a esa URL y decilo.
+7. Al cerrar la feature o si el usuario pide parar: `docker rm -f "$NAME"`. No `compose down`. No borres `start_cms_db`.
+
+Varios agentes = varios Apache/puertos, **una** DB. Writes (páginas, `site_config`, deletes) se ven también en `:8081`. No corras migraciones destructivas (`DROP`/`ALTER` que rompa columnas) contra esta DB compartida: en ese caso paramí y pedí DB aparte.
+
+`uploads/` es del worktree; las filas `file` son de la DB compartida. Un upload hecho en `:8081` puede 404 en la preview y al revés.

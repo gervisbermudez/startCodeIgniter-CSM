@@ -61,5 +61,5 @@ copy_tree "$ROOT/themes" "themes"
 mkdir -p application/cache uploads trash backups/database
 touch application/cache/.gitkeep uploads/.gitkeep trash/.gitkeep 2>/dev/null || true
 
-echo "Worktree listo (local). No ejecutes docker compose up aquí: puerto 8081 y container ci_php56 viven en el checkout principal."
-echo "Prueba la app en http://localhost:8081 tras merge o /apply-worktree."
+echo "Worktree listo (local). No ejecutes docker compose aquí: ci_php56 y :8081 viven en el checkout principal."
+echo "Para probar este árbol: docker run aislado (puerto 8082+, misma start_cms_db). Ver .cursor/rules/worktree-preview.mdc."

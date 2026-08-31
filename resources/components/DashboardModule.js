@@ -447,7 +447,7 @@ var DashboardModule = new Vue({
               return page;
             })
             : [];
-          this.forms_types = data.forms_types ? data.forms_types : [];
+          this.forms_types = data.collections || data.forms_types || [];
           this.content = data.content
             ? data.content.map((element) => {
               element.user = new User(element.user);
