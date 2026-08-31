@@ -84,12 +84,46 @@ function init_form(string $siteform_name): void
     }
 }
 
+/**
+ * Theme form templates foreach name/value attrs. hire_me seed stores nested JSON strings.
+ */
+function normalize_siteform_loop($value)
+{
+    $guard = 0;
+    while (is_string($value) && $value !== '' && $guard < 8) {
+        $decoded = json_decode($value);
+        if ($decoded === null) {
+            break;
+        }
+        $value = $decoded;
+        $guard++;
+    }
+    if (!is_array($value) && !is_object($value)) {
+        return array();
+    }
+    if (is_array($value)) {
+        return $value;
+    }
+    $asArray = (array) $value;
+    if ($asArray === array() || isset($asArray[0]) || array_key_exists(0, $asArray)) {
+        return array_values($asArray);
+    }
+    $list = array();
+    foreach ($asArray as $name => $val) {
+        $list[] = (object) array(
+            'name' => $name,
+            'value' => is_scalar($val) ? $val : '',
+        );
+    }
+    return $list;
+}
+
 function render_form(string $siteform_name): string
 {
     $ci = &get_instance();
     $ci->load->model('Admin/SiteFormModel');
     $siteform = new SiteFormModel();
-    $result = $siteform->find_with(['name' => $siteform_name]);
+    $result = $siteform->find_with(['name' => $siteform_name, 'status' => 1]);
     if (!$result) {
         return '';
     }
@@ -100,6 +134,16 @@ function render_form(string $siteform_name): string
 
     init_form($siteform_name);
     $ci->rendered_siteform = $siteform;
+
+    $siteform->properties = normalize_siteform_loop($siteform->properties);
+    if ($siteform->siteform_items === false || $siteform->siteform_items === null) {
+        $siteform->siteform_items = array();
+    } else {
+        foreach ($siteform->siteform_items as $item) {
+            $item->properties = normalize_siteform_loop(isset($item->properties) ? $item->properties : null);
+            $item->data = normalize_siteform_loop(isset($item->data) ? $item->data : null);
+        }
+    }
 
     return $ci->blade->view("site.templates.forms." . $siteform->template, ['siteform' => $siteform], true);
 }
@@ -327,7 +371,7 @@ function fragment(string $fragment_name)
     $ci = &get_instance();
     $ci->load->model('Admin/FragmentModel');
     $fragment = new FragmentModel();
-    $result = $fragment->find_with(['name' => $fragment_name]);
+    $result = $fragment->find_with(['name' => $fragment_name, 'status' => 1]);
 
     if (!$result) {
         return '';
@@ -761,30 +805,216 @@ function get_menu($name)
     $ci = &get_instance();
     $ci->load->model('Admin/MenuModel');
     $menu = new MenuModel();
-    $result = $menu->find_with(['name' => $name]);
+    $result = $menu->find_with(['name' => $name, 'status' => 1]);
     return $result ? $menu->as_data() : null;
 }
 
 function render_menu($name)
 {
     $menu = get_menu($name);
-    if ($menu) {
-        $data["menu"] = $menu;
-
-        $ci = &get_instance();
-        $blade = new Blade();
-
-        if (getThemePath()) {
-            if (file_exists(getThemePath() . '' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . 'site' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'menu' . DIRECTORY_SEPARATOR . 'menu.blade.php')) {
-                $blade->changePath(getThemePath());
-            } else {
-                $blade->changePath(APPPATH);
-            }
-        }
-        $rendered_menu = $blade->view("site.templates.menu." . $menu->template, $data, true);
-
-        return $rendered_menu;
+    if (!$menu) {
+        return '';
     }
+
+    $data["menu"] = $menu;
+    $blade = new Blade();
+
+    if (getThemePath()) {
+        if (file_exists(getThemePath() . '' . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . 'site' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . 'menu' . DIRECTORY_SEPARATOR . 'menu.blade.php')) {
+            $blade->changePath(getThemePath());
+        } else {
+            $blade->changePath(APPPATH);
+        }
+    }
+    return $blade->view("site.templates.menu." . $menu->template, $data, true);
+}
+
+/**
+ * Expands whitelist tokens {{helper(name)}} in page HTML. Unknown helpers are left as-is.
+ */
+function expand_page_embeds($html)
+{
+    if (!is_string($html) || $html === '') {
+        return is_string($html) ? $html : '';
+    }
+
+    $whitelist = array(
+        'render_form',
+        'fragment',
+        'render_menu',
+        'render_album',
+        'render_video',
+        'render_event',
+        'get_collection',
+    );
+
+    if (!preg_match_all('/\{\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\((.*?)\)\s*\}\}/s', $html, $matches, PREG_SET_ORDER)) {
+        return $html;
+    }
+
+    foreach ($matches as $match) {
+        $fn = $match[1];
+        if (!in_array($fn, $whitelist, true)) {
+            continue;
+        }
+        $arg = normalize_embed_arg($match[2]);
+        $result = call_user_func($fn, $arg);
+        if ($result === null || $result === false) {
+            $result = '';
+        }
+        $html = str_replace($match[0], (string) $result, $html);
+    }
+
+    return $html;
+}
+
+/**
+ * Token args from Trumbowyg may include entities, &nbsp; or leftover tags.
+ */
+function normalize_embed_arg($arg)
+{
+    if (!is_string($arg)) {
+        return '';
+    }
+    $arg = html_entity_decode($arg, ENT_QUOTES, 'UTF-8');
+    $arg = strip_tags($arg);
+    $arg = str_replace("\xC2\xA0", ' ', $arg);
+    $arg = preg_replace('/\s+/u', ' ', $arg);
+    $arg = trim($arg);
+    $arg = trim($arg, " \t\n\r\0\x0B'\"");
+    return trim($arg);
+}
+
+/**
+ * Exact name first; then published rows whose normalized name matches
+ * (events seed has a leading space: " ¡Únete...").
+ */
+function find_embed_record($model, $field, $name)
+{
+    $name = normalize_embed_arg($name);
+    if ($name === '' || !is_object($model) || $field === '') {
+        return false;
+    }
+    $found = $model->find_with(array($field => $name, 'status' => 1));
+    if ($found) {
+        return $found;
+    }
+    $list = $model->all();
+    if (!$list) {
+        return false;
+    }
+    $pk = $model->primaryKey;
+    foreach ($list as $row) {
+        if (!isset($row->{$field})) {
+            continue;
+        }
+        if (normalize_embed_arg($row->{$field}) === $name && !empty($row->{$pk})) {
+            return $model->find_with(array($pk => $row->{$pk}, 'status' => 1));
+        }
+    }
+    return false;
+}
+
+/**
+ * Theme view if present, otherwise core APPPATH fallback.
+ */
+function render_embed_view($view, $data)
+{
+    $blade = new Blade();
+    $relative = str_replace('.', DIRECTORY_SEPARATOR, $view) . '.blade.php';
+    $themePath = getThemePath();
+    if ($themePath && file_exists($themePath . DIRECTORY_SEPARATOR . 'views' . DIRECTORY_SEPARATOR . $relative)) {
+        $blade->changePath($themePath);
+    } else {
+        $blade->changePath(APPPATH);
+    }
+    return $blade->view($view, $data, true);
+}
+
+function render_album($name)
+{
+    $name = normalize_embed_arg($name);
+    if ($name === '') {
+        return '';
+    }
+
+    $ci = &get_instance();
+    $ci->load->model('Admin/AlbumModel');
+    $album = new AlbumModel();
+    $result = find_embed_record($album, 'name', $name);
+    if (!$result) {
+        return '';
+    }
+
+    $items = array();
+    if (!empty($album->items)) {
+        foreach ($album->items as $item) {
+            $items[] = $item;
+        }
+    }
+    return render_embed_view('site.templates.albums.default', array(
+        'album' => $album,
+        'items' => $items,
+    ));
+}
+
+function render_video($name)
+{
+    $name = normalize_embed_arg($name);
+    if ($name === '') {
+        return '';
+    }
+
+    $ci = &get_instance();
+    $ci->load->model('Admin/VideoModel');
+    $video = new VideoModel();
+    $result = find_embed_record($video, 'nam', $name);
+    if (!$result) {
+        return '';
+    }
+
+    $youtube_id = trim((string) $video->youtube_id);
+    if (preg_match('/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{6,})/', $youtube_id, $m)) {
+        $youtube_id = $m[1];
+    }
+
+    return render_embed_view('site.templates.videos.default', array(
+        'video' => $video,
+        'youtube_id' => $youtube_id,
+    ));
+}
+
+function render_event($name)
+{
+    $name = normalize_embed_arg($name);
+    if ($name === '') {
+        return '';
+    }
+
+    $ci = &get_instance();
+    $ci->load->model('Admin/EventModel');
+    $event = new EventModel();
+    $result = find_embed_record($event, 'name', $name);
+    if (!$result) {
+        return '';
+    }
+
+    $excerpt = '';
+    if (!empty($event->subtitle)) {
+        $excerpt = $event->subtitle;
+    } elseif (!empty($event->content)) {
+        $excerpt = strip_tags($event->content);
+        if (function_exists('mb_substr') && mb_strlen($excerpt) > 220) {
+            $excerpt = mb_substr($excerpt, 0, 220) . '...';
+        } elseif (strlen($excerpt) > 220) {
+            $excerpt = substr($excerpt, 0, 220) . '...';
+        }
+    }
+
+    return render_embed_view('site.templates.events.default', array(
+        'event' => $event,
+        'excerpt' => $excerpt,
+    ));
 }
 
 function get_string_between($string, $start, $end)

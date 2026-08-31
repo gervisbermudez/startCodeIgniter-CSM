@@ -397,7 +397,8 @@ class Base_Controller extends CI_Controller
         $data['template'] = $pageInfo->template == 'default' ? 'templates.default' : $pageInfo->template;
 
         if (!empty($data['page']->content)) {
-            $data['page']->content = expand_helper_snippets($data['page']->content);
+            $this->load->helper('general');
+            $data['page']->content = expand_page_embeds($data['page']->content);
         }
 
         // Se devuelve el array con la información de la página

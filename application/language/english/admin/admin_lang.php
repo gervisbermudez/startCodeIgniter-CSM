@@ -245,6 +245,14 @@ $lang['pages_date'] = 'Date:';
 $lang['pages_time'] = 'Time:';
 $lang['pages_add_image'] = 'Add Image';
 $lang['pages_remove_image'] = 'Remove Image';
+$lang['pages_insert_content'] = 'Insert content';
+$lang['pages_embed_form'] = 'Form';
+$lang['pages_embed_fragment'] = 'Fragment';
+$lang['pages_embed_menu'] = 'Menu';
+$lang['pages_embed_album'] = 'Album';
+$lang['pages_embed_video'] = 'Video';
+$lang['pages_embed_event'] = 'Event';
+$lang['pages_embed_empty'] = 'No published items';
 
 // Fragments
 $lang['fragments_new'] = 'New Fragment';

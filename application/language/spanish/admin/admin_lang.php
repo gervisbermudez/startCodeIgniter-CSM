@@ -34,6 +34,14 @@ $lang['menu_api_log'] = 'Log de API';
 $lang['menu_system_log'] = 'Log de sistema';
 $lang['menu_user_tracking'] = 'Tracking de usuarios';
 $lang['not_have_permissions'] = 'No tienes permisos para ver esto';
+$lang['pages_insert_content'] = 'Insertar contenido';
+$lang['pages_embed_form'] = 'Formulario';
+$lang['pages_embed_fragment'] = 'Fragmento';
+$lang['pages_embed_menu'] = 'Menú';
+$lang['pages_embed_album'] = 'Álbum';
+$lang['pages_embed_video'] = 'Video';
+$lang['pages_embed_event'] = 'Evento';
+$lang['pages_embed_empty'] = 'No hay elementos publicados';
 
 $lang['tooltip_new_collection'] = 'Nueva colección';
 $lang['tooltip_new_page'] = 'Nueva página';

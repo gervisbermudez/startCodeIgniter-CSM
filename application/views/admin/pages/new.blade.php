@@ -61,7 +61,7 @@
                         <div class="card mainPageImage">
                             <div class="card-image">
                                 <i class="material-icons right close tooltipped" data-position="left" data-delay="50"
-                                    :data-tooltip="lang('pages_remove_image')" v-on:click="removeImage(index);">close</i>
+                                    data-tooltip="<?php echo lang('pages_remove_image'); ?>" v-on:click="removeImage(index);">close</i>
                                 <img class="materialboxed" :src="getFileImagenPath(image)" />
                             </div>
                             <span class="card-title truncate"><span>@{{ getFileImagenName(image) }}</span></span>
@@ -191,6 +191,13 @@
                         </li>
                     </ul>
                 </div>
+                <div class="page-embed-toolbar">
+                    <button type="button" class="waves-effect waves-light btn page-embed-insert-btn"
+                        @click.prevent="openEmbedModal"
+                        aria-label="<?php echo lang('pages_insert_content'); ?>">
+                        <i class="material-icons left" aria-hidden="true">add_box</i><?php echo lang('pages_insert_content'); ?>
+                    </button>
+                </div>
                 <div class="row">
                     <a v-if="!status" class="btn bg-color3" target="_blank" :href="preview_link"
                         :class="{disabled: !btnEnable}">
@@ -274,6 +281,154 @@
                     <span v-if="status && !btnEnable"><i class="material-icons right">publish</i> Publicar</span>
                 </button>
             </div>
+        </div>
+    </div>
+    <div id="pageEmbedModal" class="modal modal-fixed-footer page-embed-modal">
+        <div class="modal-content">
+            <p class="page-header"><?php echo lang('pages_insert_content'); ?></p>
+            <ul class="tabs" id="pageEmbedTabs">
+                <li class="tab">
+                    <a class="active" href="#page-embed-form"><?php echo lang('pages_embed_form'); ?></a>
+                </li>
+                <li class="tab">
+                    <a href="#page-embed-fragment"><?php echo lang('pages_embed_fragment'); ?></a>
+                </li>
+                <li class="tab">
+                    <a href="#page-embed-menu"><?php echo lang('pages_embed_menu'); ?></a>
+                </li>
+                <li class="tab">
+                    <a href="#page-embed-album"><?php echo lang('pages_embed_album'); ?></a>
+                </li>
+                <li class="tab">
+                    <a href="#page-embed-video"><?php echo lang('pages_embed_video'); ?></a>
+                </li>
+                <li class="tab">
+                    <a href="#page-embed-event"><?php echo lang('pages_embed_event'); ?></a>
+                </li>
+            </ul>
+            <div id="page-embed-form" class="page-embed-pane">
+                <div class="page-embed-empty" v-if="embedLoading.form">
+                    <div class="preloader-wrapper small active">
+                        <div class="spinner-layer">
+                            <div class="circle-clipper left"><div class="circle"></div></div>
+                            <div class="gap-patch"><div class="circle"></div></div>
+                            <div class="circle-clipper right"><div class="circle"></div></div>
+                        </div>
+                    </div>
+                </div>
+                <ul class="collection page-embed-list" v-else-if="embedLists.form.length">
+                    <li class="collection-item" tabindex="0" v-for="item in embedLists.form" :key="'form-' + item.siteform_id"
+                        @click="insertEmbedToken('render_form', item.name)"
+                        @keydown.enter.prevent="insertEmbedToken('render_form', item.name)">@{{ item.name }}</li>
+                </ul>
+                <div class="page-embed-empty" v-else>
+                    <i class="material-icons" aria-hidden="true">inbox</i>
+                    <p><?php echo lang('pages_embed_empty'); ?></p>
+                </div>
+            </div>
+            <div id="page-embed-fragment" class="page-embed-pane">
+                <div class="page-embed-empty" v-if="embedLoading.fragment">
+                    <div class="preloader-wrapper small active">
+                        <div class="spinner-layer">
+                            <div class="circle-clipper left"><div class="circle"></div></div>
+                            <div class="gap-patch"><div class="circle"></div></div>
+                            <div class="circle-clipper right"><div class="circle"></div></div>
+                        </div>
+                    </div>
+                </div>
+                <ul class="collection page-embed-list" v-else-if="embedLists.fragment.length">
+                    <li class="collection-item" tabindex="0" v-for="item in embedLists.fragment" :key="'frag-' + item.fragment_id"
+                        @click="insertEmbedToken('fragment', item.name)"
+                        @keydown.enter.prevent="insertEmbedToken('fragment', item.name)">@{{ item.name }}</li>
+                </ul>
+                <div class="page-embed-empty" v-else>
+                    <i class="material-icons" aria-hidden="true">inbox</i>
+                    <p><?php echo lang('pages_embed_empty'); ?></p>
+                </div>
+            </div>
+            <div id="page-embed-menu" class="page-embed-pane">
+                <div class="page-embed-empty" v-if="embedLoading.menu">
+                    <div class="preloader-wrapper small active">
+                        <div class="spinner-layer">
+                            <div class="circle-clipper left"><div class="circle"></div></div>
+                            <div class="gap-patch"><div class="circle"></div></div>
+                            <div class="circle-clipper right"><div class="circle"></div></div>
+                        </div>
+                    </div>
+                </div>
+                <ul class="collection page-embed-list" v-else-if="embedLists.menu.length">
+                    <li class="collection-item" tabindex="0" v-for="item in embedLists.menu" :key="'menu-' + item.menu_id"
+                        @click="insertEmbedToken('render_menu', item.name)"
+                        @keydown.enter.prevent="insertEmbedToken('render_menu', item.name)">@{{ item.name }}</li>
+                </ul>
+                <div class="page-embed-empty" v-else>
+                    <i class="material-icons" aria-hidden="true">inbox</i>
+                    <p><?php echo lang('pages_embed_empty'); ?></p>
+                </div>
+            </div>
+            <div id="page-embed-album" class="page-embed-pane">
+                <div class="page-embed-empty" v-if="embedLoading.album">
+                    <div class="preloader-wrapper small active">
+                        <div class="spinner-layer">
+                            <div class="circle-clipper left"><div class="circle"></div></div>
+                            <div class="gap-patch"><div class="circle"></div></div>
+                            <div class="circle-clipper right"><div class="circle"></div></div>
+                        </div>
+                    </div>
+                </div>
+                <ul class="collection page-embed-list" v-else-if="embedLists.album.length">
+                    <li class="collection-item" tabindex="0" v-for="item in embedLists.album" :key="'album-' + item.album_id"
+                        @click="insertEmbedToken('render_album', item.name)"
+                        @keydown.enter.prevent="insertEmbedToken('render_album', item.name)">@{{ item.name }}</li>
+                </ul>
+                <div class="page-embed-empty" v-else>
+                    <i class="material-icons" aria-hidden="true">inbox</i>
+                    <p><?php echo lang('pages_embed_empty'); ?></p>
+                </div>
+            </div>
+            <div id="page-embed-video" class="page-embed-pane">
+                <div class="page-embed-empty" v-if="embedLoading.video">
+                    <div class="preloader-wrapper small active">
+                        <div class="spinner-layer">
+                            <div class="circle-clipper left"><div class="circle"></div></div>
+                            <div class="gap-patch"><div class="circle"></div></div>
+                            <div class="circle-clipper right"><div class="circle"></div></div>
+                        </div>
+                    </div>
+                </div>
+                <ul class="collection page-embed-list" v-else-if="embedLists.video.length">
+                    <li class="collection-item" tabindex="0" v-for="item in embedLists.video" :key="'video-' + item.video_id"
+                        @click="insertEmbedToken('render_video', item.nam)"
+                        @keydown.enter.prevent="insertEmbedToken('render_video', item.nam)">@{{ item.nam }}</li>
+                </ul>
+                <div class="page-embed-empty" v-else>
+                    <i class="material-icons" aria-hidden="true">inbox</i>
+                    <p><?php echo lang('pages_embed_empty'); ?></p>
+                </div>
+            </div>
+            <div id="page-embed-event" class="page-embed-pane">
+                <div class="page-embed-empty" v-if="embedLoading.event">
+                    <div class="preloader-wrapper small active">
+                        <div class="spinner-layer">
+                            <div class="circle-clipper left"><div class="circle"></div></div>
+                            <div class="gap-patch"><div class="circle"></div></div>
+                            <div class="circle-clipper right"><div class="circle"></div></div>
+                        </div>
+                    </div>
+                </div>
+                <ul class="collection page-embed-list" v-else-if="embedLists.event.length">
+                    <li class="collection-item" tabindex="0" v-for="item in embedLists.event" :key="'event-' + item.event_id"
+                        @click="insertEmbedToken('render_event', item.name)"
+                        @keydown.enter.prevent="insertEmbedToken('render_event', item.name)">@{{ item.name }}</li>
+                </ul>
+                <div class="page-embed-empty" v-else>
+                    <i class="material-icons" aria-hidden="true">inbox</i>
+                    <p><?php echo lang('pages_embed_empty'); ?></p>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close btn-flat"><?php echo lang('cancel'); ?></a>
         </div>
     </div>
     <file-explorer-selector :uploader="'single'" :preselected="[]" :modal="'fileUploader'" :mode="'files'"

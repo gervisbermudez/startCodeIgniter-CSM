@@ -77,3 +77,71 @@
     }
   }
 }
+
+.page-embed-toolbar {
+  margin: 1.25rem 0 0.75rem;
+
+  .page-embed-insert-btn {
+    width: 100%;
+  }
+}
+
+.page-embed-modal {
+  color: var(--st-text);
+
+  .page-header {
+    margin: 0 0 1rem;
+  }
+
+  .tabs .tab a {
+    color: var(--st-text-secondary);
+  }
+
+  .tabs .tab a.active,
+  .tabs .tab a:hover,
+  .tabs .tab a:focus {
+    color: var(--st-interactive);
+  }
+
+  .tabs .indicator {
+    background-color: var(--st-interactive);
+  }
+
+  .page-embed-pane {
+    padding-top: 1rem;
+  }
+
+  .page-embed-list {
+    max-height: 320px;
+    overflow-y: auto;
+    margin: 0;
+  }
+
+  .page-embed-list .collection-item {
+    cursor: pointer;
+    color: var(--st-text);
+    background-color: var(--st-surface);
+  }
+
+  .page-embed-list .collection-item:hover,
+  .page-embed-list .collection-item:focus {
+    background-color: var(--st-canvas);
+    outline: none;
+  }
+
+  .page-embed-empty {
+    color: var(--st-text-secondary);
+    text-align: center;
+    padding: 1.5rem 0;
+  }
+
+  .page-embed-empty .material-icons {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .page-embed-empty .spinner-layer {
+    border-color: var(--st-interactive);
+  }
+}
