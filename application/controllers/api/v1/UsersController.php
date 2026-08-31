@@ -168,10 +168,34 @@ class UsersController extends REST_Controller
         $user->user_data = $this->input->post('user_data');
         if (!$this->input->post('user_id')) {
             $user->user_data['create_by_id'] = userdata('user_id');
+            $user->date_create = date('Y-m-d H:i:s');
+            $user->date_update = $user->date_create;
         }
         if ($user->save()) {
-            system_logger('users', $user->user_id, ($this->input->post('user_id') ? "updated" : "created"),
-                ($this->input->post('user_id') ? "A user has been updated" : "A user has been created"));
+            $is_create = !$this->input->post('user_id');
+            system_logger('users', $user->user_id, ($is_create ? "created" : "updated"),
+                ($is_create ? "A user has been created" : "A user has been updated"));
+            if ($is_create) {
+                $exclude = array((int) userdata('user_id'), (int) $user->user_id);
+                $recipients = array();
+                $others = (new UserModel())->all();
+                if ($others) {
+                    foreach ($others as $other) {
+                        if (!in_array((int) $other->user_id, $exclude, true)) {
+                            $recipients[] = $other->user_id;
+                        }
+                    }
+                }
+                if (!empty($recipients)) {
+                    set_notification(
+                        lang('notification_user_created_title'),
+                        sprintf(lang('notification_user_created_desc'), $user->username),
+                        'user_created',
+                        'admin/users/ver/' . $user->user_id,
+                        $recipients
+                    );
+                }
+            }
             $this->response_ok($user);
             return;
         }

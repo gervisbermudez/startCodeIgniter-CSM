@@ -86,7 +86,7 @@ El front **no** usa la API REST. Igual que el blog: `PageController` carga `Even
 
 ## 5. Schema + migración
 
-Archivo: `application/database/migrations/005_events_core.sql`.
+Archivo: `application/database/migrations/007_events_core.sql`.
 
 Si al mergear ya existiera un `005_*` de otra rama, renumerar al siguiente libre. No reescribir dumps de `start.sql`; **sí** actualizar el `CREATE TABLE events` canónico para installs nuevas.
 
@@ -124,7 +124,7 @@ Insertar filas en `usergroup_permisions` para el grupo admin (el mismo `usergrou
 Aplicar a mano contra MySQL de esta máquina (CI3 migrations no es el flujo). Ejemplo:
 
 ```bash
-docker exec -i ci_php56 mysql -h host.docker.internal -u ... -p... < application/database/migrations/005_events_core.sql
+docker exec -i ci_php56 mysql -h host.docker.internal -u ... -p... < application/database/migrations/007_events_core.sql
 ```
 
 Usar credenciales de `.env`. No commitear `.env`.
@@ -349,7 +349,7 @@ No abrir el front antes de que `date_start` y `slug` existan y se persistan.
 
 | Archivo | Cambio |
 |---|---|
-| `application/database/migrations/005_events_core.sql` | **Nuevo** |
+| `application/database/migrations/007_events_core.sql` | **Nuevo** |
 | `application/database/start.sql` | Solo `CREATE TABLE events` + INSERTs de `permisions` / `usergroup_permisions` (no reformatear dumps) |
 | `application/models/Admin/EventModel.php` | Métodos + searchable |
 | `application/controllers/api/v1/EventsController.php` | Persistencia, status_post, ACL, logger |
@@ -434,5 +434,5 @@ Haz el core loop de Events: date_start/date_end, slug, persistir date_publish, A
 
 No implementes RSVP, tickets, recurrencia, ICS, ni el picker de embeds de New Page.
 
-Aplica la migración 005_events_core.sql a mano contra MySQL. Verifica el flujo en http://localhost:8081 si este código está servido (apply-worktree / merge); si no, deja el código listo y di qué no corriste. Un idioma por pantalla, lang(), DESIGN.md para UI admin.
+Aplica la migración 007_events_core.sql a mano contra MySQL. Verifica el flujo en http://localhost:8081 si este código está servido (apply-worktree / merge); si no, deja el código listo y di qué no corriste. Un idioma por pantalla, lang(), DESIGN.md para UI admin.
 ```

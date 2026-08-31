@@ -17,8 +17,9 @@ Credenciales por defecto: `gerber` / `admin123`. `.env` desde `.env.example` (My
 Aislamiento **local** (sin Cloud Agents). Al crear un worktree, Cursor corre `.cursor/setup-worktree-unix.sh` (vía `.cursor/worktrees.json`): copia `.env`, `vendor/`, `node_modules/` y `themes/` desde el checkout principal.
 
 - Una feature = un chat = `/worktree`. No Cloud, no `/in-cloud`, no `/best-of-n` salvo que se pida.
-- No `docker compose up` en el worktree: el stack es el del checkout principal (`ci_php56`, puerto 8081).
-- Verificar UI en `http://localhost:8081` tras merge o `/apply-worktree`.
+- El principal es `ci_php56` en `http://localhost:8081` (volume = checkout principal). Un `docker compose up` en el worktree **pisa** ese contenedor y el puerto.
+- Para probar la feature **antes** de merge: Apache aislado con `docker run` (puerto `8082+`, misma `start_cms_db`). Protocolo en `.cursor/rules/worktree-preview.mdc`.
+- Tras merge o `/apply-worktree`, el principal sigue en `http://localhost:8081`.
 
 ## Mapa del repo
 

@@ -585,21 +585,25 @@
     </div>
 </div>
 <div class="fixed-action-btn">
-    <a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_form') }}"
-        class="btn-floating btn-large tooltipped red" href="{{base_url('admin/custommodels/new')}}">
+    <a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_page') }}"
+        class="btn-floating btn-large tooltipped st-accent" href="{{base_url('admin/pages/new/')}}">
         <i class="large material-icons">add</i>
     </a>
     <ul>
+        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_page') }}"
+                class="btn-floating tooltipped st-accent" href="{{base_url('admin/pages/new/')}}"><i
+                    class="material-icons">web</i></a></li>
         @if(has_permisions('CREATE_USER'))
-        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_user') }}" class="btn-floating tooltipped red"
+        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_user') }}" class="btn-floating tooltipped"
                 href="{{base_url('admin/users/add')}}"><i class="material-icons">perm_identity</i></a></li>
         @endif
-        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_page') }}"
-                class="btn-floating tooltipped yellow darken-1" href="{{base_url('admin/pages/new/')}}"><i
-                    class="material-icons">web</i></a></li>
-        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_album') }}" class="btn-floating tooltipped green"
+        @if(has_permisions('CREATE_FORM_CUSTOM'))
+        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_collection') }}" class="btn-floating tooltipped"
+                href="{{base_url('admin/custommodels/new')}}"><i class="material-icons">view_module</i></a></li>
+        @endif
+        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_album') }}" class="btn-floating tooltipped"
                 href="{{base_url('admin/gallery/new/')}}"><i class="material-icons">publish</i></a></li>
-        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_event') }}" class="btn-floating tooltipped blue"
+        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_event') }}" class="btn-floating tooltipped"
                 href="{{ base_url('admin/events/add/') }}"><i class="material-icons">event</i></a></li>
     </ul>
 </div>

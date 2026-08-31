@@ -340,8 +340,10 @@ class PageController extends Base_Controller
     private function process_form_submit()
     {
         $this->load->model('Admin/SiteFormSubmitModel');
+        $this->load->model('Admin/SiteFormModel');
+        $form_reference = $this->input->post('form_reference');
         $siteFormSubmit = new SiteFormSubmitModel();
-        $siteFormSubmit->siteform_id = $this->input->post('form_reference');
+        $siteFormSubmit->siteform_id = $form_reference;
         $siteFormSubmit->user_tracking_id = userdata('user_tracking_id');
         $siteFormSubmit->date_create = date("Y-m-d H:i:s");
         $siteFormSubmit->date_create = date("Y-m-d H:i:s");
@@ -352,7 +354,17 @@ class PageController extends Base_Controller
 
         $result = $siteFormSubmit->save();
 
-        set_notification("Recibido mensaje formulario", "Se recibió un registro en el formulario " . $this->input->post('form_reference'), "form_submit", "/admin/siteforms/submit/#/details/" . $siteFormSubmit->siteform_submit_id);
+        $siteform = new SiteFormModel();
+        $found = $siteform->find($form_reference);
+        if ($found && siteform_should_notify($siteform)) {
+            $form_label = $siteform->name ? $siteform->name : $form_reference;
+            set_notification(
+                lang('notification_form_submit_title'),
+                sprintf(lang('notification_form_submit_desc'), $form_label),
+                'form_submit',
+                'admin/siteforms/submit/#/details/' . $siteFormSubmit->siteform_submit_id
+            );
+        }
 
         return $result;
     }

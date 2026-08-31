@@ -375,6 +375,41 @@ class SiteformsController extends REST_Controller
      *
      * @return Response
      */
+    /**
+     * Persist siteform.properties.notify (default true).
+     */
+    public function notify_post()
+    {
+        $name = $this->input->post('name');
+        $notify = $this->input->post('notify');
+        if ($name === null || $name === '') {
+            $this->response_error(lang('not_found_error'));
+            return;
+        }
+        $siteform = new SiteFormModel();
+        if (!$siteform->find_with(array('name' => $name))) {
+            $this->response_error(lang('not_found_error'));
+            return;
+        }
+        $props = $siteform->properties;
+        if (is_string($props)) {
+            $props = json_decode($props, true);
+        } elseif (is_object($props)) {
+            $props = (array) $props;
+        }
+        if (!is_array($props)) {
+            $props = array();
+        }
+        $enabled = ($notify === true || $notify === 'true' || $notify === '1' || $notify === 1);
+        $props['notify'] = $enabled;
+        $siteform->properties = json_encode($props);
+        if ($siteform->save()) {
+            $this->response_ok($siteform);
+            return;
+        }
+        $this->response_error(lang('unexpected_error'), [], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
+    }
+
     public function submit_archive_post($id = null)
     {
         $SiteFormSubmit = new SiteFormSubmitModel();

@@ -207,24 +207,18 @@
         <li class="{{ isSectionActive('custommodels') }}">
             <div class="collapsible-header waves-effect">
                 <i class="material-icons" aria-hidden="true">view_module</i>
-                <span>{{ lang('menu_models') }}</span>
+                <span>{{ lang('menu_collections') }}</span>
             </div>
             <div class="collapsible-body">
                 <ul>
                     @if(has_permisions('SELECT_FORM_CUSTOMS'))
-                    <li class="{{ isNavItemActive(array('admin/custommodels', 'admin/custommodels/edit*')) }}">
-                        <a class="waves-effect" href="{{ base_url('admin/custommodels/') }}" {!! navCurrentAttr(array('admin/custommodels', 'admin/custommodels/edit*')) !!}>{{ lang('menu_all') }}</a>
+                    <li class="{{ isNavItemActive(array('admin/custommodels', 'admin/custommodels/edit*', 'admin/custommodels/editForm*', 'admin/custommodels/items*', 'admin/custommodels/addData*', 'admin/custommodels/editData*')) }}">
+                        <a class="waves-effect" href="{{ base_url('admin/custommodels/') }}" {!! navCurrentAttr(array('admin/custommodels', 'admin/custommodels/edit*', 'admin/custommodels/editForm*', 'admin/custommodels/items*', 'admin/custommodels/addData*', 'admin/custommodels/editData*')) !!}>{{ lang('menu_all') }}</a>
                     </li>
                     @endif
                     @if(has_permisions('CREATE_FORM_CUSTOM'))
                     <li class="{{ isNavItemActive('admin/custommodels/new') }}">
                         <a class="waves-effect" href="{{ base_url('admin/custommodels/new') }}" {!! navCurrentAttr('admin/custommodels/new') !!}>{{ lang('menu_new') }}</a>
-                    </li>
-                    @endif
-                    @if(has_permisions('SELECT_CONTENT_DATA'))
-                    <li class="{{ isNavItemActive('admin/custommodels/content*') }}">
-                        <a class="waves-effect" href="{{ base_url('admin/custommodels/content') }}" {!! navCurrentAttr('admin/custommodels/content*') !!}>
-                            {{ lang('menu_contents') }}</a>
                     </li>
                     @endif
                 </ul>

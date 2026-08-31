@@ -9,10 +9,14 @@
 @endsection
 
 @section('content')
+@include('admin.custommodels.i18n')
 <div class="container formModule form" id="root">
     <div class="row">
         <div class="col s12">
             <h3 class="page-header">{{$h1}}</h3>
+            @isset($collection_name)
+            <p>{{ $collection_name }}</p>
+            @endisset
         </div>
     </div>
     <div class="col s12 center" v-bind:class="{ hide: !loader }">
@@ -44,21 +48,33 @@
             </div>
         </div>
         <div class="row">
-            <div class="form-group">
+            <div class="input-field col s12 m4">
+                <label>
+                    <input type="checkbox" class="filled-in" v-model="featured">
+                    <span><?= lang('collections_featured') ?></span>
+                </label>
+            </div>
+            <div class="input-field col s12 m4">
+                <input id="sort_order" type="number" v-model.number="sort_order">
+                <label for="sort_order" class="active"><?= lang('collections_sort_order') ?></label>
+            </div>
+            <div class="form-group col s12 m4">
                 <?= lang('custommodels_content_table_status') ?>
                 <div class="switch">
                     <label>
                         <?= lang('custommodels_content_draft') ?>
-                        <input type="checkbox" checked v-model="status" name="status" value="on">
+                        <input type="checkbox" v-model="status" name="status" value="on">
                         <span class="lever"></span>
                         <?= lang('custommodels_content_published') ?>
                     </label>
                 </div>
             </div>
             <br>
-            <div class="col s12 text-center form-group" class="" id="buttons">
-                <a href="<?php echo base_url('admin/custommodels/'); ?>" class="btn waves-effect waves-teal btn-flat"><?= lang('btn_cancel') ?></a>
-                <a class="waves-effect waves-light btn waves-effect waves-teal" @click="saveData()"><i class="material-icons left">cloud</i> <?= lang('btn_save') ?></a>
+            <div class="col s12 text-center form-group" id="buttons">
+                <a :href="base_url('admin/custommodels/items/' + custom_model_id)" class="btn waves-effect waves-teal btn-flat"><?= lang('btn_cancel') ?></a>
+                <button type="button" class="waves-effect waves-light btn" @click="saveData()">
+                    <i class="material-icons left">cloud</i> <?= lang('btn_save') ?>
+                </button>
             </div>
         </div>
     </div>

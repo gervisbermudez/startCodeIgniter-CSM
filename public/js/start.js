@@ -379,7 +379,10 @@ var mixins = {
       };
     },
     base_url: function (path) {
-      // Función para obtener la URL base
+      if (!path) {
+        return BASEURL;
+      }
+      path = String(path).replace(/^\//, "");
       return BASEURL + path;
     },
     getcontentText: function (html, length) {

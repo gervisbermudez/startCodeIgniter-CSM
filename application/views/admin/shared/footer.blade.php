@@ -12,7 +12,19 @@ window.ADMIN_LANG = {
   toast_archived: <?php echo json_encode(lang('toast_archived')); ?>,
   toast_done: <?php echo json_encode(lang('toast_done')); ?>,
   toast_duplicated: <?php echo json_encode(lang('toast_duplicated')); ?>,
-  toast_restored: <?php echo json_encode(lang('toast_restored')); ?>
+  toast_restored: <?php echo json_encode(lang('toast_restored')); ?>,
+  notifications_title: <?php echo json_encode(lang('notifications_title')); ?>,
+  notifications_all: <?php echo json_encode(lang('notifications_all')); ?>,
+  notifications_unread: <?php echo json_encode(lang('notifications_unread')); ?>,
+  notifications_read: <?php echo json_encode(lang('notifications_read')); ?>,
+  notifications_filter_all: <?php echo json_encode(lang('notifications_filter_all')); ?>,
+  notifications_empty: <?php echo json_encode(lang('notifications_empty')); ?>,
+  notifications_empty_hint: <?php echo json_encode(lang('notifications_empty_hint')); ?>,
+  notifications_view_all: <?php echo json_encode(lang('notifications_view_all')); ?>,
+  notifications_mark_read: <?php echo json_encode(lang('notifications_mark_read')); ?>,
+  notifications_mark_all: <?php echo json_encode(lang('notifications_mark_all')); ?>,
+  notifications_bell: <?php echo json_encode(lang('notifications_bell')); ?>,
+  notifications_marked: <?php echo json_encode(lang('notifications_marked')); ?>
 };
 function lang(key) {
   var dict = window.ADMIN_LANG || {};

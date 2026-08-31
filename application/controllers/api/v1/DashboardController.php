@@ -53,7 +53,7 @@ class DashboardController extends REST_Controller
     public function index_get()
     {
         // Intentar obtener datos del caché (v2 = analytics snapshot, not UserTrackingModel::all)
-        $cache_key = 'dashboard_data_v2_' . userdata('user_id');
+        $cache_key = 'dashboard_data_v3_' . userdata('user_id');
         $cached_data = $this->cache->get($cache_key);
 
         if ($cached_data !== FALSE) {
@@ -73,10 +73,13 @@ class DashboardController extends REST_Controller
         $result = array();
 
         $Form_conten = new CustomModelContentModel();
-        $result['content'] = $Form_conten->all();
+        $content = $Form_conten->where(array('status !=' => '0'), array(5), array('custom_model_content_id', 'DESC'));
+        $result['content'] = $content ? $content : array();
 
         $form = new CustomModelModel();
-        $result['forms_types'] = $form->all();
+        $types = $form->all();
+        $result['forms_types'] = $types ? $types : array();
+        $result['collections'] = $result['forms_types'];
 
         $dashboard = new CategorieModel();
         $result['dashboards'] = $dashboard->where(array('parent_id' => '0'));
@@ -289,21 +292,9 @@ class DashboardController extends REST_Controller
     public function notifications_get()
     {
         $this->load->model('Admin/NotificationsModel');
-
-        $Notifications = new NotificationsModel();
-        $result = $Notifications->where(
-            array(
-                'status' => 1, // 1 = pendiente, 2 = leido
-
-            )
-        );
-
-        $response = array(
-            'code' => 200,
-            'data' => $result,
-        );
-
-        $this->response($response, REST_Controller::HTTP_OK);
+        $model = new NotificationsModel();
+        $rows = $model->inbox(userdata('user_id'), 1, 20);
+        $this->response_ok($rows ? $rows : array());
     }
 
     /**
@@ -313,16 +304,12 @@ class DashboardController extends REST_Controller
     public function notifications_post($id = null)
     {
         $this->load->model('Admin/NotificationsModel');
-
-        $Notifications = new NotificationsModel();
-        $Notifications->find($id);
-        if ($Notifications) {
-            $Notifications->status = 2; //archive
-            $Notifications->save();
-            $this->response_ok($Notifications);
-        } else {
-            $this->response_error(lang('not_found_error'));
+        $model = new NotificationsModel();
+        if ($model->mark_read($id, userdata('user_id'))) {
+            $this->response_ok($model);
+            return;
         }
+        $this->response_error(lang('not_found_error'));
     }
 
 }
