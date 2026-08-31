@@ -16,12 +16,16 @@ class SiteFormItemModel extends MY_Model
     public function filter_results($collection = [])
     {
         foreach ($collection as $key => &$value) {
-            if (isset($value->properties) && $value->properties) {
-                $value->{'properties'} = json_decode($value->properties);
-            }
-
-            if (isset($value->data) && $value->data) {
-                $value->{'data'} = json_decode($value->data);
+            if (function_exists('normalize_siteform_loop')) {
+                $value->properties = normalize_siteform_loop(isset($value->properties) ? $value->properties : null);
+                $value->data = normalize_siteform_loop(isset($value->data) ? $value->data : null);
+            } else {
+                $value->properties = (isset($value->properties) && (is_array($value->properties) || is_object($value->properties)))
+                    ? $value->properties
+                    : array();
+                $value->data = (isset($value->data) && (is_array($value->data) || is_object($value->data)))
+                    ? $value->data
+                    : array();
             }
         }
 

@@ -41,7 +41,11 @@ class SiteFormModel extends MY_Model
 
     public function properties_to_json()
     {
-        return is_string($this->properties) ? json_decode($this->properties) : [];
+        $decoded = is_string($this->properties) ? json_decode($this->properties) : $this->properties;
+        if (is_array($decoded) || is_object($decoded)) {
+            return $decoded;
+        }
+        return array();
     }
 
 }

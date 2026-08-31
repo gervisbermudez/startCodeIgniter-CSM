@@ -139,6 +139,38 @@ var PageNewForm = new Vue({
       },
     ],
     modalCallbackMode: "copyCallcack", //Or insertImage
+    embedLists: {
+      form: [],
+      fragment: [],
+      menu: [],
+      album: [],
+      video: [],
+      event: [],
+    },
+    embedLoaded: {
+      form: false,
+      fragment: false,
+      menu: false,
+      album: false,
+      video: false,
+      event: false,
+    },
+    embedLoading: {
+      form: false,
+      fragment: false,
+      menu: false,
+      album: false,
+      video: false,
+      event: false,
+    },
+    embedEndpoints: {
+      form: "api/v1/siteforms",
+      fragment: "api/v1/fragments",
+      menu: "api/v1/menus",
+      album: "api/v1/albumes",
+      video: "api/v1/videos",
+      event: "api/v1/events",
+    },
   },
   mixins: [mixins],
   computed: {
@@ -225,6 +257,135 @@ var PageNewForm = new Vue({
   methods: {
     setModalMode(mode) {
       this.modalCallbackMode = mode;
+    },
+    lang: function (key) {
+      if (typeof this.t === "function") {
+        return this.t(key);
+      }
+      var dict = window.ADMIN_LANG || {};
+      return dict[key] ? dict[key] : key;
+    },
+    isEmbedPublished: function (row) {
+      if (!row) {
+        return false;
+      }
+      if (row.status === undefined || row.status === null || row.status === "") {
+        return true;
+      }
+      return String(row.status) === "1";
+    },
+    normalizeEmbedRows: function (payload) {
+      var rows = payload;
+      if (!rows) {
+        return [];
+      }
+      if (!Array.isArray(rows)) {
+        if (Array.isArray(rows.items)) {
+          rows = rows.items;
+        } else if (Array.isArray(rows.data)) {
+          rows = rows.data;
+        } else {
+          return [];
+        }
+      }
+      return rows;
+    },
+    fetchEmbedList: function (path, listKey) {
+      var self = this;
+      this.embedLoading[listKey] = true;
+      $.ajax({
+        type: "GET",
+        url: BASEURL + path,
+        dataType: "json",
+        success: function (response) {
+          var rows = self.normalizeEmbedRows(response && response.data);
+          self.embedLists[listKey] = rows.filter(self.isEmbedPublished);
+        },
+        error: function (error) {
+          self.debug ? console.log(error) : null;
+          self.embedLists[listKey] = [];
+        },
+        complete: function () {
+          self.embedLoading[listKey] = false;
+          self.embedLoaded[listKey] = true;
+        },
+      });
+    },
+    loadEmbedTab: function (listKey) {
+      if (!listKey || !this.embedEndpoints[listKey]) {
+        return;
+      }
+      if (this.embedLoaded[listKey] || this.embedLoading[listKey]) {
+        return;
+      }
+      this.fetchEmbedList(this.embedEndpoints[listKey], listKey);
+    },
+    openEmbedModal: function () {
+      this.loadEmbedTab("form");
+      var self = this;
+      this.$nextTick(function () {
+        var modalEl = document.getElementById("pageEmbedModal");
+        if (!modalEl) {
+          return;
+        }
+        var modal = M.Modal.getInstance(modalEl);
+        if (!modal) {
+          modal = M.Modal.init(modalEl, {});
+        }
+        modal.open();
+        self.$nextTick(function () {
+          var tabsEl = document.getElementById("pageEmbedTabs");
+          if (tabsEl) {
+            var firstLink = tabsEl.querySelector(".tab a");
+            if (firstLink && !tabsEl.querySelector(".tab a.active")) {
+              firstLink.classList.add("active");
+            }
+            M.Tabs.init(tabsEl, {
+              onShow: function (tabEl) {
+                var id = tabEl && tabEl.id ? tabEl.id : "";
+                self.loadEmbedTab(id.replace("page-embed-", ""));
+              },
+            });
+          }
+        });
+      });
+    },
+    insertEmbedToken: function (helper, name) {
+      if (!name) {
+        return;
+      }
+      name = String(name).replace(/\u00a0/g, " ").replace(/\s+/g, " ").trim();
+      if (!name) {
+        return;
+      }
+      var token = "{{" + helper + "(" + name + ")}}";
+      var $editor = $("#editor");
+      var inserted = false;
+      try {
+        if (typeof $editor.trumbowyg === "function") {
+          $editor.trumbowyg("restoreRange");
+        }
+        var instance = trumbowygInstance || $editor.data("trumbowyg");
+        var doc = instance && instance.doc ? instance.doc : document;
+        if (instance && instance.$ed && instance.$ed[0]) {
+          instance.$ed[0].focus();
+        }
+        if (doc && doc.execCommand("insertText", false, token)) {
+          inserted = true;
+        }
+      } catch (error) {
+        this.debug ? console.error(error) : null;
+      }
+      if (!inserted) {
+        var current = $editor.trumbowyg("html") || "";
+        $editor.trumbowyg("html", current + token);
+      }
+      this.content = $editor.trumbowyg("html");
+      var modalEl = document.getElementById("pageEmbedModal");
+      var modal = modalEl ? M.Modal.getInstance(modalEl) : null;
+      if (modal) {
+        modal.close();
+      }
     },
     addCustomMeta() {
       this.customMetas.push({
@@ -765,6 +926,10 @@ var PageNewForm = new Vue({
           },
         });
         this.initSelects();
+        var embedModal = document.getElementById("pageEmbedModal");
+        if (embedModal && !M.Modal.getInstance(embedModal)) {
+          M.Modal.init(embedModal, {});
+        }
       }, 1000);
     },
     initMaterialboxed() {
@@ -827,8 +992,9 @@ var PageNewForm = new Vue({
           this.content = $("#editor").trumbowyg("html");
         }) // Listen for `tbwfocus` event
         .on("tbwblur", () => {
-          //this.runSaveData(()=> {});
+          trumbowygInstance = $("#editor").data("trumbowyg");
         });
+      trumbowygInstance = $("#editor").data("trumbowyg");
       this.checkEditMode();
       this.getCategories();
     });
