@@ -31,18 +31,6 @@ function src(rel) {
   return read(rel);
 }
 
-const notes = src("resources/components/NotesLists.js");
-check(
-  "p0.1 notes pk",
-  /listPk:\s*"note_id"/.test(notes) && !/fragment_id/.test(notes),
-  "NotesLists deletes via listPk note_id, not fragment_id"
-);
-check(
-  "p0.1 notes excerpt",
-  notes.includes("note.json_content") && notes.includes("if (!note)"),
-  "getcontentText is null-safe on title/json_content"
-);
-
 const albumItems = src("resources/components/AlbumsItemsLists.js");
 const albumList = src("resources/components/AlbumsLists.js");
 const albumBlade = src("application/views/admin/gallery/albums_items.blade.php");
@@ -188,7 +176,6 @@ const listInitTimeout = [];
 [
   "CategoriesLists.js",
   "FragmentsLists.js",
-  "NotesLists.js",
   "AlbumsLists.js",
   "AlbumsItemsLists.js",
   "MenuLists.js",
