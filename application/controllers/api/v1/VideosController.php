@@ -59,7 +59,7 @@ class VideosController extends REST_Controller
 
         $nombre = $this->input->post('nombre');
         if (!$nombre) {
-            $this->response_error('Nombre is required', [], REST_Controller::HTTP_BAD_REQUEST);
+            $this->response_error('Nombre is required', [], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
 
@@ -109,7 +109,7 @@ class VideosController extends REST_Controller
             }
         }
 
-        $this->response_error(lang('unexpected_error'), [], REST_Controller::HTTP_BAD_REQUEST);
+        $this->response_error(lang('unexpected_error'), [], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
     }
 
     public function index_delete($video_id = null)
