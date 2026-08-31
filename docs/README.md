@@ -38,6 +38,8 @@ Estos archivos nacieron como spec de implementación. El corte ya está en `mast
 | Doc | Rol |
 |---|---|
 | [DESIGN.md](DESIGN.md) | Tokens, patrones y deuda UX del **admin** (el tema público no comparte paleta) |
+| [ADMIN_VIEWS_AUDIT.md](ADMIN_VIEWS_AUDIT.md) | Inventario Blade/Vue: duplicación, bugs P0/P1, qué no reabrir |
+| [ADMIN_VIEWS_BUGFIX_PROMPT.md](ADMIN_VIEWS_BUGFIX_PROMPT.md) | Prompt listo para un agente: solo el corte de bugs |
 
 ## API y datos
 
