@@ -45,6 +45,16 @@ $lang['pages_embed_album'] = 'Álbum';
 $lang['pages_embed_video'] = 'Video';
 $lang['pages_embed_event'] = 'Evento';
 $lang['pages_embed_empty'] = 'No hay elementos publicados';
+$lang['pages_embed_file'] = 'Archivo';
+$lang['pages_embed_load_error'] = 'No se pudo cargar esta lista';
+$lang['pages_embed_create'] = 'Crear uno';
+$lang['pages_saving'] = 'Guardando…';
+$lang['pages_preview'] = 'Vista previa';
+$lang['pages_template'] = 'Plantilla';
+$lang['pages_layout'] = 'Layout';
+$lang['pages_save_draft'] = 'Guardar borrador';
+$lang['pages_publish'] = 'Publicar';
+$lang['pages_form_loading'] = 'Cargando formulario';
 
 $lang['events_new'] = 'Nuevo evento';
 $lang['events_edit'] = 'Editar evento';

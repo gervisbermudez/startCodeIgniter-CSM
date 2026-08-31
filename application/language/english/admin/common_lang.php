@@ -270,6 +270,16 @@ $lang['pages_embed_album'] = 'Album';
 $lang['pages_embed_video'] = 'Video';
 $lang['pages_embed_event'] = 'Event';
 $lang['pages_embed_empty'] = 'No published items';
+$lang['pages_embed_file'] = 'File';
+$lang['pages_embed_load_error'] = 'Could not load this list';
+$lang['pages_embed_create'] = 'Create one';
+$lang['pages_saving'] = 'Saving…';
+$lang['pages_preview'] = 'Preview';
+$lang['pages_template'] = 'Template';
+$lang['pages_layout'] = 'Layout';
+$lang['pages_save_draft'] = 'Save draft';
+$lang['pages_publish'] = 'Publish';
+$lang['pages_form_loading'] = 'Loading form';
 
 // Notifications inbox
 $lang['notifications_title'] = 'Notifications';
