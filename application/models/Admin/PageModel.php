@@ -37,7 +37,14 @@ class PageModel extends MY_Model
 
     public function get_json_content()
     {
-        return json_decode($this->json_content);
+        $value = $this->json_content;
+        if (is_object($value) || is_array($value)) {
+            return $value;
+        }
+        if (!is_string($value) || $value === '') {
+            return $value;
+        }
+        return json_decode($value);
     }
 
     /**
@@ -52,7 +59,7 @@ class PageModel extends MY_Model
                 INNER JOIN user u ON p.`user_id` = u.`user_id`
                 INNER JOIN usergroup ug ON ug.`usergroup_id` = u.`usergroup_id`
                 LEFT JOIN (' . $this->get_select_json('file') . ') file_data ON file_data.file_id = p.mainImage
-                INNER JOIN page_type pt ON pt.`page_type_id` = p.`page_type_id`
+                LEFT JOIN page_type pt ON pt.`page_type_id` = p.`page_type_id`
                 WHERE p.status = 1
                 ';
         if ($limit && is_array($limit)) {
@@ -95,9 +102,37 @@ class PageModel extends MY_Model
         // Load thumbnail image relations (eliminates N+1 query)
         $collection = $this->loadFilesRelation($collection, 'thumbnailImage', 'thumbnail_image');
 
-        // Load page_data for each page
+        $page_ids = array();
+        foreach ($collection as $row) {
+            if (isset($row->page_id) && $row->page_id) {
+                $page_ids[] = $row->page_id;
+            }
+        }
+        $page_ids = array_values(array_unique($page_ids));
+
+        $data_by_page = array();
+        if (!empty($page_ids)) {
+            $this->db->where_in('page_id', $page_ids);
+            $query = $this->db->get('page_data');
+            if ($query->num_rows() > 0) {
+                foreach ($query->result() as $row) {
+                    $pid = $row->page_id;
+                    if (!isset($data_by_page[$pid])) {
+                        $data_by_page[$pid] = array();
+                    }
+                    $decode_value = json_decode($row->_value);
+                    if (gettype($decode_value) == "object" || gettype($decode_value) == "array") {
+                        $data_by_page[$pid][$row->_key] = $decode_value;
+                    } else {
+                        $data_by_page[$pid][$row->_key] = $row->_value;
+                    }
+                }
+            }
+        }
+
         foreach ($collection as &$value) {
-            $value->{'page_data'} = $this->search_for_data($value->page_id, 'page_id');
+            $pid = isset($value->page_id) ? $value->page_id : null;
+            $value->{'page_data'} = ($pid && isset($data_by_page[$pid])) ? $data_by_page[$pid] : array();
         }
 
         return $collection;
@@ -110,7 +145,11 @@ class PageModel extends MY_Model
         if ($query->num_rows() > 0) {
             $tags = [];
             foreach ($query->result() as $value) {
-                $tags = array_merge(json_decode(strtolower($value->_value)), $tags);
+                $raw = isset($value->_value) ? strtolower($value->_value) : '';
+                $decoded = json_decode($raw, true);
+                if (is_array($decoded)) {
+                    $tags = array_merge($decoded, $tags);
+                }
             }
             return array_unique($tags);
         }
@@ -119,8 +158,14 @@ class PageModel extends MY_Model
 
     public function get_relate_pages_by_tags()
     {
-        $pages = $this->where(["page_id !=" => $this->page_id])->toArray();
-        $result = array_filter($pages, function ($page) {
+        if (empty($this->page_id)) {
+            return array();
+        }
+        $pages = $this->where(["page_id !=" => $this->page_id]);
+        if (!$pages) {
+            return array();
+        }
+        $result = array_filter($pages->toArray(), function ($page) {
             $targetTags = isset($this->page_data['tags']) ? $this->page_data['tags'] : [];
             $currentTags = isset($page->page_data['tags']) ? $page->page_data['tags'] : [];
             return !empty(array_intersect($currentTags, $targetTags));

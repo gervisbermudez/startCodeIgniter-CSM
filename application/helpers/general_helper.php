@@ -16,33 +16,44 @@ if (!function_exists('url')) {
     }
 }
 
-function getTemplates(): array
-{
-    $ci = &get_instance();
-    $ci->load->helper('directory');
-    $layouts = directory_map(getThemePath() . '/views/site/layouts', 1);
-    $templates = directory_map(getThemePath() . '/views/site/templates', 1);
-    $pages = directory_map(getThemePath() . '/views/site', 1);
-
-    function filter_files($strName)
+if (!function_exists('getTemplates')) {
+    function getTemplates(): array
     {
-        return !(strpos($strName, "\\"));
+        $ci = &get_instance();
+        $ci->load->helper('directory');
+        $theme_path = getThemePath();
+        $layouts = $theme_path ? directory_map($theme_path . '/views/site/layouts', 1) : false;
+        $templates = $theme_path ? directory_map($theme_path . '/views/site/templates', 1) : false;
+        $pages = $theme_path ? directory_map($theme_path . '/views/site', 1) : false;
+
+        if (!is_array($layouts)) {
+            $layouts = array();
+        }
+        if (!is_array($templates)) {
+            $templates = array();
+        }
+        if (!is_array($pages)) {
+            $pages = array();
+        }
+
+        $filter_files = function ($strName) {
+            return !(strpos($strName, "\\"));
+        };
+
+        $add_folder_path = function ($strName) {
+            return "templates." . $strName;
+        };
+
+        $layouts = array_filter($layouts, $filter_files);
+        $templates = array_filter($templates, $filter_files);
+        $templates = array_map($add_folder_path, $templates);
+        $pages = array_filter($pages, $filter_files);
+
+        return [
+            'layouts' => $layouts ? $layouts : [],
+            'templates' => $templates ? array_merge($templates, $pages) : [],
+        ];
     }
-
-    function add_folder_path($strName)
-    {
-        return "templates." . $strName;
-    }
-
-    $layouts = array_filter($layouts, 'filter_files');
-    $templates = array_filter($templates, 'filter_files');
-    $templates = array_map('add_folder_path', $templates);
-    $pages = array_filter($pages, 'filter_files');
-
-    return [
-        'layouts' => $layouts ? $layouts : [],
-        'templates' => $templates ? array_merge($templates, $pages) : [],
-    ];
 }
 
 if (!function_exists('getThemePath')) {

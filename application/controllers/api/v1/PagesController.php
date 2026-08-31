@@ -5,11 +5,6 @@ require APPPATH . 'libraries/REST_Controller.php';
 class PagesController extends REST_Controller
 {
 
-    /**
-     * Get All Data from this method.
-     *
-     * @return Response
-     */
     public function __construct()
     {
         parent::__construct();
@@ -28,13 +23,12 @@ class PagesController extends REST_Controller
 
     }
 
-    /**
-     * Get All Data from this method.
-     *
-     * @return Response
-     */
     public function index_get($page_id = null)
     {
+        if (!$this->require_page_permision('SELECT_PAGES')) {
+            return;
+        }
+
         $page = new PageModel();
         if ($page_id) {
             $result = $page->find($page_id);
@@ -43,7 +37,7 @@ class PagesController extends REST_Controller
                 $this->response_ok($result);
                 return;
             }
-            $this->response_error(lang('not_found_error'));
+            $this->pages_error(lang('not_found_error'));
             return;
         }
 
@@ -51,7 +45,7 @@ class PagesController extends REST_Controller
     }
 
     /**
-     * Filtros del listado admin: status, filters[], o publicados + borradores.
+     * Filtros del listado admin: status, filters[] (whitelist), o publicados + borradores.
      *
      * @return array
      */
@@ -59,84 +53,117 @@ class PagesController extends REST_Controller
     {
         $status = $this->get('status');
         if ($status !== null && $status !== '') {
-            return array('status' => $status);
+            return $this->whitelist_page_filters(array('status' => $status));
         }
         $filters = $this->get('filters');
         if ($filters) {
-            return is_array($filters) ? $filters : array();
+            $whitelisted = $this->whitelist_page_filters(is_array($filters) ? $filters : array());
+            if (!empty($whitelisted)) {
+                return $whitelisted;
+            }
         }
         return array('status_in' => array(1, 2));
     }
 
-    /**
-     * Get All Data from this method.
-     *
-     * @return Response
-     */
     public function index_post()
     {
+        $page_id = $this->input->post('page_id');
+        $is_update = ($page_id !== null && $page_id !== '' && $page_id !== false);
+
+        if (!$this->require_page_permision($is_update ? 'UPDATE_PAGE' : 'CREATE_PAGE')) {
+            return;
+        }
+
         $this->load->library('FormValidator');
         $form = new FormValidator();
 
         $config = array(
             array('field' => 'title', 'label' => 'title', 'rules' => 'required|min_length[5]'),
-            array('field' => 'path', 'label' => 'path', 'rules' => 'required|min_length[5]'),
+            array('field' => 'path', 'label' => 'path', 'rules' => 'required|min_length[1]'),
             array('field' => 'content', 'label' => 'content', 'rules' => 'required|min_length[5]'),
             array('field' => 'page_type_id', 'label' => 'page_type_id', 'rules' => 'integer|is_natural_no_zero'),
             array('field' => 'categorie_id', 'label' => 'categorie_id', 'rules' => 'integer|is_natural'),
             array('field' => 'subcategorie_id', 'label' => 'subcategorie_id', 'rules' => 'integer|is_natural'),
-            array('field' => 'status', 'label' => 'status', 'rules' => 'required|integer|is_natural_no_zero'),
+            array('field' => 'status', 'label' => 'status', 'rules' => 'required|integer'),
             array('field' => 'visibility', 'label' => 'visibility', 'rules' => 'integer|is_natural_no_zero'),
         );
 
         $form->set_rules($config);
 
+        $errors = array();
         if (!$form->run()) {
-            $response = array(
-                'code' => REST_Controller::HTTP_BAD_REQUEST,
-                'error_message' => lang('validations_error'),
-                'errors' => $form->_error_array,
-                'request_data' => $_POST,
+            $errors = $form->_error_array;
+        }
+
+        $status = (int) $this->input->post('status');
+        if (!in_array($status, array(1, 2, 3), true)) {
+            $errors['status'] = 'The status field must be 1, 2 or 3';
+        }
+
+        $path = trim((string) $this->input->post('path'));
+        if (!$this->is_safe_page_path($path)) {
+            $errors['path'] = 'The path field must be a safe slug';
+        }
+
+        if (!empty($errors)) {
+            $this->pages_error(
+                lang('validations_error'),
+                REST_Controller::HTTP_BAD_REQUEST,
+                REST_Controller::HTTP_BAD_REQUEST,
+                array('errors' => $errors)
             );
-            $this->response($response, REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
 
         $page = new PageModel();
-        $this->input->post('page_id') ? $page->find($this->input->post('page_id')) : false;
+        if ($is_update) {
+            if (!$page->find($page_id)) {
+                $this->pages_error(lang('not_found_error'));
+                return;
+            }
+        }
+
+        if ($this->page_path_taken($path, $is_update ? $page_id : null)) {
+            $this->pages_error(
+                lang('validations_error'),
+                REST_Controller::HTTP_BAD_REQUEST,
+                REST_Controller::HTTP_BAD_REQUEST,
+                array('errors' => array('path' => 'The path field must contain a unique value.'))
+            );
+            return;
+        }
+
         $page->title = $this->input->post('title');
         $page->subtitle = $this->input->post('subtitle');
-        $page->path = $this->input->post('path');
+        $page->path = $path;
         $page->content = $this->input->post('content');
         $page->json_content = $this->input->post('json_content');
-        $page->user_id = userdata('user_id');
         $page->page_type_id = $this->input->post('page_type_id');
-        $page->status = $this->input->post('status');
+        $page->status = $status;
         $page->template = $this->input->post('template');
         $page->layout = $this->input->post('layout');
-        $page->date_publish = $this->input->post('publishondate') == 'true' ? date("Y-m-d H:i:s") : $this->input->post('date_publish');
-        $page->date_create = date("Y-m-d H:i:s");
+        $page->date_publish = $this->normalize_date_publish($this->input->post('date_publish'));
         $page->visibility = $this->input->post('visibility');
-        $page->categorie_id = $this->input->post('categorie_id');
-        $page->subcategorie_id = $this->input->post('subcategorie_id');
+        $page->categorie_id = $this->optional_fk($this->input->post('categorie_id'));
+        $page->subcategorie_id = $this->optional_fk($this->input->post('subcategorie_id'));
         $page->mainImage = $this->input->post('mainImage') ? $this->input->post('mainImage') : null;
         $page->thumbnailImage = $this->input->post('thumbnailImage') ? $this->input->post('thumbnailImage') : null;
         $page->{"page_data"} = $this->input->post('page_data');
 
-        if ($page->save()) {
-            system_logger('pages', $page->page_id, ($this->input->post('page_id') ? "updated" : "created"), ($this->input->post('page_id') ? "A page has been updated" : "A page has been created"));
-            $this->response_ok($page);
-
-        } else {
-            $this->response_error(lang('unexpected_error'), [], REST_Controller::HTTP_BAD_REQUEST);
+        if (!$is_update) {
+            $page->user_id = userdata('user_id');
+            $page->date_create = date("Y-m-d H:i:s");
         }
+
+        if ($page->save()) {
+            system_logger('pages', $page->page_id, ($is_update ? "updated" : "created"), ($is_update ? "A page has been updated" : "A page has been created"));
+            $this->response_ok($page);
+            return;
+        }
+
+        $this->pages_error(lang('unexpected_error'), REST_Controller::HTTP_BAD_REQUEST);
     }
 
-    /**
-     * Get All Data from this method.
-     *
-     * @return Response
-     */
     public function index_put($id)
     {
         $data = array();
@@ -144,78 +171,88 @@ class PagesController extends REST_Controller
 
     }
 
-    /**
-     * Get All Data from this method.
-     *
-     * @return Response
-     */
     public function index_delete($id = null)
     {
-        $page = new PageModel();
-        $page->find($id);
+        if (!$this->require_page_permision('DELETE_PAGE')) {
+            return;
+        }
+
+        $page = $this->load_page_or_fail($id);
+        if (!$page) {
+            return;
+        }
+
         if ($page->delete()) {
             system_logger('pages', $page->page_id, ("deleted"), ("A page has been deleted"));
             $this->response_ok($page);
-        } else {
-            $this->response_error(lang('not_found_error'));
+            return;
         }
+
+        $this->pages_error(lang('unexpected_error'));
     }
 
-    /**
-     * Get All Data from this method.
-     *
-     * @return Response
-     */
     public function archive_post($id = null)
     {
-        $page = new PageModel();
-        if ($page->find($id)) {
-            $page->status = 3;
-            if ($page->save()) {
-                system_logger('pages', $page->page_id, ("archive"), ("A page has been archived"));
-                $this->response_ok($page);
-            } else {
-                $this->response_error(lang('unexpected_error'));
-            }
-        } else {
-            $this->response_error(lang('not_found_error'));
+        if (!$this->require_page_permision('UPDATE_PAGE')) {
+            return;
         }
+
+        $page = $this->load_page_or_fail($id);
+        if (!$page) {
+            return;
+        }
+
+        $page->status = 3;
+        if ($page->save()) {
+            system_logger('pages', $page->page_id, ("archive"), ("A page has been archived"));
+            $this->response_ok($page);
+            return;
+        }
+
+        $this->pages_error(lang('unexpected_error'));
     }
 
     public function restore_post($id = null)
     {
-        $page = new PageModel();
-        if ($page->find($id)) {
-            $page->status = 2; // Restore as draft
-            if ($page->save()) {
-                system_logger('pages', $page->page_id, ("restore"), ("A page has been restored"));
-                $this->response_ok($page);
-            } else {
-                $this->response_error(lang('unexpected_error'));
-            }
-        } else {
-            $this->response_error(lang('not_found_error'));
+        if (!$this->require_page_permision('UPDATE_PAGE')) {
+            return;
         }
+
+        $page = $this->load_page_or_fail($id);
+        if (!$page) {
+            return;
+        }
+
+        $page->status = 2;
+        if ($page->save()) {
+            system_logger('pages', $page->page_id, ("restore"), ("A page has been restored"));
+            $this->response_ok($page);
+            return;
+        }
+
+        $this->pages_error(lang('unexpected_error'));
     }
 
     public function types_get()
     {
+        if (!$this->require_page_permision('SELECT_PAGES')) {
+            return;
+        }
+
         $this->load->model('Admin/PageTypeModel');
 
         $page_type = new PageTypeModel();
         $result = $page_type->all();
 
-        if ($result) {
-            $this->response_ok($result);
-            return;
-        }
-
-        $this->response_error(lang('not_found_error'));
-
+        $this->response_ok($result ? $result : array());
     }
 
     public function templates_get()
     {
+        if (!$this->require_page_permision('SELECT_PAGES')) {
+            return;
+        }
+
         $response = array(
             'code' => REST_Controller::HTTP_OK,
             'data' => getTemplates(),
@@ -227,6 +264,10 @@ class PagesController extends REST_Controller
 
     public function editpageinfo_get($page_id = false)
     {
+        if (!$this->require_page_permision('SELECT_PAGES')) {
+            return;
+        }
+
         $this->load->model('Admin/PageTypeModel');
         $this->load->helper('directory');
 
@@ -238,17 +279,14 @@ class PagesController extends REST_Controller
         }
 
         if (!$result) {
-            $this->response_error(lang('not_found_error'));
+            $this->pages_error(lang('not_found_error'));
             return;
         }
 
-        //Types
         $page_type = new PageTypeModel();
         $page_types = $page_type->all();
-
         if (!$page_types) {
-            $this->response_error(lang('not_found_error'));
-            return;
+            $page_types = array();
         }
 
         $themeTemplates = getTemplates();
@@ -267,126 +305,207 @@ class PagesController extends REST_Controller
         return;
     }
 
-    /**
-     * Get All Data from this method.
-     *
-     * @return Response
-     */
     public function autocomplete_get()
     {
-        $search = $this->input->get("search");
-        $page = new PageModel();
-        $result = $page->search($search);
-
-        if ($result) {
-
-            $response = [
-                "items" => array_map(function ($value) {
-                    return [
-                        "href" => base_url($value->path),
-                        "name" => $value->title,
-                        "description" => character_limiter(strip_tags($value->content), 120),
-                    ];
-                }, $result->toArray()),
-                "success" => true,
-            ];
-
-            $this->response($response, REST_Controller::HTTP_OK);
+        if (!$this->require_page_permision('SELECT_PAGES')) {
             return;
         }
 
-        $response = array(
-            'code' => REST_Controller::HTTP_OK,
-            'data' => [],
-        );
+        $search = $this->input->get("search");
+        $search = is_string($search) ? $search : '';
+        $page = new PageModel();
+        $result = $page->find_list(array('status_in' => array(1, 2)), array(), array(), $search);
 
-        $this->response($response, REST_Controller::HTTP_OK);
+        $items = array();
+        if ($result) {
+            $items = array_map(function ($value) {
+                return array(
+                    "href" => base_url($value->path),
+                    "name" => $value->title,
+                    "description" => character_limiter(strip_tags($value->content), 120),
+                );
+            }, $result->toArray());
+        }
+
+        $this->response(array(
+            "items" => $items,
+            "success" => true,
+        ), REST_Controller::HTTP_OK);
     }
 
-    /**
-     * Duplicate a page.
-     *
-     * @return Response
-     */
     public function duplicate_post($id = null)
     {
-        $page = new PageModel();
-        if ($page->find($id)) {
-            $page->page_id = null;
-            $page->title = "Copy of " . $page->title;
-            $page->status = 2; // Draft
-            $page->path = $page->path . "-" . time(); // Avoid collision
-            $page->date_create = date('Y-m-d H:i:s');
-            $page->date_publish = null;
-            $page->map = false; // Force insert
-
-            if ($page->save()) {
-                system_logger('pages', $page->page_id, ("duplicate"), ("A page has been duplicated"));
-                $this->response_ok($page);
-            } else {
-                $this->response_error(lang('unexpected_error'));
-            }
-        } else {
-            $this->response_error(lang('not_found_error'));
+        if (!$this->require_page_permision('UPDATE_PAGE')) {
+            return;
         }
+
+        $page = $this->load_page_or_fail($id);
+        if (!$page) {
+            return;
+        }
+
+        $page->page_id = null;
+        $page->title = "Copy of " . $page->title;
+        $page->status = 2;
+        $page->path = $this->unique_copy_path($page->path);
+        $page->date_create = date('Y-m-d H:i:s');
+        $page->date_publish = null;
+        $page->map = false;
+
+        if ($page->save()) {
+            system_logger('pages', $page->page_id, ("duplicate"), ("A page has been duplicated"));
+            $fresh = new PageModel();
+            $fresh->find($page->page_id);
+            $this->response_ok($fresh);
+            return;
+        }
+
+        $this->pages_error(lang('unexpected_error'));
     }
 
     /**
-     * Update page status (publish/draft)
-     *
-     * @return Response
+     * @param mixed $permision
+     * @return bool
      */
-    public function updatestatus_post($id = null)
+    protected function require_page_permision($permision)
     {
-        $status = $this->input->post('status');
-        
-        log_message('debug', 'UpdateStatus - ID recibido: ' . $id);
-        log_message('debug', 'UpdateStatus - Status recibido: ' . $status);
-        
-        if (!$status) {
-            $this->response_error('Estado requerido', [], REST_Controller::HTTP_BAD_REQUEST);
-            return;
+        if (!function_exists('has_permisions') || !has_permisions($permision)) {
+            $this->pages_error('You do not have permission to perform this action', REST_Controller::HTTP_FORBIDDEN);
+            return false;
         }
+        return true;
+    }
 
-        // Verificar que la página existe
+    /**
+     * Error de pages: { code, error_message, data: [] } sin POST. HTTP 200 salvo validación.
+     *
+     * @param string $error_message
+     * @param int $code
+     * @param int $http_status
+     * @param array $extra
+     * @return void
+     */
+    protected function pages_error($error_message, $code = REST_Controller::HTTP_NOT_FOUND, $http_status = REST_Controller::HTTP_OK, $extra = array())
+    {
+        $response = array(
+            'code' => $code,
+            'data' => array(),
+            'error_message' => $error_message,
+        );
+        if ($extra) {
+            $response = array_merge($response, $extra);
+        }
+        $this->response($response, $http_status);
+    }
+
+    /**
+     * @param mixed $id
+     * @return PageModel|false
+     */
+    protected function load_page_or_fail($id)
+    {
+        if ($id === null || $id === '' || $id === false) {
+            $this->pages_error(lang('not_found_error'));
+            return false;
+        }
         $page = new PageModel();
-        $pageExists = $page->find($id);
-        
-        log_message('debug', 'UpdateStatus - Página existe: ' . ($pageExists ? 'SI' : 'NO'));
-        
-        if (!$pageExists) {
-            $this->response_error(lang('not_found_error'));
-            return;
+        if (!$page->find($id)) {
+            $this->pages_error(lang('not_found_error'));
+            return false;
         }
+        return $page;
+    }
 
-        log_message('debug', 'UpdateStatus - Status actual en DB antes de update: ' . $page->status);
-
-        // Actualizar directamente con query builder
-        $this->db->where('page_id', $id);
-        $result = $this->db->update('page', [
-            'status' => $status,
-            'date_update' => date('Y-m-d H:i:s')
-        ]);
-        
-        log_message('debug', 'UpdateStatus - Resultado del update: ' . ($result ? 'TRUE' : 'FALSE'));
-        log_message('debug', 'UpdateStatus - Affected rows: ' . $this->db->affected_rows());
-        log_message('debug', 'UpdateStatus - Last query: ' . $this->db->last_query());
-        
-        if ($this->db->affected_rows() >= 0) {
-            system_logger('pages', $id, "status_updated", "Page status updated from " . $page->status . " to: " . $status);
-            
-            // Recargar el objeto con los datos actualizados
-            $updatedPage = new PageModel();
-            $updatedPage->find($id);
-            
-            log_message('debug', 'UpdateStatus - Status después de recargar: ' . $updatedPage->status);
-            
-            $this->response_ok($updatedPage);
-        } else {
-            $error = $this->db->error();
-            log_message('error', 'UpdateStatus - Error DB: ' . json_encode($error));
-            $this->response_error('No se pudo actualizar el estado. Error: ' . $error['message'], [], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+    /**
+     * @param array $filters
+     * @return array
+     */
+    protected function whitelist_page_filters($filters)
+    {
+        $allowed = array('status', 'status_in', 'page_type_id', 'categorie_id', 'user_id');
+        $out = array();
+        foreach ($allowed as $key) {
+            if (array_key_exists($key, $filters)) {
+                $out[$key] = $filters[$key];
+            }
         }
+        return $out;
+    }
+
+    /**
+     * @param string $path
+     * @return bool
+     */
+    protected function is_safe_page_path($path)
+    {
+        if (!is_string($path) || $path === '') {
+            return false;
+        }
+        if (strpos($path, '..') !== false) {
+            return false;
+        }
+        return (bool) preg_match('#^[A-Za-z0-9][A-Za-z0-9/_-]*$#', $path);
+    }
+
+    /**
+     * Unique path among non-deleted rows. Exclude self on update.
+     *
+     * @param string $path
+     * @param mixed $exclude_page_id
+     * @return bool
+     */
+    protected function page_path_taken($path, $exclude_page_id = null)
+    {
+        $this->db->from('page');
+        $this->db->where('path', $path);
+        $this->db->where('status !=', 0);
+        if ($exclude_page_id !== null && $exclude_page_id !== '' && $exclude_page_id !== false) {
+            $this->db->where('page_id !=', $exclude_page_id);
+        }
+        $this->db->limit(1);
+        return $this->db->get()->num_rows() > 0;
+    }
+
+    /**
+     * @param string $base_path
+     * @return string
+     */
+    protected function unique_copy_path($base_path)
+    {
+        $path = $base_path . '-copy';
+        $n = 2;
+        while ($this->page_path_taken($path) && $n < 100) {
+            $path = $base_path . '-copy-' . $n;
+            $n++;
+        }
+        return $path;
+    }
+
+    /**
+     * @param mixed $value
+     * @return mixed
+     */
+    protected function optional_fk($value)
+    {
+        if ($value === null || $value === '' || $value === false) {
+            return null;
+        }
+        if ((int) $value === 0) {
+            return null;
+        }
+        return $value;
+    }
+
+    /**
+     * @param mixed $value
+     * @return mixed
+     */
+    protected function normalize_date_publish($value)
+    {
+        if ($value === null || $value === '' || $value === false) {
+            return null;
+        }
+        return $value;
     }
 
 }
