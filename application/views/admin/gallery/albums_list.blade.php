@@ -156,11 +156,13 @@
         </p>
     </confirm-modal>
 </div>
+@if(has_permisions('CREATE_GALLERY'))
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
     <a class="btn-floating btn-large waves-effect st-accent tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('new_album'); ?>" href="{{base_url('admin/gallery/nuevo/')}}">
         <i class="large material-icons">add</i>
     </a>
 </div>
+@endif
 @endsection
 
 @section('footer_includes')

@@ -88,8 +88,6 @@
                                         class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + item.album_item_id' class='dropdown-content'>
                                     <li><a href="#!" v-on:click="deletePage(item, index);"><?php echo lang('delete'); ?></a></li>
-                                    <li v-if="item.file && item.file.file_front_path"><a :href="base_url(item.file.file_front_path)"
-                                            target="_blank"><?php echo lang('view_in_site'); ?></a></li>
                                 </ul>
                             </td>
                         </tr>
@@ -109,8 +107,6 @@
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown-card" + item.album_item_id' class='dropdown-content'>
                             <li><a href="#!" v-on:click="deletePage(item, index);"><?php echo lang('delete'); ?></a></li>
-                            <li v-if="item.file && item.file.file_front_path"><a :href="base_url(item.file.file_front_path)"
-                                    target="_blank"><?php echo lang('view_in_site'); ?></a></li>
                         </ul>
                     </div>
                     <div class="card-content">
@@ -149,8 +145,10 @@
             </div>
         </div>
     </div>
-    <div class="container" v-if="!loader && album.items.length == 0" v-cloak>
-        <h4><?php echo lang('albums_items_empty'); ?></h4>
+    <div class="container center" v-if="!loader && album.items.length == 0" v-cloak>
+        <i class="material-icons large grey-text">perm_media</i>
+        <p class="page-header"><?php echo lang('albums_items_empty'); ?></p>
+        <a :href="base_url('admin/gallery/editar/' + album.album_id)" class="btn"><?php echo lang('albums_items_empty_cta'); ?></a>
     </div>
 </div>
 

@@ -39,9 +39,9 @@ class AlbumesController extends REST_Controller
 
         $album = new AlbumModel();
         if ($album_id) {
-            $result = $album->where(array("album_id" => $album_id))->first();
+            $result = $album->where(array("album_id" => $album_id));
             if ($result) {
-                $this->response_ok($result);
+                $this->response_ok($result->first());
                 return;
             }
             $this->response_error(lang('not_found_error'));
@@ -100,6 +100,7 @@ class AlbumesController extends REST_Controller
                 $this->response_error(lang('not_found_error'));
                 return;
             }
+            $album->date_update = date("Y-m-d H:i:s");
         } else {
             $album->user_id = userdata('user_id');
             $album->date_create = date("Y-m-d H:i:s");

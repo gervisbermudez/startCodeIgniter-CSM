@@ -151,12 +151,14 @@
             <p><?= lang('delete_video_confirm') ?></p>
         </confirm-modal>
     </div>
+@if(has_permisions('CREATE_VIDEO'))
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
         <a class="btn-floating btn-large waves-effect st-accent tooltipped" data-position="left"
             data-delay="50" data-tooltip="<?= lang('videos_create') ?>" href="<?= base_url('admin/videos/nuevo/') ?>">
             <i class="large material-icons">add</i>
         </a>
 </div>
+@endif
 @endsection
 
 @section('footer_includes')
