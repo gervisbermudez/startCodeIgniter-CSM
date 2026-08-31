@@ -1,4 +1,6 @@
-# 🎓 Ejemplos de Uso - Analytics System
+# Ejemplos de uso — Analytics
+
+> **Estado (Start CMS 3.0):** shipped como módulo admin (`/admin/analytics`) más el tracker de sitio. Este archivo son ejemplos de API/helpers; el dashboard vive en `AnalyticsAdminController` y `AnalyticsDashboard.js`.
 
 ## 📚 Tabla de Contenidos
 1. [Tracking Básico](#tracking-básico)

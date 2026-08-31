@@ -1,7 +1,7 @@
 {
   "name": "startcodeigneitercsm",
-  "version": "2.0.0",
-  "description": "A simple CSM building with codeigneiter",
+  "version": "3.0.0",
+  "description": "Start CMS — admin SCSS (Vite) and Vue 2 islands for a CodeIgniter 3 content platform",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -21,7 +21,7 @@
     "url": "git+https://github.com/gervisbermudez/startCodeIgniter-CSM.git"
   },
   "author": "Gervis Bermúdez",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/gervisbermudez/startCodeIgniter-CSM/issues"
   },

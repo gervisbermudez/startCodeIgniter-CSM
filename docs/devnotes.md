@@ -1,15 +1,14 @@
-Para iniciar el proyecto web con PHP, se necesita instalar las dependencias necesarias con los comandos 
-`npm i` y `composer install`. 
+# Dev notes — Start CMS 3.0
 
-Luego, se puede iniciar el servidor local con el comando `php -S localhost:8000 -t ./`, 
-que crea una dirección URL donde se puede acceder al proyecto. 
+Arranque actual (no Gulp, no `php -S :8000` como flujo principal):
 
-Finalmente, se puede usar el comando `gulp watch_resources` 
-para compilar y actualizar los recursos estáticos como CSS y JavaScript.
+```bash
+cp .env.example .env          # MySQL del host: DATABASE_HOSTNAME=host.docker.internal
+docker compose up -d          # http://localhost:8081  admin: gerber / admin123
+npm install
+npm run build                 # o npm run watch
+```
 
-Comandos:
+Composer **dentro** del contenedor (`docker exec ci_php56 composer install`), no en el host con PHP 8+.
 
-npm i
-composer install
-php -S localhost:8000 -t ./
-gulp watch_resources
+Alternativa sin Docker: `./bin/server.sh` (PHP built-in). El panel y las URLs de producción esperan Apache + `APP_BASE_URL`.

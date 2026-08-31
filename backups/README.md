@@ -9,7 +9,7 @@ Este directorio almacena las copias de seguridad automáticas de la base de dato
 
 ## Gestión
 
-- **Crear backup**: Desde el panel de administración en Configuración → Base de Datos
+- **Crear backup**: Admin → Settings → Data / backups (`/admin/configuration/data`)
 - **Descargar backup**: Click en el botón de descarga en la lista de backups
 - **Eliminar backup**: Click en el botón de eliminar (requiere confirmación)
 

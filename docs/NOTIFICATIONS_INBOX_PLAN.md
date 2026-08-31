@@ -1,10 +1,8 @@
 # Inbox de notificaciones integrado al CMS
 
-Arreglar el inbox roto (API, Vue, form_submit, admin bar) y convertirlo en un sistema por usuario: API propia, página “Ver todas”, marcar leído sin borrar, polling ligero, y emisores reales del CMS (formularios, usuarios, backups).
+> **Estado (Start CMS 3.0):** shipped en `master` (`feat: Ship a per-user notifications inbox with admin bell and site bar`). Spec del corte. No reimplementar.
 
-**Rama:** `feat/notifications-inbox`  
-**Worktree:** `/home/gervis/.cursor/worktrees/startCodeIgniter-CSM/notifications-inbox`  
-**Checkout principal:** `/home/gervis/personal/startCodeIgniter-CSM` (Docker `ci_php56`, puerto 8081)
+Arreglar el inbox roto (API, Vue, form_submit, admin bar) y convertirlo en un sistema por usuario: API propia, página “Ver todas”, marcar leído sin borrar, polling ligero, y emisores reales del CMS (formularios, usuarios, backups).
 
 PHP 7.4 + CodeIgniter 3.1. No uses PHP 8+ (`match`, union types, named arguments, nullsafe `?->`, enums). Lee `AGENTS.md` y `.cursor/rules/` antes de editar.
 

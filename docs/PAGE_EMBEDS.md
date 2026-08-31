@@ -1,12 +1,11 @@
-# Embeds de productos en New Page — spec de implementación
+# Embeds de productos en New Page
 
-Documento para un agente que implemente el corte acordado.
+> **Estado (Start CMS 3.0):** shipped en `master` (`feat: Expand page helper tokens on the public site from New Page`). Spec del corte. Código vivo: `expand_page_embeds()` en `application/helpers/general_helper.php`. Whitelist actual también incluye `get_collection` (más allá del spec original de 6 helpers). No reimplementar.
 
 **Stack:** PHP 7.4, CodeIgniter 3.1, BladeOne, Vue 2 global, Materialize. Sin PHP 8+ (`match`, `?->`, union types, named arguments).
-**Worktree:** este checkout (`feat/page-embeds`). Un chat = este worktree. No Cloud Agents. No `docker compose` aquí. Verificar UI en `http://localhost:8081` tras merge o `/apply-worktree`.
 **Guías:** `AGENTS.md`, `docs/DESIGN.md`, `.cursor/rules/`.
 
-Leer este archivo entero antes de tocar código. No ampliar alcance.
+Leer este archivo para el contrato. No ampliar alcance sin un corte nuevo.
 
 ---
 
@@ -50,14 +49,15 @@ Criterio: lo que un visitante vería en el front. No herramientas internas del C
 
 | Producto | Token | Helper | Estado |
 |---|---|---|---|
-| Formulario | `{{render_form(contacto)}}` | `render_form` | existe |
-| Fragmento | `{{fragment(aviso-legal)}}` | `fragment` | existe |
-| Menú | `{{render_menu(main)}}` | `render_menu` | existe |
-| Álbum | `{{render_album(verano)}}` | `render_album` | **crear** |
-| Video | `{{render_video(trailer)}}` | `render_video` | **crear** |
-| Evento | `{{render_event(lanzamiento)}}` | `render_event` | **crear** |
+| Formulario | `{{render_form(contacto)}}` | `render_form` | shipped |
+| Fragmento | `{{fragment(aviso-legal)}}` | `fragment` | shipped |
+| Menú | `{{render_menu(main)}}` | `render_menu` | shipped |
+| Álbum | `{{render_album(verano)}}` | `render_album` | shipped |
+| Video | `{{render_video(trailer)}}` | `render_video` | shipped |
+| Evento | `{{render_event(lanzamiento)}}` | `render_event` | shipped |
+| Colección | `{{get_collection(home_portfolio)}}` | `get_collection` | shipped (3.0, extra al spec v1) |
 
-Whitelist fija: esos 6 nombres. Nada más. Lookup por **nombre** publicado (`status = 1`). Video: columna de nombre en tabla `video` es `nam` (typo histórico; no “corregir”).
+Whitelist en código: esos nombres. Lookup por **nombre** publicado (`status = 1`). Video: columna de nombre en tabla `video` es `nam` (typo histórico; no “corregir”).
 
 **No:**
 
@@ -66,7 +66,7 @@ Whitelist fija: esos 6 nombres. Nada más. Lookup por **nombre** publicado (`sta
 - Archivos (ya hay insertar imagen)
 - Páginas anidadas
 - Categorías (taxonomía)
-- Custom models / colecciones (otro worktree; constructor interno)
+- Custom models / colecciones — el spec v1 las dejó fuera; en 3.0 `get_collection` **sí** está en la whitelist de `expand_page_embeds()`.
 - Inbox de formularios, calendario admin, notes internas
 
 ---

@@ -1,6 +1,6 @@
-# Build System
+# Build System (Start CMS 3.0)
 
-Vite compiles **SCSS only**. Admin JavaScript stays unbundled (Vue 2 globals, no `import`/`export`).
+Vite compiles **SCSS only**. Admin JavaScript stays unbundled (Vue 2 globals, no `import`/`export`). Gulp is not part of this project.
 
 ## Commands
 

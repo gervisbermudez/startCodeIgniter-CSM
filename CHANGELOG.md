@@ -1,380 +1,110 @@
-# CHANGELOG - Docker Setup Implementation
+# Changelog
 
-## Date: 2025-12-16 (Latest: Naming Conventions Standardization)
+Product version is `ADMIN_VERSION` in `application/config/constants.php` (also `composer.json` / `package.json`).
 
-### Overview - v2.3.0: English Naming & Consistency
-Major refactoring to standardize all naming conventions to English and proper PSR-4/CodeIgniter standards.
+## 3.0.0 — 2026-08-31
 
-### Latest Changes (v2.3.0)
+The CMS that was still documented as a 2016 CodeIgniter starter is now a shippable content platform. This major aligns the public version with what is already on `master`.
 
-#### 1. **Controllers Renamed (Spanish → English)**
-All admin controllers now use English names for consistency:
-- `Archivos.php` → `Files.php` (class `Archivos` → `Files`)
-- `Calendario.php` → `Calendar.php` (class `Calendario` → `Calendar`)
-- `Categorias.php` → `Categories.php` (class `Categorias` → `Categories`)
-- `Configuracion.php` → `Configuration.php` (class `Configuracion` → `Configuration`)
-- `Eventos.php` → `Events.php` (class `Eventos` → `Events`)
-- `Galeria.php` → `Gallery.php` (class `Galeria` → `Gallery`)
-- `Notas.php` → `Notes.php` (class `Notas` → `Notes`)
-- `Paginas.php` → `Pages.php` (class `Paginas` → `Pages`)
-- `Usuarios.php` → `Users.php` (class `Usuarios` → `Users`)
+Previous labels were out of sync: the panel cache-busted as **1.8.22**, Composer said **2.0.0**, and this file claimed **2.3.0** for a naming pass. Git tags stop at **v1.6.4**. **3.0.0** is the single product number going forward.
 
-**Impact:** URLs updated automatically in all views. New routes:
-- `/admin/archivos` → `/admin/files`
-- `/admin/calendario` → `/admin/calendar`
-- `/admin/categorias` → `/admin/categories`
-- `/admin/configuracion` → `/admin/configuration`
-- `/admin/eventos` → `/admin/events`
-- `/admin/galeria` → `/admin/gallery`
-- `/admin/notas` → `/admin/notes`
-- `/admin/paginas` → `/admin/pages`
-- `/admin/usuarios` → `/admin/users`
+### Publish
 
-**Files updated:** 50+ view files, routes.php, models, sidenav menu
+- **Collections** — Custom Models become collections: schema + items, presets (portfolio, cards, team, FAQ), theme helper `get_collection()`. Admin URLs stay `/admin/custommodels/`.
+- **Page embeds** — New/Edit Page inserts published site products as `{{helper(name)}}`. Public expander whitelist: `render_form`, `fragment`, `render_menu`, `render_album`, `render_video`, `render_event`, `get_collection`. Unknown helpers are left as text (no `is_callable`).
+- **Events core** — Start/end dates, place, slug. Public `/events` and `/events/{slug}`. Calendar uses `date_start`. Helper `render_event()`.
+- **Pages** — Private and scheduled pages respected on the public site. Status updates from the admin. Notes admin removed (never shipped).
+- **Site forms** — Inbox, CSV export, submit cooldown, permissions migration. Public `render_form()` in page HTML.
 
-#### 2. **Models Renamed (Consistency & Standards)**
-Fixed inconsistent naming conventions and removed duplicates:
-- `Fragmentos.php` → `Fragment.php` (class `Fragmentos` → `Fragment`)
-- `Site_config.php` → `SiteConfig.php` (class `Site_config` → `SiteConfig`)
-- `Siteform_items.php` → `SiteFormItem.php` (class `siteform_items` → `SiteFormItem`)
-- `Siteform_submit.php` → `SiteFormSubmit.php`
-- `Siteform_submit_data.php` → `SiteFormSubmitData.php`
-- `Usergroup_permisions.php` → `UsergroupPermissions.php` (fixed typo)
-- **Removed duplicates:**
-  - `Notificacions.php` (typo, use `Notifications.php`)
-  - `Permisions.php` (typo, use `Permissions.php`)
+### Operate
 
-**All references updated:** `load->model()`, `new ClassName()`, object properties
+- **Analytics** — First-class admin module, KPI dashboard, client tracker, conversion funnel.
+- **Notifications inbox** — Per-user rows, bell, “view all”, mark read without delete, emitters from forms/users/backups.
+- **Command palette** — Global search in the admin.
+- **Settings IA** — Configuration, Data (backups / import / export), Logs. Content stays off the navbar.
+- **Admin bar** — Contextual menus on the public site (edit page, cache, form submissions).
+- **List UX** — Full-width search navbars, card lists aligned to Pages, optional API pagination.
 
-#### 3. **JavaScript Components Standardized**
-Renamed components to consistent PascalCase naming:
-- `CategoriaNewForm.js` → `CategoryNewForm.js`
-- `dataTable.component.js` → `DataTableComponent.js`
-- `ApiloggerData.component.js` → `ApiLoggerDataComponent.js`
-- `UserTrackingLoggerData.component.js` → `UserTrackingLoggerDataComponent.js`
-- `changePassword.Component.js` → `ChangePasswordForm.js`
-- `configurationComponent.js` → `ConfigurationComponent.js`
-- `userComponent.js` → `UserComponent.js`
-- `userProfileComponent.js` → `UserProfileComponent.js`
+### Design and build
 
-**Removed inconsistent suffixes:** `.component`, `.Component` (redundant)
+- Admin **design tokens** (`--st-*`), dark mode on `html.dark-mode`.
+- **Vite** compiles SCSS. Gulp is gone. Vue stays unbundled; each page loads its island from Blade `footer_includes`.
+- Docker Compose is **web only** (`ci_php56`, port 8081). MySQL lives on the host (`host.docker.internal`). The old `ci_mysql57` / service `db` story is obsolete.
 
-#### 4. **Code References Updated**
-Updated all references throughout the codebase:
-- Helper functions: `general_helper.php`, `cache_helper.php`
-- API controllers: `Fragments.php`, `Config.php`, `Users.php`
-- Core files: `MY_Controller.php`
-- Model relationships: Fixed `hasOne` references
-- Object instantiation: `new ClassName()` patterns
+### Schema (apply on existing DBs)
 
-#### 5. **Validation**
-✅ All PHP files: Syntax valid (no parse errors)
-✅ All controllers: Tested with `php -l`
-✅ All models: Tested with `php -l`
-✅ References: Grep verified and updated
-✅ Git history: Preserved with `git mv`
+| File | What |
+|---|---|
+| `application/database/migrations/003_analytics_module.sql` | Analytics |
+| `application/database/migrations/005_collections.sql` | Collections |
+| `application/database/migrations/006_notifications_inbox.sql` | Notifications |
+| `application/database/migrations/007_events_core.sql` | Events |
+| `application/database/migrations/008_siteforms_permissions.sql` | Site forms permissions |
 
-#### 6. **Critical Fixes (Post-Testing)**
-- **autoload.php**: Fixed `Admin/Site_config` → `Admin/SiteConfig`
-- **UsergroupPermissions.php**: Fixed references to `Admin/Permisions` → `Admin/Permissions`
-- **SiteForm.php**: Fixed `Admin/Siteform_items` → `Admin/SiteFormItem`
-- **Users.php API**: Fixed variable naming `$Usergroup_permisions` → `$UsergroupPermissions`
-- **Config.php API**: Normalized variable names `$Site_config` → `$SiteConfig`
-- **Usergroup.php**: Fixed variable names for consistency
-- **Database table names**: Added explicit `$table` property to all renamed models:
-  - `SiteConfig`: `$table = 'site_config'`
-  - `Fragment`: `$table = 'fragmentos'`
-  - `SiteFormItem`: `$table = 'siteform_items'`
-  - `UsergroupPermissions`: `$table = 'usergroup_permisions'`
-  - `SiteFormSubmit`: Fixed class name and references (20+ files)
-  - `SiteFormSubmitData`: Fixed class name
+Fresh installs: `application/database/start.sql` plus these migrations if not already folded in.
 
-**Result:** Application now runs without model loading errors or database table errors
+### Docs
 
-#### 7. **404 Errors Fixed**
-- **sw.js**: Added route in `routes.php` to serve from `public/sw.js`
-- **Hardcoded URLs in controllers**: Updated remaining Spanish URLs:
-  - `Pages.php`: `admin/paginas/save` → `admin/pages/save` (3 occurrences)
-  - `Users.php`: `admin/usuarios/` → `admin/users/` (3 occurrences)
-  - `Files.php` API: `admin/archivos/` → `admin/files/`
-- **Preview route**: Already functional with `admin/pages/preview?page_id=X`
-
-**Result:** All admin URLs now work correctly with English naming
-
-### Previous Version (v2.2.0) - Structure & Organization
-
-#### 1. **Project Structure Improvements**
-- **Root Directory**: Organized miscellaneous files
-  - `install.sh` → `scripts/install.sh`
-  - `devnotes.txt` → `docs/devnotes.md`
-  - `service-worker.min.js` → `public/service-worker.min.js`
-  - `sw.js` → `public/sw.js`
-  - `Start CMS API.postman_collection.json` → `docs/api/postman-collection.json`
-  - Created new folders: `scripts/`, `docs/`, `docs/api/`
-
-#### 2. **Git Ignore Configuration**
-- **uploads/**: Ignore user uploads but keep folder structure
-  - Added `/uploads/*` to .gitignore
-  - Created `uploads/.gitkeep` to preserve folder in repository
-  - User-uploaded files no longer tracked in git
-
-- **trash/**: Ignore temporary files but keep folder
-  - Added `/trash/*` to .gitignore
-  - Created `trash/.gitkeep` to preserve folder in repository
-  - Temporary/backup files no longer tracked in git
-
-- **application/cache/**: Enhanced cache ignore rules
-  - Added `application/cache/.gitkeep`
-  - Ensures cache folder exists on fresh clones
-
-- **Development files**: Added `/devnotes.txt` to .gitignore
-
-#### 3. **Documentation**
-- **STRUCTURE_ANALYSIS.md**: Created comprehensive analysis
-  - Identified naming convention issues (Spanish/English mix)
-  - Documented JavaScript component inconsistencies
-  - Outlined 4-phase improvement plan
-  - Prioritized recommendations by implementation difficulty
-
-### Previous Version (v2.1.0) - Security & Performance
-
-#### 1. **Security Improvements**
-- **database.php**: Database errors hidden in production
-  - `db_debug` now depends on ENVIRONMENT constant
-  - Production: `false` (prevents SQL error exposure)
-  - Development: `true` (useful for debugging)
-
-- **PageController.php**: Input sanitization
-  - `blog_list_search()` sanitizes query parameter
-  - Added validation for empty search terms
-  - Prevents SQL injection in blog searches
-
-- **API Endpoints** (Fragments.php, Categorie.php)
-  - Inputs sanitized before assignment: `input->post('field', TRUE)`
-  - Type casting for numeric fields: `(int)$status`
-  - Validation occurs before property assignment
-
-#### 2. **Code Quality Improvements**
-- **general_helper.php**: Type hints added
-  - 11 functions now have proper type declarations
-  - Examples: `function url(string $url): string`
-  - Better IDE support and error detection
-
-- **JavaScript**: Removed debug code
-  - Removed `console.log()` from production components
-  - Cleaner logs, better security
-
-#### 3. **Performance Optimization**
-- **cache_helper.php** (NEW)
-  - New helper with 7 caching functions
-  - Caches site configuration (24 hour TTL)
-  - Caches fragments to reduce database queries
-  - Performance improvement: 50-100% reduction in page load time
-
-#### 4. **Dependency Management**
-- **composer.json**: Only stable dependencies
-  - Changed `minimum-stability` from `dev` to `stable`
-  - Updated to stable versions: `bladeone`, `tightenco/collect`, `rbdwllr/reallysimplejwt`
-
-- **package.json**: Removed deprecated packages
-  - Removed: `gulp-uglify`, `gulp-minify`, `gulp-util`, `uglify-es`
-  - Active minifier: `gulp-terser`
-  - Cleaner build process
-
-### Impact Assessment
-- **Risk Level**: Very Low - No functional changes, only improvements
-- **Backward Compatible**: Yes - Type hints and security measures are additive
-- **Performance**: +50-100% with caching improvements
-- **Security**: Enhanced input validation, hidden error messages in production
+README, Docker guide, docs index, and implementation specs marked **shipped**. Product version **3.0.0** in `ADMIN_VERSION`, Composer, and npm.
 
 ---
 
-## Previous Update (Docker Setup)
+## Historical notes (2.x)
 
-## Date: 2025-12-16
-
-### Overview
-The startCodeIgniter-CSM application has been successfully containerized with Docker, enabling easy installation and deployment without requiring local PHP or MySQL setup.
-
-### Changes Made
-
-#### 1. **Docker Configuration**
-- **Dockerfile**: Updated PHP from 5.6 to 7.4 (compatible with application code)
-  - Added Composer installation
-  - Added necessary PHP extensions: mysqli, pdo, pdo_mysql, zip
-  - Added entry point script for permission management
-  
-- **docker-compose.yml**: Created multi-container setup
-  - PHP 7.4 Apache web server
-  - MySQL 5.7 database server
-  - Automatic database initialization with `start.sql`
-  - Volume mounts for development
-
-#### 2. **Database Updates**
-- **application/database/start.sql**: Updated user credentials
-  - Removed extra users (yduran, aAlejandro)
-  - Kept only `gerber` user with default password `admin123`
-  - New bcrypt hash: `$2y$10$uIX7ruLuQHku8F0vVkHcseBTGmFQjCYmCeyLtrNt5A3ByLIq6nC7C`
-
-#### 3. **Application Configuration**
-- **.env**: Updated for Docker environment
-  - Changed database host to `db` (Docker service name)
-  - Updated database name to `start_cms_db`
-  - Updated database credentials to match Docker setup
-  - Fixed `APP_BASE_URL` to use correct port `8081`
-
-- **application/config/config.php**: Added session configuration
-  - Added `sess_save_path` configuration for CodeIgniter 3
-  - Points to system temp directory for session storage
-
-#### 4. **Web Server Configuration**
-- **.htaccess** (root): Improved rewrite rules
-  - Excludes `themes`, `public`, `uploads`, `vendor` directories from rewriting
-  - Allows direct access to static files
-
-- **themes/.htaccess**: Updated to allow public folder access
-  - Permits all access to theme resources
-  - Enables CSS, JS, and image loading
-
-#### 5. **Docker Entry Point**
-- **docker-entrypoint.sh**: Created startup script
-  - Automatically creates required directories
-  - Sets proper file permissions (777) for write-enabled directories
-  - Ensures proper ownership (www-data user)
-  - Runs before Apache startup
-
-#### 6. **Documentation**
-- **README.md**: Completely rewritten
-  - Quick Start guide with Docker
-  - Installation steps
-  - Default credentials
-  - Database connection details
-  - Troubleshooting section
-  - Development commands
-  - API documentation reference
-
-- **DOCKER.md**: New comprehensive Docker guide
-  - Detailed Docker setup information
-  - Configuration details
-  - Common tasks and operations
-  - Troubleshooting guide
-  - Performance tips
-  - Security considerations
-  - Production deployment guidelines
-
-- **install.sh**: Created quick installation script
-  - Automatic Docker startup
-  - System requirements check
-  - Success verification
-  - Quick reference for credentials and access
-
-#### 7. **Permission Management**
-- Created `application/cache` directory
-- Created `application/logs` directory
-- Created cache directories for all themes
-- Created `uploads` directory
-- All with proper write permissions (777) for web server
-
-### Installation Instructions
-
-#### One-Command Setup
-```bash
-# Make the script executable
-chmod +x install.sh
-
-# Run the installation
-./install.sh
-```
-
-#### Manual Docker Setup
-```bash
-# Start containers
-docker compose up -d
-
-# Wait for services to start (approximately 10-15 seconds)
-
-# Access the application
-# Frontend: http://localhost:8081
-# Admin: http://localhost:8081/admin/login
-```
-
-#### Default Credentials
-- **Username**: `gerber`
-- **Password**: `admin123`
-
-### Database Configuration
-- **Host**: `localhost`
-- **Port**: `3306`
-- **User**: `ci_user`
-- **Password**: `ci_pass`
-- **Database**: `start_cms_db`
-
-### Services Running
-- **PHP 7.4 Apache**: Port 8081
-- **MySQL 5.7**: Port 3306
-- **Network**: Internal Docker network named `startcodeigniter-csm_default`
-
-### Key Improvements
-1. ✅ No local PHP installation required
-2. ✅ No local MySQL installation required
-3. ✅ Automatic database initialization
-4. ✅ Proper permission management
-5. ✅ Environment configuration via .env
-6. ✅ Easy to deploy and reproduce
-7. ✅ Production-ready configuration
-
-### Verified Functionality
-- ✅ Application starts without errors
-- ✅ Database connects successfully
-- ✅ Sessions initialized properly
-- ✅ Static files load correctly
-- ✅ Theme system working
-- ✅ Admin panel accessible
-- ✅ User authentication functional
-
-### Files Modified
-- Dockerfile
-- docker-compose.yml
-- .env
-- application/config/config.php
-- application/database/start.sql
-- .htaccess (root)
-- themes/.htaccess
-- README.md
-
-### Files Created
-- docker-entrypoint.sh
-- DOCKER.md
-- install.sh
-
-### Compatibility
-- **PHP**: 7.4 (compatible with application code)
-- **MySQL**: 5.7 (compatible with database schema)
-- **CodeIgniter**: 3.1.x
-- **Apache**: 2.4.54 (from php:7.4-apache image)
-
-### Testing Recommendations
-1. Test admin login with default credentials
-2. Create a test page
-3. Upload a test image
-4. Test database operations
-5. Verify API endpoints
-6. Test theme switching
-
-### Future Improvements
-- [ ] Add nginx as reverse proxy for production
-- [ ] Implement SSL/TLS certificates
-- [ ] Add Redis for caching
-- [ ] Add backup automation
-- [ ] Create Kubernetes manifests for cloud deployment
-
-### Notes
-- All original application data preserved
-- Database initialization is automatic
-- First startup may take 15-20 seconds for MySQL to be ready
-- Remove `-v` flag from `docker compose down` command if you want to keep database data between restarts
+The sections below describe work from 2025 (Docker bootstrap, structure, a partial English rename). They are kept for history. **Do not treat them as current setup:** Compose no longer includes MySQL; table names and permission keys kept historical spelling (`permisions`, `fragmentos`, `albumes`).
 
 ---
 
-**Setup completed successfully!** 🎉
-The application is now ready for development and deployment using Docker.
+## Date: 2025-12-16 — v2.3.0: English naming (partial)
+
+Major refactoring toward English controller/model names and PSR-4/CodeIgniter file names. Database tables and permission keys were **not** fully renamed.
+
+### Controllers (Spanish file → English)
+
+- `Archivos.php` → `Files.php`
+- `Calendario.php` → `Calendar.php`
+- `Categorias.php` → `Categories.php`
+- `Configuracion.php` → `Configuration.php`
+- `Eventos.php` → `Events.php`
+- `Galeria.php` → `Gallery.php`
+- `Notas.php` → `Notes.php` (later removed in 3.0)
+- `Paginas.php` → `Pages.php`
+- `Usuarios.php` → `Users.php`
+
+Admin URLs moved to `/admin/files`, `/admin/pages`, `/admin/users`, etc. Spanish aliases may still exist in `routes.php`.
+
+### Models
+
+- `Fragmentos.php` → `Fragment.php` (table still `fragmentos`)
+- `Site_config.php` → `SiteConfig.php`
+- Form submit models renamed; `$table` kept on historical names
+- `Usergroup_permisions.php` → `UsergroupPermissions.php` (table still `usergroup_permisions`)
+
+### JavaScript
+
+PascalCase component files (`CategoryNewForm.js`, `DataTableComponent.js`, …).
+
+---
+
+## v2.2.0 — Structure
+
+- Root tidy: scripts → `bin/` / `scripts/`, Postman → `docs/api/`, service worker → `public/`
+- `uploads/` and `trash/` gitignored with `.gitkeep`
+- Cache folder kept in repo structure
+
+---
+
+## v2.1.0 — Security and cache helper
+
+- `db_debug` follows `ENVIRONMENT`
+- Input sanitization on several API endpoints
+- `cache_helper.php` for site config and fragments
+- Composer `minimum-stability` set to `stable` in intent (some packages still track `dev-master` in the lock from that era)
+
+---
+
+## 2025-12-16 — Docker (original)
+
+First containerization: PHP 7.4 Apache image, entrypoint permissions, `.env` `APP_BASE_URL` on port 8081, admin user `gerber` / `admin123`.
+
+**Superseded in 3.0:** Compose no longer starts MySQL. Use host MySQL and `DATABASE_HOSTNAME=host.docker.internal`. Do not follow `docker logs ci_mysql57` from this historical section.

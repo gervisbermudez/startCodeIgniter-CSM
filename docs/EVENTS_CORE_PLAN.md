@@ -1,15 +1,12 @@
-# Events core loop — plan de implementación
+# Events core loop
+
+> **Estado (Start CMS 3.0):** shipped en `master` (`feat: Add events core loop with dates, slug, and public listing`). Rutas públicas `/events` y `/events/{slug}`. Helper `render_event()`. No reimplementar.
 
 Convertir el módulo Events de “página recortada” en un happening operable: **cuándo**, **dónde**, **listado público**, **ficha**, **calendario**. Sin ticketing, RSVP, recurrencia ni cobro.
 
-**Rama:** `feat/events-core`  
-**Worktree:** `/home/gervis/.cursor/worktrees/startCodeIgniter-CSM/events-core`  
-**Base:** `master` (`e51faa5`)  
-**Checkout principal:** `/home/gervis/personal/startCodeIgniter-CSM` (Docker `ci_php56`, puerto **8081**)
-
 PHP 7.4 + CodeIgniter 3.1. No uses PHP 8+ (`match`, union types, named arguments, nullsafe `?->`, enums). Lee `AGENTS.md`, `docs/DESIGN.md` y `.cursor/rules/` antes de editar.
 
-Leer este archivo entero. No ampliar alcance.
+Este archivo es el spec del corte. No ampliar alcance sin un corte nuevo.
 
 ---
 

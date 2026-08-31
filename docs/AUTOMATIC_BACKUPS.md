@@ -103,7 +103,7 @@ Con 10% de probabilidad:
 
 ### Paso 1: Habilitar Backups Automáticos
 
-**Admin → Configuración → Sistema**
+**Admin → Settings → System** (`/admin/configuration?section=system`)
 
 ```
 AUTO_BACKUP_ENABLED: Si

@@ -1,304 +1,175 @@
-![startCodeigneiter CSM](https://repository-images.githubusercontent.com/233129678/7ad83200-f12e-11ea-8538-ab49ede15585)
+![Start CMS](https://repository-images.githubusercontent.com/233129678/7ad83200-f12e-11ea-8538-ab49ede15585)
 
-# startCodeigneiter CSM
+# Start CMS
 
-startCodeIgniter CSM is a Lightweight Content Management System based on CodeIgniter Framework: cloud-enabled, mobile-ready, offline-storage and HTML5 editor.
+**Version 3.0.0** — a self-hosted content platform for sites that need a real admin, a themable public site, and a REST API, without WordPress.
 
-## Features
+Editors publish pages, collections, events, and forms. Developers own a Blade theme and `/api/v1`. The stack is PHP 7.4, CodeIgniter 3.1, Vue 2, and Materialize — small enough to run on one Docker container and a MySQL you already have.
 
-- Create custom pages and blogs
-- Manage your files and folders
-- Manage events, videos and photos
-- Create users with different access levels
-- Create categories and subcategories
-- Dynamic form contents
-- Dashboard with widgets
-- People section to manage users and groups
-- Received forms to view and manage form submissions
-- Fragment section to create and manage reusable content
-- Albums section to manage photo albums
-- Videos section to manage video content
-- Models section to manage custom content types
-- REST API to consume the data
-- Import and export data easily
-- Theme and website configuration management
+Repo: [startCodeIgniter-CSM](https://github.com/gervisbermudez/startCodeIgniter-CSM). Brand in the panel: **Start CMS**.
 
-## Quick Start with Docker
+## Why 3.0
 
-### Prerequisites
+3.0 is the product that is actually on `master`, not the 2016 “lightweight CI CMS” listing.
 
-- Docker and Docker Compose installed on your system
-- Git (optional, for cloning the repository)
+| Editors get | The public site gets | Operators get |
+|---|---|---|
+| Pages with drafts, schedule, and private | Blade themes | Users, groups, permissions |
+| Collections (portfolio, team, FAQ, cards) | `{!! get_collection('slug') !!}` | Analytics dashboard |
+| Insert forms, albums, videos, events into a page | Token expander `{{render_form(name)}}` | Notifications inbox |
+| Events with dates, slug, `/events` | Event listing and detail | Command palette (search) |
+| Site forms + submissions inbox | `render_form()` in the theme | Automatic DB backups |
+| Fragments, menus, albums, videos | Contextual admin bar when logged in | Import / export, dark mode |
 
-### Installation Steps
+Not a page builder. Not Gutenberg. Content stays HTML (Trumbowyg) plus named helpers the theme already understands.
 
-1. **Clone the repository** (or download the project)
+## Quick start
+
+**Needs:** Docker, a MySQL 5.7+ instance (`start_cms_db`), Node 18+ if you change SCSS/JS.
+
+Compose **only** starts Apache/PHP (`ci_php56` on port **8081**). It does not start MySQL.
+
 ```bash
 git clone https://github.com/gervisbermudez/startCodeIgniter-CSM.git
 cd startCodeIgniter-CSM
-```
-
-2. **Start the application with Docker**
-```bash
+cp .env.example .env   # DATABASE_HOSTNAME=host.docker.internal
 docker compose up -d
+npm install && npm run build
 ```
 
-This command will:
-- Download and build the PHP 7.4 Apache image
-- Install all Composer dependencies
-- Create and configure the MySQL database
-- Import the initial database schema
-- Set up proper file permissions
+| | |
+|---|---|
+| Public site | http://localhost:8081 |
+| Admin | http://localhost:8081/admin/login |
+| User / password | `gerber` / `admin123` |
 
-3. **Access the application**
-- **Frontend**: http://localhost:8081
-- **Admin Panel**: http://localhost:8081/admin/login
+Change that password before any shared environment. Details: [docs/DOCKER.md](docs/DOCKER.md).
 
-### Default Admin Credentials
-
-After installation, you can login with:
-- **Username**: `gerber`
-- **Password**: `admin123`
-
-### Database Access (Optional)
-
-If you need to manage the database directly:
-
-**Connection Details**:
-- **Host**: `localhost`
-- **Port**: `3306`
-- **Username**: `ci_user`
-- **Password**: `ci_pass`
-- **Database**: `start_cms_db`
-
-You can use tools like DBeaver or MySQL Workbench to connect.
-
-### Useful Docker Commands
-
-```bash
-# Stop the application
-docker compose down
-
-# View logs
-docker logs ci_php56        # PHP/Apache logs
-docker logs ci_mysql57      # MySQL logs
-
-# Access the database via terminal
-mysql -h localhost -u ci_user -pci_pass start_cms_db
-
-# Restart containers
-docker compose restart
-```
-
-### Project Structure
-
-```
-startCodeIgniter-CSM/
-├── application/          # CodeIgniter application files
-├── public/               # Static assets (CSS, JS, images)
-├── resources/            # SCSS and frontend sources
-├── themes/               # Theme templates
-├── uploads/              # User uploaded files
-├── bin/                  # Utility scripts
-├── docs/                 # Project documentation
-├── backups/              # Database backups
-├── index.php             # Front controller
-├── Dockerfile            # Docker image
-├── docker-compose.yml    # Docker Compose
-├── package.json          # Frontend build (Vite)
-└── composer.json         # PHP dependencies
-```
-
-### Documentation
-
-- [Docker](docs/DOCKER.md)
-- [Build (Vite)](docs/BUILD.md)
-- [Automatic backups](docs/AUTOMATIC_BACKUPS.md)
-- [Changelog](CHANGELOG.md)
-
-## Available Scripts
-
-The project includes several utility scripts to help with development:
-
-### NPM Scripts
-
-```bash
-# Build CSS from SCSS (production)
-npm run build
-
-# Development server with hot reload (if configured)
-npm run dev
-```
-
-### Shell Scripts
-
-```bash
-# Docker install helper
-./bin/install.sh
-
-# Validate development environment
-./bin/validate-env.sh
-
-# Backup database (mysqldump via Docker)
-./bin/backup-db.sh
-
-# Automatic backup (cron wrapper)
-./bin/auto_backup.sh
-
-# Docker backup menu
-./bin/docker_backup.sh
-
-# Start development server
-./bin/server.sh
-
-# Check git diff status
-./bin/check-diff.sh
-```
-
-### Environment Configuration
-
-The `.env` file contains important configuration:
+### Default `.env`
 
 ```
 APP_ENV=development
 APP_BASE_URL=http://localhost:8081/
-DATABASE_HOSTNAME=db
+DATABASE_HOSTNAME=host.docker.internal
 DATABASE_DATABASE=start_cms_db
 DATABASE_USER=ci_user
 DATABASE_PASSWORD=ci_pass
 ```
 
-### Troubleshooting
+Point `DATABASE_HOSTNAME` at your MySQL. From Docker on Linux/WSL that is usually `host.docker.internal`, not a Compose service named `db`.
 
-**Issue**: Containers not starting
+## Product
+
+### Publish
+
+- **Pages** — create, edit, preview, status (`0` deleted · `1` published · `2` draft · `3` archived). Private and scheduled pages are honoured on the public site.
+- **Collections** — structured types (schema + items) rendered in the theme with `get_collection()`. Presets: portfolio, cards, team, FAQ. Admin URL remains `/admin/custommodels/` (historical).
+- **Fragments** — reusable HTML, cached.
+- **Menus, categories** — navigation and taxonomy.
+- **Events** — start/end, place, slug. Public `/events` and `/events/{slug}`. Admin calendar uses event dates.
+- **Albums and videos** — galleries and YouTube embeds.
+- **Page embeds** — from New/Edit Page, insert a published form, fragment, menu, album, video, event, or collection as `{{helper(name)}}`. Expanded on the public site (whitelist only).
+
+### Capture
+
+- **Site forms** — public forms, submissions inbox, CSV export, submit cooldown.
+- **Analytics** — sessions, pages, referrers, conversions. Client script + admin dashboard.
+- **Notifications** — per-user inbox, bell in the admin bar, emitters from real CMS events (forms, users, backups).
+
+### Operate
+
+- **People** — users and groups with permission keys (`SELECT_PAGE`, `UPDATE_CONFIG`, …).
+- **Files** — media explorer and uploads.
+- **Settings** — general, appearance/theme, SEO, integrations, system, updater, data (backups / import / export), logs.
+- **Search** — command palette across admin.
+- **API** — `/api/v1/{resource}` with JWT or session token. Postman: `docs/api/postman-collection.json`.
+- **Backups** — cron or pseudo-cron from the admin. See [docs/AUTOMATIC_BACKUPS.md](docs/AUTOMATIC_BACKUPS.md).
+
+Admin UI: Vue 2 islands + Blade, tokens in `docs/DESIGN.md`, dark mode via `html.dark-mode`.
+
+## Stack
+
+| Layer | Choice |
+|---|---|
+| Runtime | PHP **7.4** (not 8+), Apache, CodeIgniter **3.1** |
+| Templates | BladeOne (admin + themes) |
+| Admin JS | Vue **2** globals, jQuery, Materialize — no bundler for Vue |
+| CSS | SCSS → Vite → `public/css/admin/*.min.css` |
+| Data | MySQL **5.7**, REST `/api/v1`, JWT |
+| Editor | Trumbowyg (page HTML) |
+
+Sources of truth: `application/` (PHP), `resources/components/` and `resources/js/` (admin JS), `resources/scss/admin/` (SCSS), `application/database/start.sql` (schema). Do not edit `vendor/`, `public/vendors/`, or compiled `public/css/admin/*.min.css`.
+
+## Documentation
+
+| Doc | What it is |
+|---|---|
+| [docs/README.md](docs/README.md) | Index |
+| [docs/DOCKER.md](docs/DOCKER.md) | Container, host MySQL, ports |
+| [docs/BUILD.md](docs/BUILD.md) | Vite, `npm run watch` |
+| [docs/DESIGN.md](docs/DESIGN.md) | Admin tokens and UX |
+| [docs/COLLECTIONS.md](docs/COLLECTIONS.md) | Collections (shipped) |
+| [docs/PAGE_EMBEDS.md](docs/PAGE_EMBEDS.md) | Page helper tokens (shipped) |
+| [docs/EVENTS_CORE_PLAN.md](docs/EVENTS_CORE_PLAN.md) | Events public loop (shipped) |
+| [CHANGELOG.md](CHANGELOG.md) | 3.0 and earlier notes |
+
+Agent map: `AGENTS.md`. Extra schema: `application/database/migrations/`.
+
+## Scripts
+
 ```bash
-# Check for port conflicts
-docker ps
-# Remove and rebuild
-docker compose down -v
-docker compose up --build -d
+npm run build      # copy resources/js → public/js, compile SCSS
+npm run watch      # watch JS copy + SCSS
+npm run test       # Vue admin P0 contracts
+
+./bin/install.sh        # start ci_php56 (MySQL must already be up)
+./bin/validate-env.sh
+./bin/backup-db.sh
+./bin/auto_backup.sh
+./bin/docker_backup.sh
+./bin/server.sh         # PHP built-in server (no Docker)
 ```
 
-**Issue**: Database connection error
-- Ensure MySQL container is running: `docker ps`
-- Verify `.env` file has correct database credentials
-- Check database is initialized: `docker logs ci_mysql57`
-
-**Issue**: Permission denied on uploads
-- The application automatically sets proper permissions on startup
-- If issues persist, rebuild with: `docker compose down -v && docker compose up --build -d`
-
-## Development
-
-### Running Commands in Container
+Inside the container:
 
 ```bash
-# Access PHP container shell
 docker exec -it ci_php56 bash
-
-# Run Composer commands
 docker exec ci_php56 composer install
-
-# Generate password hash
-docker exec ci_php56 php -r "echo password_hash('your_password', PASSWORD_BCRYPT);"
+docker logs -f ci_php56
 ```
 
-### Database Backup/Restore
+Backup/restore is against **host** MySQL, not a Compose `db` service. Example:
 
 ```bash
-# Backup database
-docker exec ci_mysql57 mysqldump -u ci_user -pci_pass start_cms_db > backup.sql
-
-# Restore database
-docker exec -i ci_mysql57 mysql -u ci_user -pci_pass start_cms_db < backup.sql
+mysqldump -h 127.0.0.1 -u ci_user -pci_pass start_cms_db > backup.sql
 ```
 
-## API Documentation
+## Project layout
 
-The application includes a REST API. Check the API documentation at:
-- http://localhost:8081/api/v1 (API endpoints)
-- See `docs/api/postman-collection.json` for Postman collection
+```
+application/     PHP app (controllers, models, Blade admin)
+public/          Built CSS, copied JS, vendors
+resources/       SCSS, Vue components, start.js
+themes/          Public site themes
+uploads/         User files (not the source of truth for DB rows)
+docs/            Product and implementation docs
+bin/             Install, backup, watch, QA
+```
 
-## Support
+## Troubleshooting
 
-For issues, feature requests, or contributions, please visit the GitHub repository.
+**Admin 401 / blank login** — confirm `ci_php56` is up (`docker ps`) and `.env` `APP_BASE_URL` matches the URL you open (including trailing slash).
+
+**Database connection error** — MySQL is on the host. From the container use `host.docker.internal`. The old Compose service name `db` is gone. Check `.env` and that `start_cms_db` exists.
+
+**Styles stale after SCSS edits** — run `npm run build` or `npm run watch` in this tree. Do not hand-edit `public/css/admin/*.min.css`.
+
+**Worktree preview** — `:8081` is the **main** checkout. A feature worktree needs its own Apache on `8082–8099`. See `.cursor/rules/worktree-preview.mdc`. Never `docker compose up` from a worktree (it would replace `ci_php56`).
 
 ## License
 
-This project is licensed under the GNU License - see the LICENSE.txt file for details.
+See [LICENSE.txt](LICENSE.txt). `composer.json` / `package.json` version: **3.0.0**.
 
-### Tech
+## Contribute
 
-startCodeIgniter CSM uses a number of open source projects to work properly:
-
--   [VueJS](https://github.com/vuejs/vue) - HTML enhanced for web apps!
--   [tinymce] - awesome web-based text editor
--   [Materialize] - great UI boilerplate for modern web apps
--   [MySQL] - the popular database for storage
--   [Codeigneiter](https://github.com/bcit-ci/CodeIgniter) - fast PHP app framework
--   [Gulp](https://chat.openai.com/http) - the streaming build system
--   [jQuery](http://jquery.com/) - duh
-
-And of course startCodeIgniter CSM itself is open source with a [public repository](https://github.com/gervisbermudez/startCodeIgniter-CSM) on GitHub.
-
-### Installation
-
-startCodeIgniter CSM requires [Composer](https://getcomposer.org/).
-
-Install the dependencies and devDependencies and start the server.
-
-```sh
-$ git clone https://github.com/gervisbermudez/startCodeIgniter-CSM.git
-$ cd ./startCodeIgniter-CSM
-$ composer install
-$ npm install
-$ php -S localhost:8000 -t ./ 
-```
-• startCodeIgniter CSM private panel admin will be in [/admin](https://localhost:8000/admin/). • startCodeIgniter CSM public website will be in [/](https://localhost:8000/).
-
-### Development
-
-Want to contribute? Great!
-
-startCodeIgniter CSM uses Gulp for fast developing. Make a change in your file and instantaneously see your updates!
-
-Open your favorite Terminal and run these commands.
-
-First Tab:
-
-```sh
-$ php -S localhost:8000 -t ./ 
-```
-
-Second Tab:
-
-```sh
-$ gulp watch_resources
-```
-
-### Todos
-
--  Write MORE Tests
-- Add support for multiple languages
-- Add support for more file types
-- Improve security
-- Improve API documentation
-
-## License
-
-MIT
-
-**Free Software, Hell Yeah!**
-
-[//]: # "These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax"
-[startcodeigniter]: https://github.com/gervisbermudez/startCodeIgniter-CSM
-[git-repo-url]: https://github.com/gervisbermudez/startCodeIgniter-CSM.git
-[df1]: http://daringfireball.net/projects/markdown/
-[codeigneiter]: https://github.com/bcit-ci/CodeIgniter
-[node.js]: http://nodejs.org
-[twitter bootstrap]: http://twitter.github.com/bootstrap/
-[jquery]: http://jquery.com
-[@tjholowaychuk]: http://twitter.com/tjholowaychuk
-[vuejs]: https://github.com/vuejs/vue
-[gulp]: http://gulpjs.com
-[materialize]: https://github.com/Dogfalo/materialize
+Open an issue or PR on GitHub. One feature per branch/worktree. Do not “fix” historical identifiers (`permisions`, `categorie`, `albumes`, `fragmentos`, `patern`) — they are data and URL contracts.

@@ -1,8 +1,8 @@
-# Admin Navbar Contextual - Guía Rápida
+# Admin Navbar Contextual
 
-## ✅ Cambios Aplicados
+> **Estado (Start CMS 3.0):** shipped. Guía de la barra de admin inyectada en el sitio público (`shared.admin_navbar`, `public/js/admin-navbar.js`).
 
-El admin navbar ahora es **contextual e inteligente**. Detecta automáticamente qué estás viendo y muestra opciones relevantes.
+El admin navbar es **contextual**. Detecta qué está viendo el editor logueado y muestra opciones relevantes.
 
 ## 🎯 Características
 

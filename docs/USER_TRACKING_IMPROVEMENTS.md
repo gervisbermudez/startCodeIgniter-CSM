@@ -1,4 +1,6 @@
-# 📊 User Tracking System - Mejoras v2.0
+# User Tracking — mejoras (base del módulo Analytics)
+
+> **Estado (Start CMS 3.0):** shipped. El producto se ve en **Analytics** (`/admin/analytics`). Este documento describe el schema y la librería (`Track_Visitor_Enhanced`, migración `001` / `003`).
 
 ## 🎯 Resumen de Mejoras
 

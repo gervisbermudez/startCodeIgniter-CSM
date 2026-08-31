@@ -1,24 +1,35 @@
 #!/bin/bash
 
-# Script para crear backup de la base de datos
-# Uso: ./bin/backup-db.sh
+# Dump host MySQL (Compose does not run a DB container).
+# Usage: ./bin/backup-db.sh
 
-echo "📦 Creando backup de la base de datos..."
+set -e
+cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
-# Ruta del archivo de backup
-BACKUP_FILE="application/database/start.sql"
-
-# Crear backup
-docker exec ci_mysql57 mysqldump -u root -proot \
-  --single-transaction \
-  --quick \
-  start_cms_db > "$BACKUP_FILE"
-
-# Verificar que se creó correctamente
-if [ -f "$BACKUP_FILE" ]; then
-  SIZE=$(ls -lh "$BACKUP_FILE" | awk '{print $5}')
-  echo "✅ Backup creado exitosamente: $BACKUP_FILE ($SIZE)"
-else
-  echo "❌ Error al crear el backup"
-  exit 1
+if [ -f .env ]; then
+    set -a
+    # shellcheck disable=SC1091
+    . ./.env
+    set +a
 fi
+
+DB_HOST="${DATABASE_HOSTNAME:-127.0.0.1}"
+if [ "$DB_HOST" = "host.docker.internal" ]; then
+    DB_HOST="127.0.0.1"
+fi
+DB_NAME="${DATABASE_DATABASE:-start_cms_db}"
+DB_USER="${DATABASE_USER:-ci_user}"
+DB_PASS="${DATABASE_PASSWORD:-ci_pass}"
+
+mkdir -p backups
+BACKUP_FILE="backups/manual_$(date +%Y%m%d%H%M%S).sql"
+
+echo "Dumping ${DB_NAME} from ${DB_HOST} → ${BACKUP_FILE}"
+
+mysqldump -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" \
+    --single-transaction \
+    --quick \
+    "$DB_NAME" > "$BACKUP_FILE"
+
+SIZE=$(ls -lh "$BACKUP_FILE" | awk '{print $5}')
+echo "Backup created: $BACKUP_FILE ($SIZE)"

@@ -1,17 +1,19 @@
 {
-  "description": "A simple CSM building with codeigneiter",
+  "description": "Start CMS — self-hosted content platform on CodeIgniter 3: pages, collections, events, forms, and a REST API.",
   "name": "gervisbermudez/csm",
   "keywords": [
+    "cms",
     "codeigniter",
-    "csm",
-    "simple"
+    "php",
+    "rest-api",
+    "vue"
   ],
   "homepage": "https://github.com/gervisbermudez/startCodeIgniter-CSM#readme",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "type": "project",
-  "license": "GNU",
+  "license": "MIT",
   "require": {
-    "php": ">=5.3.2",
+    "php": ">=7.4",
     "codeigniter/framework": "3.1.*",
     "eftec/bladeone": "^3.33",
     "rbdwllr/reallysimplejwt": "dev-master",

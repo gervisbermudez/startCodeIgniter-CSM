@@ -1,12 +1,11 @@
-# Colecciones (Custom Models) — spec de implementación
+# Colecciones (Custom Models)
 
-Documento para un agente que implemente el corte de producto acordado.
+> **Estado (Start CMS 3.0):** shipped en `master` (`feat: Turn Custom Models into Collections with theme render`). Este archivo es el spec del corte. El comportamiento vivo está en el código (`get_collection()`, `/admin/custommodels/`). No reimplementar.
 
 **Stack:** PHP 7.4, CodeIgniter 3.1, BladeOne, Vue 2 global, Materialize. Sin PHP 8+ (`match`, `?->`, union types, named arguments).  
-**Worktree:** un chat = `/worktree` local. No Cloud Agents. No `docker compose` en el worktree. Verificar UI en `http://localhost:8081` tras merge o `/apply-worktree`.  
 **Guías:** `AGENTS.md`, `docs/DESIGN.md`, `.cursor/rules/`.
 
-Leer este archivo entero antes de tocar código. No ampliar alcance.
+Leer este archivo para el contrato de producto. No ampliar alcance sin un corte nuevo.
 
 ---
 

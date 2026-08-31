@@ -1,317 +1,132 @@
-# Docker Setup Guide - startCodeIgniter CSM
+# Docker — Start CMS 3.0
 
-## What's Included
+Compose levanta **solo** Apache + PHP 7.4. MySQL corre en el host. El contenedor se llama `ci_php56` y publica **8081**.
 
-This Docker setup includes:
+## Qué incluye
 
-- **PHP 7.4 Apache**: Web server with all necessary PHP extensions
-- **MySQL 5.7**: Database server
-- **Composer**: Dependency manager for PHP
-- **Automatic Setup**: Database initialization with sample data
-- **Volume Mounts**: Direct file editing without container rebuild
+| Pieza | Dónde |
+|---|---|
+| PHP 7.4 + Apache + Composer | Imagen del `Dockerfile`, contenedor `ci_php56` |
+| Código | Volume `.:/var/www/html` |
+| MySQL 5.7+ | **Host** (no hay servicio `db` en `docker-compose.yml`) |
+| Red al host | `extra_hosts: host.docker.internal:host-gateway` |
 
-## System Requirements
+No hay contenedor `ci_mysql57`. `docker compose down -v` **no** borra la base: los datos viven fuera de Compose.
 
-- **Docker**: v20.10+
-- **Docker Compose**: v1.29+
-- **Disk Space**: ~2GB for images and database
-- **RAM**: ~512MB minimum
+## Requisitos
 
-## Quick Start
+- Docker 20.10+ con el plugin Compose (`docker compose`)
+- MySQL 5.7+ accesible desde el contenedor, base `start_cms_db`
+- ~512 MB RAM para el contenedor web
 
-### 1. Clone or Download the Project
+## Arranque
 
 ```bash
 git clone https://github.com/gervisbermudez/startCodeIgniter-CSM.git
 cd startCodeIgniter-CSM
-```
-
-### 2. Run the Installation Script
-
-```bash
-# On Linux/Mac
-chmod +x bin/install.sh
-./bin/install.sh
-
-# Or manually start Docker
+cp .env.example .env
+# Creá start_cms_db en tu MySQL si no existe; importá application/database/start.sql
+# y las migraciones en application/database/migrations/ que aún no hayas aplicado.
 docker compose up -d
 ```
 
-### 3. Access the Application
+O `./bin/install.sh` (comprueba Docker y levanta `ci_php56`; no crea MySQL).
 
-- **Frontend**: http://localhost:8081
-- **Admin Panel**: http://localhost:8081/admin/login
-- **Username**: `gerber`
-- **Password**: `admin123`
+| | |
+|---|---|
+| Sitio | http://localhost:8081 |
+| Admin | http://localhost:8081/admin/login |
+| Usuario / clave | `gerber` / `admin123` |
 
-## Configuration
-
-### Environment Variables (.env)
-
-Edit `.env` to customize:
+## `.env`
 
 ```env
-# Application
-APP_ENV=development          # development or production
+APP_ENV=development
 APP_BASE_URL=http://localhost:8081/
 
-# Database
-DATABASE_HOSTNAME=db        # Docker service name
+DATABASE_HOSTNAME=host.docker.internal
 DATABASE_DATABASE=start_cms_db
 DATABASE_USER=ci_user
 DATABASE_PASSWORD=ci_pass
 ```
 
-### Docker Compose Configuration
+`host.docker.internal` es el host desde el contenedor (Docker Desktop, o `host-gateway` en Linux/WSL). No uses `db` salvo que vos agregues un servicio MySQL.
 
-The `docker-compose.yml` defines:
+En un **preview de worktree** cambiá `APP_BASE_URL` y `SESS_COOKIE_NAME` (puerto 8082–8099). No toques `DATABASE_*`. Receta: `.cursor/rules/worktree-preview.mdc`.
+
+## Compose actual
 
 ```yaml
 services:
   web:
-    build: .                 # Build from Dockerfile
+    build: .
+    container_name: ci_php56
     ports:
-      - "8081:80"           # Access on port 8081
+      - "8081:80"
     volumes:
-      - ./:/var/www/html    # Mount entire project
-      
-  db:
-    image: mysql:5.7        # MySQL database
-    ports:
-      - "3306:3306"         # MySQL access
-    volumes:
-      - mysql_data:/var/lib/mysql  # Persistent data
+      - ./:/var/www/html
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 ```
 
-## Common Tasks
+`container_name: ci_php56` es fijo. Un segundo `docker compose up` en otro checkout **pisa** este contenedor. En worktrees usá `docker run`, nunca Compose.
 
-### Access PHP Container Shell
+## Tareas habituales
 
 ```bash
 docker exec -it ci_php56 bash
-```
-
-### View Application Logs
-
-```bash
-# PHP/Apache logs
 docker logs -f ci_php56
-
-# MySQL logs
-docker logs -f ci_mysql57
-
-# Follow logs with timestamps
-docker logs -f --timestamps ci_php56
-```
-
-### Database Operations
-
-```bash
-# Access MySQL CLI
-docker exec -it ci_mysql57 mysql -u ci_user -pci_pass start_cms_db
-
-# Backup database
-docker exec ci_mysql57 mysqldump -u ci_user -pci_pass start_cms_db > backup.sql
-
-# Restore database
-docker exec -i ci_mysql57 mysql -u ci_user -pci_pass start_cms_db < backup.sql
-
-# Export to CSV
-docker exec ci_mysql57 mysql -u ci_user -pci_pass start_cms_db -e "SELECT * FROM users;" > export.csv
-```
-
-### Composer Operations
-
-```bash
-# Install dependencies
 docker exec ci_php56 composer install
-
-# Update dependencies
-docker exec ci_php56 composer update
-
-# Autoload optimization
-docker exec ci_php56 composer dump-autoload
-```
-
-### Generate Password Hashes
-
-```bash
-# Generate bcrypt hash for password
 docker exec ci_php56 php -r "echo password_hash('mypassword', PASSWORD_BCRYPT);"
 ```
 
-## Troubleshooting
-
-### Containers Won't Start
+MySQL (en el **host**):
 
 ```bash
-# Check if ports are already in use
-netstat -an | grep 8081
-netstat -an | grep 3306
-
-# Remove stopped containers
-docker compose down
-
-# Rebuild everything
-docker compose down -v
-docker compose up --build -d
+mysql -h 127.0.0.1 -u ci_user -pci_pass start_cms_db
+mysqldump -h 127.0.0.1 -u ci_user -pci_pass start_cms_db > backup.sql
+mysql -h 127.0.0.1 -u ci_user -pci_pass start_cms_db < backup.sql
 ```
 
-### Permission Denied Errors
-
-The Docker setup automatically sets permissions on startup. If you still get permission errors:
+Caché de la app:
 
 ```bash
-# Restart containers
-docker compose restart
-
-# Or rebuild
-docker compose down -v && docker compose up --build -d
-```
-
-### Database Connection Errors
-
-```bash
-# Check if MySQL is running
-docker ps | grep mysql
-
-# View MySQL logs
-docker logs ci_mysql57
-
-# Test connection from PHP container
-docker exec ci_php56 php -r "
-\$mysqli = new mysqli('db', 'ci_user', 'ci_pass', 'start_cms_db');
-echo \$mysqli->connect_error ? 'Error: ' . \$mysqli->connect_error : 'Connected!';
-"
-```
-
-### Reset Everything
-
-```bash
-# Stop all containers
-docker compose down
-
-# Remove all volumes (WARNING: deletes database!)
-docker compose down -v
-
-# Rebuild from scratch
-docker compose up --build -d
-```
-
-### Change Admin Password
-
-```bash
-# Generate new password hash
-HASH=$(docker exec ci_php56 php -r "echo password_hash('newpassword', PASSWORD_BCRYPT);")
-
-# Update in database
-docker exec ci_mysql57 mysql -u ci_user -pci_pass start_cms_db -e "UPDATE user SET password='$HASH' WHERE username='gerber';"
-```
-
-## Performance Tips
-
-### Optimize Database
-
-```bash
-# Access MySQL
-docker exec -it ci_mysql57 mysql -u ci_user -pci_pass start_cms_db
-
-# Check indexes
-ANALYZE TABLE users;
-OPTIMIZE TABLE users;
-```
-
-### Clear Caches
-
-```bash
-# Clear application cache
 docker exec ci_php56 rm -rf /var/www/html/application/cache/*
-
-# Clear theme cache
 docker exec ci_php56 rm -rf /var/www/html/themes/*/cache/*
 ```
 
-### Monitor Resources
+No borres `application/cache/sessions` a ciegas: las sesiones CI viven ahí (fuera de `/tmp`).
+
+## Problemas
+
+**El contenedor no arranca** — `docker ps -a`, `docker logs ci_php56`. Puerto 8081 ocupado: otro proceso o un compose viejo. `docker compose down` (sin `-v` da igual para la DB) y volvé a `up -d`.
+
+**Error de conexión a MySQL** — desde el contenedor el host no es `localhost` ni `db`:
 
 ```bash
-# CPU and memory usage
-docker stats
-
-# Container disk usage
-docker system df
+docker exec ci_php56 php -r "
+\$m = new mysqli('host.docker.internal', 'ci_user', 'ci_pass', 'start_cms_db');
+echo \$m->connect_error ? \$m->connect_error : 'ok';
+"
 ```
 
-## Security Considerations
+**Permisos** — el entrypoint ajusta `uploads/`, `application/cache`, `application/logs`. Si falla, `docker compose restart` (en el checkout **principal**).
 
-1. **Change Default Password**: Always change the default `admin123` password
-2. **Update .env**: Change database passwords for production
-3. **Enable HTTPS**: Use a reverse proxy (nginx) for SSL in production
-4. **Backup Data**: Regular backups of the database
-5. **Update Images**: Keep Docker images updated
-
-## Production Deployment
-
-For production use:
-
-1. Use `.env.production` with secure credentials
-2. Set `APP_ENV=production` in .env
-3. Use environment-specific docker-compose files
-4. Implement proper logging and monitoring
-5. Set up automatic backups
-6. Use a reverse proxy (nginx) for SSL/TLS
-7. Implement rate limiting and security headers
-
-## Network Configuration
-
-### Access from Other Machines
-
-To access the application from another machine on the network:
-
-1. Find your machine's IP address:
-   ```bash
-   # Linux/Mac
-   ifconfig | grep "inet "
-   
-   # Windows
-   ipconfig
-   ```
-
-2. Update `.env`:
-   ```env
-   APP_BASE_URL=http://YOUR_IP:8081/
-   ```
-
-3. Access from another machine:
-   ```
-   http://YOUR_IP:8081
-   ```
-
-## Docker Cleanup
+**Cambiar la clave de `gerber`**
 
 ```bash
-# Remove unused images
-docker image prune
-
-# Remove unused volumes
-docker volume prune
-
-# Remove unused networks
-docker network prune
-
-# Full cleanup (WARNING: removes all unused data)
-docker system prune -a
+HASH=$(docker exec ci_php56 php -r "echo password_hash('newpassword', PASSWORD_BCRYPT);")
+mysql -h 127.0.0.1 -u ci_user -pci_pass start_cms_db -e "UPDATE user SET password='$HASH' WHERE username='gerber';"
 ```
 
-## Additional Resources
+## Producción
 
-- [Docker Documentation](https://docs.docker.com/)
-- [Docker Compose Documentation](https://docs.docker.com/compose/)
-- [CodeIgniter Documentation](https://codeigniter.com/user_guide/)
-- [MySQL Documentation](https://dev.mysql.com/doc/)
+1. `.env` con secretos reales (`JWT_SECRET_KEY`, clave de admin, DB).
+2. `APP_ENV=production`.
+3. Reverse proxy TLS delante de Apache.
+4. Backups: [AUTOMATIC_BACKUPS.md](AUTOMATIC_BACKUPS.md).
+5. No publiques `8081` en crudo a internet.
 
-## Support
+## Worktrees
 
-For issues or questions:
-- Check the logs: `docker logs ci_php56`
-- Review this guide
-- Open an issue on GitHub
+El volume de `ci_php56` es el checkout principal. El código de un worktree **no** se ve en `:8081`. Preview: Apache propio, puerto `8082–8099`, misma `start_cms_db`. Nunca `docker compose up|down|restart` desde un worktree.

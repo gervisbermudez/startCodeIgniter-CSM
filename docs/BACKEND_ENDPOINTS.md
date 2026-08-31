@@ -1,8 +1,8 @@
-# Endpoints del Backend - Admin Navbar
+# Endpoints del backend — Admin Navbar
 
-## ✅ Endpoints Implementados
+> **Estado (Start CMS 3.0):** shipped. Cache y acciones que usa la barra contextual del sitio público. No es el catálogo completo de `/api/v1`.
 
-Se han creado todos los endpoints necesarios para que las funciones del admin navbar contextual funcionen correctamente.
+Se documentan los endpoints que necesita el admin navbar contextual.
 
 ---
 

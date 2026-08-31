@@ -1,4 +1,4 @@
-# Guía de diseño — admin startCodeIgniter CSM
+# Guía de diseño — admin Start CMS 3.0
 
 Fuente de verdad para UI del panel. El sitio público vive en `themes/` y **no** comparte estos tokens (el tema es del cliente). Esta guía cubre solo el **admin**.
 

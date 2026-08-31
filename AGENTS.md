@@ -1,6 +1,6 @@
 # startCodeIgniter CSM — guía para agentes
 
-CMS ligero sobre **CodeIgniter 3.1** (PHP **7.4**), BladeOne, REST + JWT, Vue 2 (globales, sin bundler) y Materialize. MySQL 5.7. No uses sintaxis de PHP 8+ (`match`, union types, named arguments, nullsafe `?->`, enums).
+**Start CMS 3.0.** CMS ligero sobre **CodeIgniter 3.1** (PHP **7.4**), BladeOne, REST + JWT, Vue 2 (globales, sin bundler) y Materialize. MySQL 5.7. Versión de producto: `ADMIN_VERSION` en `application/config/constants.php`. No uses sintaxis de PHP 8+ (`match`, union types, named arguments, nullsafe `?->`, enums).
 
 ## Arranque
 
@@ -38,7 +38,7 @@ Aislamiento **local** (sin Cloud Agents). Al crear un worktree, Cursor corre `.c
 | `resources/js/` | JS global (`start.js` define `mixins`). Copiar a `public/js/` con `npm run build`. |
 | `themes/` | Temas del sitio público (`ThemeController` + vistas Blade). |
 | `application/database/start.sql` | Schema + seed. Migraciones extra en `application/database/migrations/`. |
-| `docs/` | Docker, Vite, backups, endpoints del navbar. |
+| `docs/` | Índice en `docs/README.md`. Docker, Vite, backups, colecciones, embeds, eventos. |
 
 No editar: `vendor/`, `public/vendors/`, `graphify-out/`, `application/graphify-out/`, `application/cache/`, copias en `public/js/` (editar `resources/`).
 
@@ -85,7 +85,10 @@ Hay un grafo en `graphify-out/` (también `application/graphify-out/`). Para pre
 
 ## Docs
 
+Índice: `docs/README.md`. Producto y arranque: `README.md`.
+
 - `docs/DESIGN.md` — tokens, patrones y deuda UX del admin
 - `docs/DOCKER.md` · `docs/BUILD.md` · `docs/BACKEND_ENDPOINTS.md`
+- `docs/COLLECTIONS.md` · `docs/PAGE_EMBEDS.md` · `docs/EVENTS_CORE_PLAN.md`
 - `docs/api/postman-collection.json`
 - `docs/AUTOMATIC_BACKUPS.md`
