@@ -9,15 +9,14 @@ var FragmentNewForm = new Vue({
       name: {
         value: null,
         required: true,
-        type: "username",
+        type: "text",
         maxLength: 120,
         minLength: 1,
-        customPattern: /[a-zA-Z0-9,#.-\s]+/,
+        customPattern: /^[a-zA-Z0-9_\-\s]+$/,
       },
     }),
     description: "",
     status: false,
-    date_publish: "",
     date_create: "",
     date_update: "",
     type: "contenido",
@@ -39,11 +38,7 @@ var FragmentNewForm = new Vue({
   mixins: [mixins, formMixin],
   computed: {
     btnEnable: function () {
-      let enable = !!this.form.fields.name.value || false;
-      if (enable) {
-        //this.autoSave();
-      }
-      return enable;
+      return !!this.form.fields.name.value;
     },
   },
   filters: {
@@ -54,27 +49,15 @@ var FragmentNewForm = new Vue({
     },
   },
   methods: {
-    autoSave() {
-      if (!this.status) {
-        this.runSaveData();
-        this.debug ? console.log("running autosave...") : null;
-      }
-    },
-    validateField(field) {
-      let self = this;
-      if (self.form.validateField(field)) {
-        self.serverValidation(field);
-        return;
-      }
-      return self.form.fields[field].valid;
-    },
     validateForm() {
       this.form.validate();
-      let errors = true;
-      return this.form.errors.length == 0 && errors;
+      return this.form.errors.length == 0;
     },
     save() {
       var self = this;
+      if (typeof tinymce !== "undefined" && tinymce.get("id_cazary")) {
+        this.description = tinymce.get("id_cazary").getContent();
+      }
       if (self.validateForm()) {
         this.loader = true;
         this.runSaveData(function () {
@@ -90,61 +73,17 @@ var FragmentNewForm = new Vue({
         name: this.form.fields.name.value || "",
         description: this.description || "",
         type: this.type || "",
-        parent_id: this.parent_id || 0,
         status: this.status ? 1 : 2,
-        date_publish: this.date_publish,
-        date_create: this.date_create,
-        date_update: this.date_update,
       };
     },
-    getSelectedCategorie() {
-      return this.categories.filter((value, index) => {
-        return this.fragment_id == value.fragment_id;
-      });
-    },
-    serverValidation(field) {
-      var self = this;
-      var url = BASEURL + "admin/users/ajax_check_field";
-      $.ajax({
-        type: "POST",
-        url: url,
-        data: {
-          field: field,
-          value: self.form.fields[field].value,
-        },
-        dataType: "json",
-        success: function (response) {
-          self.debug ? console.log(url, response) : null;
-          if (response.code) {
-            self.form.fields[field].valid = response.data;
-            if (response.data) {
-              self.form.markFieldAsValid(field);
-            } else {
-              self.form.fields[field].errorText =
-                "The " + field + " is already registered";
-            }
-            self.$forceUpdate();
-          }
-        },
-      });
-    },
-    getCategories() {
-      var self = this;
-      var url = BASEURL + "api/v1/fragments/type/" + self.type;
-      fetch(url)
-        .then((response) => response.json())
-        .then((response) => {
-          self.loader = false;
-          self.debug ? console.log(url, response) : null;
-          if (response.code == 200) {
-            self.categories = response.data;
-            this.initSelects();
-          }
-        })
-        .catch((err) => {
-          self.debug ? console.log(err) : null;
-          self.loader = false;
-        });
+    setEditorContent: function (html) {
+      if (typeof tinymce === "undefined") {
+        return;
+      }
+      var editor = tinymce.get("id_cazary");
+      if (editor) {
+        editor.setContent(html || "");
+      }
     },
     checkEditMode() {
       var self = this;
@@ -159,21 +98,20 @@ var FragmentNewForm = new Vue({
             if (response.code == 200) {
               self.fragment_id = response.data.fragment_id;
               self.date_create = response.data.date_create;
-              self.date_publish = response.data.date_publish;
               self.date_update = response.data.date_update;
               self.description = response.data.description;
               self.form.fields.name.value = response.data.name;
-              self.status = response.data.status == 1 || response.data.status == "1";
+              self.status =
+                response.data.status == 1 || response.data.status == "1";
               self.type = response.data.type;
               self.user_id = response.data.user_id;
               self.user = new User(response.data.user);
-              setTimeout(() => {
-                tinymce.editors["id_cazary"].setContent(self.description);
-              }, 5000);
+              self.setEditorContent(self.description);
+              self.$nextTick(function () {
+                self.initSelects();
+                M.updateTextFields();
+              });
             }
-            setTimeout(() => {
-              M.updateTextFields();
-            }, 1000);
           })
           .catch((response) => {
             M.toast({ html: response.error_message });
@@ -181,22 +119,29 @@ var FragmentNewForm = new Vue({
           });
       } else {
         self.loader = false;
+        self.$nextTick(function () {
+          self.initSelects();
+        });
       }
     },
     initSelects() {
-      setTimeout(() => {
-        var elems = document.querySelectorAll("select");
-        var instances = M.FormSelect.init(elems, {});
-      }, 1000);
+      var elems = document.querySelectorAll("select");
+      M.FormSelect.init(elems, {});
     },
     initPlugins() {
+      var self = this;
       tinymce.init({
-        base_url: BASEURL + '/public/vendors/tinymce/js/tinymce',
-        selector: "textarea",
+        base_url: BASEURL + "/public/vendors/tinymce/js/tinymce",
+        selector: "#id_cazary",
         plugins: ["link table code"],
-        setup: (editor) => {
-          editor.on("Change", (e) => {
-            this.description = tinymce.editors["id_cazary"].getContent();
+        setup: function (editor) {
+          editor.on("Change", function () {
+            self.description = editor.getContent();
+          });
+          editor.on("init", function () {
+            if (self.description) {
+              editor.setContent(self.description);
+            }
           });
         },
       });
@@ -204,8 +149,6 @@ var FragmentNewForm = new Vue({
   },
   mounted: function () {
     this.$nextTick(function () {
-      this.debug ? console.log("mounted CategoriaNewForm") : null;
-      //this.getCategories();
       this.initPlugins();
       this.checkEditMode();
     });

@@ -388,6 +388,15 @@ function fragment(string $fragment_name)
     return expand_helper_snippets($content);
 }
 
+function bust_fragment_cache($fragment_name)
+{
+    if ($fragment_name === null || $fragment_name === '') {
+        return;
+    }
+    delete_cached('fragment_raw_' . $fragment_name);
+    delete_cached('fragment_' . $fragment_name);
+}
+
 function set_notification($title, $description, $type = 'info', $url = null, $user_ids = null)
 {
     $ci = &get_instance();

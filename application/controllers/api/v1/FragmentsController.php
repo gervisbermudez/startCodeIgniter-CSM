@@ -27,11 +27,11 @@ class FragmentsController extends REST_Controller
     }
 
     /**
-     * @api {get} /api/v1/categorie/:fragment_id Request Fragments information
-     * @apiName GetCategorie
+     * @api {get} /api/v1/fragments/:fragment_id Request fragment information
+     * @apiName GetFragment
      * @apiGroup Fragments
      *
-     * @apiParam {Number} fragment_id Fragments unique ID.
+     * @apiParam {Number} [fragment_id] Fragment unique ID. Omit for the list (published + draft).
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
@@ -39,31 +39,16 @@ class FragmentsController extends REST_Controller
      *       "code": 200,
      *       "data": [
      *           {
-     *               "fragment_id": "4",
-     *               "name": "Categoria 1",
-     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
-     *               "type": "page",
-     *               "parent_id": "0",
-     *               "date_publish": "2020-04-19 10:36:10",
+     *               "fragment_id": "17",
+     *               "name": "about_me",
+     *               "description": "<p>HTML content</p>",
+     *               "type": "contenido",
      *               "date_create": "2020-04-19 10:36:14",
      *               "date_update": "2020-04-19 10:40:20",
      *               "status": "1"
-     *           },
-     *           {
-     *               "fragment_id": "5",
-     *               "name": "Categoria 2",
-     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
-     *               "type": "page",
-     *               "parent_id": "0",
-     *               "date_publish": "2020-04-19 10:36:10",
-     *               "date_create": "2020-04-19 10:36:14",
-     *               "date_update": "2020-04-19 10:40:28",
-     *               "status": "1"
-     *           },
+     *           }
      *       ]
      *   }
-     *
-     * @apiError CategorieNotFound The id of the User was not found.
      *
      * @apiErrorExample Error-Response:
      *     HTTP/1.1 404 Not Found
@@ -87,11 +72,12 @@ class FragmentsController extends REST_Controller
             return;
         }
 
-        $this->respond_index_list($fragmento, array(), array(), array('unfiltered' => true));
+        $where = array('status_in' => array(1, 2));
+        $this->respond_index_list($fragmento, $where, array(), array('unfiltered' => true));
     }
 
     /**
-     * Get All Data from this method.
+     * Create or update a fragment. description is HTML (no xss_clean).
      *
      * @return Response
      */
@@ -114,27 +100,54 @@ class FragmentsController extends REST_Controller
             return;
         }
 
-        // Obtener datos validados
         $fragment_id = $this->input->post('fragment_id', TRUE);
         $name = $this->input->post('name', TRUE);
-        $description = $this->input->post('description', TRUE);
+        $description = $this->input->post('description');
         $type = $this->input->post('type', TRUE);
-        $status = (int)$this->input->post('status');
+        $status = (int) $this->input->post('status');
+        $is_update = ($fragment_id !== null && $fragment_id !== '' && $fragment_id !== false);
+
+        if ($this->fragment_name_taken($name, $is_update ? $fragment_id : null)) {
+            $this->response_error(
+                lang('validations_error'),
+                array('errors' => array('name' => 'The name field must contain a unique value.')),
+                REST_Controller::HTTP_BAD_REQUEST,
+                REST_Controller::HTTP_BAD_REQUEST
+            );
+            return;
+        }
 
         $fragmento = new FragmentModel();
+        $old_name = '';
 
-        if ($fragment_id) {
-            $fragmento->find($fragment_id);
+        if ($is_update) {
+            if (!$fragmento->find($fragment_id)) {
+                $this->response_error(lang('not_found_error'));
+                return;
+            }
+            $old_name = $fragmento->name;
         }
 
         $fragmento->name = $name;
         $fragmento->description = $description;
-        $fragmento->user_id = userdata('user_id');
         $fragmento->type = $type;
         $fragmento->status = $status;
-        $fragmento->date_create = date("Y-m-d H:i:s");
-        $fragmento->date_publish = date("Y-m-d H:i:s");
+        $fragmento->date_update = date("Y-m-d H:i:s");
+
+        if (!$is_update) {
+            $fragmento->user_id = userdata('user_id');
+            $fragmento->date_create = date("Y-m-d H:i:s");
+        }
+
         if ($fragmento->save()) {
+            bust_fragment_cache($old_name);
+            bust_fragment_cache($fragmento->name);
+            system_logger(
+                'fragments',
+                $fragmento->fragment_id,
+                $is_update ? 'updated' : 'created',
+                $is_update ? 'A fragment has been updated' : 'A fragment has been created'
+            );
             $this->response_ok($fragmento);
             return;
         }
@@ -143,8 +156,24 @@ class FragmentsController extends REST_Controller
     }
 
     /**
-     * Get All Data from this method.
+     * Unique name among non-deleted rows. Exclude self on update.
      *
+     * @param string $name
+     * @param mixed $exclude_fragment_id
+     * @return bool
+     */
+    protected function fragment_name_taken($name, $exclude_fragment_id = null)
+    {
+        $this->db->where('name', $name);
+        $this->db->where('status !=', 0);
+        if ($exclude_fragment_id !== null && $exclude_fragment_id !== '' && $exclude_fragment_id !== false) {
+            $this->db->where('fragment_id !=', $exclude_fragment_id);
+        }
+        $this->db->limit(1);
+        return $this->db->get('fragmentos')->num_rows() > 0;
+    }
+
+    /**
      * @return Response
      */
     public function index_put($id)
@@ -155,20 +184,23 @@ class FragmentsController extends REST_Controller
     }
 
     /**
-     * Get All Data from this method.
+     * Soft-delete a fragment and bust its embed cache.
      *
      * @return Response
      */
     public function index_delete($fragment_id = null)
     {
         $fragmento = new FragmentModel();
-        $result = $fragmento->find($fragment_id);
-        if ($result) {
-            $result = $fragmento->delete($fragment_id);
+        if (!$fragmento->find($fragment_id)) {
+            $this->response_error(lang('not_found_error'));
+            return;
         }
 
-        if ($result) {
-            $this->response_ok($result);
+        bust_fragment_cache($fragmento->name);
+
+        if ($fragmento->delete($fragment_id)) {
+            system_logger('fragments', $fragmento->fragment_id, 'deleted', 'A fragment has been deleted');
+            $this->response_ok($fragmento);
             return;
         }
 

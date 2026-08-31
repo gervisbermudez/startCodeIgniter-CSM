@@ -14,6 +14,12 @@
 | [../CHANGELOG.md](../CHANGELOG.md) | 3.0 y notas 2.x | Actual |
 | [../AGENTS.md](../AGENTS.md) | Cómo partir una feature, convenciones, worktrees | Actual |
 
+## En curso
+
+| Doc | Módulo | Estado |
+|---|---|---|
+| [FRAGMENTS_MODULE_PLAN.md](FRAGMENTS_MODULE_PLAN.md) | Fragments: publicar, TinyMCE, embed (`{{fragment(nombre)}}`) | Corte A |
+
 ## Producto (shipped)
 
 Estos archivos nacieron como spec de implementación. El corte ya está en `master`. Sirven para entender el contrato; no para reimplementar el módulo.

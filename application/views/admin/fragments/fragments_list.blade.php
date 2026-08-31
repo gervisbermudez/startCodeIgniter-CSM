@@ -36,7 +36,7 @@
                                 <span v-else>-</span>
                             </td>
                             <td>
-                                @{{fragment.date_publish ? fragment.date_publish : fragment.date_create}}
+                                @{{fragment.date_create}}
                             </td>
                             <td>
                                 <i v-if="fragment.status == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('published'); ?>">publish</i>
@@ -45,10 +45,8 @@
                             <td>
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + fragment.fragment_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + fragment.fragment_id' class='dropdown-content'>
-                                    <li><a :href="base_url('admin/Fragments/editar/' + fragment.fragment_id)">{{ lang('edit') }}</a></li>
+                                    <li><a :href="base_url('admin/fragments/edit/' + fragment.fragment_id)" class="tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('edit'); ?>">{{ lang('edit') }}</a></li>
                                     <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(fragment, index);">{{ lang('delete') }}</a></li>
-                                    <li v-if="fragment.status == 2"><a :href="base_url('admin/Fragments/preview?fragment_id=' + fragment.fragment_id)" target="_blank">{{ lang('preview') }}</a></li>
-                                    <li v-if="fragment.path"><a :href="base_url(fragment.path)" target="_blank">{{ lang('view_in_site') }}</a></li>
                                 </ul>
                             </td>
                         </tr>
@@ -59,24 +57,16 @@
         <div class="row" v-else>
             <div class="col s12 m4" v-for="(fragment, index) in filterFragments" :key="index">
                 <div class="card page-card">
-                    <div class="card-image">
-                        <div class="card-image-container">
-                            <img :src="getPageImagePath(fragment)" />
-                        </div>
-
-                        <a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href='#!' :data-target='"dropdown" + fragment.fragment_id'>
-                            <i class="material-icons">more_vert</i></a>
-                        <ul :id='"dropdown" + fragment.fragment_id' class='dropdown-content'>
-                            <li><a :href="base_url('admin/Fragments/editar/' + fragment.fragment_id)"><?php echo lang('edit'); ?></a></li>
-                            <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(fragment, index);"><?php echo lang('delete'); ?></a></li>
-                            <li v-if="fragment.status == 2"><a :href="base_url('admin/Fragments/preview?fragment_id=' + fragment.fragment_id)" target="_blank"><?php echo lang('preview'); ?></a></li>
-                            <li v-if="fragment.path"><a :href="base_url(fragment.path)" target="_blank"><?php echo lang('view_in_site'); ?></a></li>
-                        </ul>
-                    </div>
                     <div class="card-content">
                         <div>
-                            <span class="card-title"><a :href="base_url(fragment.name)" target="_blank">@{{fragment.name}}</a>
+                            <span class="card-title">
+                                <a :href="base_url('admin/fragments/edit/' + fragment.fragment_id)">@{{fragment.name}}</a>
                                 @include('admin.components.entity_card_badges', ['item' => 'fragment'])
+                                <a class="dropdown-trigger right" href='#!' :data-target='"dropdown-card" + fragment.fragment_id'><i class="material-icons">more_vert</i></a>
+                                <ul :id='"dropdown-card" + fragment.fragment_id' class='dropdown-content'>
+                                    <li><a :href="base_url('admin/fragments/edit/' + fragment.fragment_id)" class="tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('edit'); ?>"><?php echo lang('edit'); ?></a></li>
+                                    <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(fragment, index);"><?php echo lang('delete'); ?></a></li>
+                                </ul>
                             </span>
                             <div class="card-info">
                                 <p>
@@ -92,11 +82,8 @@
                             <i class="material-icons right">close</i>
                             @{{fragment.name}}
                         </span>
-                        <span class="subtitle">
-                            @{{fragment.subtitle}}
-                        </span>
                         <ul>
-                            <li><b><?php echo lang('publish_date'); ?>:</b> <br> @{{fragment.date_publish ? fragment.date_publish : fragment.date_create}}</li>
+                            <li><b><?php echo lang('publish_date'); ?>:</b> <br> @{{fragment.date_create}}</li>
                             <li><b><?php echo lang('status'); ?>:</b>
                                 <span v-if="fragment.status == 1">
                                     <?php echo lang('published'); ?>
@@ -111,8 +98,10 @@
             </div>
         </div>
     </div>
-    <div class="container" v-if="!loader && fragments.length == 0 && !filter" v-cloak>
-        <h4><?php echo lang('no_fragments'); ?></h4>
+    <div class="container center" v-if="!loader && fragments.length == 0 && !filter" v-cloak>
+        <i class="material-icons large grey-text">short_text</i>
+        <p class="page-header">{{ lang('fragments_empty') }}</p>
+        <a href="{{ base_url('admin/fragments/new/') }}" class="btn">{{ lang('fragments_empty_cta') }}</a>
     </div>
     @include('admin.components.pagination')
     <confirm-modal
@@ -126,7 +115,7 @@
     </confirm-modal>
 </div>
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('create_fragment'); ?>" href="<?php echo base_url('admin/fragments/nueva/') ?>">
+    <a class="btn-floating btn-large waves-effect st-accent tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('create_fragment'); ?>" href="<?php echo base_url('admin/fragments/new/') ?>">
         <i class="large material-icons">add</i>
     </a>
 </div>
