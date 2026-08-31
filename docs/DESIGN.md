@@ -190,7 +190,7 @@ Referencia: `pages/new.blade.php` (a refinar, no a clonar ciegas).
 
 Grid 70/30. KPI + welcome counts + charts + rail (creator, drafts, timeline).
 
-- El FAB del dashboard no debería ser “nuevo custom model” como acción por defecto. Preferir “nueva página” o un speed-dial sin primaria engañosa.
+- FAB del dashboard: primaria = nueva página (`/admin/pages/new/`), accent (`var(--st-accent)`). Speed-dial incluye colección. El módulo se llama Colecciones en la UI.
 - El widget “Type here…” (creator) es un atajo opaco. Si se mantiene: placeholder que nombre el destino (“Borrador de página”).
 - Copy de KPIs por `lang()`, no “Unique Visitors” hardcodeado.
 

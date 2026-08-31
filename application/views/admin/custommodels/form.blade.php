@@ -9,6 +9,7 @@
 @endsection
 
 @section('content')
+@include('admin.custommodels.i18n')
 <div class="container formModule form" id="root">
     <div class="row">
         <div class="col s12">
@@ -21,14 +22,45 @@
     <div v-cloak v-show="!loader">
         <div class="row">
             <div class="col s12">
-                <div class="input-field col s12">
-                    <input placeholder="Model Name" v-model="form_name" id="form_name" type="text" class="validate">
-                    <label for="form_name" class="active">Model Name</label>
+                <div class="chip" @click="applyPreset('portfolio')"><?= lang('collections_preset_portfolio') ?></div>
+                <div class="chip" @click="applyPreset('team')"><?= lang('collections_preset_team') ?></div>
+                <div class="chip" @click="applyPreset('faq')"><?= lang('collections_preset_faq') ?></div>
+                <div class="chip" @click="applyPreset('cards')"><?= lang('collections_preset_cards') ?></div>
+            </div>
+            <div class="col s12">
+                <div class="input-field col s12 m6">
+                    <input v-model="form_name" id="form_name" type="text" class="validate" @input="onNameInput">
+                    <label for="form_name" class="active"><?= lang('collections_name') ?></label>
+                </div>
+                <div class="input-field col s12 m6">
+                    <input v-model="slug" id="collection_slug" type="text" class="validate" @input="slugDirty = true">
+                    <label for="collection_slug" class="active"><?= lang('collections_slug') ?></label>
+                    <span class="helper-text"><?= lang('collections_slug_help') ?></span>
                 </div>
                 <div class="input-field col s12">
-                    <input placeholder="Model Name" v-model="form_description" id="form_description" type="text"
-                        class="validate">
-                    <label for="form_description" class="active">Model Desription</label>
+                    <input v-model="form_description" id="form_description" type="text" class="validate">
+                    <label for="form_description" class="active"><?= lang('collections_description') ?></label>
+                </div>
+                <div class="input-field col s12 m6">
+                    <select v-model="template" id="collection_template">
+                        <option v-for="tpl in templates" :key="tpl" :value="tpl">@{{ tpl }}</option>
+                    </select>
+                    <label><?= lang('collections_template') ?></label>
+                </div>
+                <div class="input-field col s12 m6" v-if="apiFieldIds.length">
+                    <select v-model="title_field" id="collection_title_field">
+                        <option value=""><?= lang('select') ?></option>
+                        <option v-for="api in apiFieldIds" :key="api" :value="api">@{{ api }}</option>
+                    </select>
+                    <label><?= lang('collections_title_field') ?></label>
+                </div>
+                <div class="col s12" v-if="slug">
+                    <label><?= lang('collections_snippet') ?></label>
+                    <div class="input-field">
+                        <input id="collection_snippet" type="text" readonly :value="snippetText">
+                        <a class="btn-flat" href="#!" @click.prevent="copySnippet"><?= lang('collections_copy_snippet') ?></a>
+                    </div>
+                    <span class="helper-text"><?= lang('collections_snippet_help') ?></span>
                 </div>
             </div>
             <div class="col s9">
@@ -44,7 +76,7 @@
                                 <input type="text" :id="'input' + index" v-model="tab.tab_name"
                                     v-on:keyup.enter="saveTab(index)" v-on:blur="saveTab(index)" v-if="tab.edited">
                             </li>
-                            <li class="vtab col s3"><a href="#tab1" @click="addTab()">New Tab +</a></li>
+                            <li class="vtab col s3"><a href="#tab1" @click="addTab()"><?= lang('collections_new_tab') ?></a></li>
                         </ul>
                     </div>
                 </div>
@@ -69,7 +101,7 @@
                     <div class="col s12">
                         <ul class="collection with-header">
                             <li class="collection-header">
-                                <h5>Campos</h5>
+                                <h5><?= lang('collections_fields') ?></h5>
                             </li>
                             <li class="collection-item" v-for="(formsElement, index) in formsElements">
                                 <div>@{{formsElement.displayName}}
@@ -84,22 +116,22 @@
         </div>
         <div class="row">
             <div class="form-group">
-                Enable Model
+                <?= lang('collections_status') ?>
                 <div class="switch">
                     <label>
-                        Disabled
-                        <input type="checkbox" checked v-model="status" name="status" value="on">
+                        <?= lang('collections_disabled') ?>
+                        <input type="checkbox" v-model="status" name="status" value="on">
                         <span class="lever"></span>
-                        Enabled
+                        <?= lang('collections_enabled') ?>
                     </label>
                 </div>
             </div>
             <br>
-            <div class="col s12 text-center form-group" class="" id="buttons">
+            <div class="col s12 text-center form-group" id="buttons">
                 <a href="<?php echo base_url('admin/custommodels/'); ?>"
                     class="btn waves-effect waves-teal btn-flat"><?php echo lang('cancel'); ?></a>
-                <a class="waves-effect waves-light btn waves-effect waves-teal" @click="saveData()"><i
-                        class="material-icons left">cloud</i> Save</a>
+                <a class="waves-effect waves-light btn" @click="saveData()"><i
+                        class="material-icons left">cloud</i> <?= lang('collections_save') ?></a>
             </div>
         </div>
     </div>

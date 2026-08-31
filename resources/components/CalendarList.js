@@ -240,8 +240,8 @@ var CalendarList = new Vue({
                 if (startDate) {
                   self.allEvents.push({
                     id: "custom_model_" + element.custom_model_id,
-                    title: "⚙️ " + element.form_name,
-                    url: self.base_url("admin/custommodels/editar/" + element.custom_model_id),
+                    title: element.form_name,
+                    url: self.base_url("admin/custommodels/editForm/" + element.custom_model_id),
                     start: startDate,
                     end: startDate,
                     color: '#d32f2f',
@@ -260,8 +260,8 @@ var CalendarList = new Vue({
                 if (startDate) {
                   self.allEvents.push({
                     id: "form_content_" + element.custom_model_content_id,
-                    title: "📝 Content #" + element.custom_model_content_id,
-                    url: self.base_url("admin/custommodels/items/" + element.custom_model_id),
+                    title: element.title || ("#" + element.custom_model_content_id),
+                    url: self.base_url("admin/custommodels/editData/" + element.custom_model_id + "/" + element.custom_model_content_id),
                     start: startDate,
                     end: startDate,
                     color: '#e64a19',

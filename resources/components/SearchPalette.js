@@ -104,6 +104,9 @@ window.SearchMapper = (function () {
   }
 
   function contentTitle(item) {
+    if (item.title) {
+      return item.title;
+    }
     if (item.custom_model && item.custom_model.form_name) {
       return item.custom_model.form_name;
     }

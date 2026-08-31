@@ -9,6 +9,7 @@ class CustomModelContentModel extends MY_Model
     public $table = 'custom_model_content';
     public $primaryKey = 'custom_model_content_id';
     public $softDelete = true;
+    public $searchable = array('title');
 
     public $hasOne = [
         'user' => ['user_id', 'Admin/UserModel', 'UserModel'],
@@ -22,42 +23,43 @@ class CustomModelContentModel extends MY_Model
 
     public function filter_results($collection = [])
     {
-        $this->load->model('Admin/UserModel');
+        if (empty($collection)) {
+            return $collection;
+        }
         $this->load->model('Admin/CustomModelModel');
-        $this->load->model('Admin/CustomModelContentDataModel');
-
-        foreach ($collection as $key => &$value) {
-            if (isset($value->user_id) && $value->user_id) {
-                $user = new UserModel();
-                $user->find($value->user_id);
-                $value->{'user'} = $user->as_data();
-                $value->{'model_type'} = "custom_model_content";
+        $this->loadUsersRelation($collection);
+        $model_ids = array();
+        $content_ids = array();
+        foreach ($collection as $value) {
+            if (isset($value->custom_model_id)) {
+                $model_ids[] = (int) $value->custom_model_id;
+            }
+            if (isset($value->custom_model_content_id)) {
+                $content_ids[] = (int) $value->custom_model_content_id;
+            }
+            $value->{'model_type'} = 'custom_model_content';
+            if (empty($value->title) && isset($value->custom_model_content_id)) {
+                $value->title = 'Collection #' . $value->custom_model_content_id;
             }
         }
-
-        foreach ($collection as $key => &$value) {
-            if (isset($value->user_id) && $value->user_id) {
-                $Custom_model = new CustomModelModel();
-                $Custom_model->find($value->custom_model_id);
-                $value->{'custom_model'} = $Custom_model->as_data();
-            }
+        $models = $this->load_models_indexed($model_ids);
+        $fields_by_model = array();
+        foreach ($models as $mid => $model) {
+            $fields_by_model[$mid] = $this->get_fields_map($mid);
         }
+        $data_by_content = $this->load_content_data_batch($content_ids);
 
-        foreach ($collection as $key => &$value) {
-            $value->{'data'} = [];
-            if (isset($value->custom_model->tabs)) {
-                foreach ($value->custom_model->tabs as $index => $tab) {
-                    foreach ($tab->custom_model_fields as $form_field) {
-                        $Custom_model_content_data = new CustomModelContentDataModel();
-                        $query = $Custom_model_content_data->where(["custom_model_content_id" => $value->custom_model_content_id, "custom_model_fields_id" => $form_field->custom_model_fields_id]);
-                        $form_field->{'field_data'} = $query ? $query->first() : null;
-                        if ($form_field->field_data) {
-                            $custom_model_content_data_value = (Array) $form_field->field_data->custom_model_content_data_value;
-                            $value->data[$form_field->data->fielApiID] = $custom_model_content_data_value[$form_field->field_name];
-                        }
-                    }
-                }
+        foreach ($collection as $value) {
+            $mid = isset($value->custom_model_id) ? (int) $value->custom_model_id : 0;
+            if (isset($models[$mid])) {
+                $value->{'custom_model'} = $models[$mid];
             }
+            $cid = isset($value->custom_model_content_id) ? (int) $value->custom_model_content_id : 0;
+            $rows = isset($data_by_content[$cid]) ? $data_by_content[$cid] : array();
+            $field_map = isset($fields_by_model[$mid]) ? $fields_by_model[$mid] : array();
+            $flat = $this->flatten_rows($rows, $field_map);
+            $value->{'data'} = $flat;
+            $this->attach_field_data_to_schema($value, $rows, $field_map);
         }
 
         return $collection;
@@ -69,9 +71,15 @@ class CustomModelContentModel extends MY_Model
 
         foreach ($collection as $item) {
             $data = [];
-            foreach ($item->custom_model->tabs as $tab) {
-                foreach ($tab->custom_model_fields as $form_field) {
-                    $data[$form_field->data->fielApiID] = $form_field->field_data->custom_model_content_data_value;
+            if (!empty($item->data) && is_array($item->data)) {
+                $data = $item->data;
+            } elseif (!empty($item->custom_model->tabs)) {
+                foreach ($item->custom_model->tabs as $tab) {
+                    foreach ($tab->custom_model_fields as $form_field) {
+                        if (isset($form_field->data->fielApiID) && isset($form_field->field_data->custom_model_content_data_value)) {
+                            $data[$form_field->data->fielApiID] = $form_field->field_data->custom_model_content_data_value;
+                        }
+                    }
                 }
             }
             $result[] = $data;
@@ -80,54 +88,473 @@ class CustomModelContentModel extends MY_Model
     }
 
     /**
-     * @param object $form_name Form data to be saved
-     * @return int id form id or null
+     * One content row + data for every field across tabs.
+     *
+     * @param object $data
+     * @return array|false
      */
     public function save_data_form($data)
     {
         $custom_model_id = $data->custom_model_id;
-        foreach ($data->tabs as $tab) {
-            $form_content = array(
-                'custom_model_id' => $custom_model_id,
-                'form_tab_id' => $tab['custom_model_tab_id'],
-                'user_id' => userdata('user_id'),
-            );
-            $this->db->insert('custom_model_content', $form_content);
-            $custom_model_content_id = $this->db->insert_id();
-            foreach ($tab['custom_model_fields'] as $key => $form_field) {
-                $form_field_data = array(
-                    "custom_model_content_id" => $custom_model_content_id,
-                    "custom_model_fields_id" => $form_field['custom_model_fields_id'],
-                    "custom_model_content_data_value" => json_encode($form_field['data']),
-                );
-                $this->db->insert('custom_model_content_data', $form_field_data);
+        $status = $this->normalize_item_status(isset($data->status) ? $data->status : 1);
+        $featured = $this->normalize_featured(isset($data->featured) ? $data->featured : 0);
+        $sort_order = isset($data->sort_order) ? (int) $data->sort_order : 0;
+        $title = isset($data->title) ? $data->title : '';
+        if ($title === '') {
+            $title = $this->derive_title($custom_model_id, isset($data->tabs) ? $data->tabs : array());
+        }
+
+        $form_content = array(
+            'custom_model_id' => $custom_model_id,
+            'form_tab_id' => 0,
+            'user_id' => userdata('user_id'),
+            'title' => $title,
+            'sort_order' => $sort_order,
+            'featured' => $featured,
+            'status' => $status,
+        );
+        if ($status == 1) {
+            $form_content['date_publish'] = date('Y-m-d H:i:s');
+        }
+        $this->db->insert('custom_model_content', $form_content);
+        $custom_model_content_id = $this->db->insert_id();
+        if (!$custom_model_content_id) {
+            return false;
+        }
+
+        $tabs = isset($data->tabs) ? $data->tabs : array();
+        foreach ($tabs as $tab) {
+            $tab = is_array($tab) ? $tab : (array) $tab;
+            $fields = isset($tab['custom_model_fields']) ? $tab['custom_model_fields'] : array();
+            foreach ($fields as $form_field) {
+                $form_field = is_array($form_field) ? $form_field : (array) $form_field;
+                $this->db->insert('custom_model_content_data', array(
+                    'custom_model_content_id' => $custom_model_content_id,
+                    'custom_model_fields_id' => $form_field['custom_model_fields_id'],
+                    'custom_model_content_data_value' => json_encode(isset($form_field['data']) ? $form_field['data'] : array()),
+                ));
             }
         }
-        return true;
+
+        return array(
+            'custom_model_content_id' => $custom_model_content_id,
+            'custom_model_id' => $custom_model_id,
+        );
     }
 
     /**
-     * @param object $form_name Form data to be saved
-     * @return int id form id or null
+     * @param object|array $data
+     * @return array|false
      */
     public function update_data_form($data)
     {
-        $data = (Object) $data;
+        $data = (object) $data;
         $custom_model_content_id = $data->custom_model_content_id;
-        foreach ($data->tabs as $tab) {
-            foreach ($tab['custom_model_fields'] as $key => $form_field) {
-                $form_field_data = array(
-                    "custom_model_content_data_value" => json_encode($form_field['data']),
-                );
+        $custom_model_id = $data->custom_model_id;
+        $status = $this->normalize_item_status(isset($data->status) ? $data->status : 1);
+        $featured = $this->normalize_featured(isset($data->featured) ? $data->featured : 0);
+        $sort_order = isset($data->sort_order) ? (int) $data->sort_order : 0;
+        $title = isset($data->title) ? $data->title : '';
+        if ($title === '') {
+            $title = $this->derive_title($custom_model_id, isset($data->tabs) ? $data->tabs : array());
+        }
 
-                $this->db->where(array(
-                    "custom_model_content_id" => $custom_model_content_id,
-                    "custom_model_fields_id" => $form_field['custom_model_fields_id'],
-                ));
-                $this->db->update('custom_model_content_data', $form_field_data);
+        $update = array(
+            'title' => $title,
+            'sort_order' => $sort_order,
+            'featured' => $featured,
+            'status' => $status,
+        );
+        if ($status == 1 && empty($data->date_publish)) {
+            $update['date_publish'] = date('Y-m-d H:i:s');
+        }
+        $this->db->where('custom_model_content_id', $custom_model_content_id);
+        $this->db->update('custom_model_content', $update);
 
+        $tabs = isset($data->tabs) ? $data->tabs : array();
+        foreach ($tabs as $tab) {
+            $tab = is_array($tab) ? $tab : (array) $tab;
+            $fields = isset($tab['custom_model_fields']) ? $tab['custom_model_fields'] : array();
+            foreach ($fields as $form_field) {
+                $form_field = is_array($form_field) ? $form_field : (array) $form_field;
+                $field_id = $form_field['custom_model_fields_id'];
+                $encoded = json_encode(isset($form_field['data']) ? $form_field['data'] : array());
+                $existing = $this->db->get_where('custom_model_content_data', array(
+                    'custom_model_content_id' => $custom_model_content_id,
+                    'custom_model_fields_id' => $field_id,
+                ))->row();
+                if ($existing) {
+                    $this->db->where('custom_model_content_data_id', $existing->custom_model_content_data_id);
+                    $this->db->update('custom_model_content_data', array(
+                        'custom_model_content_data_value' => $encoded,
+                    ));
+                } else {
+                    $this->db->insert('custom_model_content_data', array(
+                        'custom_model_content_id' => $custom_model_content_id,
+                        'custom_model_fields_id' => $field_id,
+                        'custom_model_content_data_value' => $encoded,
+                    ));
+                }
             }
         }
-        return true;
+
+        return array(
+            'custom_model_content_id' => $custom_model_content_id,
+            'custom_model_id' => $custom_model_id,
+        );
+    }
+
+    public function normalize_item_status($status)
+    {
+        $status = (int) $status;
+        if ($status === 0) {
+            return 2;
+        }
+        if ($status === 2) {
+            return 2;
+        }
+        return 1;
+    }
+
+    public function normalize_featured($value)
+    {
+        if ($value === true || $value === 1 || $value === '1' || $value === 'true') {
+            return 1;
+        }
+        return 0;
+    }
+
+    /**
+     * Published items for get_collection / get_collection_items. No N+1.
+     *
+     * @param object $type CustomModelModel mapped
+     * @param array $options
+     * @return array
+     */
+    public function get_normalized_items($type, $options = array())
+    {
+        $custom_model_id = (int) $type->custom_model_id;
+        $this->db->from($this->table);
+        $this->db->where('custom_model_id', $custom_model_id);
+        $this->db->where('status', 1);
+        if (!empty($options['featured'])) {
+            $this->db->where('featured', 1);
+        }
+        $this->db->order_by('featured', 'DESC');
+        $this->db->order_by('sort_order', 'ASC');
+        $this->db->order_by('custom_model_content_id', 'DESC');
+        if (!empty($options['limit'])) {
+            $this->db->limit((int) $options['limit']);
+        }
+        $query = $this->db->get();
+        if (!$query || $query->num_rows() === 0) {
+            return array();
+        }
+        $rows = $query->result();
+        $ids = array();
+        foreach ($rows as $row) {
+            $ids[] = (int) $row->custom_model_content_id;
+        }
+        $field_map = $this->get_fields_map($custom_model_id);
+        $data_by_content = $this->load_content_data_batch($ids);
+        $items = array();
+        foreach ($rows as $row) {
+            $cid = (int) $row->custom_model_content_id;
+            $flat = $this->flatten_rows(isset($data_by_content[$cid]) ? $data_by_content[$cid] : array(), $field_map);
+            $title = !empty($row->title) ? $row->title : $this->title_from_flat($type, $flat, $cid);
+            $item = (object) array(
+                'id' => $cid,
+                'title' => $title,
+                'featured' => !empty($row->featured),
+                'sort_order' => (int) $row->sort_order,
+                'date_publish' => $row->date_publish,
+                'fields' => $flat,
+            );
+            $items[] = $item;
+        }
+        return $items;
+    }
+
+    public function get_fields_map($custom_model_id)
+    {
+        $sql = "SELECT f.custom_model_fields_id, f.field_name, f.displayName, f.component, f.custom_model_tab_id
+            FROM custom_model_fields f
+            INNER JOIN custom_model_tabs t ON t.custom_model_tab_id = f.custom_model_tab_id
+            WHERE t.custom_model_id = ?";
+        $fields = $this->db->query($sql, array($custom_model_id))->result();
+        $ids = array();
+        foreach ($fields as $field) {
+            $ids[] = (int) $field->custom_model_fields_id;
+            $field->fielApiID = $field->field_name;
+        }
+        if (!empty($ids)) {
+            $this->db->where_in('custom_model_fields_id', $ids);
+            $data_rows = $this->db->get('custom_model_fields_data')->result();
+            $by_field = array();
+            foreach ($data_rows as $d) {
+                if (!isset($by_field[$d->custom_model_fields_id])) {
+                    $by_field[$d->custom_model_fields_id] = array();
+                }
+                $by_field[$d->custom_model_fields_id][$d->_key] = $d->_value;
+            }
+            foreach ($fields as $field) {
+                if (isset($by_field[$field->custom_model_fields_id]['fielApiID']) && $by_field[$field->custom_model_fields_id]['fielApiID'] !== '') {
+                    $field->fielApiID = $by_field[$field->custom_model_fields_id]['fielApiID'];
+                }
+                $field->data_keys = isset($by_field[$field->custom_model_fields_id]) ? $by_field[$field->custom_model_fields_id] : array();
+            }
+        }
+        $map = array();
+        foreach ($fields as $field) {
+            $map[(int) $field->custom_model_fields_id] = $field;
+        }
+        return $map;
+    }
+
+    protected function load_content_data_batch($content_ids)
+    {
+        $out = array();
+        if (empty($content_ids)) {
+            return $out;
+        }
+        $this->db->where_in('custom_model_content_id', $content_ids);
+        $rows = $this->db->get('custom_model_content_data')->result();
+        foreach ($rows as $row) {
+            $cid = (int) $row->custom_model_content_id;
+            if (!isset($out[$cid])) {
+                $out[$cid] = array();
+            }
+            $out[$cid][] = $row;
+        }
+        return $out;
+    }
+
+    protected function load_models_indexed($model_ids)
+    {
+        $out = array();
+        $model_ids = array_values(array_unique(array_filter($model_ids)));
+        if (empty($model_ids)) {
+            return $out;
+        }
+        $this->load->model('Admin/CustomModelModel');
+        foreach ($model_ids as $id) {
+            $m = new CustomModelModel();
+            if ($m->find($id)) {
+                $out[$id] = $m->as_data();
+            }
+        }
+        return $out;
+    }
+
+    protected function flatten_rows($rows, $field_map)
+    {
+        $flat = array();
+        foreach ($rows as $row) {
+            $fid = (int) $row->custom_model_fields_id;
+            $meta = isset($field_map[$fid]) ? $field_map[$fid] : null;
+            $api = $meta && !empty($meta->fielApiID) ? $meta->fielApiID : (string) $fid;
+            $flat[$api] = $this->flatten_field_value($row->custom_model_content_data_value, $meta);
+        }
+        return $flat;
+    }
+
+    public function flatten_field_value($raw, $meta)
+    {
+        if (is_string($raw)) {
+            $decoded = json_decode($raw);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $raw = $decoded;
+            }
+        }
+        $component = ($meta && isset($meta->component)) ? $meta->component : '';
+        if ($component === 'formImageSelector' || $this->value_looks_like_image($raw)) {
+            return $this->flatten_image_value($raw);
+        }
+        if (is_object($raw)) {
+            $raw = (array) $raw;
+        }
+        if (is_array($raw)) {
+            if (isset($raw['title']) && !is_array($raw['title'])) {
+                return $raw['title'];
+            }
+            if (isset($raw['text']) && !is_array($raw['text'])) {
+                return $raw['text'];
+            }
+            if (isset($raw['value']) && !is_array($raw['value'])) {
+                return $raw['value'];
+            }
+            foreach ($raw as $v) {
+                if (!is_array($v) && !is_object($v)) {
+                    return $v;
+                }
+            }
+            return '';
+        }
+        return $raw;
+    }
+
+    protected function value_looks_like_image($raw)
+    {
+        if (is_object($raw) && isset($raw->image)) {
+            return true;
+        }
+        if (is_array($raw) && isset($raw['image'])) {
+            return true;
+        }
+        return false;
+    }
+
+    protected function flatten_image_value($raw)
+    {
+        if (is_object($raw)) {
+            $raw = (array) $raw;
+        }
+        $files = array();
+        if (is_array($raw) && isset($raw['image'])) {
+            $files = $raw['image'];
+        } elseif (is_array($raw)) {
+            $files = $raw;
+        }
+        $first = null;
+        if (is_array($files) && !empty($files)) {
+            $files = array_values($files);
+            $first = $files[0];
+        }
+        $file = is_object($first) ? $first : (object) (is_array($first) ? $first : array());
+        $out = new stdClass();
+        $out->url = $this->file_public_url($file);
+        $out->file = $file;
+        return $out;
+    }
+
+    protected function file_public_url($file)
+    {
+        if (!is_object($file)) {
+            return '';
+        }
+        if (!empty($file->file_front_path)) {
+            $path = $file->file_front_path;
+            if (strpos($path, 'http') === 0) {
+                return $path;
+            }
+            return rtrim(base_url(), '/') . '/' . ltrim($path, '/');
+        }
+        if (empty($file->file_path) || empty($file->file_name)) {
+            return '';
+        }
+        $path = $file->file_path;
+        if (substr($path, 0, 2) === './') {
+            $path = substr($path, 2);
+        }
+        $ext = isset($file->file_type) ? $file->file_type : '';
+        return base_url($path . $file->file_name . ($ext ? '.' . $ext : ''));
+    }
+
+    protected function derive_title($custom_model_id, $tabs)
+    {
+        $this->load->model('Admin/CustomModelModel');
+        $type = new CustomModelModel();
+        $type->find($custom_model_id);
+        $title_field = !empty($type->title_field) ? $type->title_field : null;
+        $first_title = '';
+        $first_any = '';
+        foreach ($tabs as $tab) {
+            $tab = is_array($tab) ? $tab : (array) $tab;
+            $fields = isset($tab['custom_model_fields']) ? $tab['custom_model_fields'] : array();
+            foreach ($fields as $field) {
+                $field = is_array($field) ? $field : (array) $field;
+                $data = isset($field['data']) ? (array) $field['data'] : array();
+                $api = '';
+                if (isset($field['data']) && is_object($field['data']) && isset($field['data']->fielApiID)) {
+                    $api = $field['data']->fielApiID;
+                } elseif (isset($data['fielApiID'])) {
+                    $api = $data['fielApiID'];
+                } elseif (isset($field['field_name'])) {
+                    $api = $field['field_name'];
+                }
+                $value = '';
+                if (isset($data['title'])) {
+                    $value = $data['title'];
+                } elseif (isset($data['text'])) {
+                    $value = $data['text'];
+                } else {
+                    foreach ($data as $v) {
+                        if (!is_array($v) && !is_object($v) && $v !== '') {
+                            $value = $v;
+                            break;
+                        }
+                    }
+                }
+                if ($first_any === '' && $value !== '') {
+                    $first_any = $value;
+                }
+                $component = isset($field['component']) ? $field['component'] : '';
+                if ($first_title === '' && $component === 'formFieldTitle' && $value !== '') {
+                    $first_title = $value;
+                }
+                if ($title_field && $api === $title_field && $value !== '') {
+                    return $value;
+                }
+            }
+        }
+        if ($first_title !== '') {
+            return $first_title;
+        }
+        return $first_any;
+    }
+
+    protected function title_from_flat($type, $flat, $cid)
+    {
+        if (!empty($type->title_field) && isset($flat[$type->title_field]) && !is_object($flat[$type->title_field])) {
+            return $flat[$type->title_field];
+        }
+        if (isset($flat['title']) && !is_object($flat['title'])) {
+            return $flat['title'];
+        }
+        foreach ($flat as $v) {
+            if (!is_object($v) && !is_array($v) && $v !== '') {
+                return $v;
+            }
+        }
+        return 'Collection #' . $cid;
+    }
+
+    protected function attach_field_data_to_schema($value, $rows, $field_map)
+    {
+        if (empty($value->custom_model) || empty($value->custom_model->tabs)) {
+            return;
+        }
+        $by_field = array();
+        foreach ($rows as $row) {
+            $by_field[(int) $row->custom_model_fields_id] = $row;
+        }
+        foreach ($value->custom_model->tabs as $tab) {
+            if (empty($tab->custom_model_fields)) {
+                continue;
+            }
+            foreach ($tab->custom_model_fields as $form_field) {
+                $fid = isset($form_field->custom_model_fields_id) ? (int) $form_field->custom_model_fields_id : 0;
+                if (isset($by_field[$fid])) {
+                    $form_field->field_data = $by_field[$fid];
+                    if (is_string($form_field->field_data->custom_model_content_data_value)) {
+                        $decoded = json_decode($form_field->field_data->custom_model_content_data_value);
+                        if (json_last_error() === JSON_ERROR_NONE) {
+                            $form_field->field_data->custom_model_content_data_value = $decoded;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    protected function apply_query_order($order)
+    {
+        if ($order && isset($order[0]) && $order[0] === 'collection_items') {
+            $this->db->order_by('featured', 'DESC');
+            $this->db->order_by('sort_order', 'ASC');
+            $this->db->order_by('custom_model_content_id', 'DESC');
+            return;
+        }
+        parent::apply_query_order($order);
     }
 }

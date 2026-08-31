@@ -92,6 +92,167 @@ function render_form(string $siteform_name): string
     return $ci->blade->view("site.templates.forms." . $siteform->template, ['siteform' => $siteform], true);
 }
 
+/**
+ * Expand {{ helper(args) }} and {!! helper(args) !!} in CMS HTML (pages / fragments).
+ * Theme override for collections: {theme}/views/site/templates/collections/{template}.blade.php
+ */
+function expand_helper_snippets($html)
+{
+    if (!is_string($html) || $html === '') {
+        return $html;
+    }
+    $patterns = array(
+        '/\{\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\((.*?)\)\s*\}\}/',
+        '/\{!!\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\((.*?)\)\s*!!\}/',
+    );
+    $passes = 0;
+    while ($passes < 8) {
+        $passes++;
+        $replaced = false;
+        foreach ($patterns as $pattern) {
+            $html = preg_replace_callback($pattern, function ($m) use (&$replaced) {
+                $fn = $m[1];
+                if (!is_callable($fn)) {
+                    return $m[0];
+                }
+                $args = array();
+                $raw = trim($m[2]);
+                if ($raw !== '') {
+                    $parts = explode(',', $raw);
+                    foreach ($parts as $part) {
+                        $args[] = trim($part, " \t\n\r\"'");
+                    }
+                }
+                $replaced = true;
+                $result = call_user_func_array($fn, $args);
+                return is_string($result) ? $result : '';
+            }, $html);
+        }
+        if (!$replaced) {
+            break;
+        }
+    }
+    return $html;
+}
+
+function list_collection_templates()
+{
+    $names = array();
+    $dirs = array(APPPATH . 'views/site/templates/collections');
+    $theme = getThemePath();
+    if ($theme) {
+        $dirs[] = $theme . '/views/site/templates/collections';
+    }
+    foreach ($dirs as $dir) {
+        if (!is_dir($dir)) {
+            continue;
+        }
+        $files = @scandir($dir);
+        if (!is_array($files)) {
+            continue;
+        }
+        foreach ($files as $file) {
+            if (substr($file, -10) === '.blade.php') {
+                $names[] = substr($file, 0, -10);
+            }
+        }
+    }
+    $names = array_values(array_unique($names));
+    sort($names);
+    return $names;
+}
+
+function resolve_collection_template($template)
+{
+    $template = preg_replace('/[^a-z0-9_\-]/i', '', (string) $template);
+    if ($template === '') {
+        $template = 'default';
+    }
+    $rel = '/views/site/templates/collections/' . $template . '.blade.php';
+    $theme = getThemePath();
+    if ($theme && file_exists($theme . $rel)) {
+        return array('path' => $theme, 'template' => $template);
+    }
+    $fallback = APPPATH . 'views/site/templates/collections/' . $template . '.blade.php';
+    if (file_exists($fallback)) {
+        return array('path' => APPPATH, 'template' => $template);
+    }
+    if ($theme && file_exists($theme . '/views/site/templates/collections/default.blade.php')) {
+        return array('path' => $theme, 'template' => 'default');
+    }
+    return array('path' => APPPATH, 'template' => 'default');
+}
+
+/**
+ * HTML of a published collection (type status = 1, items status = 1).
+ * Empty string if the slug is missing or inactive (not a 404).
+ * Theme override: {theme}/views/site/templates/collections/{template}.blade.php
+ *
+ * @param string $slug
+ * @param array $options limit, featured, template
+ * @return string
+ */
+function get_collection($slug, $options = array())
+{
+    if (!is_array($options)) {
+        $options = array();
+    }
+    $items = get_collection_items($slug, $options);
+    $ci = &get_instance();
+    $ci->load->model('Admin/CustomModelModel');
+    $slug = trim((string) $slug, " \t\n\r\"'");
+    $type = new CustomModelModel();
+    if (!$type->find_with(array('slug' => $slug, 'status' => 1))) {
+        return '';
+    }
+    $templateName = !empty($options['template']) ? $options['template'] : $type->template;
+    $collection = (object) array(
+        'name' => $type->form_name,
+        'slug' => $type->slug ? $type->slug : $slug,
+        'description' => $type->form_description,
+        'template' => $templateName ? $templateName : 'default',
+        'items' => $items,
+    );
+    $resolved = resolve_collection_template($collection->template);
+    $collection->template = $resolved['template'];
+    $originalViews = isset($ci->blade->views) ? $ci->blade->views : (APPPATH . 'views');
+    $ci->blade->changePath($resolved['path']);
+    $html = $ci->blade->view('site.templates.collections.' . $resolved['template'], array('collection' => $collection), true);
+    $restoreBase = str_replace('/views', '', $originalViews);
+    if ($restoreBase === '' || $restoreBase === $originalViews) {
+        $restoreBase = APPPATH;
+    }
+    $ci->blade->changePath($restoreBase);
+    return is_string($html) ? $html : '';
+}
+
+/**
+ * Normalized published items for a collection slug (no HTML).
+ *
+ * @param string $slug
+ * @param array $options limit, featured
+ * @return array
+ */
+function get_collection_items($slug, $options = array())
+{
+    if (!is_array($options)) {
+        $options = array();
+    }
+    $ci = &get_instance();
+    $ci->load->model('Admin/CustomModelModel');
+    $ci->load->model('Admin/CustomModelContentModel');
+    $slug = trim((string) $slug, " \t\n\r\"'");
+    if ($slug === '') {
+        return array();
+    }
+    $type = new CustomModelModel();
+    if (!$type->find_with(array('slug' => $slug, 'status' => 1))) {
+        return array();
+    }
+    $contentModel = new CustomModelContentModel();
+    return $contentModel->get_normalized_items($type, $options);
+}
+
 function fragment(string $fragment_name)
 {
     // Obtener del cache si existe
@@ -111,6 +272,7 @@ function fragment(string $fragment_name)
     }
 
     $content = $result->description;
+    $content = expand_helper_snippets($content);
     // Cachear por 24 horas
     set_cached($cache_key, $content, 86400);
     

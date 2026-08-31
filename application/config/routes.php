@@ -89,7 +89,8 @@ $route['admin/gallery/edit/(:num)(/?|)'] = 'admin/GalleryController/editar/$1';
 $route['admin/videos/new(/?|)'] = 'admin/VideosController/nuevo';
 $route['admin/videos/edit/(:num)(/?|)'] = 'admin/VideosController/editar/$1';
 $route['admin/custommodels/new(/?|)'] = 'admin/CustomModelsController/nuevo';
-$route['admin/custommodels/edit/(:num)(/?|)'] = 'admin/CustomModelsController/editar/$1';
+$route['admin/custommodels/edit/(:num)(/?|)'] = 'admin/CustomModelsController/editForm/$1';
+$route['admin/custommodels/items/(:num)(/?|)'] = 'admin/CustomModelsController/items/$1';
 $route['admin/fragments/new(/?|)'] = 'admin/FragmentsController/nueva';
 $route['admin/fragments/edit/(:num)(/?|)'] = 'admin/FragmentsController/editar/$1';
 

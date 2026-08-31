@@ -6,6 +6,7 @@
 @endsection
 
 @section('content')
+@include('admin.custommodels.i18n')
 <div id="root">
     <div class="col s12 center" v-bind:class="{ hide: !loader }">
         <br><br>
@@ -25,41 +26,35 @@
                     <thead>
                         <tr>
                             <th><?= lang('custommodels_table_name') ?></th>
-                            <th><?= lang('custommodels_table_description') ?></th>
-                            <th><?= lang('custommodels_table_author') ?></th>
+                            <th><?= lang('collections_slug') ?></th>
+                            <th><?= lang('collections_items_count') ?></th>
                             <th><?= lang('custommodels_table_status') ?></th>
-                            <th><?= lang('custommodels_table_publish_date') ?></th>
                             <th><?= lang('custommodels_table_options') ?></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(model, index) in filterModels" :key="index">
-                            <td>@{{model.form_name}}</td>
-                            <td>@{{getcontentText(model.form_description)}}</td>
+                        <tr v-for="(model, index) in filterModels" :key="model.custom_model_id">
                             <td>
-                                <a v-if="model.user" :href="base_url('admin/users/ver/' + model.user_id)">@{{model.user.get_fullname()}}</a>
-                                <span v-else>-</span>
+                                <a :href="base_url('admin/custommodels/items/' + model.custom_model_id)">@{{model.form_name}}</a>
                             </td>
+                            <td>@{{model.slug}}</td>
+                            <td>@{{model.items_count || 0}}</td>
                             <td>
-                                @{{model.date_publish ? model.date_publish : model.date_create}}
-                            </td>
-                            <td>
-                                <i v-if="model.status == 1" class="material-icons tooltipped" data-position="left"
-                                    data-delay="50" :data-tooltip="'<?= lang('custommodels_published') ?>'">publish</i>
-                                <i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
-                                    :data-tooltip="'<?= lang('custommodels_draft') ?>'">edit</i>
+                                <span v-if="model.status == 1"><?= lang('collections_enabled') ?></span>
+                                <span v-else><?= lang('collections_disabled') ?></span>
                             </td>
                             <td>
                                 <a class='dropdown-trigger' href='#!'
-                                    :data-target='"dropdown_" + model.custom_model_id'><i
+                                    :data-target='"dropdown_t_" + model.custom_model_id'
+                                    :aria-label="'<?= lang('options') ?>'"><i
                                         class="material-icons">more_vert</i></a>
-                                <ul :id='"dropdown_" + model.custom_model_id' class='dropdown-content'>
-                                        <li><a :href="base_url('admin/custommodels/addData/' + model.custom_model_id)">
-                                            <?= lang('custommodels_add_data') ?></a></li>
-                                        <li><a :href="base_url('admin/custommodels/editForm/' + model.custom_model_id)">
-                                            <?= lang('custommodels_edit') ?></a></li>
-                                        <li><a class="modal-trigger" href="#deleteModal"
-                                            v-on:click="tempDelete(model, index);"><?= lang('custommodels_delete') ?></a></li>
+                                <ul :id='"dropdown_t_" + model.custom_model_id' class='dropdown-content'>
+                                    <li><a :href="base_url('admin/custommodels/items/' + model.custom_model_id)"><?= lang('collections_view_items') ?></a></li>
+                                    <li><a :href="base_url('admin/custommodels/addData/' + model.custom_model_id)"><?= lang('collections_add_item') ?></a></li>
+                                    <li><a :href="base_url('admin/custommodels/editForm/' + model.custom_model_id)"><?= lang('collections_edit_schema') ?></a></li>
+                                    <li><a href="#!" v-on:click.prevent="copySnippet(model)"><?= lang('collections_copy_snippet') ?></a></li>
+                                    <li><a class="modal-trigger" href="#deleteModal"
+                                        v-on:click="tempDelete(model, index);"><?= lang('custommodels_delete') ?></a></li>
                                 </ul>
                             </td>
                         </tr>
@@ -68,79 +63,60 @@
             </div>
         </div>
         <div class="row" v-else>
-            <div class="col s12 m4" v-for="(model, index) in filterModels" :key="index">
+            <div class="col s12 m4" v-for="(model, index) in filterModels" :key="model.custom_model_id">
                 <div class="card page-card">
                     <div class="card-image">
                         <div class="card-image-container">
-                            <img :src="getPageImagePath(model)" />
+                            <img src="{{ base_url('public/img/default.jpg') }}" alt="">
                         </div>
-
-                        <a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href='#!'
-                            :data-target='"dropdown" + model.custom_model_id'>
+                        <a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger st-accent" href='#!'
+                            :data-target='"dropdown_c_" + model.custom_model_id'
+                            :aria-label="'<?= lang('options') ?>'">
                             <i class="material-icons">more_vert</i></a>
-                        <ul :id='"dropdown" + model.custom_model_id' class='dropdown-content'>
-                                <li><a :href="base_url('admin/custommodels/addData/' + model.custom_model_id)"> <?= lang('custommodels_add_data') ?></a></li>
-                                <li><a :href="base_url('admin/custommodels/editForm/' + model.custom_model_id)"> <?= lang('custommodels_edit') ?></a></li>
-                                <li><a class="modal-trigger" href="#deleteModal"
-                                    v-on:click="tempDelete(model, index);"><?= lang('custommodels_delete') ?></a></li>
+                        <ul :id='"dropdown_c_" + model.custom_model_id' class='dropdown-content'>
+                            <li><a :href="base_url('admin/custommodels/items/' + model.custom_model_id)"><?= lang('collections_view_items') ?></a></li>
+                            <li><a :href="base_url('admin/custommodels/addData/' + model.custom_model_id)"><?= lang('collections_add_item') ?></a></li>
+                            <li><a :href="base_url('admin/custommodels/editForm/' + model.custom_model_id)"><?= lang('collections_edit_schema') ?></a></li>
+                            <li><a href="#!" v-on:click.prevent="copySnippet(model)"><?= lang('collections_copy_snippet') ?></a></li>
+                            <li><a class="modal-trigger" href="#deleteModal"
+                                v-on:click="tempDelete(model, index);"><?= lang('custommodels_delete') ?></a></li>
                         </ul>
                     </div>
                     <div class="card-content">
                         <div>
-                            <span class="card-title"><a :href="base_url(model.path)"
-                                    target="_blank">@{{model.form_name}}</a>
+                            <span class="card-title">
+                                <a :href="base_url('admin/custommodels/items/' + model.custom_model_id)">@{{model.form_name}}</a>
                                 @include('admin.components.entity_card_badges', ['item' => 'model'])
                             </span>
                             <div class="card-info">
-                                <p>
-                                    @{{getcontentText(model.form_description)}}
-                                </p>
-                                <span class="activator right"><i class="material-icons">more_vert</i></span>
+                                <p v-if="model.form_description">@{{getcontentText(model.form_description)}}</p>
+                                <p><code>@{{model.slug}}</code> · @{{model.template}}</p>
+                                <p><?= lang('collections_items_count') ?>: @{{model.items_count || 0}} · <?= lang('collections_fields_count') ?>: @{{model.fields_count || 0}}</p>
                                 <user-info v-if="model.user" :user="model.user" />
                             </div>
                         </div>
                     </div>
-                    <div class="card-reveal">
-                        <span class="card-title grey-text text-darken-4">
-                            <i class="material-icons right">close</i>
-                            @{{model.form_name}}
-                        </span>
-                        <span class="subtitle">
-                            @{{model.form_description}}
-                        </span>
-                        <ul>
-                            <li><b><?= lang('custommodels_publish_date') ?>:</b> <br>
-                                @{{model.date_publish ? model.date_publish : model.date_create}}</li>
-                            <li><b><?= lang('custommodels_category') ?></b> @{{model.categorie}}</li>
-                            <li><b><?= lang('custommodels_subcategory') ?></b> @{{model.subcategorie ? model.subcategorie : '<?= lang('custommodels_none') ?>'}}</li>
-                            <li><b><?= lang('custommodels_template') ?></b> @{{model.template}}</li>
-                            <li><b><?= lang('custommodels_type') ?></b> @{{model.page_type_name}}</li>
-                            <li><b><?= lang('custommodels_status') ?></b>
-                                <span v-if="model.status == 1">
-                                    <?= lang('custommodels_published') ?>
-                                </span>
-                                <span v-else>
-                                    <?= lang('custommodels_draft') ?>
-                                </span>
-                            </li>
-                        </ul>
-                    </div>
                 </div>
             </div>
         </div>
-    </div> 
-    <div class="container" v-if="!loader && models.length == 0" v-cloak>
-        <h4><?= lang('custommodels_no_models') ?></h4>
     </div>
-    <confirm-modal id="deleteModal" :title="'<?= lang('custommodels_confirm_delete_title') ?>'" v-on:notify="confirmCallback">
+    <div class="container center" v-if="!loader && models.length == 0" v-cloak>
+        <i class="material-icons large" aria-hidden="true">view_module</i>
+        <h4 class="page-header"><?= lang('collections_empty') ?></h4>
+        <p><?= lang('collections_empty_cta') ?></p>
+        @if(has_permisions('CREATE_FORM_CUSTOM'))
+        <a class="btn waves-effect st-accent" href="{{ base_url('admin/custommodels/new') }}"><?= lang('collections_new') ?></a>
+        @endif
+    </div>
+    <confirm-modal id="deleteModal" :title="'<?= lang('collections_confirm_delete_title') ?>'" v-on:notify="confirmCallback">
         <p>
-            <?= lang('custommodels_confirm_delete_message') ?>
+            <?= lang('collections_confirm_delete_message') ?>
         </p>
     </confirm-modal>
 </div>
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left"
-        data-delay="50" data-tooltip="<?= lang('custommodels_new_model_tooltip') ?>" href="{{base_url('admin/custommodels/nuevo/')}}">
+    <a class="btn-floating btn-large waves-effect st-accent tooltipped" data-position="left"
+        data-delay="50" data-tooltip="<?= lang('tooltip_new_collection') ?>" href="{{base_url('admin/custommodels/new')}}">
         <i class="material-icons">add</i>
     </a>
 </div>
