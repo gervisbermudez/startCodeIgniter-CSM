@@ -466,17 +466,22 @@ Vue.component("FileExplorerSelector", {
     },
   },
   mounted: function () {
+    var self = this;
     this.$nextTick(function () {
-      this.updateSelector();
-      // Initialize the Materialize modal for this selector after it renders
-      setTimeout(() => {
+      // Load the file list when the modal opens, not on every form page load.
+      // filter=images otherwise fetches every png/gif in `file` (TinyMCE smileys, lightbox chrome, theme demos) as <img> and 404s.
+      setTimeout(function () {
         try {
-          var modalEl = document.getElementById(this.modal);
-          if (modalEl && typeof M !== 'undefined' && M.Modal) {
-            M.Modal.init(modalEl, {});
+          var modalEl = document.getElementById(self.modal);
+          if (modalEl && typeof M !== "undefined" && M.Modal) {
+            M.Modal.init(modalEl, {
+              onOpenStart: function () {
+                self.updateSelector();
+              },
+            });
           }
         } catch (e) {
-          console.warn('Modal init failed for FileExplorerSelector', e);
+          console.warn("Modal init failed for FileExplorerSelector", e);
         }
       }, 300);
     });

@@ -16,14 +16,38 @@ class FileModel extends MY_Model
         '.',
         '..',
         'node_modules\\',
+        'node_modules/',
         'vendor\\',
+        'vendor/',
         'startCodeIgniter-CSM-master\\',
         'application\\',
+        'application/',
         'bin\\',
+        'bin/',
         '.vscode\\',
         'resources\\',
+        'resources/',
         'temp\\',
         'backups\\',
+        'backups/',
+        'themes/',
+        'public/vendors/',
+    );
+
+    /**
+     * Rutas de assets internos que el file manager indexó (vendors, tema demo).
+     * No son uploads del editor; pedirlas como thumbnails llena la consola de 404.
+     */
+    public $exclude_file_path_prefixes = array(
+        './public/vendors/',
+        './public/js/',
+        './themes/',
+        './vendor/',
+        './node_modules/',
+        './application/',
+        './bin/',
+        './resources/',
+        './graphify-out/',
     );
 
     public $exclude_file_types = array(
@@ -94,21 +118,47 @@ class FileModel extends MY_Model
     {
         $this->db->select('*');
         $this->db->from($this->table);
+        $this->db->where('status', 1);
         $limit ? $this->db->limit($limit) : null;
         if ($order) {
             $this->db->order_by($order[0], $order[1]);
         } else {
             $this->db->order_by($this->primaryKey, 'ASC');
         }
+        $this->db->group_start();
         $this->db->like($column, $filters[0]);
         for ($i = 1; $i < count($filters); $i++) {
             $this->db->or_like($column, $filters[$i]);
         }
+        $this->db->group_end();
+        foreach ($this->exclude_file_path_prefixes as $prefix) {
+            $this->db->not_like('file_path', $prefix, 'after');
+        }
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
-            return $query->result_array();
+            return $this->keep_existing_files($query->result_array());
         }
         return array();
+    }
+
+    /**
+     * Drop rows whose file is gone from disk so the picker does not 404 on stale index entries.
+     */
+    private function keep_existing_files($rows)
+    {
+        $existing = array();
+        foreach ($rows as $row) {
+            if (isset($row['file_type']) && $row['file_type'] === 'folder') {
+                $existing[] = $row;
+                continue;
+            }
+            $relative = $row['file_path'] . $row['file_name'] . '.' . $row['file_type'];
+            $absolute = FCPATH . preg_replace('#^\./#', '', $relative);
+            if (is_file($absolute)) {
+                $existing[] = $row;
+            }
+        }
+        return $existing;
     }
 
     public function get_array_save_file($file_name, $dir_name)

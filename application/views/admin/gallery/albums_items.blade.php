@@ -5,7 +5,7 @@
 @section('head_includes')
 <link rel="stylesheet" href="<?=base_url('public/css/admin/file_explorer.min.css')?>">
 <link rel="stylesheet" href="<?=base_url('public/css/admin/header.min.css')?>">
-<link rel="stylesheet" href="<?=base_url('public/vendors/lightbox2/dist/css/lightbox.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/vendors/lightbox2/src/css/lightbox.css')?>">
 <link rel="stylesheet" href="<?=base_url('public/vendors/fileinput/css/fileinput.min.css')?>">
 <link rel="stylesheet" href="<?=base_url('public/vendors/font-awesome/css/all.min.css')?>">
 @endsection

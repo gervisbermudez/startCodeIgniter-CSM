@@ -2,7 +2,7 @@
 @section('title', $title)
 
 @section('head_includes')
-<link rel="stylesheet" href="<?=base_url('public/vendors/lightbox2/dist/css/lightbox.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/vendors/lightbox2/src/css/lightbox.css')?>">
 <link rel="stylesheet" href="<?=base_url('public/css/admin/file_explorer.min.css')?>">
 <link rel="stylesheet" href="<?=base_url('public/vendors/fileinput/css/fileinput.min.css')?>">
 <link rel="stylesheet" href="<?=base_url('public/vendors/font-awesome/css/all.min.css')?>">
@@ -142,7 +142,7 @@
 
 @section('footer_includes')
 <script src="{{base_url('resources/components/FileExplorerSelector.js')}}"></script>
-<script src="{{base_url('public/vendors/lightbox2/dist/js/lightbox.min.js')}}"></script>
+<script src="{{base_url('public/vendors/lightbox2/src/js/lightbox.js')}}"></script>
 <script src="{{base_url('public/vendors/fileinput/js/fileinput.min.js')}}"></script>
 <script src="{{base_url('public/vendors/fileinput/js/plugins/canvas-to-blob.min.js')}}"></script>
 <script src="{{base_url('public/vendors/fileinput/js/locales/es.js')}}"></script>
