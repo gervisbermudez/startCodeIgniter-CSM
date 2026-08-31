@@ -1,217 +1,264 @@
 var UserPermissionsForm = new Vue({
   el: "#root",
+  mixins: [mixins],
   data: {
     loader: true,
     editMode: false,
     usergroup_id: null,
-    name: "New User Group",
-    description: "Describe the user group",
+    name: "",
+    description: "",
     level: null,
-    status: false,
-    date_publish: "",
+    status: true,
     date_create: "",
     date_update: "",
     permissions: [],
     user_id: null,
     parent_id: null,
-    user: null,
-    data: 1,
     usergroup_permisions: [],
-    usergroups: [],
   },
-  mixins: [mixins],
   computed: {
     btnEnable: function () {
-      let enable = this.name ? true : false;
-      return enable;
+      return !!this.name && !!this.description;
     },
-    checkedPermissions: function () {
-      return this.permissions.filter((permission) => {
-        return permission.enabled;
+    permissionModules: function () {
+      var groups = {};
+      var order = [];
+      this.permissions.forEach(function (permission) {
+        var mod = permission.module || "other";
+        if (!groups[mod]) {
+          groups[mod] = [];
+          order.push(mod);
+        }
+        groups[mod].push(permission);
       });
-    }
+      return order.map(function (mod) {
+        return { module: mod, items: groups[mod] };
+      });
+    },
   },
   methods: {
-    autoSave() {
-      if (!this.status) {
-        this.runSaveData();
-        this.debug ? console.log("running autosave...") : null;
+    moduleTitle: function (mod) {
+      var key = "perm_module_" + mod;
+      var translated = this.lang(key);
+      if (translated && translated !== key) {
+        return translated;
       }
+      return String(mod || "").replace(/_/g, " ");
     },
-    save() {
-      var callBack = (response) => {
-        var toastHTML = "<span>Group saved </span>";
-        M.toast({ html: toastHTML });
-      };
-      this.loader = true;
-      this.runSaveData(callBack);
+    editorHas: function (name) {
+      var list = typeof editorPermisions !== "undefined" && editorPermisions ? editorPermisions : [];
+      if (!Array.isArray(list)) {
+        list = Object.keys(list).map(function (k) {
+          return list[k];
+        });
+      }
+      return list.indexOf(name) !== -1;
     },
-    runSaveData(callBack) {
+    moduleHasEditable: function (mod) {
+      return this.permissions.some(function (permission) {
+        return permission.module === mod && !permission.locked;
+      });
+    },
+    moduleAllChecked: function (mod) {
+      var editable = this.permissions.filter(function (permission) {
+        return permission.module === mod && !permission.locked;
+      });
+      if (!editable.length) {
+        return false;
+      }
+      return editable.every(function (permission) {
+        return permission.enabled;
+      });
+    },
+    toggleModule: function (mod, checked) {
+      this.permissions.forEach(function (permission) {
+        if (permission.module === mod && !permission.locked) {
+          permission.enabled = !!checked;
+        }
+      });
+    },
+    save: function () {
       var self = this;
-      var url = BASEURL + "api/v1/users/usergroups";
+      if (!this.btnEnable) {
+        return;
+      }
+      this.loader = true;
       $.ajax({
         type: "POST",
-        url: url,
+        url: BASEURL + "api/v1/users/usergroups",
         data: self.getData(),
         dataType: "json",
         success: function (response) {
-          self.debug ? console.log(url, response) : null;
-          setTimeout(() => {
-            self.loader = false;
-          }, 1500);
-          if (response.code == 200) {
-            self.editMode = true;
-            self.usergroup_id = response.data.usergroup_id;
-            if (typeof callBack == "function") {
-              callBack(response);
+          if (response && response.code == 200) {
+            var createdId = response.data && response.data.usergroup_id;
+            if (!self.editMode && createdId) {
+              self.toast("toast_saved");
+              window.location.href = BASEURL + "admin/users/editGroup/" + createdId;
+              return;
             }
-          } else {
-            M.toast({ html: response.error_message });
+            self.editMode = true;
+            self.usergroup_id = createdId || self.usergroup_id;
             self.loader = false;
+            self.toast("toast_saved");
+            self.initPlugins();
+            return;
           }
-        },
-        error: function (response) {
           self.loader = false;
-          M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(response);
+          self.toastError(null, response);
+        },
+        error: function (xhr) {
+          self.loader = false;
+          self.toastError(xhr);
         },
       });
-    },
-    isChecked(permission) {
-      return this.usergroup_permisions.includes(permission);
     },
     getData: function () {
-      return {
-        usergroup_id: this.usergroup_id || "",
+      var payload = {
         name: this.name || "",
-        level: this.level || "",
         description: this.description || "",
         status: this.status ? 1 : 2,
-        parent_id: this.parent_id,
-        permissions: this.checkedPermissions,
+        permissions: this.permissions
+          .filter(function (permission) {
+            return permission.enabled && !permission.locked;
+          })
+          .map(function (permission) {
+            return { permisions_id: permission.permisions_id };
+          }),
       };
+      if (this.usergroup_id) {
+        payload.usergroup_id = this.usergroup_id;
+      }
+      if (this.level) {
+        payload.level = this.level;
+      }
+      return payload;
     },
-    getUserGroups: function () {
+    applyCatalog: function (rows) {
       var self = this;
-      var url = BASEURL + "api/v1/users/usergroups/";
-      fetch(url)
-        .then((response) => response.json())
-        .then((response) => {
-          let usergroups = response.data;
-          usergroups.map((element) => {
-            if (element.user) {
-              element.user = new User(element.user);
-            } else {
-              element.user = new User({});
-            }
-            return element;
-          });
-          self.usergroups = usergroups;
-          self.loader = false;
-          this.initPlugins();
-        })
-        .catch((error) => {
-          self.loader = false;
-          M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(error);
-        });
+      var grants = this.usergroup_permisions || [];
+      this.permissions = (rows || []).map(function (row) {
+        var name = row.permision_name;
+        return {
+          permisions_id: row.permisions_id,
+          permision_name: name,
+          label: row.label || name,
+          module: row.module || "",
+          enabled: grants.indexOf(name) !== -1,
+          locked: !self.editorHas(name),
+        };
+      });
     },
-    getPermissions() {
-      var url = BASEURL + "api/v1/users/permissions/";
-      fetch(url)
-        .then((response) => response.json())
-        .then((response) => {
-          this.debug ? console.log(url, response) : null;
-          if (response.code == 200) {
-            this.permissions = response.data.map((permission, index) => {
-              let permision_name = permission.permission.permision_name;
-              let permission_type = permision_name.split(
-                "_"
-              )[0];
-              let module = permision_name.substring(permision_name.indexOf("_") + 1);
-              return {
-                ...permission.permission,
-                permission_type: permission_type,
-                module: module,
-                enabled: this.usergroup_permisions.includes(
-                  permision_name
-                ),
-              };
-            });
-            let compare  = function ( a, b ) {
-              if ( a.module < b.module ){
-                return -1;
-              }
-              if ( a.module > b.module ){
-                return 1;
-              }
-              return 0;
-            }
-            this.permissions = this.permissions.sort(compare);
+    getCatalog: function () {
+      var self = this;
+      fetch(BASEURL + "api/v1/users/allpermissions")
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (response) {
+          if (response && response.code == 200) {
+            self.applyCatalog(response.data);
           }
+          if (self.editMode) {
+            return;
+          }
+          self.loader = false;
+          self.initPlugins();
         })
-        .catch((err) => {
-          this.debug ? console.log(err) : null;
-          this.loader = false;
+        .catch(function (err) {
+          self.loader = false;
+          self.toast("usergroups_unexpected_error");
+          console.error(err);
         });
     },
-    checkEditMode() {
+    loadGroup: function () {
+      var self = this;
+      fetch(BASEURL + "api/v1/users/usergroups/" + usergroup_id)
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (response) {
+          if (response && response.code == 200 && response.data) {
+            var data = response.data;
+            self.usergroup_id = data.usergroup_id;
+            self.name = data.name;
+            self.description = data.description;
+            self.level = data.level;
+            self.date_create = data.date_create;
+            self.date_update = data.date_update;
+            self.status = data.status == 1 || data.status == "1";
+            self.user_id = data.user_id;
+            self.parent_id = data.parent_id;
+            self.usergroup_permisions = data.usergroup_permisions || [];
+            self.applyCatalog(self.permissions.length ? self.permissions.map(function (p) {
+              return {
+                permisions_id: p.permisions_id,
+                permision_name: p.permision_name,
+                label: p.label,
+                module: p.module,
+              };
+            }) : []);
+          }
+          self.loader = false;
+          self.$nextTick(function () {
+            M.updateTextFields();
+            self.initPlugins();
+          });
+        })
+        .catch(function (err) {
+          self.loader = false;
+          self.toast("usergroups_unexpected_error");
+          console.error(err);
+        });
+    },
+    checkEditMode: function () {
+      var self = this;
       if (usergroup_id && editMode == "edit") {
         this.editMode = true;
-        var url = BASEURL + "api/v1/users/usergroups/" + usergroup_id;
-        fetch(url)
-          .then((response) => response.json())
-          .then((response) => {
-            this.loader = false;
-            this.debug ? console.log(url, response) : null;
-            if (response.code == 200) {
-              let data = response.data;
-              this.usergroup_id = data.usergroup_id;
-              this.name = data.name;
-              this.description = data.description;
-              this.level = data.level;
-              this.date_create = data.date_create;
-              this.date_update = data.date_update;
-              this.status = data.status == 1 || data.status == "1";
-              this.user_id = data.user_id;
-              this.level = data.level;
-              this.usergroup_permisions = data.usergroup_permisions;
-              this.parent_id = data.parent_id;
-              this.user = new User(data.user);
-            }
-            this.initPlugins();
-            this.getPermissions();
+        fetch(BASEURL + "api/v1/users/allpermissions")
+          .then(function (response) {
+            return response.json();
           })
-          .catch((response) => {
-            M.toast({ html: response.error_message });
+          .then(function (response) {
+            var rows = response && response.code == 200 ? response.data : [];
+            return fetch(BASEURL + "api/v1/users/usergroups/" + usergroup_id).then(function (groupRes) {
+              return groupRes.json().then(function (groupJson) {
+                return { rows: rows, groupJson: groupJson };
+              });
+            });
+          })
+          .then(function (bundle) {
+            if (bundle.groupJson && bundle.groupJson.code == 200 && bundle.groupJson.data) {
+              var data = bundle.groupJson.data;
+              self.usergroup_id = data.usergroup_id;
+              self.name = data.name;
+              self.description = data.description;
+              self.level = data.level;
+              self.date_create = data.date_create;
+              self.date_update = data.date_update;
+              self.status = data.status == 1 || data.status == "1";
+              self.user_id = data.user_id;
+              self.parent_id = data.parent_id;
+              self.usergroup_permisions = data.usergroup_permisions || [];
+            }
+            self.applyCatalog(bundle.rows);
             self.loader = false;
+            self.$nextTick(function () {
+              M.updateTextFields();
+              self.initPlugins();
+            });
+          })
+          .catch(function (err) {
+            self.loader = false;
+            self.toast("usergroups_unexpected_error");
+            console.error(err);
           });
-      } else {
-        this.getPermissions();
-        this.loader = false;
+        return;
       }
-    },
-    initPlugins() {
-      setTimeout(() => {
-        var elems = document.querySelectorAll("select");
-        M.FormSelect.init(elems, {});
-      }, 3000);
-    },
-    checkAll($event, permission_type) {
-      this.setChecked($event.target.checked, permission_type);
-    },
-    setChecked: function (checked, type) {
-      this.permissions = this.permissions.map((permission) => {
-        if (permission.permission_type == type) {
-          permission.enabled = checked;
-        }
-        return permission;
-      });
+      this.getCatalog();
     },
   },
   mounted: function () {
     this.$nextTick(function () {
-      this.debug ? console.log("mounted UserPermissionsForm") : null;
       this.checkEditMode();
     });
   },

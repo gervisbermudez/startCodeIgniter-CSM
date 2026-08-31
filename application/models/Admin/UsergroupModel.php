@@ -56,15 +56,28 @@ class UsergroupModel extends MY_Model
 
     private function get_permisions($usergroup_id)
     {
-        $this->load->model('Admin/UsergroupPermissionsModel');
-        $UsergroupPermissions = new UsergroupPermissionsModel();
-        $result = $UsergroupPermissions->where(["usergroup_id" => $usergroup_id]);
-        if ($result) {
-            $result = array_merge($this->permisions, $result->toArray());
-            return $result;
+        $usergroup_id = (int) $usergroup_id;
+        if ($usergroup_id < 1) {
+            return array();
         }
-
-        return [];
+        $this->db->reset_query();
+        $sql = 'SELECT permisions.permision_name AS permision_name
+            FROM usergroup_permisions
+            INNER JOIN permisions ON permisions.permisions_id = usergroup_permisions.permision_id
+            WHERE usergroup_permisions.usergroup_id = ?
+            AND usergroup_permisions.status = 1
+            AND permisions.status = 1';
+        $query = $this->db->query($sql, array($usergroup_id));
+        if (!$query || $query->num_rows() === 0) {
+            return array();
+        }
+        $names = array();
+        foreach ($query->result() as $row) {
+            if (!empty($row->permision_name) && is_string($row->permision_name)) {
+                $names[] = $row->permision_name;
+            }
+        }
+        return array_values($names);
     }
 
 }
