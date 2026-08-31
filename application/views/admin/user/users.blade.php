@@ -126,3 +126,7 @@
 	</div>
 </script>
 @endsection
+
+@section('footer_includes')
+<script src="{{base_url('resources/components/UserComponent.js?v=' . ADMIN_VERSION)}}"></script>
+@endsection

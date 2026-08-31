@@ -48,7 +48,7 @@
                                     <li><a :href="base_url('admin/categories/editar/' + categorie.categorie_id)">{{ lang('edit') }}</a></li>
                                     <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(categorie, index);">{{ lang('delete') }}</a></li>
                                     <li v-if="categorie.status == 2"><a :href="base_url('admin/categories/preview?categorie_id=' + categorie.categorie_id)" target="_blank">Preview</a></li>
-                                    <li><a :href="base_url(categorie.path)" target="_blank">{{ lang('archive') }}</a></li>
+                                    <li v-if="categorie.path"><a :href="base_url(categorie.path)" target="_blank">{{ lang('view_in_site') }}</a></li>
                                 </ul>
                             </td>
                         </tr>
@@ -70,7 +70,7 @@
                             <li><a :href="base_url('admin/categories/editar/' + categorie.categorie_id)">{{ lang('edit') }}</a></li>
                             <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(categorie, index);">{{ lang('delete') }}</a></li>
                             <li v-if="categorie.status == 2"><a :href="base_url('admin/categories/preview?categorie_id=' + categorie.categorie_id)" target="_blank">Preview</a></li>
-                            <li><a :href="base_url(categorie.path)" target="_blank">{{ lang('archive') }}</a></li>
+                            <li v-if="categorie.path"><a :href="base_url(categorie.path)" target="_blank">{{ lang('view_in_site') }}</a></li>
                         </ul>
                     </div>
                     <div class="card-content">
@@ -130,4 +130,8 @@
         <i class="large material-icons">add</i>
     </a>
 </div>
+@endsection
+
+@section('footer_includes')
+<script src="{{base_url('resources/components/CategoriesLists.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

@@ -4,37 +4,31 @@ Vue.component("createContents", {
   data: function () {
     return {
       debug: DEBUGMODE,
+      i18n: window.COLLECTIONS_I18N || {},
     };
   },
   mixins: [mixins],
   methods: {
-    isActive(item) {
-      return item.status;
-    },
-    toggleStatus(item) {
-      var self = this;
+    toggleStatus: function (item, e) {
+      var prev = item.status;
+      var status = e.target.checked ? 1 : 2;
+      item.status = status;
       $.ajax({
         type: "POST",
-        url:
-          BASEURL +
-          "api/v1/models/data_set_status/" +
-          item.custom_model_content_id,
-        data: {
-          status: item.status ? "1" : "0",
-        },
+        url: BASEURL + "api/v1/models/data_set_status/" + item.custom_model_content_id,
+        data: { status: status },
         dataType: "json",
-        success: function (response) {
-          console.log(response);
-          M.toast({ html: "Actualizado" });
+        error: function () {
+          item.status = prev;
+          e.target.checked = prev == 1 || prev == "1";
+          M.toast({ html: (window.COLLECTIONS_I18N && window.COLLECTIONS_I18N.error) || "" });
         },
       });
     },
-    getFormsTypeUrl(formObject) {
-      return (
-        BASEURL + "admin/custommodels/addData/" + formObject.custom_model_id
-      );
+    getFormsTypeUrl: function (formObject) {
+      return BASEURL + "admin/custommodels/addData/" + formObject.custom_model_id;
     },
-    base_url(path) {
+    base_url: function (path) {
       return BASEURL + path;
     },
   },

@@ -143,11 +143,7 @@ var PageNewForm = new Vue({
   mixins: [mixins],
   computed: {
     btnEnable: function () {
-      let enable = (!!this.form.fields.title.value && !!this.path) || false;
-      if (enable) {
-        this.autoSave();
-      }
-      return enable;
+      return (!!this.form.fields.title.value && !!this.path) || false;
     },
     getDateTimePublish: function () {
       return this.datepublish && this.timepublish
@@ -353,18 +349,17 @@ var PageNewForm = new Vue({
       return str;
     },
     validateField(field) {
-      let self = UserNewForm;
-      if (self.form.validateField(field)) {
-        self.serverValidation(field);
+      if (this.form.validateField(field)) {
+        this.serverValidation(field);
         return;
       }
-      return self.form.fields[field].valid;
+      return this.form.fields[field].valid;
     },
     validateForm() {
       this.form.validate();
       let errors = true;
       if (!this.publishondate && !this.datepublish && !this.timepublish) {
-        error = false;
+        errors = false;
       }
 
       return this.form.errors.length == 0 && errors;
@@ -392,7 +387,7 @@ var PageNewForm = new Vue({
         this.loader = true;
         this.runSaveData(callBack);
       } else {
-        M.toast({ html: "Verifique todos los campos del formulario" });
+        this.toast("toast_form_invalid");
       }
     },
     runSaveData(callBack) {
@@ -421,8 +416,8 @@ var PageNewForm = new Vue({
         },
         error: function (response) {
           self.loader = false;
-          M.toast({ html: "Ocurrió un error inesperado" });
-          self.debug ? console.error(error) : null;
+          self.toast("toast_error");
+          self.debug ? console.error(response) : null;
         },
       });
     },

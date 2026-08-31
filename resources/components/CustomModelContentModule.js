@@ -156,6 +156,12 @@ var CustomModelContentModule = new Vue({
             self.editMode = true;
             self.loader = false;
             M.toast({ html: self.i18n.itemSaved || "" });
+            var modelId = self.custom_model_id;
+            var contentId = self.custom_model_content_id;
+            if (modelId && contentId && window.location.href.indexOf("/editData/") === -1) {
+              window.location.href =
+                BASEURL + "admin/custommodels/editData/" + modelId + "/" + contentId;
+            }
           }
         },
         error: function (response) {

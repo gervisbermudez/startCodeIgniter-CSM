@@ -382,11 +382,25 @@ var mixins = {
       // Función para obtener la URL base
       return BASEURL + path;
     },
-    getcontentText: function (html, length = 120) {
-      // Función para obtener el texto de un contenido
+    getcontentText: function (html, length) {
+      length = length || 120;
+      if (!html) {
+        return "";
+      }
+      if (typeof html === "object") {
+        html =
+          html.description ||
+          html.content ||
+          html.title ||
+          "";
+      }
+      html = String(html);
       var span = document.createElement("span");
       span.innerHTML = html;
-      let text = span.textContent || span.innerText;
+      var text = span.textContent || span.innerText || "";
+      if (text.length <= length) {
+        return text;
+      }
       return text.substring(0, length) + "...";
     },
     makeid: function (length) {
@@ -659,6 +673,56 @@ var mixins = {
         this.getData(page);
       }
     },
+    t: function (key) {
+      var dict = window.ADMIN_LANG || {};
+      if (dict[key]) {
+        return dict[key];
+      }
+      return key;
+    },
+    toast: function (keyOrHtml) {
+      var html = this.t(keyOrHtml);
+      M.toast({ html: html });
+    },
+    toastError: function (xhr, response) {
+      var msg = "";
+      if (response && response.error_message) {
+        msg = response.error_message;
+      } else if (xhr && xhr.responseJSON && xhr.responseJSON.error_message) {
+        msg = xhr.responseJSON.error_message;
+      }
+      this.toast(msg || "toast_error");
+      if (xhr) {
+        console.error(xhr);
+      }
+    },
+    reinitPlugin: function (selector, Plugin) {
+      if (!window.M || !Plugin) {
+        return;
+      }
+      var els = document.querySelectorAll(selector);
+      for (var i = 0; i < els.length; i++) {
+        var inst = Plugin.getInstance(els[i]);
+        if (inst && typeof inst.destroy === "function") {
+          inst.destroy();
+        }
+      }
+      if (els.length) {
+        Plugin.init(els, {});
+      }
+    },
+    initPlugins: function () {
+      var self = this;
+      this.$nextTick(function () {
+        self.reinitPlugin(".collapsible:not(#slide-out)", M.Collapsible);
+        self.reinitPlugin(".tooltipped", M.Tooltip);
+        self.reinitPlugin(".dropdown-trigger", M.Dropdown);
+        self.reinitPlugin(".modal", M.Modal);
+        if (M.Materialbox) {
+          self.reinitPlugin(".materialboxed", M.Materialbox);
+        }
+      });
+    },
   },
   watch: {
     filter: function () {
@@ -676,6 +740,144 @@ var mixins = {
           self.getData(1);
         }
       }, 400);
+    },
+  },
+};
+
+var listMixin = {
+  methods: {
+    listUrl: function (id) {
+      var path = (this.listEndpoint || "").replace(/\/?$/, "/");
+      return BASEURL + path + (typeof id === "undefined" ? "" : id);
+    },
+    reloadList: function (page) {
+      this.fetchList(page);
+    },
+    wrapListItem: function (item) {
+      if (item && item.user) {
+        item.user = new User(item.user);
+      }
+      return item;
+    },
+    listExtraQuery: function () {
+      return {};
+    },
+    fetchList: function (page) {
+      var self = this;
+      self.loader = true;
+      $.ajax({
+        type: "GET",
+        url: self.listUrl(),
+        data: this.listQuery(this.listExtraQuery(), page),
+        dataType: "json",
+        success: function (response) {
+          var items = response && response.data ? response.data : [];
+          if (!Array.isArray(items)) {
+            items = Object.keys(items).map(function (k) {
+              return items[k];
+            });
+          }
+          self[self.listKey] = items.map(function (item) {
+            return self.wrapListItem(item);
+          });
+          self.applyPaginatorFromResponse(response);
+          self.loader = false;
+          self.initPlugins();
+        },
+        error: function (xhr) {
+          self.loader = false;
+          self.toastError(xhr);
+        },
+      });
+    },
+    deleteListItem: function (item, index) {
+      var self = this;
+      var id = item && this.listPk ? item[this.listPk] : null;
+      if (!id && item) {
+        id = item.id || item.video_id;
+      }
+      if (!id) {
+        return;
+      }
+      self.loader = true;
+      $.ajax({
+        type: "DELETE",
+        url: self.listUrl(id),
+        data: {},
+        dataType: "json",
+        success: function (response) {
+          if (response.code == 200) {
+            self.toast("toast_deleted");
+            if (self.serverPagination) {
+              self.fetchList();
+              return;
+            }
+            if (typeof index === "number" && self[self.listKey]) {
+              self[self.listKey].splice(index, 1);
+            }
+            self.loader = false;
+            self.initPlugins();
+            return;
+          }
+          self.loader = false;
+          self.toastError(null, response);
+        },
+        error: function (xhr) {
+          self.loader = false;
+          self.toastError(xhr);
+        },
+      });
+    },
+    tempDelete: function (item, index) {
+      this.toDeleteItem.item = item;
+      this.toDeleteItem.index = index;
+    },
+    confirmCallback: function (data) {
+      if (data) {
+        this.deleteListItem(this.toDeleteItem.item, this.toDeleteItem.index);
+      }
+    },
+  },
+};
+
+var formMixin = {
+  methods: {
+    statusValue: function () {
+      return this.status ? 1 : 2;
+    },
+    afterSave: function (response) {
+      this.editMode = true;
+      if (this.formIdField && response && response.data) {
+        this[this.formIdField] = response.data[this.formIdField];
+      }
+    },
+    runSaveData: function (callBack) {
+      var self = this;
+      $.ajax({
+        type: "POST",
+        url: BASEURL + self.formEndpoint,
+        data: self.getData(),
+        dataType: "json",
+        success: function (response) {
+          if (self.debug) {
+            console.log(self.formEndpoint, response);
+          }
+          if (response.code == 200) {
+            self.afterSave(response);
+            self.loader = false;
+            if (typeof callBack === "function") {
+              callBack(response);
+            }
+          } else {
+            self.loader = false;
+            self.toastError(null, response);
+          }
+        },
+        error: function (xhr) {
+          self.loader = false;
+          self.toastError(xhr);
+        },
+      });
     },
   },
 };

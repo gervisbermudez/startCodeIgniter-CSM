@@ -76,7 +76,10 @@ var ConfigNewForm = new Vue({
     ],
     readonly: false,
     true_value: "",
+    formEndpoint: "api/v1/config",
+    formIdField: "site_config_id",
   },
+  mixins: [mixins, formMixin],
   computed: {
     btnEnable: function () {
       let enable =
@@ -102,7 +105,7 @@ var ConfigNewForm = new Vue({
       }
     },
     validateField(field) {
-      let self = UserNewForm;
+      let self = this;
       if (self.form.validateField(field)) {
         self.serverValidation(field);
         return;
@@ -116,47 +119,14 @@ var ConfigNewForm = new Vue({
     },
     save() {
       var self = this;
-      var callBack = (response) => {
-        var toastHTML = "<span>Config saved </span>";
-        M.toast({ html: toastHTML });
-      };
       if (self.validateForm()) {
         this.loader = true;
-        this.runSaveData(callBack);
+        this.runSaveData(function () {
+          self.toast("toast_saved");
+        });
       } else {
-        M.toast({ html: "Verifique todos los campos del formulario" });
+        this.toast("toast_form_invalid");
       }
-    },
-    runSaveData(callBack) {
-      var self = this;
-      var url = BASEURL + "api/v1/config";
-      $.ajax({
-        type: "POST",
-        url: url,
-        data: self.getData(),
-        dataType: "json",
-        success: function (response) {
-          self.debug ? console.log(url, response) : null;
-          setTimeout(() => {
-            self.loader = false;
-          }, 1500);
-          if (response.code == 200) {
-            self.editMode = true;
-            self.site_config_id = response.data.site_config_id;
-            if (typeof callBack == "function") {
-              callBack(response);
-            }
-          } else {
-            M.toast({ html: response.error_message });
-            self.loader = false;
-          }
-        },
-        error: function (response) {
-          self.loader = false;
-          M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(error);
-        },
-      });
     },
     getData: function () {
       return {
@@ -170,7 +140,7 @@ var ConfigNewForm = new Vue({
             .join("_") || "",
         config_description: this.config_description || "",
         config_type: this.config_type || "",
-        status: this.status ? 1 : 0,
+        status: this.status ? 1 : 2,
         readonly: this.readonly ? 1 : 0,
         date_publish: this.date_publish,
         date_create: this.date_create,
@@ -261,7 +231,7 @@ var ConfigNewForm = new Vue({
               self.date_update = response.data.date_update;
               self.config_description = response.data.config_description;
               self.form.fields.config_name.value = response.data.config_name;
-              self.status = response.data.status;
+              self.status = response.data.status == 1 || response.data.status == "1";
               self.config_type = response.data.config_type;
               self.user_id = response.data.user_id;
               self.user = new User(response.data.user);

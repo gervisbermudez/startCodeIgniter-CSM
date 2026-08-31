@@ -50,7 +50,7 @@ El admin **no** persiste: pinta Blade + Vue. Vue habla con `/api/v1/{recurso}`.
 3. Ruta en `routes.php` (`api/v1/{recurso}` y `admin/{recurso}`).
 4. Admin controller con `$routes_permisions` + `$this->check_permisions()` en el constructor + `renderAdminView()`.
 5. Vista `@extends('admin.layouts.app')` y componente Vue en `resources/components/`.
-6. Registrar el JS en `MY_Controller::getAutoFooterIncludes()` (mapa vista → archivo).
+6. Cargar el JS de la página en `@section('footer_includes')` del Blade (`resources/components/...`). Una sola vía: no inyectar el mismo archivo desde PHP.
 7. Strings en `application/language/english/admin/common_lang.php` (y spanish si aplica).
 8. Permiso `CREATE|UPDATE|DELETE|SELECT_{RECURSO}` en tabla `permisions`.
 

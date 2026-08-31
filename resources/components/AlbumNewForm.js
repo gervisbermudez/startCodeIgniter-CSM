@@ -24,8 +24,10 @@ var AlbumNewForm = new Vue({
     date_update: "",
     user_id: null,
     user: null,
+    formEndpoint: "api/v1/albumes",
+    formIdField: "album_id",
   },
-  mixins: [mixins],
+  mixins: [mixins, formMixin],
   computed: {
     btnEnable: function () {
       let enable =
@@ -94,7 +96,7 @@ var AlbumNewForm = new Vue({
       }
     },
     validateField(field) {
-      let self = UserNewForm;
+      let self = this;
       if (self.form.validateField(field)) {
         self.serverValidation(field);
         return;
@@ -108,17 +110,23 @@ var AlbumNewForm = new Vue({
     },
     save() {
       var self = this;
-      var callBack = (response) => {
-        var toastHTML = `<span>Album saved </span><a href="${
-          BASEURL + "admin/gallery/items/" + self.album_id
-        }" class="btn-flat toast-action">View</a>`;
-        M.toast({ html: toastHTML });
-      };
       if (self.validateForm()) {
         this.loader = true;
-        this.runSaveData(callBack);
+        this.runSaveData(function () {
+          var toastHTML =
+            "<span>" +
+            self.t("toast_saved") +
+            '</span><a href="' +
+            BASEURL +
+            "admin/gallery/items/" +
+            self.album_id +
+            '" class="btn-flat toast-action">' +
+            self.t("toast_done") +
+            "</a>";
+          M.toast({ html: toastHTML });
+        });
       } else {
-        M.toast({ html: "Verifique todos los campos del formulario" });
+        this.toast("toast_form_invalid");
       }
     },
     removeItemImage(index) {
@@ -143,43 +151,12 @@ var AlbumNewForm = new Vue({
         this.items.splice(index, 1);
       }
     },
-    runSaveData(callBack) {
-      var self = this;
-      var url = BASEURL + "api/v1/albumes";
-      $.ajax({
-        type: "POST",
-        url: url,
-        data: self.getData(),
-        dataType: "json",
-        success: function (response) {
-          self.debug ? console.log(url, response) : null;
-          setTimeout(() => {
-            self.loader = false;
-          }, 1500);
-          if (response.code == 200) {
-            self.editMode = true;
-            self.album_id = response.data.album_id;
-            if (typeof callBack == "function") {
-              callBack(response);
-            }
-          } else {
-            M.toast({ html: response.error_message });
-            self.loader = false;
-          }
-        },
-        error: function (response) {
-          self.loader = false;
-          M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(error);
-        },
-      });
-    },
     getData: function () {
       return {
         album_id: this.album_id || "",
         name: this.form.fields.name.value || "",
         description: this.description || "",
-        status: this.status ? 1 : 0,
+        status: this.status ? 1 : 2,
         date_publish: this.date_publish,
         date_create: this.date_create,
         date_update: this.date_update,
@@ -234,7 +211,7 @@ var AlbumNewForm = new Vue({
               self.date_publish = response.data.date_publish;
               self.date_update = response.data.date_update;
               self.description = response.data.description;
-              self.status = response.data.status == "0" ? false : true;
+              self.status = response.data.status == 1 || response.data.status == "1";
               self.user_id = response.data.user_id;
               self.items = response.data.items.map((item) => {
                 item.file = new ExplorerFile(item.file);

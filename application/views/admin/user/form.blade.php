@@ -99,3 +99,8 @@
     const user_id = <?php echo json_encode($userdata ? $userdata->user_id : false); ?> ;
 </script>
 @endsection
+
+@section('footer_includes')
+<script src="{{base_url('resources/js/validateForm.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('resources/components/UserNewForm.js?v=' . ADMIN_VERSION)}}"></script>
+@endsection

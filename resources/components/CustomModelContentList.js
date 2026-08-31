@@ -7,128 +7,43 @@ var CustomModelContentList = new Vue({
     loader: true,
     filter: "",
     serverPagination: true,
+    listEndpoint: "api/v1/models/data",
+    listKey: "contents",
+    listPk: "custom_model_content_id",
   },
-  mixins: [mixins],
+  mixins: [mixins, listMixin],
   computed: {
     filterContents: function () {
       if (this.serverPagination) {
         return this.contents;
       }
-      if (!!this.filter) {
-        let filterTerm = this.filter.toLowerCase();
-        return this.contents.filter((value, index) => {
+      if (this.filter) {
+        var filterTerm = this.filter.toLowerCase();
+        return this.contents.filter(function (value) {
           return this.searchInObject(value, filterTerm);
-        });
-      } else {
-        return this.contents;
+        }, this);
       }
+      return this.contents;
     },
   },
   methods: {
     getcontentText: function (content) {
-      let data = content.data;
-      let text = Object.values(data).join(" ");
+      if (!content || !content.data) {
+        return "";
+      }
+      var text = Object.values(content.data).join(" ");
       return text.substring(0, 90) + "...";
     },
-    toggleView: function () {
-      this.tableView = !this.tableView;
-      this.initPlugins();
-    },
-    resetFilter: function () {
-      this.filter = "";
-    },
-    reloadList: function (page) {
-      this.getContents(page);
-    },
-    getContentImagePath(content) {
-      if (content.imagen_file) {
-        return (
-          BASEURL +
-          content.imagen_file.file_path.substr(2) +
-          content.imagen_file.file_name +
-          "." +
-          content.imagen_file.file_type
-        );
-      }
-      return BASEURL + "/public/img/default.jpg";
-    },
     getContents: function (page) {
-      var self = this;
-      self.loader = true;
-      $.ajax({
-        type: "GET",
-        url: BASEURL + "api/v1/models/data",
-        data: this.listQuery({}, page),
-        dataType: "json",
-        success: function (response) {
-          self.contents = (response.data || []).map(function (element) {
-            if (element.user) {
-              element.user = new User(element.user);
-            }
-            return element;
-          });
-          self.applyPaginatorFromResponse(response);
-          setTimeout(() => {
-            self.loader = false;
-            self.initPlugins();
-          }, 1000);
-        },
-        error: function (error) {
-          self.loader = false;
-          M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(error);
-        },
-      });
+      this.fetchList(page);
     },
     deleteContent: function (content, index) {
-      var self = this;
-      self.loader = true;
-      $.ajax({
-        type: "DELETE",
-        url: BASEURL + "api/v1/models/data/" + content.custom_model_content_id,
-        data: {},
-        dataType: "json",
-        success: function (response) {
-          if (response.code == 200) {
-            self.getContents();
-          }
-          setTimeout(() => {
-            self.loader = false;
-            self.initPlugins();
-          }, 1000);
-        },
-        error: function (error) {
-          self.loader = false;
-          M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(error);
-        },
-      });
-    },
-    tempDelete: function (content, index) {
-      this.toDeleteItem.content = content;
-      this.toDeleteItem.index = index;
-    },
-    confirmCallback(data) {
-      if (data) {
-        this.deleteContent(this.toDeleteItem.content, this.toDeleteItem.index);
-      }
-    },
-    base_url: function (path) {
-      return BASEURL + path;
-    },
-    initPlugins: function () {
-      setTimeout(() => {
-        var elems = document.querySelectorAll(".tooltipped");
-        var instances = M.Tooltip.init(elems, {});
-        var elems = document.querySelectorAll(".dropdown-trigger");
-        var instances = M.Dropdown.init(elems, {});
-      }, 3000);
+      this.deleteListItem(content, index);
     },
   },
   mounted: function () {
     this.$nextTick(function () {
       this.getContents();
-      this.initPlugins();
     });
   },
 });

@@ -38,28 +38,3 @@
 	<p><a href="{{ base_url('admin/custommodels/') }}"><?= lang('collections_view_all') ?></a></p>
 </div>
 </script>
-<script>
-Vue.component("create-contents", {
-  template: "#create-contents-template",
-  mixins: typeof mixins !== "undefined" ? [mixins] : [],
-  props: ["forms_types", "content"],
-  methods: {
-    toggleStatus: function (item, e) {
-      var prev = item.status;
-      var status = e.target.checked ? 1 : 2;
-      item.status = status;
-      $.ajax({
-        type: "POST",
-        url: BASEURL + "api/v1/models/data_set_status/" + item.custom_model_content_id,
-        data: { status: status },
-        dataType: "json",
-        error: function () {
-          item.status = prev;
-          e.target.checked = prev == 1 || prev == "1";
-          M.toast({ html: (window.COLLECTIONS_I18N && window.COLLECTIONS_I18N.error) || "" });
-        },
-      });
-    },
-  },
-});
-</script>

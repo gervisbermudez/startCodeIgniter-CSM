@@ -1,52 +1,3 @@
-Vue.component("formFieldTitle", {
-  template: "#formFieldTitle-template",
-  props: ["tab-parent", "field-ref", "field-ref-index", "serve-data"],
-  data: function () {
-    return {
-      debug: DEBUGMODE,
-      fieldPlaceholder: "",
-      fieldID: this.makeid(10),
-      fieldName: "",
-      fielApiID: "",
-      data: {},
-    };
-  },
-  methods: {
-    convertfielApiID() {
-      this.fielApiID = this.fieldName
-        .toLowerCase()
-        .replace(/ /g, "_")
-        .replace(/[^\w-]+/g, "");
-      this.fieldPlaceholder = this.fieldName.toLowerCase();
-    },
-    makeid(length) {
-      var result = "";
-      var characters =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-      var charactersLength = characters.length;
-      for (var i = 0; i < length; i++) {
-        result += characters.charAt(
-          Math.floor(Math.random() * charactersLength)
-        );
-      }
-      return result;
-    },
-    updateFielData(value) {
-      this.data.fieldValue = value;
-    },
-  },
-  mounted: function () {
-    this.$nextTick(function () {
-      for (const key in this.serveData) {
-        if (this.serveData.hasOwnProperty(key)) {
-          const element = this.serveData[key];
-          this[key] = element;
-        }
-      }
-    });
-  },
-});
-
 var dataFormModule = new Vue({
   el: "#dataFormModule",
   data: {
@@ -134,6 +85,7 @@ var dataFormModule = new Vue({
     form_status: true,
     fieldsData: [],
   },
+  mixins: [mixins],
   computed: {
     getFormName() {
       return this.editMode ? "Edit " + this.form_name : "New " + this.form_name;
@@ -199,11 +151,7 @@ var dataFormModule = new Vue({
       this.tabs[this.getActiveTab()].fields.push(
         JSON.parse(JSON.stringify(formField))
       );
-
-      setTimeout(() => {
-        var elems = document.querySelectorAll(".collapsible:not(#slide-out)");
-        M.Collapsible.init(elems, {});
-      }, 2000);
+      this.initPlugins();
     },
     getfieldsData() {
       this.debug ? console.log("getfieldsData trigger") : null;
@@ -237,7 +185,7 @@ var dataFormModule = new Vue({
       this.getfieldsData();
       let data = {
         form_name: this.form_name,
-        form_status: this.form_status ? 1 : 0,
+        form_status: this.form_status ? 1 : 2,
         tabs: {},
         custom_model_id: this.custom_model_id,
       };

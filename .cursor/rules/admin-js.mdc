@@ -6,7 +6,17 @@ alwaysApply: false
 
 # Admin JavaScript (Vue 2)
 
-Sin bundler, sin `import`/`export`. Vue, jQuery (`$`), Materialize (`M`) y `mixins` son globales. Fuente: `resources/`. Tras cambiar JS: `npm run build` (copia a `public/js/`). El panel carga `resources/components/*.js` directo.
+Sin bundler, sin `import`/`export`. Vue, jQuery (`$`), Materialize (`M`) y `mixins` son globales. Fuente: `resources/`.
+
+**Qué carga el browser**
+
+- Footer: `public/js/start.js` ← copiar desde `resources/js/start.js` con `npm run build` o `npm run watch`.
+- Islas Vue: `resources/components/*.js` (también `formComponents/` y `widget/`). Editar y recargar basta.
+- No uses `public/js/components/` como fuente. `bin/copy-js.sh` no copia componentes.
+
+**Cómo registrar un script de página**
+
+Una sola vía: `@section('footer_includes')` en el Blade. No inyectes el mismo archivo desde PHP. Vendors (TinyMCE, fileinput) van en esa sección, antes del Vue que los usa.
 
 ```javascript
 var PagesLists = new Vue({
@@ -24,7 +34,8 @@ var PagesLists = new Vue({
           self.pages = (response && response.data) ? response.data : [];
           self.loader = false;
         },
-        error: function () {
+        error: function (xhr) {
+          console.error(xhr);
           M.toast({ html: "Ocurrió un error inesperado" });
           self.loader = false;
         },
@@ -34,7 +45,7 @@ var PagesLists = new Vue({
 });
 ```
 
-- Globals: `BASEURL`, `DEBUGMODE`, `mixins` (`resources/js/start.js`).
+- Globals: `BASEURL`, `DEBUGMODE`, `mixins`, `listMixin`, `formMixin` (`resources/js/start.js`).
+- Listas: `mixins: [mixins, listMixin]` con `listEndpoint`, `listKey`, `listPk`. `initPlugins` vive en el mixin (`$nextTick`, `.collapsible:not(#slide-out)`). No `setTimeout` 1–3s ni `initPlugins` en `updated`.
+- Forms (no PageNewForm): `mixins: [mixins, formMixin]` con `formEndpoint`, `formIdField`. Status `1|2`. Toasts: `this.toast('toast_saved')` / `lang()` via `ADMIN_LANG`.
 - Éxito API: `response.code == 200` y `response.data`.
-- Materialize: inicializa plugins en `$nextTick` (`self.initPlugins()` del mixin). No `M.AutoInit()` global.
-- SCSS del admin: `resources/scss/admin/`. Compilar con `npm run build` / `npm run watch`.

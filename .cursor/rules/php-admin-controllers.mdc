@@ -32,4 +32,4 @@ class PagesController extends MY_Controller
 - Recurso por ID: `$this->findOrFail(new PageModel(), $id, lang('pages_not_found'))`.
 - No hagas CRUD aquí. Guarda/borra en `application/controllers/api/v1/`.
 - Métodos de pantalla suelen ir en español (`nueva`, `editar`); las URLs EN están en `routes.php`.
-- Si agregas una vista con Vue, registra el JS en `MY_Controller::getAutoFooterIncludes()`.
+- Si agregas una vista con Vue, carga el JS en `@section('footer_includes')` del Blade. No inyectes el mismo archivo desde PHP.

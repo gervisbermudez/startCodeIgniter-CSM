@@ -17,9 +17,15 @@ Vue.component("formFieldTitle", {
       fielApiID: "",
       title: null,
       custom_model_data_id: null,
+      data: {},
     };
   },
   methods: {
+    updateFielData: function (value) {
+      this.data = this.data || {};
+      this.data.fieldValue = value;
+      this.title = value;
+    },
     convertfielApiID() {
       this.fielApiID = this.fieldName
         .toLowerCase()

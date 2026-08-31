@@ -42,6 +42,7 @@ var CustomModelModule = new Vue({
       return ids;
     },
   },
+  mixins: [mixins],
   methods: {
     onNameInput: function () {
       if (!this.slugDirty) {

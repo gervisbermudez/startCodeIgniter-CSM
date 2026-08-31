@@ -34,13 +34,67 @@ var EventsList = new Vue({
       window.location = `${BASEURL}admin/events/edit/${data.item.event_id}`;
       return;
     },
+    reloadEventsTable() {
+      if (this.$refs.eventsTable && typeof this.$refs.eventsTable.getData === "function") {
+        this.$refs.eventsTable.getData();
+      }
+    },
     deleteItem(data) {
-      console.log({ data });
-      return;
+      var self = this;
+      if (!data || !data.item || !data.item.event_id) {
+        return;
+      }
+      $.ajax({
+        type: "DELETE",
+        url: BASEURL + "api/v1/events/" + data.item.event_id,
+        data: {},
+        dataType: "json",
+        success: function (response) {
+          if (response.code == 200) {
+            self.toast("toast_done");
+            self.reloadEventsTable();
+            return;
+          }
+          self.toastError(null, response);
+        },
+        error: function (xhr) {
+          self.toastError(xhr);
+        },
+      });
     },
     archiveItem(data) {
-      console.log({ data });
-      return;
+      var self = this;
+      if (!data || !data.item || !data.item.event_id) {
+        return;
+      }
+      var item = data.item;
+      $.ajax({
+        type: "POST",
+        url: BASEURL + "api/v1/events",
+        data: {
+          event_id: item.event_id,
+          name: item.name,
+          subtitle: item.subtitle || "",
+          content: item.content || item.name,
+          address: item.address || "",
+          visibility: item.visibility,
+          mainImage: item.mainImage || "",
+          categorie_id: item.categorie_id || 0,
+          status: 3,
+        },
+        dataType: "json",
+        success: function (response) {
+          if (response.code == 200) {
+            self.toast("toast_done");
+            self.reloadEventsTable();
+            return;
+          }
+          self.toastError(null, response);
+        },
+        error: function (xhr) {
+          self.toastError(xhr);
+        },
+      });
     },
     newEvent() {
       window.location = `${BASEURL}admin/events/add/`;
