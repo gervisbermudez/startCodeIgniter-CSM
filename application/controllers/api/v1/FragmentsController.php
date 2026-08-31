@@ -60,6 +60,10 @@ class FragmentsController extends REST_Controller
      */
     public function index_get($fragment_id = null)
     {
+        if (!$this->require_fragment_permision('SELECT_FRAGMENT')) {
+            return;
+        }
+
         $fragmento = new FragmentModel();
         if ($fragment_id) {
             $result = $fragmento->where(array('fragment_id' => $fragment_id));
@@ -72,8 +76,19 @@ class FragmentsController extends REST_Controller
             return;
         }
 
+        $status = $this->get('status');
+        $type = $this->get('type');
         $where = array('status_in' => array(1, 2));
-        $this->respond_index_list($fragmento, $where, array(), array('unfiltered' => true));
+        $options = array('unfiltered' => true);
+        if ($status !== null && $status !== '') {
+            $where = array('status' => (int) $status);
+            $options = array();
+        }
+        $allowed_types = $this->allowed_fragment_types();
+        if ($type !== null && $type !== '' && in_array($type, $allowed_types, true)) {
+            $where['type'] = $type;
+        }
+        $this->respond_index_list($fragmento, $where, array(), $options);
     }
 
     /**
@@ -83,6 +98,12 @@ class FragmentsController extends REST_Controller
      */
     public function index_post()
     {
+        $fragment_id = $this->input->post('fragment_id', TRUE);
+        $is_update = ($fragment_id !== null && $fragment_id !== '' && $fragment_id !== false);
+        if (!$this->require_fragment_permision($is_update ? 'UPDATE_FRAGMENT' : 'CREATE_FRAGMENT')) {
+            return;
+        }
+
         $this->load->library('FormValidator');
         $form = new FormValidator();
 
@@ -100,12 +121,19 @@ class FragmentsController extends REST_Controller
             return;
         }
 
-        $fragment_id = $this->input->post('fragment_id', TRUE);
         $name = $this->input->post('name', TRUE);
         $description = $this->input->post('description');
         $type = $this->input->post('type', TRUE);
         $status = (int) $this->input->post('status');
-        $is_update = ($fragment_id !== null && $fragment_id !== '' && $fragment_id !== false);
+        if (!in_array($type, $this->allowed_fragment_types(), true)) {
+            $this->response_error(
+                lang('validations_error'),
+                array('errors' => array('type' => 'The type field is invalid.')),
+                REST_Controller::HTTP_BAD_REQUEST,
+                REST_Controller::HTTP_BAD_REQUEST
+            );
+            return;
+        }
 
         if ($this->fragment_name_taken($name, $is_update ? $fragment_id : null)) {
             $this->response_error(
@@ -190,6 +218,10 @@ class FragmentsController extends REST_Controller
      */
     public function index_delete($fragment_id = null)
     {
+        if (!$this->require_fragment_permision('DELETE_FRAGMENT')) {
+            return;
+        }
+
         $fragmento = new FragmentModel();
         if (!$fragmento->find($fragment_id)) {
             $this->response_error(lang('not_found_error'));
@@ -205,6 +237,38 @@ class FragmentsController extends REST_Controller
         }
 
         $this->response_error(lang('not_found_error'));
+    }
+
+    /**
+     * Editorial labels stored on fragmentos.type. Not used by fragment().
+     *
+     * @return array
+     */
+    protected function allowed_fragment_types()
+    {
+        return array(
+            'contenido',
+            'parrafo',
+            'widget',
+            'page',
+            'formulario',
+            'video',
+            'foto',
+            'evento',
+        );
+    }
+
+    /**
+     * @param string $permision
+     * @return bool
+     */
+    protected function require_fragment_permision($permision)
+    {
+        if (!function_exists('has_permisions') || !has_permisions($permision)) {
+            $this->response_error('You do not have permission to perform this action', array(), REST_Controller::HTTP_FORBIDDEN, REST_Controller::HTTP_FORBIDDEN);
+            return false;
+        }
+        return true;
     }
 
 }

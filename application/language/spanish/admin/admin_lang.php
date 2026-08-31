@@ -204,6 +204,14 @@ $lang['fragments_empty_cta'] = 'Nuevo fragmento';
 $lang['no_fragments'] = 'No hay fragmentos';
 $lang['delete_fragment_question'] = '¿Querés eliminar el fragmento?';
 $lang['create_fragment'] = 'Crear fragmento';
+$lang['fragments_copy_token'] = 'Copiar token';
+$lang['fragments_token_copied'] = 'Token copiado';
+$lang['fragments_token_hint'] = 'Pegalo en una página para embeber el fragmento.';
+$lang['fragments_preview'] = 'Vista previa';
+$lang['fragments_preview_empty'] = 'Todavía no hay nada para previsualizar';
+$lang['fragments_rename_warning'] = 'Guardado. Los tokens {{fragment(name)}} viejos dejan de pintar.';
+$lang['fragments_type_hint'] = 'Solo etiqueta editorial. El embed público ignora el tipo.';
+$lang['fragments_filter_empty'] = 'Ningún fragmento coincide con este filtro';
 
 $lang['albums_new'] = 'Nuevo álbum';
 $lang['albums_edit'] = 'Editar álbum';

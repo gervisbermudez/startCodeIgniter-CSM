@@ -96,6 +96,7 @@
             </a>
         </li>
         @endif
+        @if(has_permisions('SELECT_FRAGMENT'))
         <li class="{{ isSectionActive('fragments') }}">
             <div class="collapsible-header waves-effect">
                 <i class="material-icons" aria-hidden="true">bookmark_border</i>
@@ -106,12 +107,15 @@
                     <li class="{{ isNavItemActive(array('admin/fragments', 'admin/fragments/edit*')) }}">
                         <a class="waves-effect" href="{{ base_url('admin/fragments/') }}" {!! navCurrentAttr(array('admin/fragments', 'admin/fragments/edit*')) !!}>{{ lang('menu_all') }}</a>
                     </li>
+                    @if(has_permisions('CREATE_FRAGMENT'))
                     <li class="{{ isNavItemActive('admin/fragments/new') }}">
                         <a class="waves-effect" href="{{ base_url('admin/fragments/new/') }}" {!! navCurrentAttr('admin/fragments/new') !!}>{{ lang('menu_new') }}</a>
                     </li>
+                    @endif
                 </ul>
             </div>
         </li>
+        @endif
         @if(has_permisions('SELECT_FILES'))
         <li class="{{ isSectionActive('files') }}">
             <a class="waves-effect" href="{{ base_url('admin/files') }}" {!! navCurrentAttr('admin/files*') !!}>

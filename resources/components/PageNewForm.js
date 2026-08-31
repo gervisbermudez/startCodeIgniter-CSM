@@ -369,6 +369,9 @@ var PageNewForm = new Vue({
       if (listKey === "video") {
         return perms.videos !== false;
       }
+      if (listKey === "fragment") {
+        return perms.fragment !== false;
+      }
       return true;
     },
     embedItemKey: function (tab, item, index) {
@@ -392,6 +395,7 @@ var PageNewForm = new Vue({
         album: "admin/gallery/new",
         video: "admin/videos/new",
         event: "admin/events/add",
+        fragment: "admin/fragments/new",
       };
       return paths[listKey] ? BASEURL + paths[listKey] : "";
     },
