@@ -9,18 +9,23 @@ Este repo aísla features con **Git worktrees locales**. No uses Cloud Agents: c
 
 ## Al empezar una feature
 
-- Un chat por feature. Empieza con `/worktree` y trabaja solo en ese checkout.
+- Un chat por feature. Empieza con `/worktree` y trabaja **solo** en ese checkout.
 - No edites `master` (ni el checkout principal) si otra feature ya corre en paralelo.
 - No uses Cloud, `/in-cloud`, ni `/best-of-n` salvo que el usuario lo pida explícitamente.
 
-## Qué no hacer en un worktree
+## Stack sagrado (checkout principal)
 
-- No `docker compose up` / `down` / `restart`. El único stack es el del checkout principal: contenedor `ci_php56`, puerto **8081**. Un segundo compose pisa nombre y puerto.
-- No `composer install` en el host (PHP 8+ rompe el lock de PHP 7.4). `vendor/` lo copia `.cursor/setup-worktree-unix.sh` desde el checkout principal.
+- Contenedor `ci_php56`, puerto **8081**, DB `start_cms_db`. No lo detengas, recrees ni le cambies el volume.
+- En un worktree **nunca** `docker compose up` / `down` / `restart` / `--build`: el compose fija `container_name: ci_php56` y `8081:80`, y pisa el stack principal.
+- No `composer install` en el host (PHP 8+ rompe el lock de PHP 7.4). `vendor/` lo copia `.cursor/setup-worktree-unix.sh`.
 - No symlinkees `vendor/` ni `node_modules/` al árbol principal.
+
+## Cómo probar
+
+El código del worktree **no** se sirve en `:8081` (ese volume es el checkout principal). Cuando el usuario pida probar/verificar UI, seguí `.cursor/rules/worktree-preview.mdc`: Apache propio + puerto `8082+`, **misma** `start_cms_db`. No esperes a merge.
 
 ## Cómo entregar
 
 - Commit y PR **desde la rama del worktree**.
-- Verificar UI en `http://localhost:8081` después de merge o `/apply-worktree`.
+- Tras merge o `/apply-worktree`, el principal sigue en `http://localhost:8081`.
 - No apliques dos worktrees sobre un working tree sucio.
