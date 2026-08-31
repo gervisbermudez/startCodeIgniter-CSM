@@ -63,6 +63,11 @@ html.dark-mode {
   color: var(--st-on-accent);
 }
 
+.status-scheduled {
+  background-color: var(--st-interactive);
+  color: var(--st-on-accent);
+}
+
 .status-draft {
   background-color: var(--st-neutral);
   color: var(--st-on-accent);

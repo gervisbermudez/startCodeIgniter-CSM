@@ -396,12 +396,12 @@ class Base_Controller extends CI_Controller
             //Página no encontrada
             return null;
         }
-        // Se verifica si la página está publicada
-        $date_now = new DateTime();
-        $data['pagePublishTime'] = DateTime::createFromFormat('Y-m-d H:i:s', $pageInfo->date_publish);
+        $data['pagePublishTime'] = !empty($pageInfo->date_publish)
+            ? DateTime::createFromFormat('Y-m-d H:i:s', $pageInfo->date_publish)
+            : false;
 
-        if ($date_now < $data['pagePublishTime']) {
-            // Si la página no está publicada, se devuelve null
+        $canPreview = (bool) $this->session->userdata('logged_in');
+        if (!$canPreview && !page_is_live_for_public($pageInfo)) {
             return null;
         }
 

@@ -105,6 +105,7 @@ $lang['template'] = 'Template';
 $lang['type'] = 'Type';
 $lang['none'] = 'None';
 $lang['published'] = 'Published';
+$lang['scheduled'] = 'Scheduled';
 $lang['draft'] = 'Draft';
 $lang['archived'] = 'Archived';
 $lang['deleted'] = 'Deleted';

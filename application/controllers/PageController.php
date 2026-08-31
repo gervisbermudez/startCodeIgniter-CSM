@@ -55,7 +55,7 @@ class PageController extends Base_Controller
         $data['layout'] = 'site';
         $data['template'] = 'blogList';
         $data['meta'] = $this->getPageMetas([]);
-        $data['blogs'] = $this->Page->where(['page_type_id' => 2, "status" => 1]);
+        $data['blogs'] = filter_pages_for_public_site($this->Page->where(['page_type_id' => 2, "status" => 1]));
         $data['list_variant'] = '';
 
         echo $this->themeController->blog_list($data);
@@ -72,6 +72,7 @@ class PageController extends Base_Controller
                 return (isset($value->page_data['tags']) && in_array($tag, $value->page_data['tags']));
             });
         }
+        $data['blogs'] = filter_pages_for_public_site($data['blogs']);
 
         $data['layout'] = 'site';
         $data['template'] = 'blogList';
@@ -107,7 +108,7 @@ class PageController extends Base_Controller
         $data['author_info'] = $user;
 
         //Filter Blogs by user_id
-        $data['blogs'] = $this->Page->where(['page_type_id' => 2, "status" => 1, 'user_id' => $user->user_id]);
+        $data['blogs'] = filter_pages_for_public_site($this->Page->where(['page_type_id' => 2, "status" => 1, 'user_id' => $user->user_id]));
         $data['meta'] = $this->getPageMetas([]);
         echo $this->themeController->blog_list($data);
     }
@@ -146,7 +147,7 @@ class PageController extends Base_Controller
         $data['author_info'] = $user;
 
         //Filter Blogs by user_id
-        $data['blogs'] = $result;
+        $data['blogs'] = filter_pages_for_public_site($result);
         $data['meta'] = $this->getPageMetas([]);
         echo $this->themeController->blog_list($data);
     }
@@ -170,7 +171,7 @@ class PageController extends Base_Controller
         }
 
         $data['title'] = config("SITE_TITLE") . " - Blog";
-        $data['blogs'] = $this->Page->where(['page_type_id' => 2, "status" => 1, 'categorie_id' => $categorie_obj->categorie_id]);
+        $data['blogs'] = filter_pages_for_public_site($this->Page->where(['page_type_id' => 2, "status" => 1, 'categorie_id' => $categorie_obj->categorie_id]));
         $data['blogs'] = $data['blogs'] ? $data['blogs'] : [];
         $data['layout'] = 'site';
         $data['categorie'] = $categorie_obj;
@@ -463,6 +464,7 @@ class PageController extends Base_Controller
         } else {
             $data['pages'] = $this->Page->where(["status" => 1]);
         }
+        $data['pages'] = filter_pages_for_public_site($data['pages']);
 
         header("Content-Type: text/xml;charset=iso-8859-1");
         echo $this->blade->view("admin.xml.sitemap", $data);
@@ -481,7 +483,7 @@ class PageController extends Base_Controller
         $data['page_language'] = 'en-en';
         $data['creator_email'] = config("SITE_ADMIN_EMAIL");
         $data['site_language'] = config("SITE_LANGUAGE");
-        $data['posts'] = $this->Page->where(['page_type_id' => 2, "status" => 1]);
+        $data['posts'] = filter_pages_for_public_site($this->Page->where(['page_type_id' => 2, "status" => 1]));
         header("Content-Type: application/rss+xml");
         echo $this->blade->view("admin.xml.rss", $data);
     }

@@ -70,7 +70,10 @@
                                 @{{page.date_publish ? page.date_publish : page.date_create}}
                             </td>
                             <td>
-                                <span v-if="page.status == 1" class="custom-badge status-published">
+                                <span v-if="page.status == 1 && isFuturePublish(page)" class="custom-badge status-scheduled">
+                                    <i class="material-icons tiny">schedule</i> <?= lang('scheduled') ?>
+                                </span>
+                                <span v-else-if="page.status == 1" class="custom-badge status-published">
                                     <i class="material-icons tiny">check_circle</i> Published
                                 </span>
                                 <span v-else-if="page.status == 2" class="custom-badge status-draft">
@@ -108,6 +111,7 @@
                                     @endif
                                     <li v-if="page.status != 3"><a class="modal-trigger" href="#archiveModal"
                                             v-on:click="setTempPage(page, index);">Archive</a></li>
+                                    <li v-if="page.path"><a :href="base_url(page.path)" target="_blank"><?php echo lang('view_in_site'); ?></a></li>
                                 </ul>
                             </td>
                         </tr>
@@ -174,7 +178,8 @@
                             <li><b>Template:</b> @{{page.template}}</li>
                             <li><b>Type:</b> @{{page.page_type_name}}</li>
                             <li><b>Status:</b>
-                                <span v-if="page.status == 1">Published</span>
+                                <span v-if="page.status == 1 && isFuturePublish(page)"><?= lang('scheduled') ?></span>
+                                <span v-else-if="page.status == 1">Published</span>
                                 <span v-else-if="page.status == 2">Draft</span>
                                 <span v-else-if="page.status == 3">Archived</span>
                                 <span v-else-if="page.status == 0">Deleted</span>
@@ -221,7 +226,10 @@
                                 @{{page.date_publish ? page.date_publish : page.date_create}}
                             </td>
                             <td>
-                                <span v-if="page.status == 1" class="custom-badge status-published">
+                                <span v-if="page.status == 1 && isFuturePublish(page)" class="custom-badge status-scheduled">
+                                    <i class="material-icons tiny">schedule</i> <?= lang('scheduled') ?>
+                                </span>
+                                <span v-else-if="page.status == 1" class="custom-badge status-published">
                                     <i class="material-icons tiny">check_circle</i> Published
                                 </span>
                                 <span v-else-if="page.status == 2" class="custom-badge status-draft">
@@ -257,6 +265,7 @@
                                     @endif
                                     <li v-if="page.status != 3"><a class="modal-trigger" href="#archiveModal"
                                             v-on:click="setTempPage(page, index);">Archive</a></li>
+                                    <li v-if="page.path"><a :href="base_url(page.path)" target="_blank"><?php echo lang('view_in_site'); ?></a></li>
                                 </ul>
                             </td>
                         </tr>
@@ -323,8 +332,11 @@
                             <li><b>Template:</b> @{{page.template}}</li>
                             <li><b>Type:</b> @{{page.page_type_name}}</li>
                             <li><b>Status</b>
-                                <span v-if="page.status == 1">
-                                    Published
+                                <span v-if="page.status == 1 && isFuturePublish(page)">
+                                    <?= lang('scheduled') ?>
+                                </span>
+                                <span v-else-if="page.status == 1">
+                                    <?= lang('published') ?>
                                 </span>
                                 <span v-else>
                                     Draft
@@ -373,7 +385,10 @@
                                 @{{page.date_publish ? page.date_publish : page.date_create}}
                             </td>
                             <td>
-                                <span v-if="page.status == 1" class="custom-badge status-published">
+                                <span v-if="page.status == 1 && isFuturePublish(page)" class="custom-badge status-scheduled">
+                                    <i class="material-icons tiny">schedule</i> <?= lang('scheduled') ?>
+                                </span>
+                                <span v-else-if="page.status == 1" class="custom-badge status-published">
                                     <i class="material-icons tiny">check_circle</i> Published
                                 </span>
                                 <span v-else class="custom-badge status-draft">
@@ -406,6 +421,7 @@
                                     @endif
                                     <li v-if="page.status != 3"><a class="modal-trigger" href="#archiveModal"
                                             v-on:click="setTempPage(page, index);">Archive</a></li>
+                                    <li v-if="page.path"><a :href="base_url(page.path)" target="_blank"><?php echo lang('view_in_site'); ?></a></li>
                                 </ul>
                             </td>
                         </tr>
@@ -472,7 +488,8 @@
                             <li><b>Template:</b> @{{page.template}}</li>
                             <li><b>Type:</b> @{{page.page_type_name}}</li>
                             <li><b>Status:</b>
-                                <span v-if="page.status == 1">Published</span>
+                                <span v-if="page.status == 1 && isFuturePublish(page)"><?= lang('scheduled') ?></span>
+                                <span v-else-if="page.status == 1">Published</span>
                                 <span v-else-if="page.status == 2">Draft</span>
                                 <span v-else-if="page.status == 3">Archived</span>
                                 <span v-else-if="page.status == 0">Deleted</span>

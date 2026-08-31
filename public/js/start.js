@@ -293,6 +293,13 @@ var mixins = {
     resetFilter: function () {
       this.filter = "";
     },
+    isFuturePublish: function (item) {
+      if (!item || !item.date_publish) {
+        return false;
+      }
+      var parsed = Date.parse(String(item.date_publish).replace(" ", "T"));
+      return !isNaN(parsed) && parsed > Date.now();
+    },
     toggleView: function () {
       this.tableView = !this.tableView;
       if (typeof this.initPlugins === "function") {

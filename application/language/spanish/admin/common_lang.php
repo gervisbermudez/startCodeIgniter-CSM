@@ -165,6 +165,7 @@ $lang['template'] = 'Plantilla';
 $lang['type'] = 'Tipo';
 $lang['none'] = 'Ninguna';
 $lang['published'] = 'Publicado';
+$lang['scheduled'] = 'Programada';
 $lang['draft'] = 'Borrador';
 $lang['archived'] = 'Archivado';
 $lang['deleted'] = 'Eliminado';

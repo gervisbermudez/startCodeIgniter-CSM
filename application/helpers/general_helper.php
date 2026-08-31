@@ -696,6 +696,63 @@ if (!function_exists('slugify')) {
     }
 }
 
+if (!function_exists('page_is_live_for_public')) {
+    /**
+     * Visible en el sitio anónimo: visibility público y date_publish no futuro.
+     */
+    function page_is_live_for_public($page)
+    {
+        if (!$page) {
+            return false;
+        }
+        $visibility = isset($page->visibility) ? (int) $page->visibility : 1;
+        if ($visibility !== 1) {
+            return false;
+        }
+        if (!empty($page->date_publish)) {
+            $publishTime = DateTime::createFromFormat('Y-m-d H:i:s', $page->date_publish);
+            if ($publishTime instanceof DateTime) {
+                $now = new DateTime();
+                if ($now < $publishTime) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+}
+
+if (!function_exists('filter_pages_for_public_site')) {
+    /**
+     * Quita privadas y programadas del listado público. Con sesión de admin no filtra.
+     *
+     * @param Collection|array|false $pages
+     * @return Collection|array|false
+     */
+    function filter_pages_for_public_site($pages)
+    {
+        if (!$pages) {
+            return $pages;
+        }
+        $ci = &get_instance();
+        if ($ci->session->userdata('logged_in')) {
+            return $pages;
+        }
+        if (is_array($pages)) {
+            $filtered = array();
+            foreach ($pages as $page) {
+                if (page_is_live_for_public($page)) {
+                    $filtered[] = $page;
+                }
+            }
+            return $filtered;
+        }
+        return $pages->filter(function ($page) {
+            return page_is_live_for_public($page);
+        })->values();
+    }
+}
+
 if (!function_exists('script')) {
     function script($url)
     {

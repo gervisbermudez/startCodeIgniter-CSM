@@ -2,7 +2,10 @@
     $item = isset($item) ? $item : 'item';
 @endphp
 <div class="entity-card-badges">
-    <span v-if="{{ $item }}.status == 1" class="custom-badge status-published">
+    <span v-if="{{ $item }}.status == 1 && isFuturePublish({{ $item }})" class="custom-badge status-scheduled">
+        <i class="material-icons tiny">schedule</i> <?= lang('scheduled') ?>
+    </span>
+    <span v-else-if="{{ $item }}.status == 1" class="custom-badge status-published">
         <i class="material-icons tiny">check_circle</i> <?= lang('published') ?>
     </span>
     <span v-else-if="{{ $item }}.status == 2" class="custom-badge status-draft">
