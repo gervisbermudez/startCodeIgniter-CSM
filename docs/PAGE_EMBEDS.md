@@ -27,7 +27,7 @@ Helpers públicos ya existentes (`application/helpers/general_helper.php`):
 - `fragment($name)` → HTML del fragmento (cache)
 - `render_menu($name)` → `site.templates.menu.{template}`
 
-Álbum, video y evento tienen CRUD/API y **no** helper de render.
+Álbum, video y evento tienen CRUD/API y helpers `render_album` / `render_video` / `render_event`. Álbum y video resuelven por **id** numérico y fallback por nombre (`find_embed_record`).
 
 Expander proto en `Base_Controller::get_page_info()` (`application/core/MY_Controller.php`, ~líneas 399–414):
 
@@ -52,12 +52,14 @@ Criterio: lo que un visitante vería en el front. No herramientas internas del C
 | Formulario | `{{render_form(contacto)}}` | `render_form` | shipped |
 | Fragmento | `{{fragment(aviso-legal)}}` | `fragment` | shipped |
 | Menú | `{{render_menu(main)}}` | `render_menu` | shipped |
-| Álbum | `{{render_album(verano)}}` | `render_album` | shipped |
-| Video | `{{render_video(trailer)}}` | `render_video` | shipped |
+| Álbum | `{{render_album(12)}}` | `render_album` | shipped (id; fallback por nombre) |
+| Video | `{{render_video(7)}}` | `render_video` | shipped (id; fallback por `nam`) |
 | Evento | `{{render_event(lanzamiento)}}` | `render_event` | shipped |
 | Colección | `{{get_collection(home_portfolio)}}` | `get_collection` | shipped (3.0, extra al spec v1) |
 
-Whitelist en código: esos nombres. Lookup por **nombre** publicado (`status = 1`). Video: columna de nombre en tabla `video` es `nam` (typo histórico; no “corregir”).
+Whitelist en código: esos nombres. Lookup: si el argumento es solo dígitos (`ctype_digit`), se busca por PK publicado (`status = 1`). Si no hay hit, fallback por **nombre** publicado. Video: columna de nombre en tabla `video` es `nam` (typo histórico; no “corregir”). Si un álbum se llama `"12"` y existe `album_id = 12` publicado, **gana el id**. `get_collection` sigue por nombre de colección.
+
+El picker de New Page inserta `{{render_album(12)}}` / `{{render_video(7)}}` (id). Tokens viejos por nombre (`{{render_album(Diseñando apps...)}}`) siguen resolviendo.
 
 **No:**
 
@@ -91,9 +93,9 @@ No `eval`, no compilar Blade sobre `page.content`, no `is_callable` genérico.
 
 Añadir en `application/helpers/general_helper.php` (mismo estilo que `render_form` / `render_menu`):
 
-- `render_album($name)` — `AlbumModel` por `name`, `status = 1`, con `items`. Vista `site.templates.albums.default`.
-- `render_video($name)` — `VideoModel` por `nam`, `status = 1`. Iframe YouTube con `youtube_id`. Vista `site.templates.videos.default`.
-- `render_event($name)` — `EventModel` por `name`, `status = 1`. Card: nombre, fecha, dirección, extracto. Vista `site.templates.events.default`.
+- `render_album($name)` — `AlbumModel` por **id** si el arg es numérico, si no por `name`, `status = 1`, con `items`. Vista `site.templates.albums.default`. **Existe.**
+- `render_video($name)` — `VideoModel` por **id** si el arg es numérico, si no por `nam`, `status = 1`. Iframe YouTube con `youtube_id`. Vista `site.templates.videos.default`. **Existe.**
+- `render_event($name)` — `EventModel` por `name`, `status = 1`. Card: nombre, fecha, dirección, extracto. Vista `site.templates.events.default`. **Existe.**
 
 Plantillas **fallback** en el core (el tema puede sobrescribir la misma ruta relativa):
 
@@ -128,7 +130,7 @@ UI (`docs/DESIGN.md`):
   - `api/v1/videos`
   - `api/v1/events`
 - Filtrar publicados. Mostrar nombre. Click inserta el token en el cursor (`insertNode` o `trumbowyg('html')` como las imágenes).
-- V1: token de texto plano `{{render_form(nombre)}}`. No badge HTML (Trumbowyg lo puede romper).
+- V1: token de texto plano. Álbum/video: `{{render_album(12)}}` / `{{render_video(7)}}` (id). Form/fragmento/menú/evento siguen por nombre. No badge HTML (Trumbowyg lo puede romper).
 - Si el usuario no tiene `SELECT_*` del módulo, ocultar esa pestaña o no pedir la lista.
 - Insertar no crea el producto; solo referencia.
 
@@ -165,11 +167,12 @@ Tras JS: si el panel carga `resources/components/` directo, no hace falta copiar
 
 App: `http://localhost:8081` (stack del checkout principal, contenedor `ci_php56`). Login `gerber` / `admin123`.
 
-1. New Page: insertar un formulario publicado y un álbum (o video) en la misma página. Guardar.
+1. New Page: insertar un formulario publicado y un álbum (o video) en la misma página. El token de álbum/video debe ser por **id** (`{{render_album(1)}}`). Guardar.
 2. Abrir la URL pública de la página y el preview admin (`admin/pages/preview?page_id=`). Ambos pintan el form y la galería/video, no el token crudo.
-3. Token de un nombre inexistente: no se ve el `{{...}}`.
-4. Escribir `{{phpinfo()}}` en el contenido: **no** se ejecuta (el texto puede quedar visible o sanitizado, pero no el output de phpinfo).
-5. No verificar analytics, users ni config.
+3. Una página **vieja** con `{{render_album(Diseñando apps...)}}` (nombre del seed) sigue pintando.
+4. Token de un nombre inexistente: no se ve el `{{...}}`.
+5. Escribir `{{phpinfo()}}` en el contenido: **no** se ejecuta (el texto puede quedar visible o sanitizado, pero no el output de phpinfo).
+6. No verificar analytics, users ni config.
 
 ---
 

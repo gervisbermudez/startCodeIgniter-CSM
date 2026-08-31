@@ -101,7 +101,7 @@
             </div>
             <br><br>
             <div class="input-field" id="buttons">
-                <a href="<?php echo base_url('admin/categories/'); ?>" class="btn-flat"><?php echo lang('cancel'); ?></a>
+                <a href="<?php echo base_url('admin/gallery/'); ?>" class="btn-flat"><?php echo lang('cancel'); ?></a>
                 <button type="submit" class="btn btn-primary" @click="save()" :class="{disabled: !btnEnable}">
                     <span><i class="material-icons right">edit</i> Guardar</span>
                 </button>

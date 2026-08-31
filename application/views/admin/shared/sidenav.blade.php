@@ -176,6 +176,7 @@
                 </ul>
             </div>
         </li>
+        @if(has_permisions('SELECT_GALLERY'))
         <li class="{{ isSectionActive('gallery') }}">
             <div class="collapsible-header waves-effect">
                 <i class="material-icons" aria-hidden="true">perm_media</i>
@@ -186,12 +187,16 @@
                     <li class="{{ isNavItemActive(array('admin/gallery', 'admin/gallery/edit*')) }}">
                         <a class="waves-effect" href="{{ base_url('admin/gallery') }}" {!! navCurrentAttr(array('admin/gallery', 'admin/gallery/edit*')) !!}>{{ lang('menu_all') }}</a>
                     </li>
+                    @if(has_permisions('CREATE_GALLERY'))
                     <li class="{{ isNavItemActive('admin/gallery/new') }}">
                         <a class="waves-effect" href="{{ base_url('admin/gallery/new/') }}" {!! navCurrentAttr('admin/gallery/new') !!}>{{ lang('menu_new_album') }}</a>
                     </li>
+                    @endif
                 </ul>
             </div>
         </li>
+        @endif
+        @if(has_permisions('SELECT_VIDEOS'))
         <li class="{{ isSectionActive('videos') }}">
             <div class="collapsible-header waves-effect">
                 <i class="material-icons" aria-hidden="true">video_library</i>
@@ -202,12 +207,15 @@
                     <li class="{{ isNavItemActive(array('admin/videos', 'admin/videos/edit*')) }}">
                         <a class="waves-effect" href="{{ base_url('admin/videos') }}" {!! navCurrentAttr(array('admin/videos', 'admin/videos/edit*')) !!}>{{ lang('menu_all') }}</a>
                     </li>
+                    @if(has_permisions('CREATE_VIDEO'))
                     <li class="{{ isNavItemActive('admin/videos/new') }}">
                         <a class="waves-effect" href="{{ base_url('admin/videos/new/') }}" {!! navCurrentAttr('admin/videos/new') !!}>{{ lang('menu_create_video') }}</a>
                     </li>
+                    @endif
                 </ul>
             </div>
         </li>
+        @endif
         <li class="{{ isSectionActive('custommodels') }}">
             <div class="collapsible-header waves-effect">
                 <i class="material-icons" aria-hidden="true">view_module</i>

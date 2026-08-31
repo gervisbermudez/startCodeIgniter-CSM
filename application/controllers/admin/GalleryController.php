@@ -5,15 +5,39 @@
 class GalleryController extends MY_Controller
 {
 
+    public $routes_permisions = [
+        "index" => [
+            "patern" => '/admin\/gallery/',
+            "required_permissions" => ["SELECT_GALLERY"],
+            "conditions" => [],
+        ],
+        "items" => [
+            "patern" => '/admin\/gallery\/items/',
+            "required_permissions" => ["SELECT_GALLERY"],
+            "conditions" => [],
+        ],
+        "nuevo" => [
+            "patern" => '/admin\/gallery\/(new|nuevo)/',
+            "required_permissions" => ["CREATE_GALLERY"],
+            "conditions" => [],
+        ],
+        "editar" => [
+            "patern" => '/admin\/gallery\/(edit|editar)\/(\d+)/',
+            "required_permissions" => ["UPDATE_GALLERY"],
+            "conditions" => [],
+        ],
+    ];
+
     public function __construct()
     {
         parent::__construct();
+        $this->check_permisions();
         $this->load->model('Admin/AlbumModel', 'Album');
     }
 
     public function index()
     {
-        $this->renderAdminView('admin.gallery.albums_list', 'Galería', 'Galería de Imagenes');
+        $this->renderAdminView('admin.gallery.albums_list', lang('menu_albums'), lang('albums_all'));
     }
 
     public function items($albumid = '')
@@ -23,13 +47,13 @@ class GalleryController extends MY_Controller
             return;
         }
 
-        $album = $this->findOrFail(new AlbumModel(), $albumid, 'Album no encontrado :(');
-        $this->renderAdminView('admin.gallery.albums_items', 'Galería', 'Galería de Imagenes');
+        $album = $this->findOrFail(new AlbumModel(), $albumid, lang('albums_not_found'));
+        $this->renderAdminView('admin.gallery.albums_items', lang('menu_albums'), lang('albums_all'));
     }
 
     public function nuevo()
     {
-        $this->renderAdminView('admin.gallery.new_form', 'Nuevo Album', 'Agregar nuevo Album', [
+        $this->renderAdminView('admin.gallery.new_form', lang('albums_new'), lang('albums_new'), [
             'album_id' => null,
             'editMode' => null
         ]);
@@ -37,7 +61,7 @@ class GalleryController extends MY_Controller
 
     public function editar($album_id)
     {
-        $this->renderAdminView('admin.gallery.new_form', 'Editar Album', 'Editar Album', [
+        $this->renderAdminView('admin.gallery.new_form', lang('albums_edit'), lang('albums_edit'), [
             'album_id' => $album_id,
             'editMode' => 'edit'
         ]);
