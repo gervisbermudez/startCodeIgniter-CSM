@@ -33,18 +33,29 @@ class AlbumesController extends REST_Controller
      */
     public function index_get($album_id = null)
     {
+        if (!$this->require_gallery_permision('SELECT_GALLERY')) {
+            return;
+        }
+
         $album = new AlbumModel();
         if ($album_id) {
-            $result = $album->where(["album_id" => $album_id])->first();
+            $result = $album->where(array("album_id" => $album_id));
             if ($result) {
-                $this->response_ok($result);
+                $this->response_ok($result->first());
                 return;
             }
             $this->response_error(lang('not_found_error'));
             return;
         }
 
-        $this->respond_index_list($album);
+        $status = $this->get('status');
+        $where = array();
+        $options = array('unfiltered' => true);
+        if ($status !== null && $status !== '') {
+            $where['status'] = $status;
+            $options = array();
+        }
+        $this->respond_index_list($album, $where, array(), $options);
     }
 
     /**
@@ -54,6 +65,13 @@ class AlbumesController extends REST_Controller
      */
     public function index_post()
     {
+        $album_id = $this->input->post('album_id');
+        $is_update = ($album_id !== null && $album_id !== '' && $album_id !== false);
+
+        if (!$this->require_gallery_permision($is_update ? 'UPDATE_GALLERY' : 'CREATE_GALLERY')) {
+            return;
+        }
+
         $this->load->library('FormValidator');
         $form = new FormValidator();
 
@@ -77,13 +95,21 @@ class AlbumesController extends REST_Controller
         }
 
         $album = new AlbumModel();
-        $this->input->post('album_id') ? $album->find($this->input->post('album_id')) : false;
+        if ($is_update) {
+            if (!$album->find($album_id)) {
+                $this->response_error(lang('not_found_error'));
+                return;
+            }
+            $album->date_update = date("Y-m-d H:i:s");
+        } else {
+            $album->user_id = userdata('user_id');
+            $album->date_create = date("Y-m-d H:i:s");
+            $album->date_update = date("Y-m-d H:i:s");
+        }
         $album->name = $this->input->post('name');
         $album->description = $this->input->post('description');
-        $album->user_id = userdata('user_id');
         $album->status = $this->input->post('status');
         $album->date_publish = $this->input->post('date_publish') ? $this->input->post('date_publish') : date("Y-m-d H:i:s");
-        $album->date_create = date("Y-m-d H:i:s");
 
         if ($album->save()) {
 
@@ -103,6 +129,7 @@ class AlbumesController extends REST_Controller
                 }
             }
 
+            system_logger('albumes', $album->album_id, ($is_update ? 'updated' : 'created'), ($is_update ? 'An album has been updated' : 'An album has been created'));
             $this->response_ok($album);
             return;
         }
@@ -129,13 +156,21 @@ class AlbumesController extends REST_Controller
      */
     public function index_delete($id = null)
     {
-        $album = new AlbumModel();
-        $album->find($id);
-        if ($album->delete()) {
-            $this->response_ok($album);
+        if (!$this->require_gallery_permision('DELETE_GALLERY')) {
             return;
         }
 
+        if ($id) {
+            $album = new AlbumModel();
+            if ($album->find($id)) {
+                $deleted = $album->delete();
+                system_logger('albumes', $album->album_id, 'deleted', 'An album has been deleted');
+                $this->response_ok(array("result" => $deleted));
+                return;
+            }
+            $this->response_error(lang('not_found_error'));
+            return;
+        }
         $this->response_error(lang('not_found_error'));
     }
 
@@ -146,14 +181,53 @@ class AlbumesController extends REST_Controller
      */
     public function delete_album_item_get($item_album_id)
     {
-        $this->load->model('Admin/AlbumItemsModel');
-        $album_items = new AlbumItemsModel();
-        $album_items->find($item_album_id);
-        if ($album_items->delete()) {
-            $this->response_ok($album_items);
+        $this->delete_album_item($item_album_id);
+    }
+
+    /**
+     * REST delete for an album item.
+     *
+     * @param mixed $item_album_id
+     * @return void
+     */
+    public function delete_album_item_delete($item_album_id = null)
+    {
+        $this->delete_album_item($item_album_id);
+    }
+
+    /**
+     * @param mixed $item_album_id
+     * @return void
+     */
+    protected function delete_album_item($item_album_id)
+    {
+        if (!function_exists('has_permisions') || (!has_permisions('UPDATE_GALLERY') && !has_permisions('DELETE_GALLERY'))) {
+            $this->response_error('You do not have permission to perform this action', array(), REST_Controller::HTTP_FORBIDDEN, REST_Controller::HTTP_FORBIDDEN);
             return;
         }
+
+        $this->load->model('Admin/AlbumItemsModel');
+        $album_items = new AlbumItemsModel();
+        if ($item_album_id && $album_items->find($item_album_id)) {
+            if ($album_items->delete()) {
+                $this->response_ok($album_items);
+                return;
+            }
+        }
         $this->response_error(lang('not_found_error'));
+    }
+
+    /**
+     * @param mixed $permision
+     * @return bool
+     */
+    protected function require_gallery_permision($permision)
+    {
+        if (!function_exists('has_permisions') || !has_permisions($permision)) {
+            $this->response_error('You do not have permission to perform this action', array(), REST_Controller::HTTP_FORBIDDEN, REST_Controller::HTTP_FORBIDDEN);
+            return false;
+        }
+        return true;
     }
 
 }

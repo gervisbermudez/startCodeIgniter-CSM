@@ -115,7 +115,7 @@
                                         </div>
                                     </div>
                                     <div class="card-image" v-if="isImage(item)">
-                                        <img class="materialboxed" :src="getImagePath(item)" />
+                                        <img class="materialboxed" loading="lazy" :src="getImagePath(item)" />
                                     </div>
                                     <div class="card-content" @click="setSideRightBarSelectedFile(item);">
                                         @{{ item.file_name + getExtention(item) | shortName }}

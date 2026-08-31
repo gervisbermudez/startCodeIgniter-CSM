@@ -13,10 +13,31 @@
         </div>
         @include('admin.components.page_navbar', [
             'searchInputId' => 'videos-search',
-            'refreshMethod' => 'getVideos()',
+            'refreshMethod' => 'getVideos(currentStatus)',
             'navbarShow' => '!loader && videos.length > 0',
             'itemsExpr' => 'filterAll',
         ])
+        <div class="row">
+            <div class="col s12">
+                <div class="status-filters" v-cloak v-show="!loader">
+                    <div class="status-chip" :class="{active: currentStatus === null}" @click="getVideos(null)">
+                        <?= lang('menu_all') ?>
+                    </div>
+                    <div class="status-chip" :class="{active: currentStatus === 1}" @click="getVideos(1)">
+                        <?= lang('published') ?>
+                    </div>
+                    <div class="status-chip" :class="{active: currentStatus === 2}" @click="getVideos(2)">
+                        <?= lang('draft') ?>
+                    </div>
+                    <div class="status-chip" :class="{active: currentStatus === 3}" @click="getVideos(3)">
+                        <?= lang('archived') ?>
+                    </div>
+                    <div class="status-chip" :class="{active: currentStatus === 0}" @click="getVideos(0)">
+                        <?= lang('deleted') ?>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="pages" v-cloak v-if="!loader && videos.length > 0">
             <div class="row" v-if="tableView">
                 <div class="col s12">
@@ -45,8 +66,12 @@
                                 <td>
                                     <i v-if="video.status == 1" class="material-icons tooltipped" data-position="left"
                                         data-delay="50" :data-tooltip="lang('videos_published')">publish</i>
-                                    <i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
-                                        :data-tooltip="lang('videos_draft')">edit</i>
+                                    <i v-else-if="video.status == 2" class="material-icons tooltipped" data-position="left"
+                                        data-delay="50" :data-tooltip="lang('videos_draft')">edit</i>
+                                    <i v-else-if="video.status == 3" class="material-icons tooltipped" data-position="left"
+                                        data-delay="50" data-tooltip="<?= lang('archived') ?>">archive</i>
+                                    <i v-else class="material-icons tooltipped" data-position="left"
+                                        data-delay="50" data-tooltip="<?= lang('deleted') ?>">delete_outline</i>
                                 </td>
                                 <td>
                                     <a class='dropdown-trigger' href='#!'
@@ -58,8 +83,7 @@
                                         </li>
                                         <li><a class="modal-trigger" href="#deleteModal"
                                                 v-on:click="tempDelete(video, index);"><?= lang('delete') ?></a></li>
-                                        <li><a :href="base_url('/admin/videos/ver/' + (video.id || video.video_id))"
-                                                target="_blank"><?= lang('videos_view') ?></a></li>
+                                        <li><a :href="base_url('/admin/videos/ver/' + (video.id || video.video_id))"><?= lang('videos_view') ?></a></li>
                                     </ul>
                                 </td>
                             </tr>
@@ -83,8 +107,7 @@
                                 </li>
                                 <li><a class="modal-trigger" href="#deleteModal"
                                         v-on:click="tempDelete(video, index);">{{ lang('delete') }}</a></li>
-                                <li><a :href="base_url('/admin/videos/ver/' + (video.id || video.video_id))"
-                                        target="_blank">{{ lang('videos_view') }}</a></li>
+                                <li><a :href="base_url('/admin/videos/ver/' + (video.id || video.video_id))">{{ lang('videos_view') }}</a></li>
                             </ul>
                         </div>
                         <div class="card-content">
@@ -109,7 +132,9 @@
                                     video.date_create}}</li>
                                 <li><b><?= lang('videos_status') ?>:</b>
                                     <span v-if="video.status == 1"><?= lang('videos_published') ?></span>
-                                    <span v-else><?= lang('videos_draft') ?></span>
+                                    <span v-else-if="video.status == 2"><?= lang('videos_draft') ?></span>
+                                    <span v-else-if="video.status == 3"><?= lang('archived') ?></span>
+                                    <span v-else><?= lang('deleted') ?></span>
                                 </li>
                             </ul>
                         </div>
@@ -117,21 +142,23 @@
                 </div>
             </div>
         </div>
-        <div v-cloak v-show="!loader && videos.length == 0" class="container">
-            <p>
-                <?= lang('videos_none_yet') ?>
-            </p>
+        <div class="container center" v-cloak v-show="!loader && videos.length == 0">
+            <i class="material-icons large grey-text">video_library</i>
+            <p class="page-header"><?= lang('videos_empty') ?></p>
+            <a href="<?= base_url('admin/videos/nuevo') ?>" class="btn"><?= lang('videos_empty_cta') ?></a>
         </div>
         <confirm-modal id="deleteModal" title="<?= lang('delete_video_title') ?>" v-on:notify="confirmCallback">
             <p><?= lang('delete_video_confirm') ?></p>
         </confirm-modal>
     </div>
+@if(has_permisions('CREATE_VIDEO'))
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-        <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left"
+        <a class="btn-floating btn-large waves-effect st-accent tooltipped" data-position="left"
             data-delay="50" data-tooltip="<?= lang('videos_create') ?>" href="<?= base_url('admin/videos/nuevo/') ?>">
             <i class="large material-icons">add</i>
         </a>
 </div>
+@endif
 @endsection
 
 @section('footer_includes')

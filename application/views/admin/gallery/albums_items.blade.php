@@ -5,7 +5,7 @@
 @section('head_includes')
 <link rel="stylesheet" href="<?=base_url('public/css/admin/file_explorer.min.css')?>">
 <link rel="stylesheet" href="<?=base_url('public/css/admin/header.min.css')?>">
-<link rel="stylesheet" href="<?=base_url('public/vendors/lightbox2/dist/css/lightbox.min.css')?>">
+<link rel="stylesheet" href="<?=base_url('public/vendors/lightbox2/src/css/lightbox.css')?>">
 <link rel="stylesheet" href="<?=base_url('public/vendors/fileinput/css/fileinput.min.css')?>">
 <link rel="stylesheet" href="<?=base_url('public/vendors/font-awesome/css/all.min.css')?>">
 @endsection
@@ -20,7 +20,6 @@
                         class="material-icons">more_vert</i></a>
                 <ul :id='"album" + album.album_id' class='dropdown-content'>
                     <li><a :href="base_url('admin/gallery/editar/' + album.album_id)"><?php echo lang('edit'); ?></a></li>
-                    <li v-if="album.path"><a :href="base_url(album.path)" target="_blank"><?php echo lang('view_in_site'); ?></a></li>
                 </ul>
             </div>
             <div class="col s12">
@@ -28,20 +27,20 @@
             </div>
             <div class="col s12">
                 <div class="author">
-                    Create by: <br />
+                    <?php echo lang('albums_created_by'); ?>: <br />
                 </div>
                 <user-info v-if="album.user.user_id" :user="album.user" />
             </div>
             <div class="col s12">
                 <ul>
-                    <li><b>Fecha de publicacion:</b>
+                    <li><b><?php echo lang('publish_date'); ?>:</b>
                         @{{album.date_publish ? timeAgo(album.date_publish) : timeAgo(album.date_create)}}</li>
-                    <li><b>Estado:</b>
+                    <li><b><?php echo lang('status'); ?>:</b>
                         <span v-if="album.status == 1">
-                            Publicado
+                            <?php echo lang('published'); ?>
                         </span>
                         <span v-else>
-                            Borrador
+                            <?php echo lang('draft'); ?>
                         </span>
                     </li>
                 </ul>
@@ -64,11 +63,11 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Album Title</th>
-                            <th>Description</th>
-                            <th>Publish Date</th>
-                            <th>Status</th>
-                            <th>Options</th>
+                            <th><?php echo lang('album_title'); ?></th>
+                            <th><?php echo lang('description'); ?></th>
+                            <th><?php echo lang('publish_date'); ?></th>
+                            <th><?php echo lang('status'); ?></th>
+                            <th><?php echo lang('options'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -80,17 +79,15 @@
                             </td>
                             <td>
                                 <i v-if="item.status == 1" class="material-icons tooltipped" data-position="left"
-                                    data-delay="50" data-tooltip="Publicado">publish</i>
+                                    data-delay="50" data-tooltip="<?php echo lang('published'); ?>">publish</i>
                                 <i v-else class="material-icons tooltipped" data-position="left" data-delay="50"
-                                    data-tooltip="Borrador">edit</i>
+                                    data-tooltip="<?php echo lang('draft'); ?>">edit</i>
                             </td>
                             <td>
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + item.album_item_id'><i
                                         class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + item.album_item_id' class='dropdown-content'>
                                     <li><a href="#!" v-on:click="deletePage(item, index);"><?php echo lang('delete'); ?></a></li>
-                                    <li v-if="item.file && item.file.file_front_path"><a :href="base_url(item.file.file_front_path)"
-                                            target="_blank"><?php echo lang('view_in_site'); ?></a></li>
                                 </ul>
                             </td>
                         </tr>
@@ -110,8 +107,6 @@
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown-card" + item.album_item_id' class='dropdown-content'>
                             <li><a href="#!" v-on:click="deletePage(item, index);"><?php echo lang('delete'); ?></a></li>
-                            <li v-if="item.file && item.file.file_front_path"><a :href="base_url(item.file.file_front_path)"
-                                    target="_blank"><?php echo lang('view_in_site'); ?></a></li>
                         </ul>
                     </div>
                     <div class="card-content">
@@ -134,14 +129,14 @@
                             @{{getcontentText(item.description)}}
                         </span>
                         <ul>
-                            <li><b>Fecha de publicacion:</b> <br>
+                            <li><b><?php echo lang('publish_date'); ?>:</b> <br>
                                 @{{item.date_publish ? item.date_publish : item.date_create}}</li>
-                            <li><b>Estado:</b>
+                            <li><b><?php echo lang('status'); ?>:</b>
                                 <span v-if="item.status == 1">
-                                    Publicado
+                                    <?php echo lang('published'); ?>
                                 </span>
                                 <span v-else>
-                                    Borrador
+                                    <?php echo lang('draft'); ?>
                                 </span>
                             </li>
                         </ul>
@@ -150,8 +145,10 @@
             </div>
         </div>
     </div>
-    <div class="container" v-if="!loader && album.items.length == 0" v-cloak>
-        <h4>No hay Items</h4>
+    <div class="container center" v-if="!loader && album.items.length == 0" v-cloak>
+        <i class="material-icons large grey-text">perm_media</i>
+        <p class="page-header"><?php echo lang('albums_items_empty'); ?></p>
+        <a :href="base_url('admin/gallery/editar/' + album.album_id)" class="btn"><?php echo lang('albums_items_empty_cta'); ?></a>
     </div>
 </div>
 

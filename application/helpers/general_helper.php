@@ -956,14 +956,22 @@ function normalize_embed_arg($arg)
 }
 
 /**
- * Exact name first; then published rows whose normalized name matches
- * (events seed has a leading space: " ¡Únete...").
+ * Numeric id first (published only); then exact name; then published
+ * rows whose normalized name matches (events seed has a leading space).
+ * If a record is named "12" and id 12 exists, the id wins.
  */
 function find_embed_record($model, $field, $name)
 {
     $name = normalize_embed_arg($name);
     if ($name === '' || !is_object($model) || $field === '') {
         return false;
+    }
+    $pk = $model->primaryKey;
+    if (ctype_digit($name)) {
+        $found = $model->find_with(array($pk => (int) $name, 'status' => 1));
+        if ($found) {
+            return $found;
+        }
     }
     $found = $model->find_with(array($field => $name, 'status' => 1));
     if ($found) {
@@ -973,7 +981,6 @@ function find_embed_record($model, $field, $name)
     if (!$list) {
         return false;
     }
-    $pk = $model->primaryKey;
     foreach ($list as $row) {
         if (!isset($row->{$field})) {
             continue;

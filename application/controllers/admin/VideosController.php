@@ -4,9 +4,29 @@
 
 class VideosController extends MY_Controller
 {
+
+    public $routes_permisions = [
+        "index" => [
+            "patern" => '/admin\/videos/',
+            "required_permissions" => ["SELECT_VIDEOS"],
+            "conditions" => [],
+        ],
+        "nuevo" => [
+            "patern" => '/admin\/videos\/(new|nuevo)/',
+            "required_permissions" => ["CREATE_VIDEO"],
+            "conditions" => [],
+        ],
+        "editar" => [
+            "patern" => '/admin\/videos\/(edit|editar)\/(\d+)/',
+            "required_permissions" => ["UPDATE_VIDEO"],
+            "conditions" => [],
+        ],
+    ];
+
     public function __construct()
     {
         parent::__construct();
+        $this->check_permisions();
         $this->load->model('Admin/VideoModel', 'Video');
     }
 
@@ -37,7 +57,6 @@ class VideosController extends MY_Controller
         $this->load->helper('array');
         $this->Video->find($video_id);
         $videoRaw = is_object($this->Video) ? (array) $this->Video : [];
-        // Mapear claves del modelo/DB a las usadas en el formulario
         $video = [
             'id' => element('video_id', $videoRaw, ''),
             'nombre' => element('nam', $videoRaw, ''),
@@ -93,9 +112,7 @@ class VideosController extends MY_Controller
         $this->load->library('menu');
         $this->menu->char = "'";
         $this->menu->set_ul_properties(['class' => 'dropdown-content', 'role' => 'menu', 'id' => 'options']);
-        $links = [
-            lang('videos_view') => ['target' => '_blank', 'href' => base_url('videos/ver/' . $video_id)],
-        ];
+        $links = [];
         if (5 > $this->session->userdata('level')) {
             $links[lang('edit')] = ['href' => base_url('admin/videos/editar/' . $video_id)];
         }

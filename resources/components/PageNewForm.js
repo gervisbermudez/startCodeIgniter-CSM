@@ -235,6 +235,12 @@ var PageNewForm = new Vue({
 
       return fullPath;
     },
+    visibleEmbedTabs: function () {
+      var self = this;
+      return this.embedProductTabs.filter(function (tab) {
+        return self.embedCanShow(tab.key);
+      });
+    },
   },
   watch: {
     content: function (value) {
@@ -342,6 +348,28 @@ var PageNewForm = new Vue({
         return item.nam || item.nombre || item.name || "";
       }
       return item.name || "";
+    },
+    embedItemInsertValue: function (item, listKey) {
+      if (!item) {
+        return "";
+      }
+      if (listKey === "album" && item.album_id) {
+        return String(item.album_id);
+      }
+      if (listKey === "video" && item.video_id) {
+        return String(item.video_id);
+      }
+      return this.embedItemName(item, listKey);
+    },
+    embedCanShow: function (listKey) {
+      var perms = window.PAGE_EMBED_PERMS || {};
+      if (listKey === "album") {
+        return perms.gallery !== false;
+      }
+      if (listKey === "video") {
+        return perms.videos !== false;
+      }
+      return true;
     },
     embedItemKey: function (tab, item, index) {
       if (!item) {
@@ -451,6 +479,9 @@ var PageNewForm = new Vue({
     },
     loadEmbedTab: function (listKey) {
       if (!listKey || !this.embedEndpoints[listKey]) {
+        return;
+      }
+      if (!this.embedCanShow(listKey)) {
         return;
       }
       if (this.embedLoading[listKey]) {

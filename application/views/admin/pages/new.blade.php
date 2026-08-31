@@ -307,12 +307,16 @@
                 <li class="tab">
                     <a href="#page-embed-menu" @click="onEmbedTabClick('menu')"><?php echo lang('pages_embed_menu'); ?></a>
                 </li>
+                @if(has_permisions('SELECT_GALLERY'))
                 <li class="tab">
                     <a href="#page-embed-album" @click="onEmbedTabClick('album')"><?php echo lang('pages_embed_album'); ?></a>
                 </li>
+                @endif
+                @if(has_permisions('SELECT_VIDEOS'))
                 <li class="tab">
                     <a href="#page-embed-video" @click="onEmbedTabClick('video')"><?php echo lang('pages_embed_video'); ?></a>
                 </li>
+                @endif
                 <li class="tab">
                     <a href="#page-embed-event" @click="onEmbedTabClick('event')"><?php echo lang('pages_embed_event'); ?></a>
                 </li>
@@ -320,7 +324,7 @@
                     <a href="#page-embed-file" @click="onEmbedTabClick('file')"><?php echo lang('pages_embed_file'); ?></a>
                 </li>
             </ul>
-            <div :id="'page-embed-' + tab.key" class="page-embed-pane" v-for="tab in embedProductTabs" :key="tab.key">
+            <div :id="'page-embed-' + tab.key" class="page-embed-pane" v-for="tab in visibleEmbedTabs" :key="tab.key">
                 <div class="page-embed-empty" v-if="embedLoading[tab.key]">
                     <div class="preloader-wrapper small active">
                         <div class="spinner-layer">
@@ -334,8 +338,8 @@
                     <li class="collection-item" tabindex="0"
                         v-for="(item, index) in embedLists[tab.key]"
                         :key="embedItemKey(tab, item, index)"
-                        @click="insertEmbedToken(tab.helper, embedItemName(item, tab.key))"
-                        @keydown.enter.prevent="insertEmbedToken(tab.helper, embedItemName(item, tab.key))">
+                        @click="insertEmbedToken(tab.helper, embedItemInsertValue(item, tab.key))"
+                        @keydown.enter.prevent="insertEmbedToken(tab.helper, embedItemInsertValue(item, tab.key))">
                         @{{ embedItemName(item, tab.key) }}
                     </li>
                 </ul>
@@ -385,6 +389,10 @@ window.ADMIN_LANG = Object.assign({}, window.ADMIN_LANG || {}, {
   pages_publish: <?php echo json_encode(lang('pages_publish')); ?>,
   pages_saving: <?php echo json_encode(lang('pages_saving')); ?>
 });
+window.PAGE_EMBED_PERMS = {
+  gallery: <?php echo has_permisions('SELECT_GALLERY') ? 'true' : 'false'; ?>,
+  videos: <?php echo has_permisions('SELECT_VIDEOS') ? 'true' : 'false'; ?>
+};
 </script>
 <script src="{{base_url('resources/js/validateForm.js')}}"></script>
 <script src="{{base_url('public/vendors/trumbowyg/trumbowyg.min.js')}}"></script>

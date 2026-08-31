@@ -44,9 +44,9 @@
                 <input type="text" id="youtubeid" name="youtubeid" required="required"
                     value="<?php echo element('youtubeid', $video, ''); ?>">
             </div>
-            <div class="input-field">
+            <div class="input-field hide">
                 <label for="paypal"><?= lang('videos_payment_info') ?>:</label>
-                <input type="text" id="paypal" name="paypal" required="required"
+                <input type="text" id="paypal" name="paypal"
                     value="<?php echo element('payinfo', $video, ''); ?>">
             </div>
                 <span id="preview" class="header grey-text text-darken-2 scrollspy"><?= lang('videos_preview') ?> <i
@@ -68,10 +68,10 @@
                         </div>
                     </div>
                 </div>
-                <input type="hidden" id="imagen" name="preview" :value="preview" />
+                <input type="hidden" id="imagen" name="preview" :value="preview" data-preview="<?php echo htmlspecialchars(element('preview', $video, ''), ENT_QUOTES, 'UTF-8'); ?>" />
             </div>
             <br>
-            <div class="input-field">
+            <div class="input-field hide">
                 <select name="categorias[]" multiple>
                     <option value="" disabled selected><?= lang('videos_select') ?></option>
                     <?php if ($categorias): ?>
