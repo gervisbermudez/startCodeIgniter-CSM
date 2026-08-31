@@ -68,6 +68,9 @@ class UsersController extends REST_Controller
      */
     public function index_get($user_id = null)
     {
+        if (!$this->require_permision('SELECT_USERS')) {
+            return;
+        }
         if ($user_id) {
             $result = $this->User->get_full_info($user_id);
             if ($result) {
@@ -144,6 +147,10 @@ class UsersController extends REST_Controller
      */
     public function index_post()
     {
+        $perm = $this->input->post('user_id') ? 'UPDATE_USER' : 'CREATE_USER';
+        if (!$this->require_permision($perm)) {
+            return;
+        }
         $this->load->library('FormValidator');
         $form = new FormValidator();
         $config = array(
@@ -221,6 +228,9 @@ class UsersController extends REST_Controller
      */
     public function index_delete($user_id = null)
     {
+        if (!$this->require_permision('DELETE_USER')) {
+            return;
+        }
         $user = new UserModel();
         $user->find($user_id);
         if ($user->delete()) {
@@ -233,6 +243,9 @@ class UsersController extends REST_Controller
 
     public function usergroups_get($usergroup_id = null)
     {
+        if (!$this->require_permision('SELECT_USERS')) {
+            return;
+        }
         $this->load->model('Admin/UsergroupModel');
         $usergroup = new UsergroupModel();
         if ($usergroup_id) {
@@ -261,6 +274,9 @@ class UsersController extends REST_Controller
      */
     public function usergroups_post()
     {
+        if (!$this->require_permision('UPDATE_USERS')) {
+            return;
+        }
         $this->load->library('FormValidator');
         $this->load->model('Admin/UsergroupModel');
 
@@ -317,6 +333,9 @@ class UsersController extends REST_Controller
 
     public function allpermissions_get()
     {
+        if (!$this->require_permision('UPDATE_USERS')) {
+            return;
+        }
         $this->load->model('Admin/PermissionsModel');
         $Permissions = new PermissionsModel();
         $result = $Permissions->all();
@@ -399,6 +418,12 @@ class UsersController extends REST_Controller
      */
     public function timeline_get($user_id = null)
     {
+        $session_id = (int) userdata('user_id');
+        if ((int) $user_id !== $session_id) {
+            if (!$this->require_permision('SELECT_USERS')) {
+                return;
+            }
+        }
         $user = new UserModel();
         if ($user_id) {
             $result = $user->find($user_id);
@@ -415,6 +440,12 @@ class UsersController extends REST_Controller
     public function avatar_post()
     {
         $user_id = $this->input->post('user_id');
+        $session_id = (int) userdata('user_id');
+        if ((int) $user_id !== $session_id) {
+            if (!$this->require_permision('UPDATE_USER')) {
+                return;
+            }
+        }
         $avatar = $this->input->post('avatar');
         $user = new UserModel();
         $result = false;
@@ -433,32 +464,38 @@ class UsersController extends REST_Controller
     public function changePassword_post()
     {
         $user_id = $this->input->post('user_id');
+        $session_id = (int) userdata('user_id');
+        if ((int) $user_id !== $session_id) {
+            if (!$this->require_permision('UPDATE_USER')) {
+                return;
+            }
+        }
         $currentPassword = $this->input->post('currentPassword');
         $user = new UserModel();
         $result = false;
         $result_find = $user->find($user_id);
         if ($result_find) {
-            $this->load->model('Admin/LoginModModel');
+            $this->load->model('Admin/LoginModModel', 'LoginMod');
             $login_data = $this->LoginMod->isLoged($user->username, $currentPassword);
             if ($login_data) {
                 $result = $user->update_data(["user_id" => $user_id], ["password" => password_hash($this->input->post('password'), PASSWORD_DEFAULT)]);
                 if ($result) {
                     $response = array(
                         'code' => REST_Controller::HTTP_OK,
-                        'data' => $_POST,
+                        'data' => true,
                         'error_message' => "Password changed correctly",
                     );
                 } else {
                     $response = array(
                         'code' => REST_Controller::HTTP_BAD_REQUEST,
-                        'data' => $_POST,
+                        'data' => array(),
                         'error_message' => "An error has occurred",
                     );
                 }
             } else {
                 $response = array(
                     'code' => REST_Controller::HTTP_BAD_REQUEST,
-                    'data' => $_POST,
+                    'data' => array(),
                     'error_message' => "The current password is incorret",
                 );
             }

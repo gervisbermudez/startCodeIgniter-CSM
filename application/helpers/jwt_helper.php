@@ -31,37 +31,43 @@ class JWT
 	 */
 	public static function decode($jwt, $key = null, $verify = true)
 	{
+		if (!is_string($jwt) || $jwt === '' || $key === null || $key === '') {
+			return false;
+		}
 		$tks = explode('.', $jwt);
 		if (count($tks) != 3) {
-			//if you don't want to disclose more details
 			return false;
-
-			//throw new UnexpectedValueException('Wrong number of segments');
 		}
 		list($headb64, $bodyb64, $cryptob64) = $tks;
-		if (null === ($header = JWT::jsonDecode(JWT::urlsafeB64Decode($headb64)))) {
-			//if you don't want to disclose more details
+		try {
+			if (null === ($header = JWT::jsonDecode(JWT::urlsafeB64Decode($headb64)))) {
+				return false;
+			}
+			if (!is_object($header)) {
+				return false;
+			}
+			if (null === ($payload = JWT::jsonDecode(JWT::urlsafeB64Decode($bodyb64)))) {
+				return false;
+			}
+		} catch (Exception $e) {
 			return false;
-
-			//throw new UnexpectedValueException('Invalid segment encoding');
-		}
-		if (null === $payload = JWT::jsonDecode(JWT::urlsafeB64Decode($bodyb64))) {
-			//if you don't want to disclose more details
-			return false;
-
-			//throw new UnexpectedValueException('Invalid segment encoding');
 		}
 		$sig = JWT::urlsafeB64Decode($cryptob64);
+		if ($sig === false || !is_string($sig)) {
+			return false;
+		}
 		if ($verify) {
-			if (empty($header->alg)) {
-				//if you don't want to disclose more details
+			// Ignore $header->alg (including alg=none). Always verify HS256.
+			$expected = JWT::sign($headb64 . '.' . $bodyb64, $key, 'HS256');
+			if (!is_string($expected) || !hash_equals($expected, $sig)) {
 				return false;
-
-				//throw new DomainException('Empty algorithm');
 			}
-			if ($sig != JWT::sign("$headb64.$bodyb64", $key, $header->alg)) {
-				throw new UnexpectedValueException('Signature verification failed');
-			}
+		}
+		if (is_object($payload) && isset($payload->exp) && (int) $payload->exp < time()) {
+			return false;
+		}
+		if (is_object($payload) && isset($payload->nbf) && (int) $payload->nbf > time()) {
+			return false;
 		}
 		return $payload;
 	}
@@ -80,6 +86,10 @@ class JWT
 	 */
 	public static function encode($payload, $key, $algo = 'HS256')
 	{
+		if ($key === null || $key === '') {
+			return false;
+		}
+		$algo = 'HS256';
 		$header = array('typ' => 'JWT', 'alg' => $algo);
 
 		$segments = array();

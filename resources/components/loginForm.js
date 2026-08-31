@@ -35,7 +35,7 @@ var loginForm = new Vue({
             localStorage.removeItem("userdata");
             localStorage.setItem(
               "userdata",
-              JSON.stringify(response.userdata[0])
+              JSON.stringify({ username: self.username })
             );
           }
           window.location = self.redirect
@@ -69,12 +69,40 @@ var loginForm = new Vue({
         }
       }
     },
+    sanitizeRedirect(path) {
+      if (!path || path === true || path === "admin") {
+        return "";
+      }
+      try {
+        path = decodeURIComponent(path);
+      } catch (e) {
+        return "";
+      }
+      if (
+        path.indexOf("://") !== -1 ||
+        path.indexOf("//") === 0 ||
+        path.indexOf("\\") !== -1 ||
+        !/^admin(\/[-a-zA-Z0-9_\/]*)?$/.test(path)
+      ) {
+        return "";
+      }
+      return path;
+    },
     getRememberUserdata() {
-      let userdata = JSON.parse(localStorage.getItem("userdata"));
-      if (userdata) {
-        this.userdata = new User(userdata);
+      var stored = localStorage.getItem("userdata");
+      if (!stored) {
+        return;
+      }
+      try {
+        var userdata = JSON.parse(stored);
+      } catch (e) {
+        localStorage.removeItem("userdata");
+        return;
+      }
+      if (userdata && userdata.username) {
         this.username = userdata.username;
-        this.remember_user = !!userdata;
+        this.userdata = null;
+        this.remember_user = true;
       }
     },
   },
@@ -83,8 +111,7 @@ var loginForm = new Vue({
       console.log("mounted loginForm");
       this.loader = false;
       this.getRememberUserdata();
-      let redirectpath = this.getUrlParameter("redirect");
-      this.redirect = redirectpath == "admin" ? "" : redirectpath;
+      this.redirect = this.sanitizeRedirect(this.getUrlParameter("redirect"));
     });
   },
 });

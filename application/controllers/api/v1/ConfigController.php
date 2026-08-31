@@ -97,6 +97,10 @@ class ConfigController extends REST_Controller
      */
     public function index_post()
     {
+        $perm = $this->input->post('site_config_id') ? 'UPDATE_CONFIG' : 'CREATE_CONFIG';
+        if (!$this->require_permision($perm)) {
+            return;
+        }
 
         $configuration = new SiteConfigModel();
         $this->input->post('site_config_id') ? $configuration->find($this->input->post('site_config_id')) : false;
@@ -148,6 +152,9 @@ class ConfigController extends REST_Controller
      */
     public function backup_database_get()
     {
+        if (!$this->require_permision('UPDATE_CONFIG')) {
+            return;
+        }
         try {
             // Load the DB utility class
             $this->load->dbutil();
@@ -242,6 +249,9 @@ class ConfigController extends REST_Controller
 
     public function themes_get()
     {
+        if (!$this->require_permision('SELECT_CONFIG')) {
+            return;
+        }
         $this->load->helper('directory');
         $map = directory_map('./themes/');
 
@@ -270,6 +280,9 @@ class ConfigController extends REST_Controller
 
     public function check_update_get()
     {
+        if (!$this->require_permision('SELECT_CONFIG')) {
+            return;
+        }
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'https://raw.githubusercontent.com/gervisbermudez/startCodeIgniter-CSM/master/startcms_info.json');
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -314,6 +327,9 @@ class ConfigController extends REST_Controller
 
     public function download_update_get()
     {
+        if (!$this->require_permision('UPDATE_CONFIG')) {
+            return;
+        }
         $filename = "./temp/startCodeIgniter-CSM-master-" . date("Ymd") . ".zip";
         $result = file_put_contents($filename, fopen(ADMIN_GIT_MASTERZIP_URL, 'r'));
         if ($result && file_exists($filename)) {
@@ -337,6 +353,9 @@ class ConfigController extends REST_Controller
 
     public function download_install_theme_post()
     {
+        if (!$this->require_permision('UPDATE_CONFIG')) {
+            return;
+        }
         $response = array(
             'data' => ["message" => "Unnable to download the package"],
             "code" => REST_Controller::HTTP_BAD_REQUEST,
@@ -372,6 +391,9 @@ class ConfigController extends REST_Controller
 
     public function install_downloaded_update_get()
     {
+        if (!$this->require_permision('UPDATE_CONFIG')) {
+            return;
+        }
         /* $filename = $this->input->get('packagename');
     if (file_exists($filename)) {
     $ignorefiles = ['.', '..', 'config.php', 'database.php'];
@@ -396,6 +418,9 @@ class ConfigController extends REST_Controller
 
     public function systemlogger_get($logger_id = null)
     {
+        if (!$this->require_permision('SELECT_CONFIG')) {
+            return;
+        }
         $this->load->model('Admin/LoggerModel');
 
         $Logger = new LoggerModel();
@@ -415,6 +440,9 @@ class ConfigController extends REST_Controller
 
     public function apilogger_get($api_log_id = null)
     {
+        if (!$this->require_permision('SELECT_CONFIG')) {
+            return;
+        }
         $this->load->model('Admin/ApiLogsModel');
 
         $Api_logs = new ApiLogsModel();
@@ -434,6 +462,9 @@ class ConfigController extends REST_Controller
 
     public function usertrackinglogger_get($user_tracking_id = null)
     {
+        if (!$this->require_permision('SELECT_CONFIG')) {
+            return;
+        }
         $this->load->model('Admin/UserTrackingModel');
 
         $User_tracking = new UserTrackingModel();
@@ -453,6 +484,9 @@ class ConfigController extends REST_Controller
 
     public function export_data_get()
     {
+        if (!$this->require_permision('UPDATE_CONFIG')) {
+            return;
+        }
         $data = [];
 
         //Pages
@@ -468,6 +502,9 @@ class ConfigController extends REST_Controller
 
     public function system_info_get()
     {
+        if (!$this->require_permision('SELECT_CONFIG')) {
+            return;
+        }
         $this->load->helper('number');
         
         $info = [
@@ -492,6 +529,9 @@ class ConfigController extends REST_Controller
      */
     public function cleanup_logs_post()
     {
+        if (!$this->require_permision('UPDATE_CONFIG')) {
+            return;
+        }
         // Check if auto cleanup is enabled
         $auto_cleanup = config('AUTO_CLEANUP_ENABLED');
         if ($auto_cleanup != '1' && $auto_cleanup != 'Si' && $auto_cleanup != 'On') {
@@ -556,6 +596,9 @@ class ConfigController extends REST_Controller
 
     public function generate_export_file_post()
     {
+        if (!$this->require_permision('UPDATE_CONFIG')) {
+            return;
+        }
         $exportData = $this->input->post("exportData");
 
         function removeUser($item)
@@ -608,6 +651,9 @@ class ConfigController extends REST_Controller
 
     public function import_file_post()
     {
+        if (!$this->require_permision('UPDATE_CONFIG')) {
+            return;
+        }
         $exportData = json_decode($this->input->post('exportData'));
 
         if (!move_uploaded_file($_FILES["import_file"]["tmp_name"], "./uploads/" . $_FILES["import_file"]["name"])) {
