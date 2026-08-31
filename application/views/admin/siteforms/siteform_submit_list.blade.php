@@ -4,12 +4,26 @@
 @endsection
 @section('content')
 <div id="root">
-    <router-view :endpoint="endpoint" :module="'api/v1/siteforms/submit/'" :colums="colums" :index_data="index_data"
-        :pagination="true" v-on:delete="deleteItem" :options="options"></router-view>
+    <router-view
+        ref="view"
+        :endpoint="endpoint"
+        :colums="colums"
+        :index_data="index_data"
+        :pagination="true"
+        :client_search="true"
+        :options="options"
+        :show_fab="false"
+        :query_params="queryParams"
+        :empty_title="emptyTitle"
+        :confirm_title="confirmTitle"
+        :confirm_body="confirmBody"
+        v-on:delete="deleteItem"
+        v-on:archive="archiveItem"></router-view>
 </div>
 @endsection
 
 @section('footer_includes')
+@include('admin.siteforms.siteforms_i18n')
 @include('admin.components.data_table_component')
 @include('admin.components.form_site_details_component')
 <script src="{{base_url('resources/components/DataTableComponent.js?v=' . ADMIN_VERSION)}}"></script>

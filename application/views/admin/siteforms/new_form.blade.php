@@ -16,54 +16,50 @@
 			<preloader />
 		</div>
 		<div id="form" class="col s12" v-bind:class="{'m10': user_id}" v-cloak v-show="!loader">
-			<input type="hidden" name="id_form" value="">
-			<span class="header grey-text text-darken-2">Datos básicos <i
-					class="material-icons left">description</i></span>
+			<span class="header grey-text text-darken-2"><i class="material-icons left">description</i>{{ lang('siteforms_basic') }}</span>
 			<br>
 			<div class="input-field">
-				<label for="nombre">Nombre:</label>
+				<label for="nombre">{{ lang('siteforms_name') }}</label>
 				<input type="text" v-model="name" id="nombre" name="nombre_form" required="required" value="">
 			</div>
-			<br />
+			<p class="grey-text">{{ lang('siteforms_name_help') }}</p>
 			<div class="input-field">
 				<select name="tipo_form" v-model="template">
-					<option value="0" disabled>Selecciona</option>
+					<option value="" disabled>{{ lang('siteforms_select_template') }}</option>
 					<option v-for="template in templates" :key="template" :value="template">
 						@{{ template }}
 					</option>
 				</select>
-				<label>Template</label>
+				<label>{{ lang('siteforms_template') }}</label>
 			</div>
 			<div class="row">
 				<div class="col s12">
-					<p>
-						Form Properties
-					</p>
-					<ul class="collection">
-						<li class="collection-item" v-for="(propertie, index) in properties">
-							<div class="row">
-								<i class="material-icons" @click="removePropertie(properties, index)">remove_circle</i>
-								<input class="col s5" type="text" v-model="propertie.name">
-								<input class="col s5" type="text" v-model="propertie.value">
-							</div>
-						</li>
-						<li  class="collection-item">
-							<button class="btn waves-effect waves-light" name="action" @click="addPropertie(properties);">Add Propertie <i class="material-icons right">add_box</i></button>
-						</li>
-					</ul>
+					<a href="#!" class="btn-flat" @click.prevent="showAdvanced = !showAdvanced">{{ lang('siteforms_advanced') }}</a>
+					<div v-show="showAdvanced">
+						<p>{{ lang('siteforms_properties') }}</p>
+						<p class="grey-text">{{ lang('siteforms_properties_help') }}</p>
+						<ul class="collection">
+							<li class="collection-item" v-for="(propertie, index) in properties">
+								<div class="row">
+									<i class="material-icons" @click="removePropertie(properties, index)">remove_circle</i>
+									<input class="col s5" type="text" v-model="propertie.name" :placeholder="'{{ lang('siteforms_item_name') }}'">
+									<input class="col s5" type="text" v-model="propertie.value" :placeholder="'{{ lang('siteforms_option_value') }}'">
+								</div>
+							</li>
+							<li class="collection-item">
+								<button type="button" class="btn waves-effect waves-light" @click="addPropertie(properties);">{{ lang('siteforms_add_attribute') }} <i class="material-icons right">add_box</i></button>
+							</li>
+						</ul>
+					</div>
 				</div>
 			</div>
-			<br />
-			Campos del Formulario:
-			<br />
-			<br />
+			<p>{{ lang('siteforms_fields') }}</p>
 			<div>
-				<a href="#!" class="btn" v-on:click="addItem()">Campo <i class="material-icons right">add_box</i></a>
+				<a href="#!" class="btn" v-on:click="addItem()">{{ lang('siteforms_add_field') }} <i class="material-icons right">add_box</i></a>
 			</div>
 			<br />
 			<ol class="default vertical">
-				<li v-for="(item, index) in siteform_items" :key="index" :data-id="index" :data-name="item.item_name"
-					:data-menuitem="item">
+				<li v-for="(item, index) in siteform_items" :key="index" :data-id="index" :data-name="item.item_name">
 					<div class="collapsible expandable sorteable menuitem">
 						<div class="collapsible-header">
 							<i class="material-icons">navigate_next</i>
@@ -74,86 +70,58 @@
 						<div class="collapsible-body">
 							<div class="input-field">
 								<select name="type" v-model="item.item_type" @change="handlerSelect($event, item);">
-									<option v-for="(type, index) in items_types" :key="index" :value="type">
+									<option v-for="(type, typeIndex) in items_types" :key="typeIndex" :value="type">
 										@{{type | capitalize}}</option>
 								</select>
 							</div>
 							<div class="row" v-if="item.item_type == 'select'">
 								<div class="col s12">
-									<p>
-										Select Options
-									</p>
-									<div v-for="(propertie, index) in item.data" :key="index" v-if="propertie.name == 'select_options'">
+									<p>{{ lang('siteforms_select_options') }}</p>
+									<div v-for="(propertie, pIndex) in item.data" :key="pIndex" v-if="propertie.name == 'select_options'">
 										<div v-for="(val, i) in propertie['value']" :key="i">
 											<div class="row">
 												<i class="material-icons" @click="removePropertie(propertie['value'], i)">remove_circle</i>
-												<input class="col s5" type="text" v-model="val.name">
-												<input class="col s5" type="text" v-model="val.value">
+												<input class="col s5" type="text" v-model="val.name" placeholder="{{ lang('siteforms_option_label') }}">
+												<input class="col s5" type="text" v-model="val.value" placeholder="{{ lang('siteforms_option_value') }}">
 											</div>
 										</div>
-										<button class="btn waves-effect waves-light" name="action" @click="addPropertie(propertie['value']);">Add Propertie <i class="material-icons right">add_box</i></button>
+										<button type="button" class="btn waves-effect waves-light" @click="addPropertie(propertie['value']);">{{ lang('siteforms_add_option') }} <i class="material-icons right">add_box</i></button>
 									</div>
 								</div>
 							</div>
 							<div class="input-field">
-								<label class="active" for="'nombre-' + index">Nombre:</label>
-								<input type="text" v-model="item.item_name" :id="'nombre-' + index" required="required"
-									value="">
+								<label class="active" :for="'nombre-' + index">{{ lang('siteforms_item_name') }}</label>
+								<input type="text" v-model="item.item_name" :id="'nombre-' + index" required="required">
 							</div>
 							<div class="input-field">
-								<label class="active" for="'item_label' + index">Label:</label>
-								<input type="text" v-model="item.item_label" :id="'item_label' + index"
-									required="required" value="">
+								<label class="active" :for="'item_label' + index">{{ lang('siteforms_item_label') }}</label>
+								<input type="text" v-model="item.item_label" :id="'item_label' + index" required="required">
 							</div>
 							<div class="input-field">
-								<label class="active" for="'item_placeholder' + index">item_placeholder:</label>
-								<input type="text" v-model="item.item_placeholder" :id="'item_placeholder' + index"
-									required="required" value="">
+								<label class="active" :for="'item_placeholder' + index">{{ lang('siteforms_item_placeholder') }}</label>
+								<input type="text" v-model="item.item_placeholder" :id="'item_placeholder' + index">
 							</div>
 							<div class="input-field">
-								<label class="active" for="'item_title' + index">Title:</label>
-								<input type="text" v-model="item.item_title" :id="'item_title' + index"
-									required="required" value="">
+								<label class="active" :for="'item_title' + index">{{ lang('siteforms_item_title') }}</label>
+								<input type="text" v-model="item.item_title" :id="'item_title' + index">
 							</div>
 							<div class="input-field">
-								<label class="active" for="'item_class' + index">item_class:</label>
-								<input type="text" v-model="item.item_class" :id="'item_class' + index"
-									required="required" value="">
+								<label class="active" :for="'item_class' + index">{{ lang('siteforms_item_class') }}</label>
+								<input type="text" v-model="item.item_class" :id="'item_class' + index">
 							</div>
 							<div class="row">
 								<div class="col s12">
-									<p>
-										Item Properties
-									</p>
+									<p>{{ lang('siteforms_item_properties') }}</p>
 									<ul class="collection">
-										<li class="collection-item" v-for="(propertie, index) in item.properties">
+										<li class="collection-item" v-for="(propertie, propIndex) in item.properties">
 											<div class="row">
-												<i class="material-icons" @click="removePropertie(item.properties, index)">remove_circle</i>
+												<i class="material-icons" @click="removePropertie(item.properties, propIndex)">remove_circle</i>
 												<input class="col s5" type="text" v-model="propertie.name">
 												<input class="col s5" type="text" v-model="propertie.value">
 											</div>
 										</li>
-										<li  class="collection-item">
-											<button class="btn waves-effect waves-light" name="action" @click="addPropertie(item.properties);">Add Propertie <i class="material-icons right">add_box</i></button>
-										</li>
-									</ul>
-								</div>
-							</div>
-							<div class="row">
-								<div class="col s12">
-									<p>
-										Extra Data
-									</p>
-									<ul class="collection">
-										<li class="collection-item" v-for="(propertie, index) in item.data" v-if="propertie.name != 'select_options'">
-											<div class="row">
-												<i class="material-icons" @click="removePropertie(item.data, index)">remove_circle</i>
-												<input class="col s5" type="text" v-model="propertie.name">
-												<input class="col s5" type="text" v-model="propertie.value">
-											</div>
-										</li>
-										<li  class="collection-item">
-											<button class="btn waves-effect waves-light" name="action" @click="addPropertie(item.data);">Add Data <i class="material-icons right">add_box</i></button>
+										<li class="collection-item">
+											<button type="button" class="btn waves-effect waves-light" @click="addPropertie(item.properties);">{{ lang('siteforms_add_attribute') }} <i class="material-icons right">add_box</i></button>
 										</li>
 									</ul>
 								</div>
@@ -163,8 +131,7 @@
 				</li>
 			</ol>
 			<br>
-
-			Activar Site Form
+			{{ lang('siteforms_activate') }}
 			<div class="input-field">
 				<div class="switch">
 					<label>
@@ -175,27 +142,25 @@
 					</label>
 				</div>
 			</div>
-			<br><br>
+			<p v-if="!btnEnable" class="grey-text">{{ lang('siteforms_save_hint') }}</p>
 			<div class="input-field" id="buttons">
-				<a href="<?php echo base_url('admin/categories/'); ?>" class="btn-flat"><?php echo lang('cancel'); ?></a>
-				<button type="submit" class="btn btn-primary" @click="save()" :class="{disabled: !btnEnable}">
-					<span><i class="material-icons right">edit</i> Guardar</span>
+				<a href="<?php echo base_url('admin/siteforms'); ?>" class="btn-flat"><?php echo lang('cancel'); ?></a>
+				<button type="button" class="btn btn-primary" @click="save()" :class="{disabled: !btnEnable}" :disabled="!btnEnable">
+					<span><i class="material-icons right">save</i> <?php echo lang('save'); ?></span>
 				</button>
 			</div>
 		</div>
 		<div class="col s12" v-bind:class="{'m2': user_id}" v-cloak v-if="user_id" v-show="!loader">
-			<span class="header grey-text text-darken-2">Adicional <i class="material-icons left">description</i></span>
+			<span class="header grey-text text-darken-2"><i class="material-icons left">description</i>{{ lang('siteforms_additional') }}</span>
 			<p>
-				<b>Creado por</b>:
+				<b>{{ lang('siteforms_created_by') }}</b>:
 				<user-info :user="user" />
 			</p>
 			<p>
-				<b>Creado</b>: <br>
+				<b>{{ lang('siteforms_created') }}</b>: <br>
 				<span>@{{date_create}}</span> <br><br>
-				<b>Modificado</b>: <br>
-				<span>@{{date_update}}</span> <br><br>
-				<b><?php echo lang('published'); ?></b>: <br>
-				<span>@{{date_publish}}</span>
+				<b>{{ lang('siteforms_updated') }}</b>: <br>
+				<span>@{{date_update}}</span>
 			</p>
 		</div>
 	</div>
@@ -207,6 +172,7 @@
 @endsection
 
 @section('footer_includes')
+@include('admin.siteforms.siteforms_i18n')
 <script src="{{base_url('resources/components/SiteFormNewForm.js?v=' . ADMIN_VERSION)}}"></script>
 <script src="{{base_url('public/js/jquery-sortable.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

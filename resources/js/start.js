@@ -253,6 +253,10 @@ function getFuncName() {
   return getFuncName.caller.name;
 }
 
+if (window.M && M.Dropdown && M.Dropdown.defaults) {
+  M.Dropdown.defaults.constrainWidth = false;
+}
+
 var mixins = {
   data() {
     return {
@@ -305,7 +309,7 @@ var mixins = {
       }
     },
     onNavbarSearch: function () {
-      if (!this.pagination && !this.serverPagination) {
+      if (this.client_search || (!this.pagination && !this.serverPagination)) {
         return;
       }
       clearTimeout(this._searchTimer);
@@ -317,20 +321,37 @@ var mixins = {
         this.getData(1);
       }
     },
-    searchInObject(object, strSearchTerm) {
-      // Función para buscar un término dentro de un objeto
+    searchInObject: function (object, strSearchTerm, depth) {
+      if (object === null || typeof object === "undefined") {
+        return false;
+      }
+      if (typeof depth === "undefined") {
+        depth = 0;
+      }
+      if (depth > 3) {
+        return false;
+      }
+      var valueType = typeof object;
+      if (valueType === "string" || valueType === "number" || valueType === "boolean") {
+        return String(object).toLowerCase().indexOf(strSearchTerm) !== -1;
+      }
+      if (valueType !== "object") {
+        return false;
+      }
+      if (typeof User === "function" && object instanceof User) {
+        return false;
+      }
       var keys = Object.keys(object);
-      var result = false;
       for (var i = 0; i < keys.length; i++) {
-        if (typeof object[keys[i]] == "string") {
-          item_val = object[keys[i]];
-          result = item_val.toLowerCase().indexOf(strSearchTerm) != -1;
-          if (result) {
-            break;
-          }
+        var key = keys[i];
+        if (key === "user" || typeof object[key] === "function") {
+          continue;
+        }
+        if (this.searchInObject(object[key], strSearchTerm, depth + 1)) {
+          return true;
         }
       }
-      return result;
+      return false;
     },
     getFullFileName(file) {
       // Función para obtener el nombre completo de un archivo
@@ -543,7 +564,7 @@ var mixins = {
       });
       query.page = page || this.currentPage || 1;
       query.per_page = 25;
-      if (this.filter) {
+      if (this.filter && !this.client_search) {
         query.q = this.filter;
       }
       this.currentPage = parseInt(query.page, 10) || 1;
@@ -683,6 +704,9 @@ var mixins = {
       }
       return key;
     },
+    lang: function (key) {
+      return this.t(key);
+    },
     toast: function (keyOrHtml) {
       var html = this.t(keyOrHtml);
       M.toast({ html: html });
@@ -699,7 +723,7 @@ var mixins = {
         console.error(xhr);
       }
     },
-    reinitPlugin: function (selector, Plugin) {
+    reinitPlugin: function (selector, Plugin, options) {
       if (!window.M || !Plugin) {
         return;
       }
@@ -711,7 +735,7 @@ var mixins = {
         }
       }
       if (els.length) {
-        Plugin.init(els, {});
+        Plugin.init(els, options || {});
       }
     },
     initPlugins: function () {
@@ -719,7 +743,7 @@ var mixins = {
       this.$nextTick(function () {
         self.reinitPlugin(".collapsible:not(#slide-out)", M.Collapsible);
         self.reinitPlugin(".tooltipped", M.Tooltip);
-        self.reinitPlugin(".dropdown-trigger", M.Dropdown);
+        self.reinitPlugin(".dropdown-trigger", M.Dropdown, { constrainWidth: false });
         self.reinitPlugin(".modal", M.Modal);
         if (M.Materialbox) {
           self.reinitPlugin(".materialboxed", M.Materialbox);
@@ -730,7 +754,7 @@ var mixins = {
   watch: {
     filter: function () {
       var self = this;
-      if (!this.pagination && !this.serverPagination) {
+      if (this.client_search || (!this.pagination && !this.serverPagination)) {
         return;
       }
       clearTimeout(this._searchTimer);

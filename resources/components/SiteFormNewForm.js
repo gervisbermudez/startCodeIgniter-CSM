@@ -3,6 +3,7 @@ var SiteFormNewForm = new Vue({
   data: {
     debug: DEBUGMODE,
     loader: true,
+    showAdvanced: false,
     editMode: false,
     siteform_id: null,
     form: {},

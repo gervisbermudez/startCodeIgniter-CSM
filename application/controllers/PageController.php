@@ -252,111 +252,168 @@ class PageController extends Base_Controller
 
     public function formsubmit()
     {
-        $siteform_id = $this->input->post('form_reference');
-        $this->load->model('Admin/SiteFormModel');
-        $siteform = new SiteFormModel();
-        $result = $siteform->where(['siteform_id' => $siteform_id]);
-        if ($result) {
-            $siteforms = $this->session->userdata('siteforms');
-            if ($siteforms && isset($siteforms[$result->first()->name])) {
-                $submited_form = $siteforms[$result->first()->name];
-                $date = new DateTime();
-                if (isset($submited_form['timestamp'])) {
-                    $datetime2 = DateTime::createFromFormat('Y-m-d H:i:s', $submited_form['timestamp']);
-                    $interval = $date->diff($datetime2);
-                    if ($interval->format('%I') >= 3) {
-                        $this->process_form_submit();
-                    }
-                } else {
-                    $this->process_form_submit();
-                }
-                $submited = [$result->first()->name => ['submited' => $submited_form['submited'] + 1, "timestamp" => $date->format('Y-m-d H:i:s')]];
-                $this->session->set_userdata('siteforms', $submited);
-                $data['title'] = config("SITE_TITLE") . " - Submited Form";
-                $data['layout'] = 'site';
-                $data['template'] = 'templates.default';
-                $data['page'] = (object) ["title" => lang('form_submited_title'), "subtitle" => "", "content" => lang("form_submited_message")];
-                echo $this->themeController->render($data, '');
-            }
-        } else {
+        $form = $this->resolve_posted_siteform();
+        if (!$form) {
             redirect("/");
+            return;
         }
+
+        if ($this->is_form_cooldown($form->name)) {
+            $data['title'] = config("SITE_TITLE") . " - " . lang('form_wait_title');
+            $data['layout'] = 'site';
+            $data['template'] = 'templates.default';
+            $data['page'] = (object) array(
+                "title" => lang('form_wait_title'),
+                "subtitle" => "",
+                "content" => lang('siteforms_wait'),
+            );
+            echo $this->themeController->render($data, '');
+            return;
+        }
+
+        $this->process_form_submit($form);
+        $this->merge_form_session($form->name);
+
+        $data['title'] = config("SITE_TITLE") . " - Submited Form";
+        $data['layout'] = 'site';
+        $data['template'] = 'templates.default';
+        $data['page'] = (object) array(
+            "title" => lang('form_submited_title'),
+            "subtitle" => "",
+            "content" => lang("form_submited_message"),
+        );
+        echo $this->themeController->render($data, '');
     }
 
     public function formajaxsubmit()
     {
         $this->lang->load('rest_lang', 'english');
-
         header('Content-Type: application/json');
 
-        $siteform_id = $this->input->post('form_reference');
-        $this->load->model('Admin/SiteFormModel');
-        $siteform = new SiteFormModel();
-        $result = $siteform->where(['siteform_id' => $siteform_id]);
-        if ($result) {
-            $siteforms = $this->session->userdata('siteforms');
-            if ($siteforms && isset($siteforms[$result->first()->name])) {
-                $submited_form = $siteforms[$result->first()->name];
-                $date = new DateTime();
-                if (isset($submited_form['timestamp'])) {
-                    $datetime2 = DateTime::createFromFormat('Y-m-d H:i:s', $submited_form['timestamp']);
-                    $interval = $date->diff($datetime2);
-                    if ($interval->format('%I') >= 3) {
-                        $this->process_form_submit();
-                    }
-                } else {
-                    $this->process_form_submit();
-                }
-                $submited = [$result->first()->name => ['submited' => $submited_form['submited'] + 1, "timestamp" => $date->format('Y-m-d H:i:s')]];
-                $this->session->set_userdata('siteforms', $submited);
-                $response = array(
-                    'code' => 200,
-                    'data' => [],
-                    "error_message" => '',
-                    'requets_data' => $_POST,
-                );
-
-                $this->output->set_status_header(200);
-
-                echo json_encode($response);
-                return;
-            }
+        $form = $this->resolve_posted_siteform();
+        if (!$form) {
+            $this->output->set_status_header(400);
+            echo json_encode(array(
+                'code' => 400,
+                'data' => array(),
+                "error_message" => lang('unexpected_error'),
+                'requets_data' => $_POST,
+            ));
+            return;
         }
 
-        // bad request
-        $response = array(
-            'code' => 400,
-            'data' => [],
-            "error_message" => lang('unexpected_error'),
-            'requets_data' => $_POST,
-        );
+        if ($this->is_form_cooldown($form->name)) {
+            $this->output->set_status_header(429);
+            echo json_encode(array(
+                'code' => 429,
+                'data' => array(),
+                "error_message" => lang('siteforms_wait'),
+            ));
+            return;
+        }
 
-        $this->output->set_status_header(400);
+        $this->process_form_submit($form);
+        $this->merge_form_session($form->name);
 
-        echo json_encode($response);
-
+        $this->output->set_status_header(200);
+        echo json_encode(array(
+            'code' => 200,
+            'data' => array(),
+            "error_message" => '',
+        ));
     }
 
-    private function process_form_submit()
+    /**
+     * @return object|null
+     */
+    private function resolve_posted_siteform()
     {
-        $this->load->model('Admin/SiteFormSubmitModel');
+        $siteform_id = $this->input->post('form_reference');
+        if (!$siteform_id) {
+            return null;
+        }
         $this->load->model('Admin/SiteFormModel');
+        $siteform = new SiteFormModel();
+        if (!$siteform->find($siteform_id)) {
+            return null;
+        }
+        return $siteform;
+    }
+
+    /**
+     * @param string $formName
+     * @return bool
+     */
+    private function is_form_cooldown($formName)
+    {
+        $siteforms = $this->session->userdata('siteforms');
+        if (!is_array($siteforms) || !isset($siteforms[$formName]) || empty($siteforms[$formName]['timestamp'])) {
+            return false;
+        }
+        $last = DateTime::createFromFormat('Y-m-d H:i:s', $siteforms[$formName]['timestamp']);
+        if (!$last) {
+            return false;
+        }
+        $interval = (new DateTime())->diff($last);
+        $minutes = (int) $interval->i + ((int) $interval->h * 60) + ((int) $interval->days * 24 * 60);
+        return $minutes < 3;
+    }
+
+    /**
+     * @param string $formName
+     * @return void
+     */
+    private function merge_form_session($formName)
+    {
+        $siteforms = $this->session->userdata('siteforms');
+        if (!is_array($siteforms)) {
+            $siteforms = array();
+        }
+        $prev = isset($siteforms[$formName]['submited']) ? (int) $siteforms[$formName]['submited'] : 0;
+        $siteforms[$formName] = array(
+            'submited' => $prev + 1,
+            'timestamp' => date('Y-m-d H:i:s'),
+        );
+        $this->session->set_userdata('siteforms', $siteforms);
+    }
+
+    /**
+     * @param object $siteform
+     * @return mixed
+     */
+    private function process_form_submit($siteform)
+    {
         $form_reference = $this->input->post('form_reference');
+        $this->load->model('Admin/SiteFormSubmitModel');
         $siteFormSubmit = new SiteFormSubmitModel();
         $siteFormSubmit->siteform_id = $form_reference;
         $siteFormSubmit->user_tracking_id = userdata('user_tracking_id');
         $siteFormSubmit->date_create = date("Y-m-d H:i:s");
-        $siteFormSubmit->date_create = date("Y-m-d H:i:s");
-
-        unset($_POST['form_reference']);
         $siteFormSubmit->status = 1;
-        $siteFormSubmit->siteform_submit_data = $_POST;
+
+        $allowed = array();
+        if (!empty($siteform->siteform_items)) {
+            foreach ($siteform->siteform_items as $item) {
+                if (isset($item->item_name) && $item->item_name !== '') {
+                    $allowed[$item->item_name] = true;
+                }
+            }
+        }
+
+        $data = array();
+        foreach ($_POST as $key => $value) {
+            if ($key === 'form_reference') {
+                continue;
+            }
+            if (isset($allowed[$key])) {
+                $data[$key] = $value;
+            }
+        }
+        $siteFormSubmit->siteform_submit_data = $data;
 
         $result = $siteFormSubmit->save();
 
-        $siteform = new SiteFormModel();
-        $found = $siteform->find($form_reference);
-        if ($found && siteform_should_notify($siteform)) {
+        if (siteform_should_notify($siteform)) {
             $form_label = $siteform->name ? $siteform->name : $form_reference;
             set_notification(
                 lang('notification_form_submit_title'),

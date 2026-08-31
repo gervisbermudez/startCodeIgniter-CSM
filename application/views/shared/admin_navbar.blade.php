@@ -46,8 +46,9 @@ if (isset($page)) {
 }
 
 // Detectar formulario en la página
-$has_form = isset($siteform) && $siteform;
-$form_name = $has_form ? (isset($siteform->form_name) ? $siteform->form_name : (isset($siteform->name) ? $siteform->name : null)) : null;
+$has_form = isset($siteform) && $siteform && isset($siteform->siteform_id);
+$form_name = $has_form ? (isset($siteform->name) ? $siteform->name : (isset($siteform->form_name) ? $siteform->form_name : null)) : null;
+$form_id = $has_form ? $siteform->siteform_id : null;
 $form_notify = true;
 if ($has_form && isset($siteform->properties)) {
     $form_props = is_string($siteform->properties) ? json_decode($siteform->properties) : $siteform->properties;
@@ -237,32 +238,25 @@ if ($has_form && isset($siteform->properties)) {
             <div class="scms-adminbar-item dropdown-trigger" data-target="scms-form-dropdown">
                 <a href="#!" class="scms-adminbar-link scms-adminbar-highlight">
                     <i class="material-icons scms-adminbar-icon">assignment</i>
-                    <span class="scms-adminbar-text scms-hide-on-small"><?php echo $form_name; ?></span>
+                    <span class="scms-adminbar-text scms-hide-on-small"><?php echo htmlspecialchars($form_name, ENT_QUOTES, 'UTF-8'); ?></span>
                     <i class="material-icons scms-adminbar-icon scms-adminbar-arrow">arrow_drop_down</i>
                 </a>
             </div>
             
             <ul id="scms-form-dropdown" class="dropdown-content scms-adminbar-dropdown">
-                <li class="scms-dropdown-header">Formulario: <?php echo $form_name; ?></li>
+                <li class="scms-dropdown-header">{{ lang('siteforms_adminbar') }}: <?php echo htmlspecialchars($form_name, ENT_QUOTES, 'UTF-8'); ?></li>
                 <li class="divider scms-adminbar-divider"></li>
-                <li><a href="{{ base_url('admin/siteforms/data?form=' . urlencode($form_name)) }}"><i class="material-icons scms-adminbar-icon">inbox</i>Ver Envíos</a></li>
-                <li><a href="{{ base_url('admin/siteforms/edit/' . urlencode($form_name)) }}"><i class="material-icons scms-adminbar-icon">edit</i>Editar Formulario</a></li>
-                <li><a href="#!" onclick="scmsAdminBar.exportFormData('<?php echo $form_name; ?>')"><i class="material-icons scms-adminbar-icon">download</i>Exportar Datos</a></li>
+                <li><a href="{{ base_url('admin/siteforms/submit/?form=' . $form_id) }}"><i class="material-icons scms-adminbar-icon">inbox</i>{{ lang('siteforms_adminbar_submissions') }}</a></li>
+                @if(has_permisions('UPDATE_SITEFORM'))
+                <li><a href="{{ base_url('admin/siteforms/edit/' . $form_id) }}"><i class="material-icons scms-adminbar-icon">edit</i>{{ lang('siteforms_adminbar_edit') }}</a></li>
+                @endif
+                <li><a href="{{ base_url('admin/siteforms/export/' . $form_id) }}"><i class="material-icons scms-adminbar-icon">download</i>{{ lang('siteforms_adminbar_export') }}</a></li>
                 <li class="divider scms-adminbar-divider"></li>
                 <li class="scms-toggle-item">
                     <label class="scms-toggle-label">
-                        <span><i class="material-icons scms-adminbar-icon">notifications_active</i>Notificar</span>
-                        <div class="scms-toggle-switch" data-form-name="<?php echo htmlspecialchars($form_name, ENT_QUOTES, 'UTF-8'); ?>" data-action="toggle-notifications">
+                        <span><i class="material-icons scms-adminbar-icon">notifications_active</i>{{ lang('notifications_bell') }}</span>
+                        <div class="scms-toggle-switch" data-form-name="<?php echo htmlspecialchars((string) $form_name, ENT_QUOTES, 'UTF-8'); ?>" data-action="toggle-notifications">
                             <input type="checkbox" <?php echo $form_notify ? 'checked' : ''; ?>>
-                            <span class="scms-toggle-slider"></span>
-                        </div>
-                    </label>
-                </li>
-                <li class="scms-toggle-item">
-                    <label class="scms-toggle-label">
-                        <span><i class="material-icons scms-adminbar-icon">shield</i>CAPTCHA</span>
-                        <div class="scms-toggle-switch" data-form-name="<?php echo $form_name; ?>" data-action="toggle-captcha">
-                            <input type="checkbox">
                             <span class="scms-toggle-slider"></span>
                         </div>
                     </label>

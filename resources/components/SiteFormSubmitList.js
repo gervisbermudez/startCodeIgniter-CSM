@@ -1,9 +1,5 @@
-// Creación de una instancia Vue llamada SiteFormSubmitList
 var SiteFormSubmitList = new Vue({
-  // Elemento HTML donde se montará la instancia Vue
   el: "#root",
-
-  // Configuración de las rutas para el enrutador VueRouter
   router: new VueRouter({
     routes: [
       {
@@ -15,102 +11,112 @@ var SiteFormSubmitList = new Vue({
       {
         name: "details",
         path: "/details/:siteform_submit_id",
-        component: dataDeatils,
-        props: {
-          data: [],
-        },
+        component: FormSiteDetails,
+        props: true,
       },
     ],
   }),
-
-  // Datos que se utilizarán en el componente "dataTable"
-  data: {
-    // Ruta de acceso a los datos de la tabla
-    endpoint: "api/v1/siteforms/submit/",
-    // Personalización de las columnas de la tabla
-    colums: [
-      {
-        colum: "user_tracking_id",
-        label: "tracking_id",
-      },
-      {
-        colum: "SiteForm.name",
-        label: "name",
-      },
-      {
-        colum: "SiteForm.template",
-        label: "template",
-      },
-      {
-        colum: "date_create",
-        label: "Creado",
-      },
-      {
-        colum: "status",
-        label: "Status",
-        handler: "publish",
-      },
-      {
-        colum: "options",
-        label: "Options",
-      },
-    ],
-    // Nombre de la clave que contiene los datos en la respuesta
-    index_data: "logger_id",
-    options: [
-      {
-        label: "Detalles",
-        icon: "fas fa-info-circle",
-        href: "details",
-        params: ["siteform_submit_id"],
-      },
-    ],
+  data: function () {
+    var i18n = window.SITEFORMS_I18N || {};
+    var formId = "";
+    var match = window.location.search.match(/[?&]form=([^&]+)/);
+    if (match) {
+      formId = decodeURIComponent(match[1]);
+    }
+    return {
+      endpoint: "api/v1/siteforms/submit/",
+      index_data: "siteform_submit_id",
+      emptyTitle: i18n.inboxEmpty || "",
+      confirmTitle: i18n.confirmDelete || "",
+      confirmBody: i18n.confirmDeleteBody || "",
+      queryParams: formId ? { siteform_id: formId } : {},
+      colums: [
+        {
+          colum: "siteform.name",
+          label: i18n.form || "Form",
+        },
+        {
+          colum: "preview",
+          label: i18n.preview || "Preview",
+        },
+        {
+          colum: "date_create",
+          label: i18n.created || "Created",
+        },
+        {
+          colum: "status",
+          label: i18n.status || "Status",
+          format: function (item) {
+            var labels = window.SITEFORMS_I18N || {};
+            return parseInt(item.status, 10) === 2
+              ? labels.statusSeen || "Seen"
+              : labels.statusNew || "New";
+          },
+        },
+        {
+          colum: "options",
+          label: i18n.options || "Options",
+        },
+      ],
+      options: [
+        {
+          label: i18n.details || "Details",
+          icon: "info",
+          href: "details",
+          params: ["siteform_submit_id"],
+        },
+        {
+          label: i18n.markSeen || "Seen",
+          icon: "done",
+          action: "archive",
+        },
+        {
+          label: i18n.delete || "Delete",
+          icon: "delete",
+          action: "delete",
+        },
+      ],
+    };
   },
-
-  // Uso de mixins para extender la funcionalidad del componente
   mixins: [mixins],
-
-  // Propiedades calculadas que se utilizan en el componente
-  computed: {},
-
-  // Métodos que se utilizan en el componente
   methods: {
-    // Redirige al usuario a la página de creación de un nuevo item
-    newItem() {
-      window.location = `${BASEURL}admin/siteforms/nuevo/`;
-      return;
-    },
-    // Redirige al usuario a la página de edición de un item existente
-    editItem(data) {
-      window.location = `${BASEURL}admin/siteforms/editar/${data.item.siteform_id}`;
-      return;
-    },
-    // Elimina un item de la tabla
-    deleteItem({ item }) {
+    deleteItem: function (payload) {
       var self = this;
+      var item = payload.item;
       $.ajax({
         type: "DELETE",
-        url: BASEURL + "api/v1/siteforms/" + item.siteform_id,
-        data: {},
+        url: BASEURL + "api/v1/siteforms/submit/" + item.siteform_submit_id,
         dataType: "json",
-        success: function (response) {
+        success: function () {
+          if (self.$refs.view && typeof self.$refs.view.getData === "function") {
+            self.$refs.view.getData();
+            return;
+          }
           window.location.reload();
         },
-        error: function (error) {
-          M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(error);
+        error: function () {
+          M.toast({ html: (window.SITEFORMS_I18N && window.SITEFORMS_I18N.error) || "Error" });
         },
       });
-      return;
     },
-    // Archiva un item de la tabla
-    archiveItem(data) {
-      console.log({ data });
-      return;
+    archiveItem: function (payload) {
+      var item = payload.item;
+      $.ajax({
+        type: "POST",
+        url: BASEURL + "api/v1/siteforms/submit_archive/" + item.siteform_submit_id,
+        dataType: "json",
+        success: function (response) {
+          if (response && response.code == 200) {
+            item.status = 2;
+            M.toast({ html: (window.SITEFORMS_I18N && window.SITEFORMS_I18N.statusSeen) || "Seen" });
+          }
+        },
+        error: function () {
+          M.toast({ html: (window.SITEFORMS_I18N && window.SITEFORMS_I18N.error) || "Error" });
+        },
+      });
     },
   },
-
-  // Se ejecuta cuando se ha montado la instancia Vue
   mounted: function () {
     this.$nextTick(function () {});
   },

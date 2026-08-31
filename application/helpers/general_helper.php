@@ -79,8 +79,12 @@ function init_form(string $siteform_name): void
 {
     $ci = &get_instance();
     $siteforms = $ci->session->userdata('siteforms');
-    if (!$siteforms && !isset($siteforms[$siteform_name])) {
-        $ci->session->set_userdata('siteforms', [$siteform_name => ['submited' => 0]]);
+    if (!is_array($siteforms)) {
+        $siteforms = array();
+    }
+    if (!isset($siteforms[$siteform_name])) {
+        $siteforms[$siteform_name] = array('submited' => 0);
+        $ci->session->set_userdata('siteforms', $siteforms);
     }
 }
 
@@ -134,6 +138,7 @@ function render_form(string $siteform_name): string
 
     init_form($siteform_name);
     $ci->rendered_siteform = $siteform;
+    $ci->load->vars(array('siteform' => $siteform));
 
     $siteform->properties = normalize_siteform_loop($siteform->properties);
     if ($siteform->siteform_items === false || $siteform->siteform_items === null) {
@@ -655,7 +660,10 @@ if (!function_exists('has_permisions')) {
     {
         $ci = &get_instance();
         $usergroup_permisions = $ci->session->userdata('usergroup_permisions');
-        return in_array($permision, $usergroup_permisions);
+        if (!is_array($usergroup_permisions)) {
+            return false;
+        }
+        return in_array($permision, $usergroup_permisions, true);
     }
 }
 
@@ -1028,6 +1036,65 @@ function get_string_between($string, $start, $end)
     $ini += strlen($start);
     $len = strpos($string, $end, $ini) - $ini;
     return substr($string, $ini, $len);
+}
+
+/**
+ * Replace Blade-style helper calls in stored page HTML.
+ * Admin snippets use {!! render_form('Name') !!}; the old expander only handled {{ }}.
+ */
+function expand_content_helpers($content)
+{
+    if (!is_string($content) || $content === '') {
+        return $content;
+    }
+
+    $callback = function ($matches) {
+        $fn = $matches[1];
+        if (!is_callable($fn)) {
+            return $matches[0];
+        }
+        $args = parse_helper_args($matches[2]);
+        $result = call_user_func_array($fn, $args);
+        if ($result === null || is_scalar($result)) {
+            return (string) $result;
+        }
+        return $matches[0];
+    };
+
+    $content = preg_replace_callback(
+        '/\{!!\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\((.*?)\)\s*!!\}/s',
+        $callback,
+        $content
+    );
+    $content = preg_replace_callback(
+        '/\{\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\((.*?)\)\s*\}\}/s',
+        $callback,
+        $content
+    );
+
+    return $content;
+}
+
+function parse_helper_args($raw)
+{
+    $raw = trim($raw);
+    if ($raw === '') {
+        return array();
+    }
+    $parts = str_getcsv($raw, ',', "'");
+    $args = array();
+    foreach ($parts as $part) {
+        $part = trim($part);
+        if ($part === '') {
+            continue;
+        }
+        $len = strlen($part);
+        if ($len >= 2 && $part[0] === '"' && $part[$len - 1] === '"') {
+            $part = substr($part, 1, -1);
+        }
+        $args[] = $part;
+    }
+    return $args;
 }
 
 function system_logger($type, $type_id, $token, $comment = '')

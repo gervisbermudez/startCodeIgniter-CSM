@@ -21,10 +21,33 @@ class MY_Controller extends CI_Controller
             redirect('admin/login/?redirect=' . $uri);
         }
 
+        if ($this->session->userdata('logged_in')) {
+            $this->refreshUsergroupPermisions();
+        }
+
         // Si el perfilador está habilitado, lo activa para la salida
         if ($this->config->item('enable_profiler')) {
             $this->output->enable_profiler(true);
         }
+    }
+
+    /**
+     * Reload group permissions when the session predates a new permision row.
+     */
+    private function refreshUsergroupPermisions()
+    {
+        $perms = $this->session->userdata('usergroup_permisions');
+        if (is_array($perms) && in_array('SELECT_SITEFORMS', $perms, true)) {
+            return;
+        }
+        $usergroup_id = $this->session->userdata('usergroup_id');
+        if (!$usergroup_id) {
+            return;
+        }
+        $this->load->model('Admin/UsergroupModel');
+        $usergroup = new UsergroupModel();
+        $usergroup->usergroup_id = $usergroup_id;
+        $this->session->set_userdata('usergroup_permisions', $usergroup->usergroup_permisions());
     }
 
     // Verifica los permisos requeridos para la ruta actual
@@ -399,6 +422,7 @@ class Base_Controller extends CI_Controller
         if (!empty($data['page']->content)) {
             $this->load->helper('general');
             $data['page']->content = expand_page_embeds($data['page']->content);
+            $data['page']->content = expand_content_helpers($data['page']->content);
         }
 
         // Se devuelve el array con la información de la página

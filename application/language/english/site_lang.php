@@ -45,7 +45,16 @@ $lang['videos_publish_date'] = 'Publish date';
 $lang['videos_create'] = 'Create video';
 
 
+$lang['siteforms_submit'] = 'Send';
+$lang['siteforms_wait'] = 'Please wait a few minutes before sending the form again.';
+$lang['siteforms_notification_title'] = 'Form submission received';
+$lang['siteforms_notification_body'] = 'A new submission was received for form %s';
 $lang['form_submited_title'] = 'Thanks for filling out our form!';
+$lang['form_wait_title'] = 'Please wait';
+$lang['siteforms_adminbar'] = 'Form';
+$lang['siteforms_adminbar_submissions'] = 'View submissions';
+$lang['siteforms_adminbar_edit'] = 'Edit form';
+$lang['siteforms_adminbar_export'] = 'Export data';
 $lang['form_submited_message'] = '<p>
     We appreciate you contacting us. We will get back in touch with you soon! <br /> In the meantime, you can check the FAQ section, look over our new product collection or browse through our latest blog posts. <a href="'.base_url().'">Go Home</a>. <br><br> Have a great day!</p>';
 

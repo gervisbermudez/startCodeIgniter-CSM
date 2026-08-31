@@ -23,55 +23,11 @@ class SiteformsController extends REST_Controller
         $this->load->helper('general');
         $this->load->model('Admin/SiteFormModel');
         $this->load->model('Admin/SiteFormSubmitModel');
-
+        $this->load->model('Admin/SiteFormItemModel');
     }
 
     /**
-     * @api {get} /api/v1/categorie/:siteform_id Request Categorie information
-     * @apiName GetCategorie
-     * @apiGroup Categorie
-     *
-     * @apiParam {Number} siteform_id Categorie unique ID.
-     *
-     * @apiSuccessExample Success-Response:
-     *     HTTP/1.1 200 OK
-     *   {
-     *       "code": 200,
-     *       "data": [
-     *           {
-     *               "siteform_id": "4",
-     *               "name": "Manu 1",
-     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
-     *               "type": "page",
-     *               "menu_item_parent_id": "0",
-     *               "date_publish": "2020-04-19 10:36:10",
-     *               "date_create": "2020-04-19 10:36:14",
-     *               "date_update": "2020-04-19 10:40:20",
-     *               "status": "1"
-     *           },
-     *           {
-     *               "siteform_id": "5",
-     *               "name": "Manu 2",
-     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
-     *               "type": "page",
-     *               "menu_item_parent_id": "0",
-     *               "date_publish": "2020-04-19 10:36:10",
-     *               "date_create": "2020-04-19 10:36:14",
-     *               "date_update": "2020-04-19 10:40:28",
-     *               "status": "1"
-     *           },
-     *       ]
-     *   }
-     *
-     * @apiError ManuNotFound The id of the User was not found.
-     *
-     * @apiErrorExample Error-Response:
-     *     HTTP/1.1 404 Not Found
-     * {
-     *     "code": 404,
-     *     "error_message": "Resource not found",
-     *     "data": []
-     * }
+     * GET /api/v1/siteforms[/{siteform_id}]
      */
     public function index_get($siteform_id = null)
     {
@@ -87,13 +43,11 @@ class SiteformsController extends REST_Controller
             return;
         }
 
-        $this->respond_index_list($siteform);
+        $this->respond_index_list($siteform, array('status_in' => array(1, 2)));
     }
 
     /**
-     * Get All Data from this method.
-     *
-     * @return Response
+     * POST /api/v1/siteforms
      */
     public function index_post()
     {
@@ -101,7 +55,7 @@ class SiteformsController extends REST_Controller
         $form = new FormValidator();
         $config = array(
             array('field' => 'name', 'label' => 'name', 'rules' => 'required|min_length[1]'),
-            array('field' => 'template', 'label' => 'description', 'rules' => 'required|min_length[1]'),
+            array('field' => 'template', 'label' => 'template', 'rules' => 'required|min_length[1]'),
             array('field' => 'status', 'label' => 'status', 'rules' => 'required|integer'),
         );
         $form->set_rules($config);
@@ -109,22 +63,36 @@ class SiteformsController extends REST_Controller
             $this->response_error(lang('validations_error'), ['errors' => $form->_error_array], REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
+
         $siteform = new SiteFormModel();
-        $this->input->post('siteform_id') ? $siteform->find($this->input->post('siteform_id')) : false;
+        $isUpdate = (bool) $this->input->post('siteform_id');
+        $now = date("Y-m-d H:i:s");
+        if ($isUpdate) {
+            $siteform->find($this->input->post('siteform_id'));
+        } else {
+            $siteform->date_create = $now;
+            $siteform->date_delete = $now;
+        }
         $siteform->name = $this->input->post('name');
         $siteform->template = $this->input->post('template');
         $siteform->properties = $this->input->post('properties');
         $siteform->user_id = userdata('user_id');
         $siteform->status = $this->input->post('status');
-        $siteform->date_create = date("Y-m-d H:i:s");
-        $siteform->date_publish = date("Y-m-d H:i:s");
+        $siteform->date_update = $now;
+
         if ($siteform->save()) {
             $siteform_items = $this->input->post('siteform_items');
+            if (!is_array($siteform_items)) {
+                $siteform_items = array();
+            }
 
-            foreach ($siteform_items as $key => $item) {
+            $keepIds = array();
+            foreach ($siteform_items as $item) {
                 $item = (object) $item;
                 $siteform_item = new SiteFormItemModel();
-                isset($item->siteform_item_id) ? $siteform_item->find($item->siteform_item_id) : false;
+                if (!empty($item->siteform_item_id)) {
+                    $siteform_item->find($item->siteform_item_id);
+                }
                 $siteform_item->siteform_id = $siteform->siteform_id;
                 $siteform_item->order = isset($item->order) ? $item->order : '0';
                 $siteform_item->item_type = $item->item_type;
@@ -136,164 +104,59 @@ class SiteformsController extends REST_Controller
                 $siteform_item->properties = $item->properties;
                 $siteform_item->data = $item->data;
                 $siteform_item->status = $item->status;
-                $siteform_item->date_create = $item->date_create;
-                $siteform_item->date_publish = $item->date_publish;
+                if (empty($siteform_item->date_create) || $siteform_item->date_create === '0000-00-00 00:00:00') {
+                    $siteform_item->date_create = $now;
+                }
+                if (empty($siteform_item->date_publish) || $siteform_item->date_publish === '0000-00-00 00:00:00') {
+                    $siteform_item->date_publish = $now;
+                }
+                $siteform_item->date_update = $now;
                 $siteform_item->save();
+                if (!empty($siteform_item->siteform_item_id)) {
+                    $keepIds[] = (int) $siteform_item->siteform_item_id;
+                }
             }
+
+            $existing = (new SiteFormItemModel())->where(array('siteform_id' => $siteform->siteform_id));
+            if ($existing) {
+                foreach ($existing as $old) {
+                    $oldId = (int) $old->siteform_item_id;
+                    if (!in_array($oldId, $keepIds, true)) {
+                        $orphan = new SiteFormItemModel();
+                        if ($orphan->find($oldId)) {
+                            $orphan->delete();
+                        }
+                    }
+                }
+            }
+
+            system_logger('siteforms', $siteform->siteform_id, $isUpdate ? 'updated' : 'created', $isUpdate ? 'A siteform has been updated' : 'A siteform has been created');
             $this->response_ok($siteform);
             return;
         }
         $this->response_error(lang('unexpected_error'), [], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
     }
 
-    /**
-     * Get All Data from this method.
-     *
-     * @return Response
-     */
     public function index_put($id)
     {
         $data = array();
         $this->response($data, REST_Controller::HTTP_NOT_FOUND);
-
     }
 
-    /**
-     * Get All Data from this method.
-     *
-     * @return Response
-     */
     public function index_delete($siteform_id = null)
     {
         if ($siteform_id) {
             $siteform = new SiteFormModel();
             $result = $siteform->find($siteform_id);
             if ($result) {
+                system_logger('siteforms', $siteform->siteform_id, 'deleted', 'A siteform has been deleted');
                 $this->response_ok(["result" => $siteform->delete()]);
                 return;
-            } else {
-                $this->response_error(lang('not_found_error'));
-                return;
             }
-        }
-        $this->response_error(lang('not_found_error'));
-        return;
-    }
-
-    /**
-     * @api {get} /api/v1/categorie/type/:type/ Request Categorie information
-     * @apiName GetCategorieType
-     * @apiGroup Categorie
-     *
-     * @apiParam {String} type Categorie Categorie type name.
-     *
-     * @apiSuccessExample Success-Response:
-     *     HTTP/1.1 200 OK
-     *   {
-     *       "code": 200,
-     *       "data": [
-     *           {
-     *               "siteform_id": "4",
-     *               "name": "SiteForm 1",
-     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
-     *               "type": "page",
-     *               "menu_item_parent_id": "0",
-     *               "date_publish": "2020-04-19 10:36:10",
-     *               "date_create": "2020-04-19 10:36:14",
-     *               "date_update": "2020-04-19 10:40:20",
-     *               "status": "1"
-     *           },
-     *           {
-     *               "siteform_id": "5",
-     *               "name": "SiteForm 2",
-     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
-     *               "type": "page",
-     *               "menu_item_parent_id": "0",
-     *               "date_publish": "2020-04-19 10:36:10",
-     *               "date_create": "2020-04-19 10:36:14",
-     *               "date_update": "2020-04-19 10:40:28",
-     *               "status": "1"
-     *           },
-     *       ]
-     *   }
-     *
-     * @apiError CategorieNotFound The id of the User was not found.
-     *
-     * @apiErrorExample Error-Response:
-     *     HTTP/1.1 404 Not Found
-     * {
-     *     "code": 404,
-     *     "error_message": "Resource not found",
-     *     "data": []
-     * }
-     */
-    public function type_get($type = 0)
-    {
-        $siteform = new SiteFormModel();
-        $result = $siteform->where(array('menu_item_parent_id' => '0', 'type' => $type));
-        if ($result) {;
-            $this->response_ok($result);
+            $this->response_error(lang('not_found_error'));
             return;
         }
         $this->response_error(lang('not_found_error'));
-    }
-
-    /**
-     * @api {get} /api/v1/categorie/type/:type/ Request Categorie information
-     * @apiName GetCategorieType
-     * @apiGroup Categorie
-     *
-     * @apiParam {String} type Categorie Categorie type name.
-     *
-     * @apiSuccessExample Success-Response:
-     *     HTTP/1.1 200 OK
-     *   {
-     *       "code": 200,
-     *       "data": [
-     *           {
-     *               "siteform_id": "4",
-     *               "name": "SiteForm 1",
-     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
-     *               "type": "page",
-     *               "menu_item_parent_id": "0",
-     *               "date_publish": "2020-04-19 10:36:10",
-     *               "date_create": "2020-04-19 10:36:14",
-     *               "date_update": "2020-04-19 10:40:20",
-     *               "status": "1"
-     *           },
-     *           {
-     *               "siteform_id": "5",
-     *               "name": "SiteForm 2",
-     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
-     *               "type": "page",
-     *               "menu_item_parent_id": "0",
-     *               "date_publish": "2020-04-19 10:36:10",
-     *               "date_create": "2020-04-19 10:36:14",
-     *               "date_update": "2020-04-19 10:40:28",
-     *               "status": "1"
-     *           },
-     *       ]
-     *   }
-     *
-     * @apiError CategorieNotFound The id of the User was not found.
-     *
-     * @apiErrorExample Error-Response:
-     *     HTTP/1.1 404 Not Found
-     * {
-     *     "code": 404,
-     *     "error_message": "Resource not found",
-     *     "data": []
-     * }
-     */
-    public function filter_get()
-    {
-        $siteform = new SiteFormModel();
-        $result = $siteform->where($_GET);
-        if ($result) {
-
-            $this->response_ok($result);
-        }
-        $this->response_error(lang('not_found_error'), ['filters' => $_GET]);
     }
 
     public function templates_get()
@@ -308,51 +171,7 @@ class SiteformsController extends REST_Controller
     }
 
     /**
-     * @api {get} /api/v1/categorie/:siteform_id Request Categorie information
-     * @apiName GetCategorie
-     * @apiGroup Categorie
-     *
-     * @apiParam {Number} siteform_id Categorie unique ID.
-     *
-     * @apiSuccessExample Success-Response:
-     *     HTTP/1.1 200 OK
-     *   {
-     *       "code": 200,
-     *       "data": [
-     *           {
-     *               "siteform_id": "4",
-     *               "name": "Manu 1",
-     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
-     *               "type": "page",
-     *               "menu_item_parent_id": "0",
-     *               "date_publish": "2020-04-19 10:36:10",
-     *               "date_create": "2020-04-19 10:36:14",
-     *               "date_update": "2020-04-19 10:40:20",
-     *               "status": "1"
-     *           },
-     *           {
-     *               "siteform_id": "5",
-     *               "name": "Manu 2",
-     *               "description": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim numquam dignissimos repudiandae iure adipisci tempora vel dolorum perspiciatis excepturi non earum nisi soluta quibusdam voluptatibus, cum minima nam? Incidunt, dolor!",
-     *               "type": "page",
-     *               "menu_item_parent_id": "0",
-     *               "date_publish": "2020-04-19 10:36:10",
-     *               "date_create": "2020-04-19 10:36:14",
-     *               "date_update": "2020-04-19 10:40:28",
-     *               "status": "1"
-     *           },
-     *       ]
-     *   }
-     *
-     * @apiError ManuNotFound The id of the User was not found.
-     *
-     * @apiErrorExample Error-Response:
-     *     HTTP/1.1 404 Not Found
-     * {
-     *     "code": 404,
-     *     "error_message": "Resource not found",
-     *     "data": []
-     * }
+     * GET /api/v1/siteforms/submit[/{id}]
      */
     public function submit_get($siteFormSubmit_id = null)
     {
@@ -368,12 +187,34 @@ class SiteformsController extends REST_Controller
             return;
         }
 
-        $this->respond_index_list($SiteFormSubmit);
+        $where = array('status_in' => array(1, 2));
+        $formId = $this->get('siteform_id');
+        if ($formId === null || $formId === '') {
+            $formId = $this->get('form');
+        }
+        if ($formId) {
+            $where['siteform_id'] = (int) $formId;
+        }
+
+        $this->respond_index_list($SiteFormSubmit, $where, array('date_create', 'DESC'));
     }
 
     /**
-     *
-     * @return Response
+     * DELETE /api/v1/siteforms/submit/{id}
+     */
+    public function submit_delete($id = null)
+    {
+        $SiteFormSubmit = new SiteFormSubmitModel();
+        if ($id && $SiteFormSubmit->find($id)) {
+            system_logger('siteforms', $SiteFormSubmit->siteform_submit_id, 'deleted', 'A siteform submission has been deleted');
+            $this->response_ok(array('result' => $SiteFormSubmit->delete()));
+            return;
+        }
+        $this->response_error(lang('not_found_error'));
+    }
+
+    /**
+     * POST /api/v1/siteforms/submit_archive/{id}
      */
     /**
      * Persist siteform.properties.notify (default true).
@@ -413,14 +254,13 @@ class SiteformsController extends REST_Controller
     public function submit_archive_post($id = null)
     {
         $SiteFormSubmit = new SiteFormSubmitModel();
-        $SiteFormSubmit->find($id);
-        if ($SiteFormSubmit) {
-            $SiteFormSubmit->status = 2; //archive
+        if ($id && $SiteFormSubmit->find($id)) {
+            $SiteFormSubmit->status = 2;
             $SiteFormSubmit->save();
-            system_logger('pages', $SiteFormSubmit->siteform_submit_id, ("archive"), ("A Siteform_submit has been archive"));
+            system_logger('siteforms', $SiteFormSubmit->siteform_submit_id, 'archive', 'A siteform submission has been marked as seen');
             $this->response_ok($SiteFormSubmit);
-        } else {
-            $this->response_error(lang('not_found_error'));
+            return;
         }
+        $this->response_error(lang('not_found_error'));
     }
 }
