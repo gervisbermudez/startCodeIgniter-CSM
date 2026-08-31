@@ -38,9 +38,6 @@ class CustomModelContentModel extends MY_Model
                 $content_ids[] = (int) $value->custom_model_content_id;
             }
             $value->{'model_type'} = 'custom_model_content';
-            if (empty($value->title) && isset($value->custom_model_content_id)) {
-                $value->title = 'Collection #' . $value->custom_model_content_id;
-            }
         }
         $models = $this->load_models_indexed($model_ids);
         $fields_by_model = array();
@@ -59,6 +56,11 @@ class CustomModelContentModel extends MY_Model
             $field_map = isset($fields_by_model[$mid]) ? $fields_by_model[$mid] : array();
             $flat = $this->flatten_rows($rows, $field_map);
             $value->{'data'} = $flat;
+            $type = isset($models[$mid]) ? $models[$mid] : (object) array();
+            $resolved = $this->title_from_flat($type, $flat, $cid);
+            if ($this->is_placeholder_title(isset($value->title) ? $value->title : '', $cid)) {
+                $value->title = $resolved;
+            }
             $this->attach_field_data_to_schema($value, $rows, $field_map);
         }
 
@@ -99,10 +101,7 @@ class CustomModelContentModel extends MY_Model
         $status = $this->normalize_item_status(isset($data->status) ? $data->status : 1);
         $featured = $this->normalize_featured(isset($data->featured) ? $data->featured : 0);
         $sort_order = isset($data->sort_order) ? (int) $data->sort_order : 0;
-        $title = isset($data->title) ? $data->title : '';
-        if ($title === '') {
-            $title = $this->derive_title($custom_model_id, isset($data->tabs) ? $data->tabs : array());
-        }
+        $title = $this->resolve_persisted_title($data, $custom_model_id, null);
 
         $form_content = array(
             'custom_model_id' => $custom_model_id,
@@ -154,10 +153,7 @@ class CustomModelContentModel extends MY_Model
         $status = $this->normalize_item_status(isset($data->status) ? $data->status : 1);
         $featured = $this->normalize_featured(isset($data->featured) ? $data->featured : 0);
         $sort_order = isset($data->sort_order) ? (int) $data->sort_order : 0;
-        $title = isset($data->title) ? $data->title : '';
-        if ($title === '') {
-            $title = $this->derive_title($custom_model_id, isset($data->tabs) ? $data->tabs : array());
-        }
+        $title = $this->resolve_persisted_title($data, $custom_model_id, $custom_model_content_id);
 
         $update = array(
             'title' => $title,
@@ -260,8 +256,11 @@ class CustomModelContentModel extends MY_Model
         $items = array();
         foreach ($rows as $row) {
             $cid = (int) $row->custom_model_content_id;
-            $flat = $this->flatten_rows(isset($data_by_content[$cid]) ? $data_by_content[$cid] : array(), $field_map);
-            $title = !empty($row->title) ? $row->title : $this->title_from_flat($type, $flat, $cid);
+            $flat = $this->apply_field_aliases($this->flatten_rows(isset($data_by_content[$cid]) ? $data_by_content[$cid] : array(), $field_map));
+            $title = $this->title_from_flat($type, $flat, $cid);
+            if (!$this->is_placeholder_title(isset($row->title) ? $row->title : '', $cid) && !empty($row->title)) {
+                $title = $row->title;
+            }
             $item = (object) array(
                 'id' => $cid,
                 'title' => $title,
@@ -505,18 +504,31 @@ class CustomModelContentModel extends MY_Model
 
     protected function title_from_flat($type, $flat, $cid)
     {
-        if (!empty($type->title_field) && isset($flat[$type->title_field]) && !is_object($flat[$type->title_field])) {
-            return $flat[$type->title_field];
+        if (!empty($type->title_field) && $this->scalar_text($flat, $type->title_field) !== '') {
+            return $this->scalar_text($flat, $type->title_field);
         }
-        if (isset($flat['title']) && !is_object($flat['title'])) {
-            return $flat['title'];
+        if ($this->scalar_text($flat, 'title') !== '') {
+            return $this->scalar_text($flat, 'title');
         }
         foreach ($flat as $v) {
-            if (!is_object($v) && !is_array($v) && $v !== '') {
+            if (!is_object($v) && !is_array($v) && $v !== '' && $v !== null) {
                 return $v;
             }
         }
         return 'Collection #' . $cid;
+    }
+
+    /**
+     * @param array $flat
+     * @param string $key
+     * @return string
+     */
+    protected function scalar_text($flat, $key)
+    {
+        if (!isset($flat[$key]) || is_object($flat[$key]) || is_array($flat[$key])) {
+            return '';
+        }
+        return trim((string) $flat[$key]);
     }
 
     protected function attach_field_data_to_schema($value, $rows, $field_map)
@@ -556,5 +568,103 @@ class CustomModelContentModel extends MY_Model
             return;
         }
         parent::apply_query_order($order);
+    }
+
+    /**
+     * Search title column and EAV values (legacy items store the title only in data).
+     *
+     * @param array $filters
+     * @param string $search
+     * @return void
+     */
+    protected function apply_list_filters($filters, $search = '')
+    {
+        parent::apply_list_filters($filters, '');
+        $search = is_string($search) ? trim($search) : '';
+        if ($search === '') {
+            return;
+        }
+        $like = $this->db->escape('%' . $this->db->escape_like_str($search) . '%');
+        $this->db->group_start();
+        $this->db->like('title', $search);
+        $this->db->or_where(
+            'custom_model_content_id IN (SELECT custom_model_content_id FROM custom_model_content_data WHERE custom_model_content_data_value LIKE ' . $like . " ESCAPE '!')",
+            null,
+            false
+        );
+        $this->db->group_end();
+    }
+
+    /**
+     * @param object $data
+     * @param int $custom_model_id
+     * @param int|null $content_id
+     * @return string
+     */
+    protected function resolve_persisted_title($data, $custom_model_id, $content_id)
+    {
+        $derived = $this->derive_title($custom_model_id, isset($data->tabs) ? $data->tabs : array());
+        if ($derived !== '') {
+            return $derived;
+        }
+        $title = isset($data->title) ? trim((string) $data->title) : '';
+        if (!$this->is_placeholder_title($title, $content_id) && $title !== '') {
+            return $title;
+        }
+        if ($content_id) {
+            return 'Collection #' . $content_id;
+        }
+        return $title;
+    }
+
+    /**
+     * @param string $title
+     * @param int|null $cid
+     * @return bool
+     */
+    protected function is_placeholder_title($title, $cid)
+    {
+        if ($title === null || $title === '') {
+            return true;
+        }
+        if ($cid && $title === ('Collection #' . $cid)) {
+            return true;
+        }
+        return (bool) preg_match('/^Collection #\d+$/', (string) $title);
+    }
+
+    /**
+     * Accept image|imagen and url|link without renaming stored Api IDs.
+     *
+     * @param array $flat
+     * @return array
+     */
+    protected function apply_field_aliases($flat)
+    {
+        if (!is_array($flat)) {
+            return array();
+        }
+        $pairs = array(
+            'image' => array('imagen', 'photo', 'picture'),
+            'url' => array('link', 'href'),
+        );
+        foreach ($pairs as $canonical => $alts) {
+            if (!empty($flat[$canonical])) {
+                continue;
+            }
+            foreach ($alts as $alt) {
+                if (!empty($flat[$alt])) {
+                    $flat[$canonical] = $flat[$alt];
+                    break;
+                }
+            }
+        }
+        if (empty($flat['imagen']) && !empty($flat['image'])) {
+            $flat['imagen'] = $flat['image'];
+        }
+        if (empty($flat['link']) && !empty($flat['url'])) {
+            $flat['link'] = $flat['url'];
+        }
+        return $flat;
     }
 }

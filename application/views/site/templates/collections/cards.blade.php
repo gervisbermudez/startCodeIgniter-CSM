@@ -1,19 +1,18 @@
 <section class="scms-collection scms-collection--cards">
   @foreach ($collection->items as $item)
     <article class="scms-collection-item">
-      @if (!empty($item->fields['image']) && is_object($item->fields['image']) && !empty($item->fields['image']->url))
-        <img src="{{ $item->fields['image']->url }}" alt="{{ $item->title }}">
-      @endif
-      <h3>{{ $item->title }}</h3>
       @php
-        $text = '';
-        if (!empty($item->fields['text']) && !is_object($item->fields['text'])) {
-            $text = $item->fields['text'];
-        } elseif (!empty($item->fields['card_content']) && !is_object($item->fields['card_content'])) {
-            $text = $item->fields['card_content'];
+        $image = collection_item_image($item);
+        $text = collection_item_field($item, array('text', 'card_content', 'content', 'body'));
+        if (is_object($text) || is_array($text)) {
+            $text = '';
         }
       @endphp
-      @if ($text !== '')
+      @if (!empty($image) && !empty($image->url))
+        <img src="{{ $image->url }}" alt="{{ $item->title }}">
+      @endif
+      <h3>{{ $item->title }}</h3>
+      @if ($text !== '' && $text !== null)
         <p>{{ $text }}</p>
       @endif
     </article>

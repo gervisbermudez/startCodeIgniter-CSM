@@ -89,3 +89,6 @@ $lang['collections_preset_portfolio'] = 'Portfolio';
 $lang['collections_preset_team'] = 'Equipo';
 $lang['collections_preset_faq'] = 'FAQ';
 $lang['collections_preset_cards'] = 'Cards';
+$lang['collections_no_drafts'] = 'No hay borradores';
+$lang['collections_no_published'] = 'No hay ítems publicados';
+$lang['collections_no_filter_results'] = 'Ningún ítem coincide con este filtro';

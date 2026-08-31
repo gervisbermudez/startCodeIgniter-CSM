@@ -72,7 +72,9 @@
             <br>
             <div class="col s12 text-center form-group" id="buttons">
                 <a :href="base_url('admin/custommodels/items/' + custom_model_id)" class="btn waves-effect waves-teal btn-flat"><?= lang('btn_cancel') ?></a>
-                <a class="waves-effect waves-light btn" @click="saveData()"><i class="material-icons left">cloud</i> <?= lang('btn_save') ?></a>
+                <button type="button" class="waves-effect waves-light btn" @click="saveData()">
+                    <i class="material-icons left">cloud</i> <?= lang('btn_save') ?>
+                </button>
             </div>
         </div>
     </div>

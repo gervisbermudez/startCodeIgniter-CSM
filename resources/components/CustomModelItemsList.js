@@ -8,6 +8,7 @@ var CustomModelItemsList = new Vue({
     statusFilter: null,
     serverPagination: true,
     custom_model_id: window.COLLECTION_ITEMS_MODEL_ID,
+    collectionItemCount: window.COLLECTION_ITEMS_COUNT || 0,
     i18n: window.COLLECTIONS_I18N || {},
     toDeleteItem: {},
   },
@@ -20,7 +21,7 @@ var CustomModelItemsList = new Vue({
           return String(item.status) === String(this.statusFilter);
         }.bind(this));
       }
-      if (this.filter) {
+      if (this.filter && !this.serverPagination) {
         var term = this.filter.toLowerCase();
         list = list.filter(function (value) {
           return this.searchInObject(value, term);
@@ -28,15 +29,59 @@ var CustomModelItemsList = new Vue({
       }
       return list;
     },
+    isCollectionEmpty: function () {
+      return this.collectionItemCount === 0 && !this.filter;
+    },
+    isStatusFilterEmpty: function () {
+      return (
+        !this.filter &&
+        this.statusFilter !== null &&
+        this.collectionItemCount > 0 &&
+        this.filterItems.length === 0
+      );
+    },
+    statusEmptyMessage: function () {
+      if (this.statusFilter === 2) {
+        return this.i18n.noDrafts || "";
+      }
+      if (this.statusFilter === 1) {
+        return this.i18n.noPublished || "";
+      }
+      return this.i18n.noFilterResults || "";
+    },
   },
   methods: {
     setStatusFilter: function (status) {
       this.statusFilter = status;
     },
-    getItemImagePath: function (item) {
+    itemTitle: function (item) {
+      if (item.title && String(item.title).indexOf("Collection #") !== 0) {
+        return item.title;
+      }
       var data = item.data || {};
+      if (data.title && typeof data.title !== "object") {
+        return data.title;
+      }
       var keys = Object.keys(data);
       for (var i = 0; i < keys.length; i++) {
+        var val = data[keys[i]];
+        if (val && typeof val !== "object") {
+          return val;
+        }
+      }
+      return item.title || (this.i18n.fallbackTitle || "Collection") + " #" + item.custom_model_content_id;
+    },
+    getItemImagePath: function (item) {
+      var data = item.data || {};
+      var prefer = ["image", "imagen", "photo", "picture"];
+      var i;
+      for (i = 0; i < prefer.length; i++) {
+        if (data[prefer[i]] && data[prefer[i]].url) {
+          return data[prefer[i]].url;
+        }
+      }
+      var keys = Object.keys(data);
+      for (i = 0; i < keys.length; i++) {
         var val = data[keys[i]];
         if (val && typeof val === "object" && val.url) {
           return val.url;
@@ -61,6 +106,9 @@ var CustomModelItemsList = new Vue({
             return element;
           });
           self.applyPaginatorFromResponse(response);
+          if (!self.filter) {
+            self.collectionItemCount = response.total_rows != null ? Number(response.total_rows) : self.items.length;
+          }
           self.loader = false;
           self.$nextTick(function () {
             self.initPlugins();
@@ -74,6 +122,10 @@ var CustomModelItemsList = new Vue({
     },
     reloadList: function (page) {
       this.getItems(page);
+    },
+    resetFilter: function () {
+      this.filter = "";
+      this.getItems(1);
     },
     deleteItem: function (item) {
       var self = this;

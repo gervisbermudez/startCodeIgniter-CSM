@@ -71,9 +71,10 @@ class ModelsController extends REST_Controller
         $form = new CustomModelModel();
         if ($form_id) {
             $result = $form->find($form_id);
-            $result = $result ? $form : [];
             if ($result) {
-                $this->response_ok($result);
+                $payload = $form->as_data();
+                $form->decorate_type($payload, true);
+                $this->response_ok($payload);
                 return;
             }
             $this->response_error(lang('not_found_error'));
@@ -134,19 +135,19 @@ class ModelsController extends REST_Controller
         $raw = isset($_POST['data']) ? $_POST['data'] : '';
         $data = is_string($raw) ? json_decode($raw) : $raw;
         if (!$data || !is_object($data)) {
-            $this->response_error(lang('validations_error'), array('errors' => array('data' => lang('collections_need_field'))), REST_Controller::HTTP_BAD_REQUEST);
+            $this->response_error(lang('validations_error'), array('errors' => array('data' => lang('collections_need_field'))), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
 
         $errors = $this->validate_collection_schema($data);
         if (!empty($errors)) {
-            $this->response_error(lang('validations_error'), array('errors' => $errors), REST_Controller::HTTP_BAD_REQUEST);
+            $this->response_error(lang('validations_error'), array('errors' => $errors), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
 
         $exclude_id = !empty($data->custom_model_id) ? $data->custom_model_id : null;
         if ($this->CustomModelModel->slug_exists($data->slug, $exclude_id)) {
-            $this->response_error(lang('validations_error'), array('errors' => array('slug' => lang('collections_slug_taken'))), REST_Controller::HTTP_BAD_REQUEST);
+            $this->response_error(lang('validations_error'), array('errors' => array('slug' => lang('collections_slug_taken'))), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
 
@@ -159,11 +160,11 @@ class ModelsController extends REST_Controller
         }
 
         if ($result === false && $this->CustomModelModel->last_error === 'tab_has_data') {
-            $this->response_error(lang('collections_tab_has_data'), array(), REST_Controller::HTTP_BAD_REQUEST);
+            $this->response_error(lang('collections_tab_has_data'), array(), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
         if ($result === false && $this->CustomModelModel->last_error === 'field_has_data') {
-            $this->response_error(lang('collections_tab_has_data'), array(), REST_Controller::HTTP_BAD_REQUEST);
+            $this->response_error(lang('collections_tab_has_data'), array(), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
 
@@ -287,7 +288,7 @@ class ModelsController extends REST_Controller
             $data = (object) $data;
         }
         if (!$data || !is_object($data)) {
-            $this->response_error(lang('validations_error'), array('errors' => array('data' => lang('collections_error'))), REST_Controller::HTTP_BAD_REQUEST);
+            $this->response_error(lang('validations_error'), array('errors' => array('data' => lang('collections_error'))), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
         if (!empty($data->custom_model_content_id)) {
@@ -341,7 +342,7 @@ class ModelsController extends REST_Controller
         }
         $status = (int) $this->input->post('status');
         if ($status !== 0 && $status !== 1 && $status !== 2) {
-            $this->response_error(lang('validations_error'), array('errors' => array('status' => lang('collections_error'))), REST_Controller::HTTP_BAD_REQUEST);
+            $this->response_error(lang('validations_error'), array('errors' => array('status' => lang('collections_error'))), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
         $Form_conten->status = $status;

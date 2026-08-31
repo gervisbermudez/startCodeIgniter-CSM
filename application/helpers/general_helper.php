@@ -195,6 +195,55 @@ function resolve_collection_template($template)
 }
 
 /**
+ * First matching field on a normalized collection item (image|imagen, url|link, …).
+ *
+ * @param object $item
+ * @param array|string $keys
+ * @return mixed|null
+ */
+function collection_item_field($item, $keys)
+{
+    if (!is_object($item) || empty($item->fields) || !is_array($item->fields)) {
+        return null;
+    }
+    if (!is_array($keys)) {
+        $keys = array($keys);
+    }
+    foreach ($keys as $key) {
+        if (isset($item->fields[$key]) && $item->fields[$key] !== '' && $item->fields[$key] !== null) {
+            return $item->fields[$key];
+        }
+    }
+    return null;
+}
+
+/**
+ * @param object $item
+ * @return object|null
+ */
+function collection_item_image($item)
+{
+    $val = collection_item_field($item, array('image', 'imagen', 'photo', 'picture'));
+    if (is_object($val) && !empty($val->url)) {
+        return $val;
+    }
+    return null;
+}
+
+/**
+ * @param object $item
+ * @return string
+ */
+function collection_item_url($item)
+{
+    $val = collection_item_field($item, array('url', 'link', 'href'));
+    if ($val !== null && !is_object($val) && !is_array($val) && $val !== '') {
+        return $val;
+    }
+    return '';
+}
+
+/**
  * HTML of a published collection (type status = 1, items status = 1).
  * Empty string if the slug is missing or inactive (not a 404).
  * Theme override: {theme}/views/site/templates/collections/{template}.blade.php

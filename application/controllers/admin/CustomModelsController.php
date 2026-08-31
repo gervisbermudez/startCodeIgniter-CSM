@@ -79,6 +79,7 @@ class CustomModelsController extends MY_Controller
         $this->renderAdminView('admin.custommodels.items', lang('menu_collections'), $heading, [
             'custom_model_id' => $custom_model_id,
             'collection_name' => $model->form_name,
+            'items_count' => isset($model->items_count) ? (int) $model->items_count : 0,
         ]);
     }
 
