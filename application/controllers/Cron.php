@@ -98,6 +98,12 @@ class Cron extends CI_Controller
                 system_logger('error', 'Error al crear backup automático', [
                     'filename' => basename($filename)
                 ]);
+                set_notification(
+                    lang('notification_backup_fail_title'),
+                    lang('notification_backup_fail_desc'),
+                    'system_error',
+                    'admin/configuration/data'
+                );
             }
             
         } catch (Exception $e) {
@@ -105,6 +111,12 @@ class Cron extends CI_Controller
             system_logger('error', 'Error en backup automático', [
                 'error' => $e->getMessage()
             ]);
+            set_notification(
+                lang('notification_backup_fail_title'),
+                $e->getMessage(),
+                'system_error',
+                'admin/configuration/data'
+            );
         }
         
         echo "\n=== Backup Process Completed ===\n";

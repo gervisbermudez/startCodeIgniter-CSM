@@ -99,6 +99,7 @@ function render_form(string $siteform_name): string
     }
 
     init_form($siteform_name);
+    $ci->rendered_siteform = $siteform;
 
     return $ci->blade->view("site.templates.forms." . $siteform->template, ['siteform' => $siteform], true);
 }
@@ -128,18 +129,72 @@ function fragment(string $fragment_name)
     return $content;
 }
 
-function set_notification(string $title, string $description, string $type = 'info', ?string $url = null): bool
+function set_notification($title, $description, $type = 'info', $url = null, $user_ids = null)
 {
     $ci = &get_instance();
     $ci->load->model('Admin/NotificationsModel');
-    $notification = new NotificationsModel();
-    $notification->title = $title;
-    $notification->description = $description;
-    $notification->type = $type;
-    $notification->url = $url;
-    $notification->date_create = date("Y-m-d H:i:s");
-    $notification->status = "1";
-    return $notification->save();
+    $ci->load->model('Admin/UserModel');
+
+    if ($user_ids === null) {
+        $user_ids = array();
+        $users = (new UserModel())->all();
+        if ($users) {
+            foreach ($users as $user) {
+                $user_ids[] = $user->user_id;
+            }
+        }
+    } else {
+        $user_ids = is_array($user_ids) ? $user_ids : array($user_ids);
+    }
+
+    if (empty($user_ids)) {
+        return true;
+    }
+
+    if (is_string($url) && $url !== '') {
+        $url = ltrim($url, '/');
+    }
+
+    $ok = true;
+    foreach ($user_ids as $uid) {
+        $uid = (int) $uid;
+        if ($uid < 1) {
+            continue;
+        }
+        $notification = new NotificationsModel();
+        $notification->title = $title;
+        $notification->description = $description;
+        $notification->type = $type;
+        $notification->url = $url;
+        $notification->user_id = $uid;
+        $notification->date_create = date('Y-m-d H:i:s');
+        $notification->date_update = $notification->date_create;
+        $notification->status = '1';
+        if (!$notification->save()) {
+            $ok = false;
+        }
+    }
+    return $ok;
+}
+
+if (!function_exists('siteform_should_notify')) {
+    function siteform_should_notify($siteform)
+    {
+        if (!$siteform) {
+            return true;
+        }
+        $props = isset($siteform->properties) ? $siteform->properties : null;
+        if (is_string($props)) {
+            $props = json_decode($props);
+        }
+        if (is_object($props) && isset($props->notify) && $props->notify === false) {
+            return false;
+        }
+        if (is_array($props) && array_key_exists('notify', $props) && $props['notify'] === false) {
+            return false;
+        }
+        return true;
+    }
 }
 
 if (!function_exists("config")) {

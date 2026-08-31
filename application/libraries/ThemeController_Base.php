@@ -31,6 +31,10 @@ class ThemeController_Base
                 $this->ci->blade->changePath(APPPATH);
             }
             
+            if (empty($data['siteform']) && !empty($this->ci->rendered_siteform)) {
+                $data['siteform'] = $this->ci->rendered_siteform;
+            }
+
             // Load the admin navbar view with the page/blog/form data
             $adminNavbar = $this->ci->blade->view('shared.admin_navbar', $data, true);
             

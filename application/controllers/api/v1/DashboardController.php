@@ -289,21 +289,9 @@ class DashboardController extends REST_Controller
     public function notifications_get()
     {
         $this->load->model('Admin/NotificationsModel');
-
-        $Notifications = new NotificationsModel();
-        $result = $Notifications->where(
-            array(
-                'status' => 1, // 1 = pendiente, 2 = leido
-
-            )
-        );
-
-        $response = array(
-            'code' => 200,
-            'data' => $result,
-        );
-
-        $this->response($response, REST_Controller::HTTP_OK);
+        $model = new NotificationsModel();
+        $rows = $model->inbox(userdata('user_id'), 1, 20);
+        $this->response_ok($rows ? $rows : array());
     }
 
     /**
@@ -313,16 +301,12 @@ class DashboardController extends REST_Controller
     public function notifications_post($id = null)
     {
         $this->load->model('Admin/NotificationsModel');
-
-        $Notifications = new NotificationsModel();
-        $Notifications->find($id);
-        if ($Notifications) {
-            $Notifications->status = 2; //archive
-            $Notifications->save();
-            $this->response_ok($Notifications);
-        } else {
-            $this->response_error(lang('not_found_error'));
+        $model = new NotificationsModel();
+        if ($model->mark_read($id, userdata('user_id'))) {
+            $this->response_ok($model);
+            return;
         }
+        $this->response_error(lang('not_found_error'));
     }
 
 }

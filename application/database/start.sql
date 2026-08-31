@@ -734,9 +734,10 @@ CREATE TABLE `notifications` (
   `url` varchar(600) DEFAULT NULL,
   `date_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `date_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `date_delete` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `date_delete` timestamp NULL DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`notification_id`) USING BTREE
+  PRIMARY KEY (`notification_id`) USING BTREE,
+  KEY `idx_notifications_inbox` (`user_id`, `status`, `date_create`)
 ) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC COMMENT='Notificaciones del sistema';
 /*!40101 SET character_set_client = @saved_cs_client */;
 

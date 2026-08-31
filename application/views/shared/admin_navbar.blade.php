@@ -47,7 +47,16 @@ if (isset($page)) {
 
 // Detectar formulario en la página
 $has_form = isset($siteform) && $siteform;
-$form_name = $has_form ? (isset($siteform->form_name) ? $siteform->form_name : null) : null;
+$form_name = $has_form ? (isset($siteform->form_name) ? $siteform->form_name : (isset($siteform->name) ? $siteform->name : null)) : null;
+$form_notify = true;
+if ($has_form && isset($siteform->properties)) {
+    $form_props = is_string($siteform->properties) ? json_decode($siteform->properties) : $siteform->properties;
+    if (is_object($form_props) && isset($form_props->notify) && $form_props->notify === false) {
+        $form_notify = false;
+    } elseif (is_array($form_props) && array_key_exists('notify', $form_props) && $form_props['notify'] === false) {
+        $form_notify = false;
+    }
+}
 ?>
 <!-- Admin Bar - WordPress Style with MaterializeCSS -->
 <div id="scms-wp-adminbar" class="scms-wp-adminbar">
@@ -243,8 +252,8 @@ $form_name = $has_form ? (isset($siteform->form_name) ? $siteform->form_name : n
                 <li class="scms-toggle-item">
                     <label class="scms-toggle-label">
                         <span><i class="material-icons scms-adminbar-icon">notifications_active</i>Notificar</span>
-                        <div class="scms-toggle-switch" data-form-name="<?php echo $form_name; ?>" data-action="toggle-notifications">
-                            <input type="checkbox" checked>
+                        <div class="scms-toggle-switch" data-form-name="<?php echo htmlspecialchars($form_name, ENT_QUOTES, 'UTF-8'); ?>" data-action="toggle-notifications">
+                            <input type="checkbox" <?php echo $form_notify ? 'checked' : ''; ?>>
                             <span class="scms-toggle-slider"></span>
                         </div>
                     </label>
@@ -273,9 +282,9 @@ $form_name = $has_form ? (isset($siteform->form_name) ? $siteform->form_name : n
             <ul id="scms-notifications-dropdown" class="dropdown-content scms-adminbar-dropdown scms-notifications-dropdown">
                 <li class="scms-dropdown-header">Notificaciones</li>
                 <li class="divider scms-adminbar-divider"></li>
-                <li id="scms-no-notifications"><a href="#!"><i class="material-icons scms-adminbar-icon">info</i>No hay notificaciones nuevas</a></li>
+                <li id="scms-no-notifications"><a href="#!"><i class="material-icons scms-adminbar-icon">info</i>{{ lang('notifications_empty') }}</a></li>
                 <li class="divider scms-adminbar-divider"></li>
-                <li><a href="{{ base_url('admin') }}"><i class="material-icons scms-adminbar-icon">list</i>Ver todas</a></li>
+                <li><a href="{{ base_url('admin/notifications') }}"><i class="material-icons scms-adminbar-icon">list</i>{{ lang('notifications_view_all') }}</a></li>
             </ul>
             
             <!-- User Menu -->
@@ -661,6 +670,14 @@ body.scms-has-admin-bar {
 // Variables de configuración para admin-navbar.js
 window.SCMS_BASE_URL = '{{ base_url() }}';
 window.SCMS_CURRENT_URL = '{{ current_url() }}';
+window.SCMS_LANG = {
+    notifications_empty: <?php echo json_encode(lang('notifications_empty')); ?>,
+    notifications_view_all: <?php echo json_encode(lang('notifications_view_all')); ?>,
+    notifications_mark_read: <?php echo json_encode(lang('notifications_mark_read')); ?>,
+    notifications_enabled: <?php echo json_encode(lang('notifications_enabled')); ?>,
+    notifications_disabled: <?php echo json_encode(lang('notifications_disabled')); ?>,
+    toast_error: <?php echo json_encode(lang('search_error')); ?>
+};
 </script>
 <script src="{{ base_url('public/js/admin-navbar.js') }}"></script>
 @endif

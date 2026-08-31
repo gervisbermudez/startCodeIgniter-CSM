@@ -158,6 +158,12 @@ class ConfigController extends REST_Controller
             // Check if directory exists, if not create it
             if (!file_exists($backup_dir)) {
                 if (!@mkdir($backup_dir, 0777, true)) {
+                    set_notification(
+                        lang('notification_backup_fail_title'),
+                        lang('notification_backup_fail_desc'),
+                        'system_error',
+                        'admin/configuration/data'
+                    );
                     $this->response([
                         'result' => 'No se pudo crear el directorio de backups. Verifica los permisos.',
                         'code' => REST_Controller::HTTP_INTERNAL_SERVER_ERROR,
@@ -170,6 +176,12 @@ class ConfigController extends REST_Controller
             
             // Check if directory is writable
             if (!is_writable($backup_dir)) {
+                set_notification(
+                    lang('notification_backup_fail_title'),
+                    lang('notification_backup_fail_desc'),
+                    'system_error',
+                    'admin/configuration/data'
+                );
                 $this->response([
                     'result' => 'El directorio de backups no tiene permisos de escritura.',
                     'code' => REST_Controller::HTTP_INTERNAL_SERVER_ERROR,
@@ -199,6 +211,12 @@ class ConfigController extends REST_Controller
                     'size' => filesize($filename)
                 ], REST_Controller::HTTP_OK);
             } else {
+                set_notification(
+                    lang('notification_backup_fail_title'),
+                    lang('notification_backup_fail_desc'),
+                    'system_error',
+                    'admin/configuration/data'
+                );
                 $this->response([
                     'result' => 'No se pudo escribir el archivo de backup',
                     'code' => REST_Controller::HTTP_BAD_REQUEST
@@ -208,6 +226,12 @@ class ConfigController extends REST_Controller
             system_logger('error', 'Error al crear backup de base de datos', [
                 'error' => $e->getMessage()
             ]);
+            set_notification(
+                lang('notification_backup_fail_title'),
+                $e->getMessage(),
+                'system_error',
+                'admin/configuration/data'
+            );
             
             $this->response([
                 'result' => 'Error al crear el backup: ' . $e->getMessage(),

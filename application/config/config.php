@@ -245,7 +245,8 @@ $config['encryption_key'] = 'roughly';
 | 'sess_time_to_update'        = how many seconds between CI refreshing Session Information
 |
  */
-$config['sess_cookie_name'] = 'ci_session';
+$sess_cookie = getenv('SESS_COOKIE_NAME');
+$config['sess_cookie_name'] = ($sess_cookie !== false && $sess_cookie !== '') ? $sess_cookie : 'ci_session';
 $config['sess_expiration'] = 7200;
 $config['sess_expire_on_close'] = false;
 $config['sess_encrypt_cookie'] = false;

@@ -2043,6 +2043,33 @@ iframe.components-sandbox {
   li {
     display: flex;
   }
+
+  .notifications-mark {
+    cursor: pointer;
+    align-self: center;
+    padding-right: 8px;
+    color: var(--st-text-secondary);
+  }
+
+  .notifications-view-all {
+    justify-content: center;
+  }
+}
+
+.notifications-page {
+  .notifications-filters {
+    margin: 16px 0;
+
+    .chip.active {
+      background: var(--st-interactive);
+      color: #fff;
+    }
+  }
+
+  .notifications-empty .material-icons {
+    font-size: 48px;
+    color: var(--st-text-secondary);
+  }
 }
 
 // === Generic Card Styles ===

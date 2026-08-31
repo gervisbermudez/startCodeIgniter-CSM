@@ -262,3 +262,25 @@ $lang['config_col_page'] = 'Page';
 $lang['config_col_query'] = 'Query';
 $lang['config_max_upload'] = 'Max upload';
 $lang['pagination_page_of'] = 'Page';
+
+// Notifications inbox
+$lang['notifications_title'] = 'Notifications';
+$lang['notifications_all'] = 'All notifications';
+$lang['notifications_unread'] = 'Unread';
+$lang['notifications_read'] = 'Read';
+$lang['notifications_filter_all'] = 'All';
+$lang['notifications_empty'] = 'No notifications';
+$lang['notifications_empty_hint'] = 'New alerts will show up here.';
+$lang['notifications_view_all'] = 'View all';
+$lang['notifications_mark_read'] = 'Mark as read';
+$lang['notifications_mark_all'] = 'Mark all as read';
+$lang['notifications_bell'] = 'Notifications';
+$lang['notifications_marked'] = 'Marked as read';
+$lang['notifications_enabled'] = 'Notifications enabled';
+$lang['notifications_disabled'] = 'Notifications disabled';
+$lang['notification_form_submit_title'] = 'Form submission received';
+$lang['notification_form_submit_desc'] = 'A new entry was received in the form %s';
+$lang['notification_user_created_title'] = 'New user created';
+$lang['notification_user_created_desc'] = 'The user %s was created';
+$lang['notification_backup_fail_title'] = 'Backup failed';
+$lang['notification_backup_fail_desc'] = 'The database backup could not be written';

@@ -32,18 +32,19 @@
         </div>
         <div class="right notifications" id="notifications">
             <div class="icon-container">
-                <a class='dropdown-trigger' href='#' data-target='notifications-list'>
+                <a class='dropdown-trigger' href='#' data-target='notifications-list' aria-label="{{ lang('notifications_bell') }}">
                     <span v-show="notifications.length" v-cloak class="new badge"
                         data-badge-caption="">@{{notifications.length}}</span>
-                    <i class="material-icons">notifications</i>
+                    <i class="material-icons" aria-hidden="true">notifications</i>
                 </a>
             </div>
-            <!-- Dropdown Structure -->
             <ul id='notifications-list' class='dropdown-content notifications-dropdown'>
-                <li v-for="(notification, index) in notifications" :key="index">
-                    <a @click="setArchive(notification, index)" :href="base_url(notification.url)"
-                        :title="notification.description">
-                        <i class="material-icons">notifications</i>
+                <li v-for="(notification, index) in notifications" :key="notification.notification_id" class="notifications-dropdown-item">
+                    <a href="#!"
+                        :title="notification.description"
+                        :aria-label="notification.title"
+                        v-on:click.prevent="openNotification(notification, index, $event)">
+                        <i class="material-icons" aria-hidden="true">notifications</i>
                         <div>
                             <span class="title"><b>@{{notification.title}}</b></span>
                         </div>
@@ -51,26 +52,29 @@
                             <span class="message">@{{getcontentText(notification.description, 60)}}</span>
                         </div>
                     </a>
-                    <i @click="setArchive(notification, index)" class="material-icons">check</i>
+                    <i
+                        class="material-icons notifications-mark tooltipped"
+                        data-position="left"
+                        data-tooltip="{{ lang('notifications_mark_read') }}"
+                        aria-label="{{ lang('notifications_mark_read') }}"
+                        v-on:click.stop.prevent="markRead(notification, index, false)"
+                    >done</i>
                 </li>
                 <li v-if="!notifications.length">
-                    <a href="#!" title="No notifications">
+                    <a href="#!">
+                        <i class="material-icons" aria-hidden="true">notifications_none</i>
                         <div>
-                            <span class="title"><b>No notifications</b></span>
+                            <span class="title"><b>{{ lang('notifications_empty') }}</b></span>
                         </div>
                         <div>
-                            <span class="message">Enjoy your day :)</span>
+                            <span class="message">{{ lang('notifications_empty_hint') }}</span>
                         </div>
                     </a>
-                    <i class="material-icons">beach_access</i>
-
                 </li>
-                <!-- <li><a href="#!">one</a></li>
-                <li><a href="#!">two</a></li>
                 <li class="divider" tabindex="-1"></li>
-                <li><a href="#!">three</a></li>
-                <li><a href="#!"><i class="material-icons">view_module</i>four</a></li>
-                <li><a href="#!"><i class="material-icons">cloud</i>five</a></li> -->
+                <li class="notifications-view-all">
+                    <a href="{{ base_url('admin/notifications') }}">{{ lang('notifications_view_all') }}</a>
+                </li>
             </ul>
         </div>
         <div id="user_dropdown" class="dropdown-content user-dropdown">
