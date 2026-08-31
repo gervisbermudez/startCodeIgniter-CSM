@@ -73,11 +73,6 @@ var loginForm = new Vue({
       if (!path || path === true || path === "admin") {
         return "";
       }
-      try {
-        path = decodeURIComponent(path);
-      } catch (e) {
-        return "";
-      }
       if (
         path.indexOf("://") !== -1 ||
         path.indexOf("//") === 0 ||

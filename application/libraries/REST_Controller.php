@@ -338,6 +338,13 @@ abstract class REST_Controller extends \CI_Controller
     protected $_enable_xss = false;
 
     /**
+     * Login rate-limit file cache: null = not tried, true = usable, false = fail-open.
+     *
+     * @var bool|null
+     */
+    protected $_login_rate_cache = null;
+
+    /**
      * HTTP status codes and their respective description
      * Note: Only the widely used HTTP status codes are used
      *
@@ -700,16 +707,44 @@ abstract class REST_Controller extends \CI_Controller
     }
 
     /**
+     * Load the file cache adapter once. Fail-open (and log) if it cannot be used.
+     *
+     * @return bool
+     */
+    protected function ensure_login_rate_cache()
+    {
+        if ($this->_login_rate_cache === false) {
+            return false;
+        }
+        if ($this->_login_rate_cache === true) {
+            return true;
+        }
+        if (!isset($this->cache)) {
+            $this->load->driver('cache', array('adapter' => 'file'));
+        }
+        if (!isset($this->cache) || !is_object($this->cache)) {
+            log_message('error', 'Login rate limit: cache driver unavailable; failing open');
+            $this->_login_rate_cache = false;
+            return false;
+        }
+        $this->_login_rate_cache = true;
+        return true;
+    }
+
+    /**
      * @param string $username
      * @return bool
      */
     protected function is_login_rate_limited($username)
     {
-        if (!isset($this->cache)) {
+        if (!$this->ensure_login_rate_cache()) {
             return false;
         }
         $hits = $this->cache->get($this->login_rate_limit_key($username));
-        return ($hits !== false && (int) $hits >= 10);
+        if ($hits === false) {
+            return false;
+        }
+        return ((int) $hits >= 10);
     }
 
     /**
@@ -720,7 +755,7 @@ abstract class REST_Controller extends \CI_Controller
      */
     protected function hit_login_rate_limit($username)
     {
-        if (!isset($this->cache)) {
+        if (!$this->ensure_login_rate_cache()) {
             return false;
         }
         $key = $this->login_rate_limit_key($username);
@@ -729,7 +764,11 @@ abstract class REST_Controller extends \CI_Controller
             $hits = 0;
         }
         $hits = (int) $hits + 1;
-        $this->cache->save($key, $hits, 900);
+        if ($this->cache->save($key, $hits, 900) === false) {
+            log_message('error', 'Login rate limit: cache save failed; failing open');
+            $this->_login_rate_cache = false;
+            return false;
+        }
         return ($hits >= 10);
     }
 
@@ -739,9 +778,10 @@ abstract class REST_Controller extends \CI_Controller
      */
     protected function clear_login_rate_limit($username)
     {
-        if (isset($this->cache)) {
-            $this->cache->delete($this->login_rate_limit_key($username));
+        if (!$this->ensure_login_rate_cache()) {
+            return;
         }
+        $this->cache->delete($this->login_rate_limit_key($username));
     }
 
     public function failed_auth()

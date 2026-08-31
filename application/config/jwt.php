@@ -2,17 +2,31 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 $key = getenv('JWT_SECRET_KEY');
-$app_env = getenv('APP_ENV');
 $is_placeholder = ($key === false || $key === '' || $key === 'CHANGE_THIS_TO_A_RANDOM_STRING_IN_PRODUCTION' || $key === 'MY_SECRET_KEY');
 
-if ($app_env === 'production' && $is_placeholder) {
-    log_message('error', 'JWT_SECRET_KEY is missing or a placeholder; refusing to sign tokens in production');
-    $key = '';
-} elseif ($is_placeholder) {
-    // Development: allow a long derived key so local .env.example still boots,
-    // but never the literal MY_SECRET_KEY as HMAC secret.
-    $fallback = getenv('APP_BASE_URL');
-    $key = hash('sha256', 'start-cms-dev-only|' . ($fallback ? $fallback : 'local'));
+if ($is_placeholder) {
+    $app_env = getenv('APP_ENV');
+    $is_local = ($app_env === 'development');
+    if (!$is_local) {
+        $base = getenv('APP_BASE_URL');
+        if (is_string($base) && $base !== '') {
+            $host = parse_url($base, PHP_URL_HOST);
+            if (is_string($host)) {
+                $host = strtolower($host);
+                if ($host === 'localhost' || $host === '127.0.0.1') {
+                    $is_local = true;
+                }
+            }
+        }
+    }
+    if (!$is_local) {
+        log_message('error', 'JWT_SECRET_KEY is missing or a placeholder; refusing to sign tokens outside a clearly local environment');
+        $key = '';
+    } else {
+        // Local only: derived key so .env.example still boots. Never HMAC with MY_SECRET_KEY.
+        $fallback = getenv('APP_BASE_URL');
+        $key = hash('sha256', 'start-cms-dev-only|' . ($fallback ? $fallback : 'local'));
+    }
 }
 
 $config['jwt_key'] = $key;

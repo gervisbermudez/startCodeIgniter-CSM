@@ -499,7 +499,7 @@ class UsersController extends REST_Controller
                     'error_message' => "The current password is incorret",
                 );
             }
-            $this->response($response, REST_Controller::HTTP_OK);
+            $this->response($response, $response['code']);
             return;
         }
         $this->response_error(lang('user_not_found_error'), [], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);

@@ -20,7 +20,7 @@ class JWT
 	 *
 	 * @param string      $jwt    The JWT
 	 * @param string|null $key    The secret key
-	 * @param bool        $verify Don't skip verification process 
+	 * @param bool        $verify Ignored; HS256 is always verified
 	 *
 	 * @return object      The JWT's payload as a PHP object
 	 * @throws UnexpectedValueException Provided JWT was invalid
@@ -56,12 +56,10 @@ class JWT
 		if ($sig === false || !is_string($sig)) {
 			return false;
 		}
-		if ($verify) {
-			// Ignore $header->alg (including alg=none). Always verify HS256.
-			$expected = JWT::sign($headb64 . '.' . $bodyb64, $key, 'HS256');
-			if (!is_string($expected) || !hash_equals($expected, $sig)) {
-				return false;
-			}
+		// Ignore $verify and $header->alg (including alg=none). Always verify HS256.
+		$expected = JWT::sign($headb64 . '.' . $bodyb64, $key, 'HS256');
+		if (!is_string($expected) || !hash_equals($expected, $sig)) {
+			return false;
 		}
 		if (is_object($payload) && isset($payload->exp) && (int) $payload->exp < time()) {
 			return false;
