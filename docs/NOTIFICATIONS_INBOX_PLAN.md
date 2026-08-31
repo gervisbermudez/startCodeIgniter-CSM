@@ -77,7 +77,7 @@ No emitir en CRUD diario (páginas, notas, vídeos). Solo eventos que un admin *
 
 - `application/models/Admin/NotificationsModel.php`: quitar N+1; método `inbox($userId, $status, $limit)` con `(user_id = $userId)` y `status != 0`.
 - Ampliar `set_notification` con fan-out.
-- Migración `application/database/migrations/005_notifications_inbox.sql`: `date_delete` nullable + índice `(user_id, status, date_create)`.
+- Migración `application/database/migrations/006_notifications_inbox.sql`: `date_delete` nullable + índice `(user_id, status, date_create)`.
 - En `start.sql`, ajustar solo el `CREATE TABLE notifications` (no reescribir dumps). Aplicar la migración a mano contra MySQL de esta máquina (CI3 migrations no es el flujo principal).
 
 ### 2. API propia
