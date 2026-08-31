@@ -596,3 +596,43 @@ function cast($destination, $sourceObject)
     }
     return $destination;
 }
+
+if (!function_exists('theme_site_view_root')) {
+    /**
+     * Parent of /views for a site template: theme if the file exists, else APPPATH.
+     *
+     * @param string $template e.g. eventsList or templates.event_card
+     * @return string
+     */
+    function theme_site_view_root($template)
+    {
+        $relative = 'views/site/' . str_replace('.', '/', $template) . '.blade.php';
+        $theme = getThemePath();
+        if ($theme && file_exists($theme . '/' . $relative)) {
+            return $theme;
+        }
+        return rtrim(APPPATH, '/\\');
+    }
+}
+
+if (!function_exists('render_event')) {
+    /**
+     * Published+visible event card HTML, or empty string.
+     *
+     * @param string $slug
+     * @return string
+     */
+    function render_event($slug)
+    {
+        $ci = &get_instance();
+        $ci->load->model('Admin/EventModel');
+        $event = new EventModel();
+        if (!$event->find_by_slug($slug)) {
+            return '';
+        }
+        $template = 'templates.event_card';
+        $blade = new Blade();
+        $blade->changePath(theme_site_view_root($template));
+        return $blade->view('site.' . $template, array('event' => $event), true);
+    }
+}

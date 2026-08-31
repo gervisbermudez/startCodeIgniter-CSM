@@ -358,11 +358,11 @@
                     </a>
                     <a href="{{ base_url('admin/events') }}" class="colum st-gray-light" style="text-decoration:none;">
                         <div class="colum__icon">
-                            <i class="material-icons text-st-gray">assistant</i>
+                            <i class="material-icons text-st-gray">event</i>
                         </div>
                         <div class="colum__description">
                             <div class="text-st-gray"><b>@{{events.length}}</b></div>
-                            <div class="text-st-gray">Events</div>
+                            <div class="text-st-gray">{{ lang('menu_events') }}</div>
                         </div>
                     </a>
                 </div>
@@ -600,7 +600,7 @@
         <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_album') }}" class="btn-floating tooltipped green"
                 href="{{base_url('admin/gallery/new/')}}"><i class="material-icons">publish</i></a></li>
         <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_event') }}" class="btn-floating tooltipped blue"
-                href="{{ base_url('admin/events/add/') }}"><i class="material-icons">assistant</i></a></li>
+                href="{{ base_url('admin/events/add/') }}"><i class="material-icons">event</i></a></li>
     </ul>
 </div>
 @include('admin.components.page_card_component')

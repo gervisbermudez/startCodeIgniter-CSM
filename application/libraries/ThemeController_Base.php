@@ -60,14 +60,25 @@ class ThemeController_Base
     }
 
     /**
+     * Theme view if present, otherwise APPPATH/views (tracked fallback).
+     *
+     * @param string $template
+     * @return void
+     */
+    protected function applyTemplatePath($template)
+    {
+        $root = theme_site_view_root($template);
+        $this->blade->changePath($root);
+    }
+
+    /**
      * @return String
      */
     public function render($data)
     {
-        if (getThemePath()) {
-            $this->blade->changePath(getThemePath());
-        }
-        $content = $this->blade->view("site." . $data["template"], $data);
+        $template = isset($data["template"]) ? $data["template"] : '';
+        $this->applyTemplatePath($template);
+        $content = $this->blade->view("site." . $template, $data);
         return $this->injectAdminNavbar($content, $data);
     }
 
@@ -77,10 +88,9 @@ class ThemeController_Base
      */
     public function error404($data)
     {
-        if (getThemePath()) {
-            $this->blade->changePath(getThemePath());
-        }
-        $content = $this->blade->view("site." . $data["template"], $data);
+        $template = isset($data["template"]) ? $data["template"] : '';
+        $this->applyTemplatePath($template);
+        $content = $this->blade->view("site." . $template, $data);
         return $this->injectAdminNavbar($content);
     }
 
@@ -98,6 +108,16 @@ class ThemeController_Base
     }
 
     public function blog_post($data)
+    {
+        return $this->render($data);
+    }
+
+    public function events_list($data)
+    {
+        return $this->render($data);
+    }
+
+    public function event_detail($data)
     {
         return $this->render($data);
     }

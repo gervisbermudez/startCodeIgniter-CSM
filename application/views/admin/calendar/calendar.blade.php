@@ -23,6 +23,14 @@
                         <div class="col s12 m6 l3">
                             <p>
                                 <label>
+                                    <input type="checkbox" v-model="filters.events" @change="applyFilters" />
+                                    <span><?php echo lang('menu_events'); ?></span>
+                                </label>
+                            </p>
+                        </div>
+                        <div class="col s12 m6 l3">
+                            <p>
+                                <label>
                                     <input type="checkbox" v-model="filters.pages" @change="applyFilters" />
                                     <span>📄 <?php echo lang('pages'); ?></span>
                                 </label>

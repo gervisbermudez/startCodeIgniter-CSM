@@ -12,12 +12,34 @@
     :colums="colums"
     :index_data="index_data"
     :pagination="true"
+    :show_empty_input="false"
     v-on:new="newEvent"
     v-on:edit="editEvent"
     v-on:delete="deleteItem"
     v-on:archive="archiveItem"
-  ></data-table>
+  >
+    <div slot="filters" class="status-filters">
+      <button type="button" class="status-chip" :class="{ active: when === 'all' }" @click="setWhen('all')">{{ lang('events_when_all') }}</button>
+      <button type="button" class="status-chip" :class="{ active: when === 'upcoming' }" @click="setWhen('upcoming')">{{ lang('events_upcoming') }}</button>
+      <button type="button" class="status-chip" :class="{ active: when === 'past' }" @click="setWhen('past')">{{ lang('events_past') }}</button>
+    </div>
+  </data-table>
+  <div class="container center" v-show="tableEmpty" v-cloak>
+    <i class="material-icons large grey-text">event</i>
+    <p class="page-header">{{ lang('events_empty') }}</p>
+    <a href="{{ base_url('admin/events/add') }}" class="btn">{{ lang('events_empty_cta') }}</a>
+  </div>
 </div>
+<script>
+window.EVENTS_I18N = {
+  name: <?= json_encode(lang('events_name')); ?>,
+  start: <?= json_encode(lang('events_start')); ?>,
+  address: <?= json_encode(lang('events_address')); ?>,
+  status: <?= json_encode(lang('events_status')); ?>,
+  options: <?= json_encode(lang('events_options')); ?>,
+  online: <?= json_encode(lang('events_online')); ?>
+};
+</script>
 @endsection
 
 @section('footer_includes')
