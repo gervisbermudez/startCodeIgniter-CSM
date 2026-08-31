@@ -21,11 +21,39 @@
     </div>
     <div v-cloak v-show="!loader">
         <div class="row">
-            <div class="col s12">
-                <div class="chip" @click="applyPreset('portfolio')"><?= lang('collections_preset_portfolio') ?></div>
-                <div class="chip" @click="applyPreset('team')"><?= lang('collections_preset_team') ?></div>
-                <div class="chip" @click="applyPreset('faq')"><?= lang('collections_preset_faq') ?></div>
-                <div class="chip" @click="applyPreset('cards')"><?= lang('collections_preset_cards') ?></div>
+            <div class="col s12 collection-presets" v-if="!editMode">
+                <p class="collection-presets__label"><?= lang('collections_presets_label') ?></p>
+                <p class="collection-presets__help"><?= lang('collections_presets_help') ?></p>
+                <div class="collection-presets__list">
+                    <button type="button" class="collection-preset" :class="{ 'is-active': activePreset === 'blank' }" @click="applyPreset('blank')">
+                        <span class="collection-preset__name"><?= lang('collections_preset_blank') ?></span>
+                        <span class="collection-preset__hint"><?= lang('collections_preset_blank_hint') ?></span>
+                    </button>
+                    <button type="button" class="collection-preset" :class="{ 'is-active': activePreset === 'portfolio' }" @click="applyPreset('portfolio')">
+                        <span class="collection-preset__name"><?= lang('collections_preset_portfolio') ?></span>
+                        <span class="collection-preset__hint"><?= lang('collections_preset_portfolio_hint') ?></span>
+                    </button>
+                    <button type="button" class="collection-preset" :class="{ 'is-active': activePreset === 'team' }" @click="applyPreset('team')">
+                        <span class="collection-preset__name"><?= lang('collections_preset_team') ?></span>
+                        <span class="collection-preset__hint"><?= lang('collections_preset_team_hint') ?></span>
+                    </button>
+                    <button type="button" class="collection-preset" :class="{ 'is-active': activePreset === 'faq' }" @click="applyPreset('faq')">
+                        <span class="collection-preset__name"><?= lang('collections_preset_faq') ?></span>
+                        <span class="collection-preset__hint"><?= lang('collections_preset_faq_hint') ?></span>
+                    </button>
+                    <button type="button" class="collection-preset" :class="{ 'is-active': activePreset === 'cards' }" @click="applyPreset('cards')">
+                        <span class="collection-preset__name"><?= lang('collections_preset_cards') ?></span>
+                        <span class="collection-preset__hint"><?= lang('collections_preset_cards_hint') ?></span>
+                    </button>
+                    <button type="button" class="collection-preset" :class="{ 'is-active': activePreset === 'testimonials' }" @click="applyPreset('testimonials')">
+                        <span class="collection-preset__name"><?= lang('collections_preset_testimonials') ?></span>
+                        <span class="collection-preset__hint"><?= lang('collections_preset_testimonials_hint') ?></span>
+                    </button>
+                    <button type="button" class="collection-preset" :class="{ 'is-active': activePreset === 'features' }" @click="applyPreset('features')">
+                        <span class="collection-preset__name"><?= lang('collections_preset_features') ?></span>
+                        <span class="collection-preset__hint"><?= lang('collections_preset_features_hint') ?></span>
+                    </button>
+                </div>
             </div>
             <div class="col s12">
                 <div class="input-field col s12 m6">
@@ -82,6 +110,7 @@
                 </div>
                 <div class="col s12 tab-pane" v-for="(tab, i) in tabs" :id="tab.tabID" :class="{active : tab.active}">
                     <div id="simple-list">
+                        <p class="collection-presets__help" v-if="!tab.custom_model_fields.length"><?= lang('collections_fields_empty') ?></p>
                         <div class="row" v-for="(field, index) in tab.custom_model_fields">
                             <div class="col s12 component">
                                 <a class="waves-effect waves-light btn right red darken-2"

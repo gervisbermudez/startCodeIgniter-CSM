@@ -20,6 +20,7 @@ var CustomModelModule = new Vue({
     formsElements: formsElements,
     configurable: true,
     i18n: window.COLLECTIONS_I18N || {},
+    activePreset: "",
   },
   computed: {
     snippetText: function () {
@@ -74,6 +75,11 @@ var CustomModelModule = new Vue({
     },
     applyPreset: function (key) {
       var map = {
+        blank: {
+          slug: "",
+          template: "default",
+          fields: [],
+        },
         portfolio: {
           slug: "home_portfolio",
           template: "portfolio",
@@ -109,24 +115,47 @@ var CustomModelModule = new Vue({
             { field_name: "image", displayName: "Image", icon: "image", component: "formImageSelector" },
           ],
         },
+        testimonials: {
+          slug: "testimonials",
+          template: "default",
+          fields: [
+            { field_name: "quote", displayName: "Quote", icon: "short_text", component: "formFieldTextArea" },
+            { field_name: "title", displayName: "Author", icon: "format_color_text", component: "formFieldTitle" },
+            { field_name: "role", displayName: "Role", icon: "format_color_text", component: "formFieldTitle" },
+          ],
+        },
+        features: {
+          slug: "features",
+          template: "default",
+          fields: [
+            { field_name: "title", displayName: "Title", icon: "format_color_text", component: "formFieldTitle" },
+            { field_name: "text", displayName: "Text", icon: "short_text", component: "formFieldTextArea" },
+            { field_name: "icon", displayName: "Icon", icon: "format_color_text", component: "formFieldTitle" },
+          ],
+        },
       };
       var preset = map[key];
       if (!preset) {
         return;
       }
-      if (!this.slugDirty) {
+      this.activePreset = key;
+      if (!this.slugDirty && preset.slug) {
         this.slug = preset.slug;
       }
-      this.template = preset.template;
-      if (!this.form_name) {
-        this.form_name = key.charAt(0).toUpperCase() + key.slice(1);
+      this.template = preset.template || "default";
+      var names = (this.i18n && this.i18n.presetNames) || {};
+      if (!this.form_name && names[key]) {
+        this.form_name = names[key];
+        if (!this.slugDirty) {
+          this.slug = preset.slug || this.slugFromName(this.form_name);
+        }
       }
       var tab = this.tabs[this.getActiveTab()] || this.tabs[0];
       if (!tab) {
         this.addTab();
         tab = this.tabs[0];
       }
-      var self = this;
+      var fields = [];
       preset.fields.forEach(function (def) {
         var base = null;
         formsElements.forEach(function (el) {
@@ -144,11 +173,19 @@ var CustomModelModule = new Vue({
         base.data = base.data || {};
         base.data.fielApiID = def.field_name;
         base.data.fieldName = def.field_name;
-        tab.custom_model_fields.push(base);
+        fields.push(base);
       });
+      this.$set(tab, "custom_model_fields", fields);
+      if (!this.title_field && fields.length) {
+        this.title_field = fields[0].field_name;
+      }
+      var self = this;
       this.$nextTick(function () {
         self.initFieldPlugins();
       });
+      if (this.i18n && this.i18n.presetApplied) {
+        M.toast({ html: this.i18n.presetApplied });
+      }
     },
     getInitialTab: function () {
       return {

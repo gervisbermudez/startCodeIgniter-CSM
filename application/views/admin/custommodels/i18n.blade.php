@@ -13,6 +13,15 @@ window.COLLECTIONS_I18N = {
     noFilterResults: {!! json_encode(lang('collections_no_filter_results')) !!},
     slugInvalid: {!! json_encode(lang('collections_slug_invalid')) !!},
     needField: {!! json_encode(lang('collections_need_field')) !!},
-    tabHasData: {!! json_encode(lang('collections_tab_has_data')) !!}
+    tabHasData: {!! json_encode(lang('collections_tab_has_data')) !!},
+    presetApplied: {!! json_encode(lang('collections_preset_applied')) !!},
+    presetNames: {
+        portfolio: {!! json_encode(lang('collections_preset_portfolio')) !!},
+        team: {!! json_encode(lang('collections_preset_team')) !!},
+        faq: {!! json_encode(lang('collections_preset_faq')) !!},
+        cards: {!! json_encode(lang('collections_preset_cards')) !!},
+        testimonials: {!! json_encode(lang('collections_preset_testimonials')) !!},
+        features: {!! json_encode(lang('collections_preset_features')) !!}
+    }
 };
 </script>
