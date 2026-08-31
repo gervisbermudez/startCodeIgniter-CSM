@@ -14,6 +14,14 @@
 | [../CHANGELOG.md](../CHANGELOG.md) | 3.0 y notas 2.x | Actual |
 | [../AGENTS.md](../AGENTS.md) | Cómo partir una feature, convenciones, worktrees | Actual |
 
+## En implementación
+
+Specs de un corte **aún no mergeado**. El agente ejecutor trabaja en el worktree de esa rama; no reimplementar en `master`.
+
+| Doc | Rama | Corte |
+|---|---|---|
+| [USERGROUPS_ACCESS_PLAN.md](USERGROUPS_ACCESS_PLAN.md) | `feat/usergroups-access` | Grupos y permisos: matriz por módulo + sidenav (fase UX) |
+
 ## Producto (shipped)
 
 Estos archivos nacieron como spec de implementación. El corte ya está en `master`. Sirven para entender el contrato; no para reimplementar el módulo.
@@ -40,7 +48,7 @@ Estos archivos nacieron como spec de implementación. El corte ya está en `mast
 
 - Colección Postman: [api/postman-collection.json](api/postman-collection.json)
 - Schema seed: `application/database/start.sql`
-- Migraciones 3.0: `003_analytics_module.sql`, `005_collections.sql`, `006_notifications_inbox.sql`, `007_events_core.sql`, `008_siteforms_permissions.sql`
+- Migraciones 3.0: `003_analytics_module.sql`, `005_collections.sql`, `006_notifications_inbox.sql`, `007_events_core.sql`, `008_siteforms_permissions.sql`. Pendiente en `feat/usergroups-access`: `009_usergroups_access.sql` (ver [USERGROUPS_ACCESS_PLAN.md](USERGROUPS_ACCESS_PLAN.md)).
 
 ## Notas viejas
 
