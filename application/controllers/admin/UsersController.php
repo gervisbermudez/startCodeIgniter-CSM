@@ -150,10 +150,7 @@ class UsersController extends MY_Controller
 
     public function usergroups()
     {
-        $data['title'] = ADMIN_TITLE . " | User Groups";
-        $data['h1'] = "User Groups";
-        $data['header'] = $this->load->view('admin/header', $data, true);
-        echo $this->blade->view("admin.user.usergroups", $data);
+        $this->renderAdminView('admin.user.user_groups', lang('menu_usergroups'), lang('menu_usergroups'));
     }
 
     public function editGroup($usergroup_id)
@@ -172,7 +169,7 @@ class UsersController extends MY_Controller
             $data['editMode'] = 'edit';
             $data['usergroup_id'] = $usergroup_id;
            
-            echo $this->blade->view("admin.user.usergroups_permissions", $data);
+            echo $this->blade->view("admin.user.user_groups_permissions", $data);
         } else {
             $this->showError('Usergroup no encontrado');
         }
@@ -194,7 +191,7 @@ class UsersController extends MY_Controller
             $data['editMode'] = 'new';
             $data['usergroup_id'] = null;
            
-            echo $this->blade->view("admin.user.usergroups_permissions", $data);
+            echo $this->blade->view("admin.user.user_groups_permissions", $data);
         } else {
             $this->showError('Usergroup no encontrado');
         }
