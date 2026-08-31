@@ -17,7 +17,11 @@ var PageNewForm = new Vue({
   el: "#PageNewForm-root",
   data: {
     debug: DEBUGMODE,
-    loader: true,
+    bootLoading: true,
+    bootPending: 0,
+    bootFailed: false,
+    saving: false,
+    editorReady: false,
     editMode: false,
     page_id: null,
     user: null,
@@ -139,6 +143,14 @@ var PageNewForm = new Vue({
       },
     ],
     modalCallbackMode: "copyCallcack", //Or insertImage
+    embedProductTabs: [
+      { key: "form", helper: "render_form" },
+      { key: "fragment", helper: "fragment" },
+      { key: "menu", helper: "render_menu" },
+      { key: "album", helper: "render_album" },
+      { key: "video", helper: "render_video" },
+      { key: "event", helper: "render_event" },
+    ],
     embedLists: {
       form: [],
       fragment: [],
@@ -162,6 +174,14 @@ var PageNewForm = new Vue({
       album: false,
       video: false,
       event: false,
+    },
+    embedErrors: {
+      form: "",
+      fragment: "",
+      menu: "",
+      album: "",
+      video: "",
+      event: "",
     },
     embedEndpoints: {
       form: "api/v1/siteforms",
@@ -215,6 +235,12 @@ var PageNewForm = new Vue({
 
       return fullPath;
     },
+    visibleEmbedTabs: function () {
+      var self = this;
+      return this.embedProductTabs.filter(function (tab) {
+        return self.embedCanShow(tab.key);
+      });
+    },
   },
   watch: {
     content: function (value) {
@@ -255,6 +281,30 @@ var PageNewForm = new Vue({
     },
   },
   methods: {
+    beginBoot: function (count) {
+      this.bootPending = count;
+      this.bootLoading = true;
+      this.bootFailed = false;
+    },
+    finishBootRequest: function (ok) {
+      var self = this;
+      if (!ok && !this.bootFailed) {
+        this.bootFailed = true;
+        this.toast("toast_error");
+      }
+      this.bootPending -= 1;
+      if (this.bootPending <= 0) {
+        this.bootLoading = false;
+        this.$nextTick(function () {
+          if (!self.editorReady) {
+            self.initEditor();
+            self.editorReady = true;
+          }
+          self.initPlugins();
+          M.updateTextFields();
+        });
+      }
+    },
     setModalMode(mode) {
       this.modalCallbackMode = mode;
     },
@@ -290,9 +340,121 @@ var PageNewForm = new Vue({
       }
       return rows;
     },
+    embedItemName: function (item, listKey) {
+      if (!item) {
+        return "";
+      }
+      if (listKey === "video") {
+        return item.nam || item.nombre || item.name || "";
+      }
+      return item.name || "";
+    },
+    embedItemInsertValue: function (item, listKey) {
+      if (!item) {
+        return "";
+      }
+      if (listKey === "album" && item.album_id) {
+        return String(item.album_id);
+      }
+      if (listKey === "video" && item.video_id) {
+        return String(item.video_id);
+      }
+      return this.embedItemName(item, listKey);
+    },
+    embedCanShow: function (listKey) {
+      var perms = window.PAGE_EMBED_PERMS || {};
+      if (listKey === "album") {
+        return perms.gallery !== false;
+      }
+      if (listKey === "video") {
+        return perms.videos !== false;
+      }
+      return true;
+    },
+    embedItemKey: function (tab, item, index) {
+      if (!item) {
+        return tab.key + "-" + index;
+      }
+      return (
+        tab.key +
+        "-" +
+        (item.album_id ||
+          item.video_id ||
+          item.event_id ||
+          item.siteform_id ||
+          item.fragment_id ||
+          item.menu_id ||
+          index)
+      );
+    },
+    embedCreateUrl: function (listKey) {
+      var paths = {
+        album: "admin/gallery/new",
+        video: "admin/videos/new",
+        event: "admin/events/add",
+      };
+      return paths[listKey] ? BASEURL + paths[listKey] : "";
+    },
+    isEmbedImageFile: function (file) {
+      var type = file && file.file_type ? String(file.file_type).toLowerCase() : "";
+      return (
+        type === "jpg" ||
+        type === "jpeg" ||
+        type === "png" ||
+        type === "gif" ||
+        type === "webp"
+      );
+    },
+    saveEditorRange: function () {
+      var $editor = $("#editor");
+      try {
+        if (typeof $editor.trumbowyg === "function") {
+          $editor.trumbowyg("saveRange");
+        }
+      } catch (error) {
+        this.debug ? console.error(error) : null;
+      }
+      trumbowygInstance = $editor.data("trumbowyg") || trumbowygInstance;
+    },
+    editorContainsNode: function (instance, node) {
+      var editorEl = instance && instance.$ed && instance.$ed[0];
+      return !!(node && node.parentNode && editorEl && editorEl.contains(node));
+    },
+    insertEditorNode: function (node) {
+      var $editor = $("#editor");
+      var inserted = false;
+      try {
+        if (typeof $editor.trumbowyg === "function") {
+          $editor.trumbowyg("restoreRange");
+        }
+        var instance = trumbowygInstance || $editor.data("trumbowyg");
+        if (instance && instance.$ed && instance.$ed[0]) {
+          instance.$ed[0].focus();
+        }
+        if (instance && instance.range) {
+          instance.range.insertNode(node);
+          if (this.editorContainsNode(instance, node)) {
+            if (instance.range.setStartAfter) {
+              instance.range.setStartAfter(node);
+              instance.range.collapse(true);
+            }
+            inserted = true;
+          }
+        }
+      } catch (error) {
+        this.debug ? console.error(error) : null;
+      }
+      if (!inserted) {
+        var current = $editor.trumbowyg("html") || "";
+        var extra = node.outerHTML || node.textContent || "";
+        $editor.trumbowyg("html", current + extra);
+      }
+      this.content = $editor.trumbowyg("html");
+    },
     fetchEmbedList: function (path, listKey) {
       var self = this;
       this.embedLoading[listKey] = true;
+      this.embedErrors[listKey] = "";
       $.ajax({
         type: "GET",
         url: BASEURL + path,
@@ -300,10 +462,14 @@ var PageNewForm = new Vue({
         success: function (response) {
           var rows = self.normalizeEmbedRows(response && response.data);
           self.embedLists[listKey] = rows.filter(self.isEmbedPublished);
+          self.embedErrors[listKey] = "";
         },
-        error: function (error) {
-          self.debug ? console.log(error) : null;
+        error: function (xhr) {
+          self.debug ? console.log(xhr) : null;
           self.embedLists[listKey] = [];
+          self.embedErrors[listKey] =
+            xhr && xhr.status === 403 ? "forbidden" : "error";
+          self.toast("pages_embed_load_error");
         },
         complete: function () {
           self.embedLoading[listKey] = false;
@@ -315,12 +481,55 @@ var PageNewForm = new Vue({
       if (!listKey || !this.embedEndpoints[listKey]) {
         return;
       }
-      if (this.embedLoaded[listKey] || this.embedLoading[listKey]) {
+      if (!this.embedCanShow(listKey)) {
+        return;
+      }
+      if (this.embedLoading[listKey]) {
+        return;
+      }
+      if (this.embedLoaded[listKey] && !this.embedErrors[listKey]) {
         return;
       }
       this.fetchEmbedList(this.embedEndpoints[listKey], listKey);
     },
+    onEmbedTabClick: function (listKey) {
+      if (listKey === "file") {
+        this.openEditorFileModal();
+        return;
+      }
+      this.loadEmbedTab(listKey);
+    },
+    initEmbedTabs: function () {
+      var self = this;
+      var tabsEl = document.getElementById("pageEmbedTabs");
+      if (!tabsEl) {
+        return;
+      }
+      var existing = M.Tabs.getInstance(tabsEl);
+      if (existing && typeof existing.destroy === "function") {
+        existing.destroy();
+      }
+      var firstLink = tabsEl.querySelector(".tab a");
+      if (firstLink && !tabsEl.querySelector(".tab a.active")) {
+        firstLink.classList.add("active");
+      }
+      var tabs = M.Tabs.init(tabsEl, {
+        onShow: function (tabEl) {
+          var id = tabEl && tabEl.id ? tabEl.id : "";
+          var key = id.replace("page-embed-", "");
+          if (key === "file") {
+            self.openEditorFileModal();
+            return;
+          }
+          self.loadEmbedTab(key);
+        },
+      });
+      if (tabs && typeof tabs.updateTabIndicator === "function") {
+        tabs.updateTabIndicator();
+      }
+    },
     openEmbedModal: function () {
+      this.saveEditorRange();
       this.loadEmbedTab("form");
       var self = this;
       this.$nextTick(function () {
@@ -334,58 +543,43 @@ var PageNewForm = new Vue({
         }
         modal.open();
         self.$nextTick(function () {
-          var tabsEl = document.getElementById("pageEmbedTabs");
-          if (tabsEl) {
-            var firstLink = tabsEl.querySelector(".tab a");
-            if (firstLink && !tabsEl.querySelector(".tab a.active")) {
-              firstLink.classList.add("active");
-            }
-            M.Tabs.init(tabsEl, {
-              onShow: function (tabEl) {
-                var id = tabEl && tabEl.id ? tabEl.id : "";
-                self.loadEmbedTab(id.replace("page-embed-", ""));
-              },
-            });
-          }
+          self.initEmbedTabs();
         });
       });
     },
-    insertEmbedToken: function (helper, name) {
-      if (!name) {
-        return;
-      }
-      name = String(name).replace(/\u00a0/g, " ").replace(/\s+/g, " ").trim();
-      if (!name) {
-        return;
-      }
-      var token = "{{" + helper + "(" + name + ")}}";
-      var $editor = $("#editor");
-      var inserted = false;
-      try {
-        if (typeof $editor.trumbowyg === "function") {
-          $editor.trumbowyg("restoreRange");
-        }
-        var instance = trumbowygInstance || $editor.data("trumbowyg");
-        var doc = instance && instance.doc ? instance.doc : document;
-        if (instance && instance.$ed && instance.$ed[0]) {
-          instance.$ed[0].focus();
-        }
-        if (doc && doc.execCommand("insertText", false, token)) {
-          inserted = true;
-        }
-      } catch (error) {
-        this.debug ? console.error(error) : null;
-      }
-      if (!inserted) {
-        var current = $editor.trumbowyg("html") || "";
-        $editor.trumbowyg("html", current + token);
-      }
-      this.content = $editor.trumbowyg("html");
+    closeEmbedModal: function () {
       var modalEl = document.getElementById("pageEmbedModal");
       var modal = modalEl ? M.Modal.getInstance(modalEl) : null;
       if (modal) {
         modal.close();
       }
+    },
+    openEditorFileModal: function () {
+      this.saveEditorRange();
+      var el = document.getElementById("editorFileModal");
+      if (!el) {
+        return;
+      }
+      var modal = M.Modal.getInstance(el);
+      if (!modal) {
+        modal = M.Modal.init(el, {});
+      }
+      modal.open();
+    },
+    insertEmbedToken: function (helper, name) {
+      if (!name) {
+        return;
+      }
+      name = String(name)
+        .replace(/\u00a0/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+      if (!name) {
+        return;
+      }
+      var token = "{{" + helper + "(" + name + ")}}";
+      this.insertEditorNode(document.createTextNode(token));
+      this.closeEmbedModal();
     },
     addCustomMeta() {
       this.customMetas.push({
@@ -518,34 +712,54 @@ var PageNewForm = new Vue({
     },
     validateForm() {
       this.form.validate();
-      let errors = true;
-      if (!this.publishondate && !this.datepublish && !this.timepublish) {
-        errors = false;
+      var scheduleOk =
+        this.publishondate ||
+        !this.status ||
+        (!!this.datepublish && !!this.timepublish);
+      return this.form.errors.length == 0 && scheduleOk;
+    },
+    pageSaveErrorToast: function (xhr) {
+      var json = xhr && xhr.responseJSON ? xhr.responseJSON : {};
+      var msg = json.error_message || "";
+      if (json.errors && json.errors.path) {
+        msg = msg ? msg + " " + json.errors.path : json.errors.path;
       }
-
-      return this.form.errors.length == 0 && errors;
+      if (msg) {
+        M.toast({ html: msg });
+        return;
+      }
+      this.toast("toast_error");
     },
     save() {
       var self = this;
       var callBack = function (response) {
+        var toastHTML = "";
         if (response.data.status == 1) {
-          var toastHTML =
-            '<span>Page saved </span><a target="_blank" href="' +
+          toastHTML =
+            "<span>" +
+            self.lang("toast_saved") +
+            '</span><a target="_blank" href="' +
             BASEURL +
             response.data.path +
-            '" class="btn-flat toast-action">View in site</a>';
+            '" class="btn-flat toast-action">' +
+            self.lang("pages_view_in_site") +
+            "</a>";
         } else {
-          var toastHTML =
-            '<span>Draf saved </span><a target="_blank" href="' +
+          toastHTML =
+            "<span>" +
+            self.lang("toast_saved") +
+            '</span><a target="_blank" href="' +
             BASEURL +
             "admin/pages/preview?page_id=" +
             response.data.page_id +
-            '" class="btn-flat toast-action">Preview</a>';
+            '" class="btn-flat toast-action">' +
+            self.lang("pages_preview") +
+            "</a>";
         }
         M.toast({ html: toastHTML });
       };
       if (self.validateForm()) {
-        this.loader = true;
+        this.saving = true;
         this.runSaveData(callBack);
       } else {
         this.toast("toast_form_invalid");
@@ -561,9 +775,7 @@ var PageNewForm = new Vue({
         dataType: "json",
         success: function (response) {
           self.debug ? console.log(url, response) : null;
-          setTimeout(() => {
-            self.loader = false;
-          }, 1500);
+          self.saving = false;
           if (response.code == 200) {
             self.editMode = true;
             self.page_id = response.data.page_id;
@@ -572,13 +784,12 @@ var PageNewForm = new Vue({
             }
           } else {
             M.toast({ html: response.error_message });
-            self.loader = false;
           }
         },
-        error: function (response) {
-          self.loader = false;
-          self.toast("toast_error");
-          self.debug ? console.error(response) : null;
+        error: function (xhr) {
+          self.saving = false;
+          self.pageSaveErrorToast(xhr);
+          self.debug ? console.error(xhr) : null;
         },
       });
     },
@@ -630,10 +841,12 @@ var PageNewForm = new Vue({
     },
     getPageTags() {
       let tags = [];
-      const instance = M.Chips.getInstance(
-        document.getElementById("pageTags")
-      ).chipsData;
-      instance.forEach((element) => {
+      const chipsEl = document.getElementById("pageTags");
+      const instance = chipsEl ? M.Chips.getInstance(chipsEl) : null;
+      if (!instance || !instance.chipsData) {
+        return tags;
+      }
+      instance.chipsData.forEach((element) => {
         tags.push(element.tag);
       });
       return tags;
@@ -647,7 +860,6 @@ var PageNewForm = new Vue({
         data: {},
         dataType: "json",
         success: function (response) {
-          self.loader = false;
           self.debug ? console.log(url, response) : null;
           if (response.code == 200) {
             self.templates = response.data.templates.map(function (value) {
@@ -658,12 +870,14 @@ var PageNewForm = new Vue({
               let layout = value.split(".")[0];
               return layout == "site" ? "default" : layout;
             });
-            self.initPlugins();
+            self.finishBootRequest(true);
+          } else {
+            self.finishBootRequest(false);
           }
         },
         error: function (error) {
           self.debug ? console.log(error) : null;
-          self.loader = false;
+          self.finishBootRequest(false);
         },
       });
     },
@@ -718,14 +932,16 @@ var PageNewForm = new Vue({
         dataType: "json",
         success: function (response) {
           self.debug ? console.log(url, response) : null;
-          self.loader = false;
           if (response.code == 200) {
             self.pageTypes = response.data;
+            self.finishBootRequest(true);
+          } else {
+            self.finishBootRequest(false);
           }
         },
         error: function (error) {
           self.debug ? console.log(error) : null;
-          self.loader = false;
+          self.finishBootRequest(false);
         },
       });
     },
@@ -738,15 +954,17 @@ var PageNewForm = new Vue({
         data: {},
         dataType: "json",
         success: function (response) {
-          self.loader = false;
           self.debug ? console.log(url, response) : null;
           if (response.code == 200) {
             self.categories = response.data;
+            self.finishBootRequest(true);
+          } else {
+            self.finishBootRequest(false);
           }
         },
         error: function (error) {
           self.debug ? console.log(error) : null;
-          self.loader = false;
+          self.finishBootRequest(false);
         },
       });
     },
@@ -760,7 +978,6 @@ var PageNewForm = new Vue({
         dataType: "json",
         success: function (response) {
           self.debug ? console.log(url, response) : null;
-          self.loader = false;
           if (response.code == 200) {
             self.subcategories = response.data;
             PageNewForm.initSelects();
@@ -768,7 +985,6 @@ var PageNewForm = new Vue({
         },
         error: function (error) {
           self.debug ? console.log(error) : null;
-          self.loader = false;
         },
       });
     },
@@ -779,11 +995,12 @@ var PageNewForm = new Vue({
       if (page_id && editMode == "edit") {
         var self = this;
         self.editMode = true;
+        self.beginBoot(2);
+        self.getCategories();
         var url = BASEURL + "api/v1/pages/editpageinfo/" + page_id;
         fetch(url)
           .then((response) => response.json())
           .then((response) => {
-            self.loader = false;
             self.debug ? console.log(url, response) : null;
             if (response.code == 200) {
               self.form.fields.title.value = response.data.page.title;
@@ -792,17 +1009,27 @@ var PageNewForm = new Vue({
               self.status = response.data.page.status == "1";
               self.path = response.data.page.path;
               self.visibility = response.data.page.visibility;
-              self.publishondate = !!response.data.page.date_publish;
+              var datePublish = response.data.page.date_publish;
+              var hasSchedule = !!(
+                datePublish && String(datePublish).indexOf("0000-00-00") === -1
+              );
+              self.publishondate = !hasSchedule;
+              if (hasSchedule) {
+                var dateParts = String(datePublish).split(" ");
+                self.datepublish = dateParts[0] || "";
+                var timePart = dateParts[1] || "";
+                self.timepublish =
+                  timePart.length >= 5 ? timePart.substring(0, 5) : timePart;
+              }
               self.template = response.data.page.template;
               self.categorie_id = response.data.page.categorie_id || 0;
               self.subcategories_id = response.data.page.subcategories_id || 0;
               self.pageTypes = response.data.page_types;
               self.page_type_id = response.data.page.page_type_id;
               self.page_data = response.data.page.page_data;
-              const instance = M.Chips.getInstance(
-                document.getElementById("pageTags")
-              );
-              response.data.page.page_data.tags
+              const chipsEl = document.getElementById("pageTags");
+              const instance = chipsEl ? M.Chips.getInstance(chipsEl) : null;
+              response.data.page.page_data.tags && instance
                 ? response.data.page.page_data.tags.forEach((element) => {
                     self.debug ? console.log({ element }) : null;
                     instance.addChip({
@@ -830,23 +1057,20 @@ var PageNewForm = new Vue({
               });
               self.json_content = response.data.page.json_content;
               self.content = response.data.page.content;
-              self.content
-                ? $("#editor").trumbowyg("html", response.data.page.content)
-                : null;
+              self.finishBootRequest(true);
+            } else {
+              self.finishBootRequest(false);
             }
-            setTimeout(() => {
-              M.updateTextFields();
-            }, 1000);
-            this.initPlugins();
           })
           .catch((response) => {
             self.debug ? console.log(response) : null;
-            M.toast({ html: response.error_message });
-            self.loader = false;
+            self.finishBootRequest(false);
           });
       } else {
+        this.beginBoot(3);
         this.getPageTypes();
         this.getTemplates();
+        this.getCategories();
       }
     },
     copyCallcack(files) {
@@ -879,96 +1103,54 @@ var PageNewForm = new Vue({
       files = files.map((file) => new ExplorerFile(file));
       this.debug ? console.log(files) : null;
       let instance = M.Modal.getInstance($("#editorModal"));
-      instance.close();
+      if (instance) {
+        instance.close();
+      }
+      var self = this;
       files.forEach((file) => {
-        try {
-          var node = $(
-            `<img alt="${file.file_name}" src="${file.get_full_file_path()}" />`
+        var node = $(
+          '<img alt="' +
+            file.file_name +
+            '" src="' +
+            file.get_full_file_path() +
+            '" />'
+        )[0];
+        self.insertEditorNode(node);
+      });
+    },
+    onSelectEditorFileCallback(files) {
+      files = files.map((file) => new ExplorerFile(file));
+      var fileModalEl = document.getElementById("editorFileModal");
+      var fileModal = fileModalEl ? M.Modal.getInstance(fileModalEl) : null;
+      if (fileModal) {
+        fileModal.close();
+      }
+      this.closeEmbedModal();
+      var self = this;
+      files.forEach((file) => {
+        var node;
+        if (self.isEmbedImageFile(file)) {
+          node = $(
+            '<img alt="' +
+              file.file_name +
+              '" src="' +
+              file.get_full_file_path() +
+              '" />'
           )[0];
-          console.log({ trumbowygInstance });
-          if (trumbowygInstance.range == null) {
-            let startNode = $(".trumbowyg-editor")[0];
-            let endNode = $(".trumbowyg-editor")[0];
-            let range = document.createRange();
-            range.setStart(startNode, 1);
-            range.setEnd(endNode, 1);
-            trumbowygInstance.range = range;
-          }
-          this.debug ? console.log({ trumbowygInstance }) : null;
-          trumbowygInstance.range.insertNode(node);
-        } catch (error) {
-          this.debug ? console.error(error) : null;
+        } else {
+          node = $(
+            '<a href="' +
+              file.get_full_file_path() +
+              '" target="_blank" rel="noopener">' +
+              file.get_filename() +
+              "</a>"
+          )[0];
         }
+        self.insertEditorNode(node);
       });
     },
-    initPlugins() {
-      setTimeout(() => {
-        M.Tabs.init(document.getElementById("formTabs"), {});
-        var elems = document.getElementById("pageMetas");
-        M.Collapsible.init(elems, {
-          accordion: false,
-        });
-        var elems = document.querySelectorAll(".datepicker");
-        M.Datepicker.init(elems, {
-          format: "yyyy-mm-dd",
-          onClose: function () {
-            PageNewForm.datepublish =
-              document.getElementById("datepublish").value;
-          },
-        });
-        var elems = document.querySelectorAll(".timepicker");
-        M.Timepicker.init(elems, {
-          twelveHour: false,
-          defaultTime: "now",
-          onCloseEnd: function () {
-            PageNewForm.timepublish =
-              document.getElementById("timepublish").value;
-          },
-        });
-        this.initSelects();
-        var embedModal = document.getElementById("pageEmbedModal");
-        if (embedModal && !M.Modal.getInstance(embedModal)) {
-          M.Modal.init(embedModal, {});
-        }
-      }, 1000);
-    },
-    initMaterialboxed() {
-      setTimeout(() => {
-        var elems = document.querySelectorAll(".materialboxed");
-        M.Materialbox.init(elems, {});
-      }, 500);
-    },
-    initSelects() {
-      setTimeout(() => {
-        var elems = document.querySelectorAll("select");
-        M.FormSelect.init(elems, {});
-        this.initMaterialboxed();
-      }, 1000);
-    },
-    setEditorContent: function (page) {
-      return;
-    },
-  },
-  mounted: function () {
-    this.$nextTick(function () {
-      this.debug ? console.log("mounted PageNewForm") : null;
-
-      M.Chips.init(document.getElementById("pageTags"), {
-        placeholder: "Enter a value",
-      });
-
-      setTimeout(() => {
-        const instance = M.Chips.getInstance(
-          document.getElementById("pageTags")
-        );
-        instance.options.onChipAdd = (value) => {
-          this.page_data.tags = this.getPageTags();
-        };
-        instance.options.onChipDelete = (value) => {
-          this.page_data.tags = this.getPageTags();
-        };
-      }, 2000);
-
+    initEditor: function () {
+      var self = this;
       $("#editor")
         .trumbowyg({
           semantic: false,
@@ -987,16 +1169,100 @@ var PageNewForm = new Vue({
             ["fullscreen"],
           ],
         })
-        .on("tbwfocus", () => {}) // Listen for `tbwfocus` event
-        .on("tbwchange", () => {
-          this.content = $("#editor").trumbowyg("html");
-        }) // Listen for `tbwfocus` event
-        .on("tbwblur", () => {
-          trumbowygInstance = $("#editor").data("trumbowyg");
+        .on("tbwchange", function () {
+          self.content = $("#editor").trumbowyg("html");
+        })
+        .on("tbwblur", function () {
+          self.saveEditorRange();
         });
       trumbowygInstance = $("#editor").data("trumbowyg");
+      if (self.content) {
+        $("#editor").trumbowyg("html", self.content);
+      }
+    },
+    initPlugins() {
+      var formTabsEl = document.getElementById("formTabs");
+      if (formTabsEl) {
+        var existingTabs = M.Tabs.getInstance(formTabsEl);
+        if (existingTabs && typeof existingTabs.destroy === "function") {
+          existingTabs.destroy();
+        }
+        var formTabs = M.Tabs.init(formTabsEl, {});
+        if (formTabs && typeof formTabs.updateTabIndicator === "function") {
+          formTabs.updateTabIndicator();
+        }
+      }
+      var elems = document.getElementById("pageMetas");
+      if (elems) {
+        M.Collapsible.init(elems, {
+          accordion: false,
+        });
+      }
+      var dateEls = document.querySelectorAll(".datepicker");
+      M.Datepicker.init(dateEls, {
+        format: "yyyy-mm-dd",
+        onClose: function () {
+          PageNewForm.datepublish =
+            document.getElementById("datepublish").value;
+        },
+      });
+      var timeEls = document.querySelectorAll(".timepicker");
+      M.Timepicker.init(timeEls, {
+        twelveHour: false,
+        defaultTime: "now",
+        onCloseEnd: function () {
+          PageNewForm.timepublish =
+            document.getElementById("timepublish").value;
+        },
+      });
+      this.initSelects();
+      var embedModal = document.getElementById("pageEmbedModal");
+      if (embedModal && !M.Modal.getInstance(embedModal)) {
+        M.Modal.init(embedModal, {});
+      }
+    },
+    initMaterialboxed() {
+      setTimeout(() => {
+        var elems = document.querySelectorAll(".materialboxed");
+        M.Materialbox.init(elems, {});
+      }, 500);
+    },
+    initSelects() {
+      var self = this;
+      this.$nextTick(function () {
+        var elems = document.querySelectorAll("#PageNewForm-root select");
+        M.FormSelect.init(elems, {});
+        self.initMaterialboxed();
+      });
+    },
+    setEditorContent: function (page) {
+      return;
+    },
+  },
+  mounted: function () {
+    this.$nextTick(function () {
+      this.debug ? console.log("mounted PageNewForm") : null;
+
+      M.Chips.init(document.getElementById("pageTags"), {
+        placeholder: "Enter a value",
+      });
+
+      setTimeout(() => {
+        const instance = M.Chips.getInstance(
+          document.getElementById("pageTags")
+        );
+        if (!instance) {
+          return;
+        }
+        instance.options.onChipAdd = (value) => {
+          this.page_data.tags = this.getPageTags();
+        };
+        instance.options.onChipDelete = (value) => {
+          this.page_data.tags = this.getPageTags();
+        };
+      }, 2000);
+
       this.checkEditMode();
-      this.getCategories();
     });
   },
 });

@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="<?=base_url('public/vendors/trumbowyg/ui/trumbowyg.min.css')?>" />
 <script src="https://unpkg.com/moment@2.22.1/min/moment.min.js"></script>
 @endsection @section('content')
-<div class="container form" id="PageNewForm-root">
+<div class="container form page-form" id="PageNewForm-root">
     <input type="hidden" name="editMode" id="editMode" value="{{ $editMode }}" />
     <input type="hidden" name="page_id" id="page_id" value="{{ $page_id }}" />
     <div class="row">
@@ -15,40 +15,53 @@
             <h3 class="page-header">{{ $h1 }}</h3>
         </div>
     </div>
-    <div class="row" id="form">
-        <div class="col s12 center" v-bind:class="{ hide: !loader }">
-            <preloader />
+    <div class="row" id="form" :aria-busy="bootLoading ? 'true' : 'false'">
+        <div class="row form-boot-skeleton" v-cloak v-show="bootLoading">
+            <span class="sr-only"><?php echo lang('pages_form_loading'); ?></span>
+            <div class="col s12 m8 l9">
+                <div class="form-skeleton-bar"></div>
+                <div class="form-skeleton-bar"></div>
+                <div class="form-skeleton-bar form-skeleton-bar--short"></div>
+                <div class="form-skeleton-editor"></div>
+            </div>
+            <div class="col s12 m4 l3">
+                <div class="form-skeleton-block"></div>
+                <div class="form-skeleton-block"></div>
+                <div class="form-skeleton-block"></div>
+                <div class="form-skeleton-block"></div>
+            </div>
         </div>
+        <div class="row page-form-body" v-cloak v-show="!bootLoading">
         <div class="col s12">
             <ul class="tabs" id="formTabs">
                 <li class="tab col s3">
-                    <a class="active grey-text text-darken-2" href="#test1">
+                    <a class="active grey-text text-darken-2" href="#basic">
                         <i class="material-icons">assignment</i><span>{{ lang('pages_basic_data') }} </span>
                     </a>
                 </li>
                 <li class="tab col s3">
-                    <a href="#test2" class="active grey-text text-darken-2">
+                    <a href="#seo" class="grey-text text-darken-2">
                         <i class="material-icons">build</i>
                         <span>{{ lang('pages_additional') }}</span>
                     </a>
                 </li>
             </ul>
         </div>
-        <div class="col s12" id="test1">
-            <div v-cloak v-show="!loader" class="col s12 m8 l9">
+        <div class="col s12" id="basic">
+            <div class="col s12 m8 l9">
                 <div class="input-field">
-                    <label for="title">{{ lang('pages_title') }}</label>
-                    <input type="text" id="title" name="title" required="required" value=""
+                    <label for="page_title">{{ lang('pages_title') }}</label>
+                    <input type="text" id="page_title" name="title" required="required" value=""
                         v-model="form.fields.title.value" v-on:blur="onChangeTitle(form.fields.title.value);" />
                 </div>
                 <div class="input-field">
-                    <label for="subtitle">{{ lang('pages_subtitle') }}</label>
-                    <input type="text" id="subtitle" name="subtitle" required="required" value=""
+                    <label for="page_subtitle">{{ lang('pages_subtitle') }}</label>
+                    <input type="text" id="page_subtitle" name="subtitle" required="required" value=""
                         v-model="form.fields.subtitle.value" />
                 </div>
                 <div class="input-field">
-                    <label for="path">{{ lang('pages_path') }}</label>
-                    <input type="text" id="path" name="path" required="required" value="" v-model="path" />
+                    <label for="page_path">{{ lang('pages_path') }}</label>
+                    <input type="text" id="page_path" name="path" required="required" value="" v-model="path" />
                     <br />
                 </div>
                 <p>
@@ -61,7 +74,9 @@
                         <div class="card mainPageImage">
                             <div class="card-image">
                                 <i class="material-icons right close tooltipped" data-position="left" data-delay="50"
-                                    data-tooltip="<?php echo lang('pages_remove_image'); ?>" v-on:click="removeImage(index);">close</i>
+                                    data-tooltip="<?php echo lang('pages_remove_image'); ?>"
+                                    aria-label="<?php echo lang('pages_remove_image'); ?>"
+                                    v-on:click="removeImage(index);">close</i>
                                 <img class="materialboxed" :src="getFileImagenPath(image)" />
                             </div>
                             <span class="card-title truncate"><span>@{{ getFileImagenName(image) }}</span></span>
@@ -72,12 +87,18 @@
                     <span class="header grey-text text-darken-2">{{ lang('pages_content') }} <i
                             class="material-icons left">description</i></span>
                     <br />
-                    <textarea v-model="content" id="editor"></textarea>
-                    <br />
+                    <textarea id="editor"></textarea>
+                    <div class="page-embed-toolbar">
+                        <button type="button" class="waves-effect waves-light btn page-embed-insert-btn"
+                            @click.prevent="openEmbedModal"
+                            aria-label="<?php echo lang('pages_insert_content'); ?>">
+                            <i class="material-icons left" aria-hidden="true">add_box</i><?php echo lang('pages_insert_content'); ?>
+                        </button>
+                    </div>
                 </div>
                 <br />
             </div>
-            <div v-cloak v-show="!loader" class="col s12 m4 l3">
+            <div class="col s12 m4 l3">
                 <span class="header grey-text text-darken-2">{{ lang('pages_publish') }}
                     <i class="material-icons left">assignment_turned_in</i></span>
                 <div class="input-field">
@@ -160,7 +181,7 @@
                     <label>{{ lang('pages_subcategory') }}</label>
                 </div>
                 <br />
-                <span class="header grey-text text-darken-2"><i class="material-icons left">layers</i> Template</span>
+                <span class="header grey-text text-darken-2"><i class="material-icons left">layers</i> {{ lang('pages_template') }}</span>
                 <br />
                 <div class="input-field">
                     <select v-model="template" id="template" name="template">
@@ -177,7 +198,7 @@
                             @{{ layout }}
                         </option>
                     </select>
-                    <label>Layout</label>
+                    <label>{{ lang('pages_layout') }}</label>
                 </div>
                 <div v-if="user">
                     <p><b>{{ lang('categories_created_by') }}</b>:</p>
@@ -191,35 +212,19 @@
                         </li>
                     </ul>
                 </div>
-                <div class="page-embed-toolbar">
-                    <button type="button" class="waves-effect waves-light btn page-embed-insert-btn"
-                        @click.prevent="openEmbedModal"
-                        aria-label="<?php echo lang('pages_insert_content'); ?>">
-                        <i class="material-icons left" aria-hidden="true">add_box</i><?php echo lang('pages_insert_content'); ?>
-                    </button>
-                </div>
-                <div class="row">
-                    <a v-if="!status" class="btn bg-color3" target="_blank" :href="preview_link"
-                        :class="{disabled: !btnEnable}">
-                        <span><i class="material-icons right">launch</i> Preview</span>
-                    </a>
-                    <a v-else class="btn bg-color3" target="_blank" :href="full_path" :class="{disabled: !btnEnable}">
-                        <span><i class="material-icons right">launch</i> {{ lang('pages_view_in_site') }}</span>
-                    </a>
-                </div>
             </div>
         </div>
-        <div id="test2" class="col s12">
-            <div class="col s12 m8 l9" v-cloak v-show="!loader">
+        <div id="seo" class="col s12">
+            <div class="col s12 m8 l9">
                 <br />
                 <span class="header grey-text text-darken-2">{{ lang('pages_add_tags') }}</span>
                 <div class="chips chips-autocomplete" id="pageTags"></div>
             </div>
             <br />
-            <div class="row" v-cloak v-show="!loader">
+            <div class="row">
                 <div class="input-field col s12">
-                    <textarea id="title" v-model="page_data.title" class="materialize-textarea"></textarea>
-                    <label for="title">{{ lang('pages_page_title') }}</label>
+                    <textarea id="page_document_title" v-model="page_data.title" class="materialize-textarea"></textarea>
+                    <label for="page_document_title">{{ lang('pages_page_title') }}</label>
                 </div>
                 <div class="input-field col s12">
                     <textarea id="headers_includes" v-model="page_data.headers_includes"
@@ -232,7 +237,7 @@
                     <label for="footer_includes">{{ lang('pages_footer_includes') }}</label>
                 </div>
             </div>
-            <div class="row" v-cloak v-show="!loader">
+            <div class="row">
                 <div class="col s12">
                     <span class="header grey-text text-darken-2"><i class="material-icons left">layers</i> {{ lang('pages_metas') }} <a
                             class="waves-effect waves-light btn right" href="#!" @click="addCustomMeta();">{{ lang('pages_add_meta') }}
@@ -272,15 +277,21 @@
                 </div>
             </div>
         </div>
-        <div v-cloak v-show="!loader" class="col s12">
-            <div class="input-field" id="buttons">
-                <a href="<?php echo base_url('admin/pages/'); ?>" class="btn-flat"><?php echo lang('cancel'); ?></a>
-                <button type="submit" class="btn btn-primary" @click="save" :class="{disabled: !btnEnable}">
-                    <span v-if="!status"><i class="material-icons right">edit</i> Guardar Borrador</span>
-                    <span v-if="status && btnEnable"><i class="material-icons right">publish</i> Publicar</span>
-                    <span v-if="status && !btnEnable"><i class="material-icons right">publish</i> Publicar</span>
-                </button>
-            </div>
+        <div class="col s12 page-form-actions">
+            <a href="<?php echo base_url('admin/pages/'); ?>" class="btn-flat"><?php echo lang('cancel'); ?></a>
+            <a v-if="!status" class="btn-flat" target="_blank" :href="preview_link"
+                :class="{disabled: !page_id}">
+                <?php echo lang('pages_preview'); ?>
+            </a>
+            <a v-else class="btn-flat" target="_blank" :href="full_path" :class="{disabled: !btnEnable}">
+                <?php echo lang('pages_view_in_site'); ?>
+            </a>
+            <button type="button" class="btn page-form-save" @click="save" :class="{disabled: !btnEnable || saving}">
+                <span v-if="saving"><?php echo lang('pages_saving'); ?></span>
+                <span v-else-if="!status"><i class="material-icons right">edit</i> <?php echo lang('pages_save_draft'); ?></span>
+                <span v-else><i class="material-icons right">publish</i> <?php echo lang('pages_publish'); ?></span>
+            </button>
+        </div>
         </div>
     </div>
     <div id="pageEmbedModal" class="modal modal-fixed-footer page-embed-modal">
@@ -288,30 +299,33 @@
             <p class="page-header"><?php echo lang('pages_insert_content'); ?></p>
             <ul class="tabs" id="pageEmbedTabs">
                 <li class="tab">
-                    <a class="active" href="#page-embed-form"><?php echo lang('pages_embed_form'); ?></a>
+                    <a class="active" href="#page-embed-form" @click="onEmbedTabClick('form')"><?php echo lang('pages_embed_form'); ?></a>
                 </li>
                 <li class="tab">
-                    <a href="#page-embed-fragment"><?php echo lang('pages_embed_fragment'); ?></a>
+                    <a href="#page-embed-fragment" @click="onEmbedTabClick('fragment')"><?php echo lang('pages_embed_fragment'); ?></a>
                 </li>
                 <li class="tab">
-                    <a href="#page-embed-menu"><?php echo lang('pages_embed_menu'); ?></a>
+                    <a href="#page-embed-menu" @click="onEmbedTabClick('menu')"><?php echo lang('pages_embed_menu'); ?></a>
                 </li>
                 @if(has_permisions('SELECT_GALLERY'))
                 <li class="tab">
-                    <a href="#page-embed-album"><?php echo lang('pages_embed_album'); ?></a>
+                    <a href="#page-embed-album" @click="onEmbedTabClick('album')"><?php echo lang('pages_embed_album'); ?></a>
                 </li>
                 @endif
                 @if(has_permisions('SELECT_VIDEOS'))
                 <li class="tab">
-                    <a href="#page-embed-video"><?php echo lang('pages_embed_video'); ?></a>
+                    <a href="#page-embed-video" @click="onEmbedTabClick('video')"><?php echo lang('pages_embed_video'); ?></a>
                 </li>
                 @endif
                 <li class="tab">
-                    <a href="#page-embed-event"><?php echo lang('pages_embed_event'); ?></a>
+                    <a href="#page-embed-event" @click="onEmbedTabClick('event')"><?php echo lang('pages_embed_event'); ?></a>
+                </li>
+                <li class="tab">
+                    <a href="#page-embed-file" @click="onEmbedTabClick('file')"><?php echo lang('pages_embed_file'); ?></a>
                 </li>
             </ul>
-            <div id="page-embed-form" class="page-embed-pane">
-                <div class="page-embed-empty" v-if="embedLoading.form">
+            <div :id="'page-embed-' + tab.key" class="page-embed-pane" v-for="tab in visibleEmbedTabs" :key="tab.key">
+                <div class="page-embed-empty" v-if="embedLoading[tab.key]">
                     <div class="preloader-wrapper small active">
                         <div class="spinner-layer">
                             <div class="circle-clipper left"><div class="circle"></div></div>
@@ -320,118 +334,34 @@
                         </div>
                     </div>
                 </div>
-                <ul class="collection page-embed-list" v-else-if="embedLists.form.length">
-                    <li class="collection-item" tabindex="0" v-for="item in embedLists.form" :key="'form-' + item.siteform_id"
-                        @click="insertEmbedToken('render_form', item.name)"
-                        @keydown.enter.prevent="insertEmbedToken('render_form', item.name)">@{{ item.name }}</li>
+                <ul class="collection page-embed-list" v-else-if="embedLists[tab.key].length">
+                    <li class="collection-item" tabindex="0"
+                        v-for="(item, index) in embedLists[tab.key]"
+                        :key="embedItemKey(tab, item, index)"
+                        @click="insertEmbedToken(tab.helper, embedItemInsertValue(item, tab.key))"
+                        @keydown.enter.prevent="insertEmbedToken(tab.helper, embedItemInsertValue(item, tab.key))">
+                        @{{ embedItemName(item, tab.key) }}
+                    </li>
                 </ul>
+                <div class="page-embed-empty" v-else-if="embedErrors[tab.key]">
+                    <i class="material-icons" aria-hidden="true">error_outline</i>
+                    <p><?php echo lang('pages_embed_load_error'); ?></p>
+                </div>
                 <div class="page-embed-empty" v-else>
                     <i class="material-icons" aria-hidden="true">inbox</i>
                     <p><?php echo lang('pages_embed_empty'); ?></p>
+                    <a v-if="embedCreateUrl(tab.key)" class="btn-flat" :href="embedCreateUrl(tab.key)">
+                        <?php echo lang('pages_embed_create'); ?>
+                    </a>
                 </div>
             </div>
-            <div id="page-embed-fragment" class="page-embed-pane">
-                <div class="page-embed-empty" v-if="embedLoading.fragment">
-                    <div class="preloader-wrapper small active">
-                        <div class="spinner-layer">
-                            <div class="circle-clipper left"><div class="circle"></div></div>
-                            <div class="gap-patch"><div class="circle"></div></div>
-                            <div class="circle-clipper right"><div class="circle"></div></div>
-                        </div>
-                    </div>
-                </div>
-                <ul class="collection page-embed-list" v-else-if="embedLists.fragment.length">
-                    <li class="collection-item" tabindex="0" v-for="item in embedLists.fragment" :key="'frag-' + item.fragment_id"
-                        @click="insertEmbedToken('fragment', item.name)"
-                        @keydown.enter.prevent="insertEmbedToken('fragment', item.name)">@{{ item.name }}</li>
-                </ul>
-                <div class="page-embed-empty" v-else>
-                    <i class="material-icons" aria-hidden="true">inbox</i>
-                    <p><?php echo lang('pages_embed_empty'); ?></p>
-                </div>
-            </div>
-            <div id="page-embed-menu" class="page-embed-pane">
-                <div class="page-embed-empty" v-if="embedLoading.menu">
-                    <div class="preloader-wrapper small active">
-                        <div class="spinner-layer">
-                            <div class="circle-clipper left"><div class="circle"></div></div>
-                            <div class="gap-patch"><div class="circle"></div></div>
-                            <div class="circle-clipper right"><div class="circle"></div></div>
-                        </div>
-                    </div>
-                </div>
-                <ul class="collection page-embed-list" v-else-if="embedLists.menu.length">
-                    <li class="collection-item" tabindex="0" v-for="item in embedLists.menu" :key="'menu-' + item.menu_id"
-                        @click="insertEmbedToken('render_menu', item.name)"
-                        @keydown.enter.prevent="insertEmbedToken('render_menu', item.name)">@{{ item.name }}</li>
-                </ul>
-                <div class="page-embed-empty" v-else>
-                    <i class="material-icons" aria-hidden="true">inbox</i>
-                    <p><?php echo lang('pages_embed_empty'); ?></p>
-                </div>
-            </div>
-            @if(has_permisions('SELECT_GALLERY'))
-            <div id="page-embed-album" class="page-embed-pane">
-                <div class="page-embed-empty" v-if="embedLoading.album">
-                    <div class="preloader-wrapper small active">
-                        <div class="spinner-layer">
-                            <div class="circle-clipper left"><div class="circle"></div></div>
-                            <div class="gap-patch"><div class="circle"></div></div>
-                            <div class="circle-clipper right"><div class="circle"></div></div>
-                        </div>
-                    </div>
-                </div>
-                <ul class="collection page-embed-list" v-else-if="embedLists.album.length">
-                    <li class="collection-item" tabindex="0" v-for="item in embedLists.album" :key="'album-' + item.album_id"
-                        @click="insertEmbedToken('render_album', item.album_id)"
-                        @keydown.enter.prevent="insertEmbedToken('render_album', item.album_id)">@{{ item.name }}</li>
-                </ul>
-                <div class="page-embed-empty" v-else>
-                    <i class="material-icons" aria-hidden="true">inbox</i>
-                    <p><?php echo lang('pages_embed_empty'); ?></p>
-                </div>
-            </div>
-            @endif
-            @if(has_permisions('SELECT_VIDEOS'))
-            <div id="page-embed-video" class="page-embed-pane">
-                <div class="page-embed-empty" v-if="embedLoading.video">
-                    <div class="preloader-wrapper small active">
-                        <div class="spinner-layer">
-                            <div class="circle-clipper left"><div class="circle"></div></div>
-                            <div class="gap-patch"><div class="circle"></div></div>
-                            <div class="circle-clipper right"><div class="circle"></div></div>
-                        </div>
-                    </div>
-                </div>
-                <ul class="collection page-embed-list" v-else-if="embedLists.video.length">
-                    <li class="collection-item" tabindex="0" v-for="item in embedLists.video" :key="'video-' + item.video_id"
-                        @click="insertEmbedToken('render_video', item.video_id)"
-                        @keydown.enter.prevent="insertEmbedToken('render_video', item.video_id)">@{{ item.nam }}</li>
-                </ul>
-                <div class="page-embed-empty" v-else>
-                    <i class="material-icons" aria-hidden="true">inbox</i>
-                    <p><?php echo lang('pages_embed_empty'); ?></p>
-                </div>
-            </div>
-            @endif
-            <div id="page-embed-event" class="page-embed-pane">
-                <div class="page-embed-empty" v-if="embedLoading.event">
-                    <div class="preloader-wrapper small active">
-                        <div class="spinner-layer">
-                            <div class="circle-clipper left"><div class="circle"></div></div>
-                            <div class="gap-patch"><div class="circle"></div></div>
-                            <div class="circle-clipper right"><div class="circle"></div></div>
-                        </div>
-                    </div>
-                </div>
-                <ul class="collection page-embed-list" v-else-if="embedLists.event.length">
-                    <li class="collection-item" tabindex="0" v-for="item in embedLists.event" :key="'event-' + item.event_id"
-                        @click="insertEmbedToken('render_event', item.name)"
-                        @keydown.enter.prevent="insertEmbedToken('render_event', item.name)">@{{ item.name }}</li>
-                </ul>
-                <div class="page-embed-empty" v-else>
-                    <i class="material-icons" aria-hidden="true">inbox</i>
-                    <p><?php echo lang('pages_embed_empty'); ?></p>
+            <div id="page-embed-file" class="page-embed-pane">
+                <div class="page-embed-empty">
+                    <i class="material-icons" aria-hidden="true">attach_file</i>
+                    <p><?php echo lang('pages_embed_file'); ?></p>
+                    <button type="button" class="btn-flat" @click="openEditorFileModal">
+                        <?php echo lang('pages_embed_file'); ?>
+                    </button>
                 </div>
             </div>
         </div>
@@ -443,11 +373,27 @@
         :filter="'images'" :multiple="true" v-on:notify="copyCallcack"></file-explorer-selector>
     <file-explorer-selector :uploader="'single'" :preselected="[]" :modal="'editorModal'" :mode="'files'"
         :filter="'images'" :multiple="true" v-on:notify="onSelectImageCallcack"></file-explorer-selector>
+    <file-explorer-selector :uploader="'single'" :preselected="[]" :modal="'editorFileModal'" :mode="'files'"
+        :multiple="true" v-on:notify="onSelectEditorFileCallback"></file-explorer-selector>
 </div>
 @include('admin.components.file_explorer_selector_component')
 @endsection
 
 @section('footer_includes')
+<script>
+window.ADMIN_LANG = Object.assign({}, window.ADMIN_LANG || {}, {
+  pages_embed_load_error: <?php echo json_encode(lang('pages_embed_load_error')); ?>,
+  pages_preview: <?php echo json_encode(lang('pages_preview')); ?>,
+  pages_view_in_site: <?php echo json_encode(lang('pages_view_in_site')); ?>,
+  pages_save_draft: <?php echo json_encode(lang('pages_save_draft')); ?>,
+  pages_publish: <?php echo json_encode(lang('pages_publish')); ?>,
+  pages_saving: <?php echo json_encode(lang('pages_saving')); ?>
+});
+window.PAGE_EMBED_PERMS = {
+  gallery: <?php echo has_permisions('SELECT_GALLERY') ? 'true' : 'false'; ?>,
+  videos: <?php echo has_permisions('SELECT_VIDEOS') ? 'true' : 'false'; ?>
+};
+</script>
 <script src="{{base_url('resources/js/validateForm.js')}}"></script>
 <script src="{{base_url('public/vendors/trumbowyg/trumbowyg.min.js')}}"></script>
 <script src="{{base_url('public/vendors/trumbowyg/plugins/uploadimage/trumbowyg.uploadimage.js')}}"></script>
