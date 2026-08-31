@@ -58,7 +58,7 @@ fi
 copy_tree "$ROOT/node_modules" "node_modules"
 copy_tree "$ROOT/themes" "themes"
 
-mkdir -p application/cache uploads trash backups/database
+mkdir -p application/cache/sessions uploads trash backups/database
 touch application/cache/.gitkeep uploads/.gitkeep trash/.gitkeep 2>/dev/null || true
 
 echo "Worktree listo (local). No ejecutes docker compose aquí: ci_php56 y :8081 viven en el checkout principal."

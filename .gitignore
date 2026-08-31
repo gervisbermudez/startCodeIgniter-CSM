@@ -29,6 +29,10 @@ application/logs/*
 /application/cache/*
 !/application/cache/index.html
 !/application/cache/.gitkeep
+!/application/cache/sessions/
+/application/cache/sessions/*
+!/application/cache/sessions/index.html
+!/application/cache/sessions/.htaccess
 
 # Development notes
 /devnotes.txt

@@ -232,30 +232,28 @@ $config['encryption_key'] = 'roughly';
 | Session Variables
 |--------------------------------------------------------------------------
 |
-| 'sess_cookie_name'        = the name you want for the cookie
-| 'sess_expiration'            = the number of SECONDS you want the session to last.
-|   by default sessions last 7200 seconds (two hours).  Set to zero for no expiration.
-| 'sess_expire_on_close'    = Whether to cause the session to expire automatically
-|   when the browser window is closed
-| 'sess_encrypt_cookie'        = Whether to encrypt the cookie
-| 'sess_use_database'        = Whether to save the session data to a database
-| 'sess_table_name'            = The name of the session database table
-| 'sess_match_ip'            = Whether to match the user's IP address when reading the session data
-| 'sess_match_useragent'    = Whether to match the User Agent when reading the session data
-| 'sess_time_to_update'        = how many seconds between CI refreshing Session Information
+| Files driver. Do not use /tmp: it has the sticky bit, so Apache (www-data)
+| cannot garbage-collect session files created by root (CLI / docker exec).
+| That surfaces as unlink(): Operation not permitted in Session_files_driver.
 |
  */
+$config['sess_driver'] = 'files';
 $sess_cookie = getenv('SESS_COOKIE_NAME');
 $config['sess_cookie_name'] = ($sess_cookie !== false && $sess_cookie !== '') ? $sess_cookie : 'ci_session';
 $config['sess_expiration'] = 7200;
 $config['sess_expire_on_close'] = false;
 $config['sess_encrypt_cookie'] = false;
 $config['sess_use_database'] = false;
-$config['sess_save_path'] = sys_get_temp_dir();
+$sess_save_path = APPPATH . 'cache/sessions';
+if (!is_dir($sess_save_path)) {
+    @mkdir($sess_save_path, 0777, true);
+}
+$config['sess_save_path'] = $sess_save_path;
 $config['sess_table_name'] = 'ci_sessions';
 $config['sess_match_ip'] = false;
 $config['sess_match_useragent'] = true;
 $config['sess_time_to_update'] = 300;
+$config['sess_regenerate_destroy'] = false;
 
 /*
 |--------------------------------------------------------------------------

@@ -2,7 +2,7 @@
 set -e
 
 # Crear directorios necesarios si no existen
-mkdir -p /var/www/html/application/cache
+mkdir -p /var/www/html/application/cache/sessions
 mkdir -p /var/www/html/application/logs
 mkdir -p /var/www/html/themes/iPortfolio/cache
 mkdir -p /var/www/html/themes/awesomeTheme/cache
