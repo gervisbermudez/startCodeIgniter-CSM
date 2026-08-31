@@ -14,6 +14,14 @@
 | [../CHANGELOG.md](../CHANGELOG.md) | 3.0 y notas 2.x | Actual |
 | [../AGENTS.md](../AGENTS.md) | Cómo partir una feature, convenciones, worktrees | Actual |
 
+## Cortes en curso (worktree)
+
+Spec para implementar en su rama. **No** reimplementar en `master` hasta merge.
+
+| Doc | Rama / worktree |
+|---|---|
+| [CATEGORIES_CUT_A_PLAN.md](CATEGORIES_CUT_A_PLAN.md) | `feat/categories-cut-a` — `/home/gervis/.cursor/worktrees/startCodeIgniter-CSM/categories-cut-a` |
+
 ## Producto (shipped)
 
 Estos archivos nacieron como spec de implementación. El corte ya está en `master`. Sirven para entender el contrato; no para reimplementar el módulo.
