@@ -81,6 +81,7 @@ class SearchController extends REST_Controller
             'menus' => array(),
             'categories' => array(),
             'albumes' => array(),
+            'events' => array(),
         );
     }
 
@@ -127,6 +128,10 @@ class SearchController extends REST_Controller
             $this->load->model('Admin/AlbumModel');
             $album = new AlbumModel();
             $data['albumes'] = $album->search($str_term);
+
+            $this->load->model('Admin/EventModel');
+            $event = new EventModel();
+            $data['events'] = $event->search($str_term);
 
         } else {
             $data = $this->empty_payload();

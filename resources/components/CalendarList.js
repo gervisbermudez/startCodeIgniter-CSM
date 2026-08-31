@@ -8,6 +8,7 @@ var CalendarList = new Vue({
     events: [],
     allEvents: [],
     filters: {
+      events: true,
       pages: true,
       albums: true,
       users: true,
@@ -72,6 +73,27 @@ var CalendarList = new Vue({
           });
 
           if (response.data) {
+
+            // Events — date_start, not date_create. Color = --st-interactive
+            if (response.data.events && Array.isArray(response.data.events)) {
+              response.data.events.forEach((element) => {
+                const startDate = self.parseDateTime(element.date_start);
+                if (startDate) {
+                  const endDate = self.parseDateTime(element.date_end) || startDate;
+                  self.allEvents.push({
+                    id: "event_" + element.event_id,
+                    title: element.name,
+                    url: self.base_url("admin/events/edit/" + element.event_id),
+                    start: startDate,
+                    end: endDate,
+                    color: '#26A69A',
+                    extendedProps: {
+                      type: 'events'
+                    }
+                  });
+                }
+              });
+            }
 
             // Pages
             if (response.data.pages && Array.isArray(response.data.pages)) {

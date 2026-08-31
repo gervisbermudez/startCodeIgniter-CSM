@@ -205,6 +205,51 @@ class PageController extends Base_Controller
         echo $this->themeController->blog_post($data);
     }
 
+    public function events_list()
+    {
+        $this->load->model('Admin/EventModel');
+        $eventModel = new EventModel();
+        $when = $this->input->get('when');
+
+        $data['title'] = config("SITE_TITLE") . " - " . lang('events_heading');
+        $data['layout'] = 'site';
+        $data['template'] = 'eventsList';
+        $data['meta'] = $this->getPageMetas([]);
+        $data['when'] = $when;
+
+        if ($when === 'past') {
+            $data['events'] = $eventModel->past();
+            $data['past_events'] = false;
+        } else {
+            $data['events'] = $eventModel->upcoming();
+            $data['past_events'] = $eventModel->past();
+        }
+
+        echo $this->themeController->events_list($data);
+    }
+
+    public function get_event($slug = null)
+    {
+        if ($slug === null || $slug === '') {
+            $slug = $this->uri->segment($this->uri->total_segments());
+        }
+
+        $this->load->model('Admin/EventModel');
+        $event = new EventModel();
+        if (!$event->find_by_slug($slug)) {
+            $this->error404();
+            return;
+        }
+
+        $data['title'] = config("SITE_TITLE") . " - " . $event->name;
+        $data['layout'] = 'site';
+        $data['template'] = 'event';
+        $data['event'] = $event;
+        $data['meta'] = $this->getPageMetas([]);
+
+        echo $this->themeController->event_detail($data);
+    }
+
     public function formsubmit()
     {
         $siteform_id = $this->input->post('form_reference');

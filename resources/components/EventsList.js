@@ -1,42 +1,80 @@
 var EventsList = new Vue({
   el: "#root",
   data: {
+    when: "all",
+    tableEmpty: false,
     colums: [
       {
         colum: "name",
-        label: "Name",
+        label: (window.EVENTS_I18N && EVENTS_I18N.name) || "Name",
       },
       {
-        colum: "user",
-        label: "Author",
+        colum: "date_start",
+        label: (window.EVENTS_I18N && EVENTS_I18N.start) || "Start",
+        format: function (item) {
+          return EventsList.formatStart(item);
+        },
       },
       {
-        colum: "date_create",
-        label: "Created",
+        colum: "address",
+        label: (window.EVENTS_I18N && EVENTS_I18N.address) || "Address",
+        format: function (item) {
+          return EventsList.formatPlace(item);
+        },
       },
       {
         colum: "status",
-        label: "Status",
-        handler: "publish",
+        label: (window.EVENTS_I18N && EVENTS_I18N.status) || "Status",
       },
       {
         colum: "options",
-        label: "Options",
+        label: (window.EVENTS_I18N && EVENTS_I18N.options) || "Options",
       },
     ],
     index_data: "event_id",
-    endpoint: "api/v1/events",
   },
   mixins: [mixins],
-  computed: {},
+  computed: {
+    endpoint: function () {
+      return "api/v1/events?when=" + encodeURIComponent(this.when);
+    },
+  },
   methods: {
+    formatStart: function (item) {
+      if (!item || !item.date_start) {
+        return "";
+      }
+      var allDay = item.all_day == 1 || item.all_day === true || item.all_day === "1";
+      var value = String(item.date_start);
+      if (allDay) {
+        return value.substr(0, 10);
+      }
+      return value.substr(0, 16).replace("T", " ");
+    },
+    formatPlace: function (item) {
+      if (!item) {
+        return "";
+      }
+      var type = item.location_type || "physical";
+      if (type === "online") {
+        return (window.EVENTS_I18N && EVENTS_I18N.online) || "Online";
+      }
+      return item.address || "";
+    },
+    setWhen: function (when) {
+      this.when = when;
+      var self = this;
+      this.$nextTick(function () {
+        self.reloadEventsTable();
+      });
+    },
     editEvent(data) {
       window.location = `${BASEURL}admin/events/edit/${data.item.event_id}`;
       return;
     },
     reloadEventsTable() {
       if (this.$refs.eventsTable && typeof this.$refs.eventsTable.getData === "function") {
-        this.$refs.eventsTable.getData();
+        this.$refs.eventsTable.getData(1);
       }
     },
     deleteItem(data) {
@@ -67,19 +105,10 @@ var EventsList = new Vue({
       if (!data || !data.item || !data.item.event_id) {
         return;
       }
-      var item = data.item;
       $.ajax({
         type: "POST",
-        url: BASEURL + "api/v1/events",
+        url: BASEURL + "api/v1/events/status/" + data.item.event_id,
         data: {
-          event_id: item.event_id,
-          name: item.name,
-          subtitle: item.subtitle || "",
-          content: item.content || item.name,
-          address: item.address || "",
-          visibility: item.visibility,
-          mainImage: item.mainImage || "",
-          categorie_id: item.categorie_id || 0,
           status: 3,
         },
         dataType: "json",
@@ -100,8 +129,36 @@ var EventsList = new Vue({
       window.location = `${BASEURL}admin/events/add/`;
       return;
     },
+    syncEmpty() {
+      var table = this.$refs.eventsTable;
+      if (!table) {
+        this.tableEmpty = false;
+        return;
+      }
+      this.tableEmpty = !table.loader && !table.filter && table.data.length === 0;
+    },
   },
   mounted: function () {
-    this.$nextTick(function () { });
+    var self = this;
+    this.$nextTick(function () {
+      var table = self.$refs.eventsTable;
+      if (!table) {
+        return;
+      }
+      table.$watch("loader", function () {
+        self.syncEmpty();
+      });
+      table.$watch("filter", function () {
+        self.syncEmpty();
+      });
+      table.$watch(
+        "data",
+        function () {
+          self.syncEmpty();
+        },
+        { deep: true }
+      );
+      self.syncEmpty();
+    });
   },
 });

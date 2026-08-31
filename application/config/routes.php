@@ -194,3 +194,6 @@ $route['blog/author/(:any)'] = 'PageController/blog_list_author/$1';
 $route['blog/tag/(:any)'] = 'PageController/blog_list_tag/$1';
 $route['blog/categorie/(:any)'] = 'PageController/blog_list_categorie/$1';
 $route['blog/(:any)'] = 'PageController/get_blog/$1';
+
+$route['events'] = 'PageController/events_list';
+$route['events/(:any)'] = 'PageController/get_event/$1';

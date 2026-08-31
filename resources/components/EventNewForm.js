@@ -6,8 +6,19 @@ var EventNewForm = new Vue({
     editMode: false,
     event_id: null,
     name: "",
+    slug: "",
+    slugManual: false,
     subtitle: "",
     address: "",
+    online_url: "",
+    location_type: "physical",
+    all_day: false,
+    date_start: "",
+    date_end: "",
+    date_start_date: "",
+    date_start_time: "",
+    date_end_date: "",
+    date_end_time: "",
     content: "",
     status: true,
     visibility: true,
@@ -16,7 +27,6 @@ var EventNewForm = new Vue({
     date_update: "",
     type: "event",
     categorie_id: "0",
-    categories: [],
     categories: [],
     user_id: null,
     user: null,
@@ -30,22 +40,37 @@ var EventNewForm = new Vue({
   mixins: [mixins, formMixin],
   computed: {
     btnEnable: function () {
-      let enable = !!this.name || false;
-      if (enable) {
-        //this.autoSave();
-      }
-      return enable;
+      return !!this.name;
     },
     getDateTimePublish: function () {
+      if (this.publishondate) {
+        return null;
+      }
       return this.datepublish && this.timepublish
         ? this.datepublish + " " + this.timepublish + ":00"
-        : null;
+        : this.datepublish || null;
     },
     getMainImagenPath() {
       if (this.mainImage.length > 0) {
         return this.mainImage[0].file_id;
       }
       return null;
+    },
+    composedDateStart: function () {
+      return this.composeDateTime(this.date_start_date, this.date_start_time, this.all_day, "00:00:00");
+    },
+    composedDateEnd: function () {
+      if (!this.date_end_date) {
+        return null;
+      }
+      return this.composeDateTime(this.date_end_date, this.date_end_time, this.all_day, "23:59:59");
+    },
+  },
+  watch: {
+    name: function (val) {
+      if (!this.editMode && !this.slugManual) {
+        this.slug = this.slugFromName(val);
+      }
     },
   },
   filters: {
@@ -56,6 +81,37 @@ var EventNewForm = new Vue({
     },
   },
   methods: {
+    composeDateTime: function (datePart, timePart, allDay, allDayTime) {
+      if (!datePart) {
+        return null;
+      }
+      if (allDay) {
+        return datePart + " " + allDayTime;
+      }
+      if (timePart) {
+        var t = timePart.length === 5 ? timePart + ":00" : timePart;
+        return datePart + " " + t;
+      }
+      return datePart + " 00:00:00";
+    },
+    slugFromName: function (name) {
+      return String(name || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+    },
+    splitDateTime: function (value) {
+      if (!value) {
+        return { date: "", time: "" };
+      }
+      var parts = String(value).split(" ");
+      return {
+        date: parts[0] || "",
+        time: parts[1] ? parts[1].substr(0, 5) : "",
+      };
+    },
     removeImage(index) {
       if (this.mainImage.length > 0) {
         this.mainImage.splice(index, 1);
@@ -77,34 +133,35 @@ var EventNewForm = new Vue({
       let instance = M.Modal.getInstance($("#fileUploader"));
       instance.close();
     },
-    autoSave() {
-      if (!this.status) {
-        this.runSaveData();
-        this.debug ? console.log("running autosave...") : null;
-      }
-    },
-    validateField(field) {
-      let self = this;
-      if (self.form.validateField(field)) {
-        self.serverValidation(field);
+    setTinyContent: function (html) {
+      if (typeof tinymce === "undefined" || !tinymce.editors["id_cazary"]) {
         return;
       }
-      return self.form.fields[field].valid;
+      tinymce.editors["id_cazary"].setContent(html || "");
     },
     validateForm() {
-      const isValid = this.name && this.content;
-      console.log('validateForm:', {
-        name: this.name,
-        content: this.content,
-        contentLength: this.content ? this.content.length : 0,
-        isValid: isValid
-      });
-      return isValid;
+      if (!this.name) {
+        return false;
+      }
+      if (this.location_type === "online" || this.location_type === "hybrid") {
+        if (!String(this.online_url || "").trim()) {
+          return false;
+        }
+      }
+      if (this.status) {
+        if (!this.composedDateStart) {
+          return false;
+        }
+        var text = String(this.content || "").replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ").trim();
+        if (!text) {
+          return false;
+        }
+      }
+      return true;
     },
-
     save() {
       var self = this;
-      if (tinymce.editors["id_cazary"]) {
+      if (typeof tinymce !== "undefined" && tinymce.editors["id_cazary"]) {
         this.content = tinymce.editors["id_cazary"].getContent();
       }
       if (self.validateForm()) {
@@ -120,48 +177,40 @@ var EventNewForm = new Vue({
       return {
         event_id: this.event_id || "",
         name: this.name || "",
+        slug: this.slug || "",
         subtitle: this.subtitle || "",
         content: this.content || "",
         address: this.address || "",
+        online_url: this.online_url || "",
+        location_type: this.location_type || "physical",
+        all_day: this.all_day ? 1 : 0,
+        date_start: this.composedDateStart || "",
+        date_end: this.composedDateEnd || "",
         mainImage: this.getMainImagenPath,
         categorie_id: this.categorie_id || 0,
         status: this.status ? 1 : 2,
         visibility: this.visibility ? 1 : 0,
-        date_publish: this.getDateTimePublish,
-        date_create: this.date_create,
-        date_update: this.date_update,
+        date_publish: this.getDateTimePublish || "",
       };
     },
-    getSelectedCategorie() {
-      return this.categories.filter((value, index) => {
-        return this.event_id == value.event_id;
-      });
-    },
-    serverValidation(field) {
-      var self = this;
-      var url = BASEURL + "admin/users/ajax_check_field";
-      $.ajax({
-        type: "POST",
-        url: url,
-        data: {
-          field: field,
-          value: self.form.fields[field].value,
-        },
-        dataType: "json",
-        success: function (response) {
-          self.debug ? console.log(url, response) : null;
-          if (response.code) {
-            self.form.fields[field].valid = response.data;
-            if (response.data) {
-              self.form.markFieldAsValid(field);
-            } else {
-              self.form.fields[field].errorText =
-                "The " + field + " is already registered";
-            }
-            self.$forceUpdate();
-          }
-        },
-      });
+    afterSave: function (response) {
+      this.editMode = true;
+      this.slugManual = true;
+      if (this.formIdField && response && response.data) {
+        this[this.formIdField] = response.data[this.formIdField];
+        if (response.data.slug) {
+          this.slug = response.data.slug;
+        }
+        if (response.data.date_create) {
+          this.date_create = response.data.date_create;
+        }
+        if (response.data.date_publish) {
+          this.date_publish = response.data.date_publish;
+        }
+        if (response.data.date_update) {
+          this.date_update = response.data.date_update;
+        }
+      }
     },
     getCategories() {
       this.debug ? console.log(`${getFuncName()} fired`) : null;
@@ -171,7 +220,6 @@ var EventNewForm = new Vue({
         .then((response) => response.json())
         .then((response) => {
           self.loader = false;
-          self.debug ? console.log(url, response) : null;
           if (response.code == 200) {
             self.categories = response.data;
             this.initSelects();
@@ -183,39 +231,54 @@ var EventNewForm = new Vue({
         });
     },
     checkEditMode() {
-      this.debug ? console.log(`${getFuncName()} fired`) : null;
       var self = this;
       if (event_id && editMode == "edit") {
         self.editMode = true;
+        self.slugManual = true;
         var url = BASEURL + "api/v1/events/" + event_id;
         fetch(url)
           .then((response) => response.json())
           .then((response) => {
             self.loader = false;
-            self.debug ? console.log(url, response) : null;
             if (response.code == 200) {
-              self.event_id = response.data.event_id;
-              self.date_create = response.data.date_create;
-              self.date_publish = response.data.date_publish;
-              self.date_update = response.data.date_update;
-              self.name = response.data.name;
-              self.subtitle = response.data.subtitle;
-              self.categorie_id = response.data.categorie_id;
-              self.status = response.data.status == 1 || response.data.status == "1";
-              self.visibility = response.data.visibility;
-              self.address = response.data.address;
-              self.type = response.data.type;
-              self.user_id = response.data.user_id;
-              self.parent = response.data.parent;
-              self.subcategories = response.data.subcategories;
-              self.user = new User(response.data.user);
-              self.content = response.data.content;
-              if (response.data.mainImage) {
-                self.mainImage.push(new ExplorerFile(response.data.mainImage));
+              var d = response.data;
+              self.event_id = d.event_id;
+              self.date_create = d.date_create;
+              self.date_publish = d.date_publish;
+              self.date_update = d.date_update;
+              self.name = d.name;
+              self.slug = d.slug || "";
+              self.subtitle = d.subtitle;
+              self.categorie_id = d.categorie_id;
+              self.status = d.status == 1 || d.status == "1";
+              self.visibility = d.visibility == 1 || d.visibility == "1" || d.visibility === true;
+              self.address = d.address;
+              self.online_url = d.online_url || "";
+              self.location_type = d.location_type || "physical";
+              self.all_day = d.all_day == 1 || d.all_day == "1" || d.all_day === true;
+              self.date_start = d.date_start;
+              self.date_end = d.date_end;
+              var startParts = self.splitDateTime(d.date_start);
+              self.date_start_date = startParts.date;
+              self.date_start_time = startParts.time;
+              var endParts = self.splitDateTime(d.date_end);
+              self.date_end_date = endParts.date;
+              self.date_end_time = endParts.time;
+              self.user_id = d.user_id;
+              self.user = new User(d.user);
+              self.content = d.content;
+              if (d.date_publish) {
+                var pub = self.splitDateTime(d.date_publish);
+                self.datepublish = pub.date;
+                self.timepublish = pub.time;
               }
-              setTimeout(() => {
-                tinymce.editors["id_cazary"].setContent(response.data.content);
-              }, 5000);
+              if (d.mainImage) {
+                self.mainImage.push(new ExplorerFile(d.mainImage));
+              }
+              self.setTinyContent(d.content);
+              self.$nextTick(function () {
+                self.initSelects();
+              });
             }
           })
           .catch((response) => {
@@ -227,37 +290,60 @@ var EventNewForm = new Vue({
       }
     },
     initSelects() {
-      setTimeout(() => {
+      this.$nextTick(function () {
         var elems = document.querySelectorAll("select");
-        var instances = M.FormSelect.init(elems, {});
-      }, 1000);
+        M.FormSelect.init(elems, {});
+      });
+    },
+    initDateTimePickers: function () {
+      var self = this;
+      var bindDate = function (id, field) {
+        var el = document.getElementById(id);
+        if (!el) {
+          return;
+        }
+        M.Datepicker.init(el, {
+          format: "yyyy-mm-dd",
+          onClose: function () {
+            self[field] = el.value;
+          },
+        });
+      };
+      var bindTime = function (id, field) {
+        var el = document.getElementById(id);
+        if (!el) {
+          return;
+        }
+        M.Timepicker.init(el, {
+          twelveHour: false,
+          defaultTime: "now",
+          onCloseEnd: function () {
+            self[field] = el.value;
+          },
+        });
+      };
+      bindDate("event_date_start", "date_start_date");
+      bindDate("event_date_end", "date_end_date");
+      bindDate("datepublish", "datepublish");
+      bindTime("event_time_start", "date_start_time");
+      bindTime("event_time_end", "date_end_time");
+      bindTime("timepublish", "timepublish");
     },
     initPlugins() {
-      this.debug ? console.log(`${getFuncName()} fired`) : null;
-      var elems = document.querySelectorAll(".datepicker");
-      M.Datepicker.init(elems, {
-        format: "yyyy-mm-dd",
-        onClose: function () {
-          EventNewForm.datepublish =
-            document.getElementById("datepublish").value;
-        },
-      });
-      var elems = document.querySelectorAll(".timepicker");
-      M.Timepicker.init(elems, {
-        twelveHour: false,
-        defaultTime: "now",
-        onCloseEnd: function () {
-          EventNewForm.timepublish =
-            document.getElementById("timepublish").value;
-        },
-      });
+      this.initDateTimePickers();
+      var self = this;
       tinymce.init({
-        base_url: BASEURL + '/public/vendors/tinymce/js/tinymce',
-        selector: "textarea",
+        base_url: BASEURL + "/public/vendors/tinymce/js/tinymce",
+        selector: "#id_cazary",
         plugins: ["link table code"],
+        init_instance_callback: function (editor) {
+          if (self.content) {
+            editor.setContent(self.content);
+          }
+        },
         setup: (editor) => {
           editor.on("Change", (e) => {
-            this.content = tinymce.editors["id_cazary"].getContent();
+            this.content = editor.getContent();
           });
         },
       });
@@ -265,7 +351,6 @@ var EventNewForm = new Vue({
   },
   mounted: function () {
     this.$nextTick(function () {
-      this.debug ? console.log("mounted EventNewForm") : null;
       this.getCategories();
       this.initPlugins();
       this.checkEditMode();

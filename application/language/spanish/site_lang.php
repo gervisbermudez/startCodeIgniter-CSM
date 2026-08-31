@@ -96,3 +96,9 @@ $lang['menu_select_page'] = 'Seleccionar página';
 $lang['menu_not_active'] = 'No Activo';
 $lang['menu_active'] = 'Activo';
 $lang['save'] = 'Guardar';
+
+$lang['events_heading'] = 'Eventos';
+$lang['events_no_upcoming'] = 'No hay próximos eventos';
+$lang['events_past_heading'] = 'Eventos pasados';
+$lang['events_read_more'] = 'Ver detalle';
+$lang['events_online'] = 'En línea';
