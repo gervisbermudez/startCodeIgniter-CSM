@@ -31,6 +31,10 @@ class SiteformsController extends REST_Controller
      */
     public function index_get($siteform_id = null)
     {
+        if (!$this->require_siteform_permision('SELECT_SITEFORMS')) {
+            return;
+        }
+
         $siteform = new SiteFormModel();
         if ($siteform_id) {
             $result = $siteform->find_with(array('siteform_id' => $siteform_id));
@@ -51,6 +55,12 @@ class SiteformsController extends REST_Controller
      */
     public function index_post()
     {
+        $siteform_id = $this->input->post('siteform_id');
+        $is_update = ($siteform_id !== null && $siteform_id !== '' && $siteform_id !== false);
+        if (!$this->require_siteform_permision($is_update ? 'UPDATE_SITEFORM' : 'CREATE_SITEFORM')) {
+            return;
+        }
+
         $this->load->library('FormValidator');
         $form = new FormValidator();
         $config = array(
@@ -145,6 +155,10 @@ class SiteformsController extends REST_Controller
 
     public function index_delete($siteform_id = null)
     {
+        if (!$this->require_siteform_permision('DELETE_SITEFORM')) {
+            return;
+        }
+
         if ($siteform_id) {
             $siteform = new SiteFormModel();
             $result = $siteform->find($siteform_id);
@@ -161,6 +175,10 @@ class SiteformsController extends REST_Controller
 
     public function templates_get()
     {
+        if (!$this->require_siteform_permision('SELECT_SITEFORMS')) {
+            return;
+        }
+
         $this->load->helper('directory');
         $directory = APPPATH . '/views/site/templates/forms';
         if (getThemePath()) {
@@ -175,6 +193,10 @@ class SiteformsController extends REST_Controller
      */
     public function submit_get($siteFormSubmit_id = null)
     {
+        if (!$this->require_siteform_permision('SELECT_SITEFORMS')) {
+            return;
+        }
+
         $SiteFormSubmit = new SiteFormSubmitModel();
         if ($siteFormSubmit_id) {
             $result = $SiteFormSubmit->find_with(array('siteform_submit_id' => $siteFormSubmit_id));
@@ -204,6 +226,10 @@ class SiteformsController extends REST_Controller
      */
     public function submit_delete($id = null)
     {
+        if (!$this->require_siteform_permision('DELETE_SITEFORM')) {
+            return;
+        }
+
         $SiteFormSubmit = new SiteFormSubmitModel();
         if ($id && $SiteFormSubmit->find($id)) {
             system_logger('siteforms', $SiteFormSubmit->siteform_submit_id, 'deleted', 'A siteform submission has been deleted');
@@ -221,6 +247,10 @@ class SiteformsController extends REST_Controller
      */
     public function notify_post()
     {
+        if (!$this->require_siteform_permision('UPDATE_SITEFORM')) {
+            return;
+        }
+
         $name = $this->input->post('name');
         $notify = $this->input->post('notify');
         if ($name === null || $name === '') {
@@ -253,6 +283,10 @@ class SiteformsController extends REST_Controller
 
     public function submit_archive_post($id = null)
     {
+        if (!$this->require_siteform_permision('UPDATE_SITEFORM')) {
+            return;
+        }
+
         $SiteFormSubmit = new SiteFormSubmitModel();
         if ($id && $SiteFormSubmit->find($id)) {
             $SiteFormSubmit->status = 2;
@@ -262,5 +296,18 @@ class SiteformsController extends REST_Controller
             return;
         }
         $this->response_error(lang('not_found_error'));
+    }
+
+    /**
+     * @param mixed $permision
+     * @return bool
+     */
+    protected function require_siteform_permision($permision)
+    {
+        if (!function_exists('has_permisions') || !has_permisions($permision)) {
+            $this->response_error('You do not have permission to perform this action', array(), REST_Controller::HTTP_FORBIDDEN, REST_Controller::HTTP_FORBIDDEN);
+            return false;
+        }
+        return true;
     }
 }

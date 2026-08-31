@@ -58,7 +58,9 @@
                             <td>
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + fragment.fragment_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + fragment.fragment_id' class='dropdown-content'>
+                                    @if(has_permisions('UPDATE_FRAGMENT'))
                                     <li><a :href="base_url('admin/fragments/edit/' + fragment.fragment_id)"><?php echo lang('edit'); ?></a></li>
+                                    @endif
                                     <li><a href="#!" v-on:click.prevent="openPreview(fragment);"><?php echo lang('fragments_preview'); ?></a></li>
                                     <li><a href="#!" v-on:click.prevent="copyToken(fragment);"><?php echo lang('fragments_copy_token'); ?></a></li>
                                     @if(has_permisions('DELETE_FRAGMENT'))
@@ -81,7 +83,9 @@
                                 @include('admin.components.entity_card_badges', ['item' => 'fragment'])
                                 <a class="dropdown-trigger right" href='#!' :data-target='"dropdown-card" + fragment.fragment_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown-card" + fragment.fragment_id' class='dropdown-content'>
+                                    @if(has_permisions('UPDATE_FRAGMENT'))
                                     <li><a :href="base_url('admin/fragments/edit/' + fragment.fragment_id)"><?php echo lang('edit'); ?></a></li>
+                                    @endif
                                     <li><a href="#!" v-on:click.prevent="openPreview(fragment);"><?php echo lang('fragments_preview'); ?></a></li>
                                     <li><a href="#!" v-on:click.prevent="copyToken(fragment);"><?php echo lang('fragments_copy_token'); ?></a></li>
                                     @if(has_permisions('DELETE_FRAGMENT'))

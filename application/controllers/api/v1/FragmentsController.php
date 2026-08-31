@@ -60,7 +60,7 @@ class FragmentsController extends REST_Controller
      */
     public function index_get($fragment_id = null)
     {
-        if (!$this->require_fragment_permision('SELECT_FRAGMENT')) {
+        if (!$this->require_fragment_permision('SELECT_FRAGMENTS')) {
             return;
         }
 

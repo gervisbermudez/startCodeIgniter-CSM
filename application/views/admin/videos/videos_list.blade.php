@@ -78,11 +78,15 @@
                                         :data-target='"dropdown" + (video.id || video.video_id)'><i
                                             class="material-icons">more_vert</i></a>
                                     <ul :id='"dropdown" + (video.id || video.video_id)' class='dropdown-content'>
+                                        @if(has_permisions('UPDATE_VIDEO'))
                                         <li><a
                                                 :href="base_url('admin/videos/editar/' + (video.id || video.video_id))"><?= lang('edit') ?></a>
                                         </li>
+                                        @endif
+                                        @if(has_permisions('DELETE_VIDEO'))
                                         <li><a class="modal-trigger" href="#deleteModal"
                                                 v-on:click="tempDelete(video, index);"><?= lang('delete') ?></a></li>
+                                        @endif
                                         <li><a :href="base_url('/admin/videos/ver/' + (video.id || video.video_id))"><?= lang('videos_view') ?></a></li>
                                     </ul>
                                 </td>
@@ -102,11 +106,15 @@
                                 :data-target='"dropdown" + (video.id || video.video_id)'>
                                 <i class="material-icons">more_vert</i></a>
                             <ul :id='"dropdown" + (video.id || video.video_id)' class='dropdown-content'>
+                                @if(has_permisions('UPDATE_VIDEO'))
                                 <li><a
                                         :href="base_url('admin/videos/editar/' + (video.id || video.video_id))">{{ lang('edit') }}</a>
                                 </li>
+                                @endif
+                                @if(has_permisions('DELETE_VIDEO'))
                                 <li><a class="modal-trigger" href="#deleteModal"
                                         v-on:click="tempDelete(video, index);">{{ lang('delete') }}</a></li>
+                                @endif
                                 <li><a :href="base_url('/admin/videos/ver/' + (video.id || video.video_id))">{{ lang('videos_view') }}</a></li>
                             </ul>
                         </div>

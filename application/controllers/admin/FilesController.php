@@ -4,10 +4,23 @@
 
 class FilesController extends MY_Controller
 {
+    public $routes_permisions = [
+        "index" => [
+            "patern" => '/^admin\/files\/?$/',
+            "required_permissions" => ["SELECT_FILES"],
+            "conditions" => [],
+        ],
+        "ajax_upload_file" => [
+            "patern" => '/^admin\/files\/ajax_upload_file/',
+            "required_permissions" => ["CREATE_FILE"],
+            "conditions" => [],
+        ],
+    ];
 
     public function __construct()
     {
         parent::__construct();
+        $this->check_permisions();
         $this->load->model('Admin/FileModel');
         $this->load->model('Admin/FileActivityModel');
     }

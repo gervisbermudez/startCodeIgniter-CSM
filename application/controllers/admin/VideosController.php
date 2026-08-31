@@ -4,21 +4,25 @@
 
 class VideosController extends MY_Controller
 {
-
     public $routes_permisions = [
         "index" => [
-            "patern" => '/admin\/videos/',
+            "patern" => '/^admin\/videos\/?$/',
             "required_permissions" => ["SELECT_VIDEOS"],
             "conditions" => [],
         ],
         "nuevo" => [
-            "patern" => '/admin\/videos\/(new|nuevo)/',
+            "patern" => '/^admin\/videos\/(nuevo|new)\/?$/',
             "required_permissions" => ["CREATE_VIDEO"],
             "conditions" => [],
         ],
         "editar" => [
-            "patern" => '/admin\/videos\/(edit|editar)\/(\d+)/',
+            "patern" => '/^admin\/videos\/(editar|edit)\/(\d+)/',
             "required_permissions" => ["UPDATE_VIDEO"],
+            "conditions" => [],
+        ],
+        "ver" => [
+            "patern" => '/^admin\/videos\/ver\/(\d+)/',
+            "required_permissions" => ["SELECT_VIDEOS"],
             "conditions" => [],
         ],
     ];
@@ -112,11 +116,13 @@ class VideosController extends MY_Controller
         $this->load->library('menu');
         $this->menu->char = "'";
         $this->menu->set_ul_properties(['class' => 'dropdown-content', 'role' => 'menu', 'id' => 'options']);
-        $links = [];
-        if (5 > $this->session->userdata('level')) {
+        $links = [
+            lang('videos_view') => ['target' => '_blank', 'href' => base_url('videos/ver/' . $video_id)],
+        ];
+        if (has_permisions('UPDATE_VIDEO')) {
             $links[lang('edit')] = ['href' => base_url('admin/videos/editar/' . $video_id)];
         }
-        if (3 > $this->session->userdata('level')) {
+        if (has_permisions('DELETE_VIDEO')) {
             $links[lang('delete')] = [
                 'href' => '#' . $data['modalid'],
                 'class' => 'modal-trigger',

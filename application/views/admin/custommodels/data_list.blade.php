@@ -47,8 +47,12 @@
                             <td>
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + model.custom_model_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + model.custom_model_id' class='dropdown-content'>
+                                    @if(has_permisions('CREATE_CONTENT_DATA'))
                                     <li><a :href="base_url('admin/custommodels/addData/' + model.custom_model_id)"> <?= lang('custommodels_add_data_data') ?></a></li>
+                                    @endif
+                                    @if(has_permisions('UPDATE_FORM_CUSTOM'))
                                     <li><a :href="base_url('admin/custommodels/editForm/' + model.custom_model_id)"> <?= lang('custommodels_edit_data') ?></a></li>
+                                    @endif
                                 </ul>
                             </td>
                         </tr>
@@ -67,8 +71,12 @@
                         <a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href='#!' :data-target='"dropdown" + model.custom_model_id'>
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown" + model.custom_model_id' class='dropdown-content'>
+                            @if(has_permisions('CREATE_CONTENT_DATA'))
                             <li><a :href="base_url('admin/custommodels/addData/' + model.custom_model_id)"> <?= lang('custommodels_add_data_data') ?></a></li>
+                            @endif
+                            @if(has_permisions('UPDATE_FORM_CUSTOM'))
                             <li><a :href="base_url('admin/custommodels/editForm/' + model.custom_model_id)"> <?= lang('custommodels_edit_data') ?></a></li>
+                            @endif
                         </ul>
                     </div>
                     <div class="card-content">
@@ -117,11 +125,13 @@
         <h4><?= lang('custommodels_no_forms') ?></h4>
     </div>
 </div>
+@if(has_permisions('CREATE_FORM_CUSTOM'))
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
     <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="<?= lang('custommodels_new_form_tooltip') ?>" href="{{base_url('admin/custommodels/nuevo')}}">
         <i class="material-icons">add</i>
     </a>
 </div>
+@endif
 @endsection
 
 @section('footer_includes')

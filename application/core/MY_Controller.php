@@ -36,13 +36,6 @@ class MY_Controller extends CI_Controller
      */
     private function refreshUsergroupPermisions()
     {
-        $perms = $this->session->userdata('usergroup_permisions');
-        if (is_array($perms)
-            && in_array('SELECT_SITEFORMS', $perms, true)
-            && in_array('SELECT_GALLERY', $perms, true)
-        ) {
-            return;
-        }
         $usergroup_id = $this->session->userdata('usergroup_id');
         if (!$usergroup_id) {
             return;

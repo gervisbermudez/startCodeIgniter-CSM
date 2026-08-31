@@ -4,20 +4,19 @@
 
 class FragmentsController extends MY_Controller
 {
-
     public $routes_permisions = [
         "index" => [
-            "patern" => '/admin\/fragments/',
-            "required_permissions" => ["SELECT_FRAGMENT"],
+            "patern" => '/^admin\/fragments\/?$/',
+            "required_permissions" => ["SELECT_FRAGMENTS"],
             "conditions" => [],
         ],
         "nueva" => [
-            "patern" => '/admin\/fragments\/(new|nueva)/',
+            "patern" => '/^admin\/fragments\/(nueva|new)\/?$/',
             "required_permissions" => ["CREATE_FRAGMENT"],
             "conditions" => [],
         ],
         "editar" => [
-            "patern" => '/admin\/fragments\/(edit|editar)\/(\d+)/',
+            "patern" => '/^admin\/fragments\/(editar|edit)\/(\d+)/',
             "required_permissions" => ["UPDATE_FRAGMENT"],
             "conditions" => [],
         ],

@@ -78,6 +78,10 @@ class CategoriesController extends REST_Controller
 
     public function index_get($categorie_id = null)
     {
+        if (!$this->require_categorie_permision('SELECT_CATEGORIES')) {
+            return;
+        }
+
         // Se crea una instancia de la clase Categories para acceder a los métodos de la tabla categories de la BD
         $categorie = new CategorieModel();
         // Si se recibe un parámetro "categorie_id", se busca la categoría correspondiente en la BD
@@ -104,6 +108,12 @@ class CategoriesController extends REST_Controller
      */
     public function index_post()
     {
+        $categorie_id = $this->input->post('categorie_id');
+        $is_update = ($categorie_id !== null && $categorie_id !== '' && $categorie_id !== false);
+        if (!$this->require_categorie_permision($is_update ? 'UPDATE_CATEGORIE' : 'CREATE_CATEGORIE')) {
+            return;
+        }
+
         // Cargamos la biblioteca 'FormValidator'
         $this->load->library('FormValidator');
         // Creamos una nueva instancia de 'FormValidator'
@@ -181,6 +191,10 @@ class CategoriesController extends REST_Controller
      */
     public function index_delete($categorie_id = null)
     {
+        if (!$this->require_categorie_permision('DELETE_CATEGORIE')) {
+            return;
+        }
+
         $categorie = new CategorieModel();
         $result = $categorie->find($categorie_id);
         if ($result) {
@@ -254,6 +268,10 @@ class CategoriesController extends REST_Controller
      */
     public function subcategorie_get($categorie_id, $subcategorie_id = null)
     {
+        if (!$this->require_categorie_permision('SELECT_CATEGORIES')) {
+            return;
+        }
+
         $categorie = new CategorieModel();
 
         /** Si se especificó una subcategoría ID, obtiene la subcategoría con esa ID y la ID de su categoría padre. */
@@ -359,6 +377,10 @@ class CategoriesController extends REST_Controller
      */
     public function type_get($type = 0)
     {
+        if (!$this->require_categorie_permision('SELECT_CATEGORIES')) {
+            return;
+        }
+
         $categorie = new CategorieModel();
         $result = $categorie->where(array('parent_id' => '0', 'type' => $type));
 
@@ -422,6 +444,10 @@ class CategoriesController extends REST_Controller
      */
     public function filter_get()
     {
+        if (!$this->require_categorie_permision('SELECT_CATEGORIES')) {
+            return;
+        }
+
         /* Crea una instancia de Categories */
         $categorie = new CategorieModel();
 
@@ -436,6 +462,19 @@ class CategoriesController extends REST_Controller
 
         /** Si no se encontraron resultados, devuelve un código de estado "not found". */
         $this->response_error(lang('not_found_error'));
+    }
+
+    /**
+     * @param mixed $permision
+     * @return bool
+     */
+    protected function require_categorie_permision($permision)
+    {
+        if (!function_exists('has_permisions') || !has_permisions($permision)) {
+            $this->response_error('You do not have permission to perform this action', array(), REST_Controller::HTTP_FORBIDDEN, REST_Controller::HTTP_FORBIDDEN);
+            return false;
+        }
+        return true;
     }
 
 }
