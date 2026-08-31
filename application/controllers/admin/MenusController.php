@@ -5,18 +5,18 @@
 class MenusController extends MY_Controller
 {
     public $routes_permisions = [
-        "index" => [ 
-            "patern" => '/admin\/menus/',
+        "index" => [
+            "patern" => '/^admin\/menus\/?$/',
             "required_permissions" => ["SELECT_MENUS"],
             "conditions" => [],
         ],
-        "nuevo" => [ 
-            "patern" => '/admin\/menus\/nuevo/',
+        "nuevo" => [
+            "patern" => '/^admin\/menus\/(nuevo|new)\/?$/',
             "required_permissions" => ["CREATE_MENU"],
             "conditions" => [],
         ],
-        "editForm" => [ 
-            "patern" => '/admin\/menus\/editForm\/(\d+)/',
+        "editar" => [
+            "patern" => '/^admin\/menus\/(editar|edit|editForm)\/(\d+)/',
             "required_permissions" => ["UPDATE_MENU"],
             "conditions" => ["check_self_permissions"],
         ],

@@ -45,8 +45,12 @@
                             <td>
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + categorie.categorie_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + categorie.categorie_id' class='dropdown-content'>
+                                    @if(has_permisions('UPDATE_CATEGORIE'))
                                     <li><a :href="base_url('admin/categories/editar/' + categorie.categorie_id)">{{ lang('edit') }}</a></li>
+                                    @endif
+                                    @if(has_permisions('DELETE_CATEGORIE'))
                                     <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(categorie, index);">{{ lang('delete') }}</a></li>
+                                    @endif
                                     <li v-if="categorie.status == 2"><a :href="base_url('admin/categories/preview?categorie_id=' + categorie.categorie_id)" target="_blank">Preview</a></li>
                                     <li v-if="categorie.path"><a :href="base_url(categorie.path)" target="_blank">{{ lang('view_in_site') }}</a></li>
                                 </ul>
@@ -67,8 +71,12 @@
                         <a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href='#!' :data-target='"dropdown" + categorie.categorie_id'>
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown" + categorie.categorie_id' class='dropdown-content'>
+                            @if(has_permisions('UPDATE_CATEGORIE'))
                             <li><a :href="base_url('admin/categories/editar/' + categorie.categorie_id)">{{ lang('edit') }}</a></li>
+                            @endif
+                            @if(has_permisions('DELETE_CATEGORIE'))
                             <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(categorie, index);">{{ lang('delete') }}</a></li>
+                            @endif
                             <li v-if="categorie.status == 2"><a :href="base_url('admin/categories/preview?categorie_id=' + categorie.categorie_id)" target="_blank">Preview</a></li>
                             <li v-if="categorie.path"><a :href="base_url(categorie.path)" target="_blank">{{ lang('view_in_site') }}</a></li>
                         </ul>
@@ -125,11 +133,13 @@
         </p>
     </confirm-modal>
 </div>
+@if(has_permisions('CREATE_CATEGORIE'))
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
     <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" :data-tooltip="lang('tooltip_new_category')" href="<?php echo base_url('admin/categories/nueva/') ?>">
         <i class="large material-icons">add</i>
     </a>
 </div>
+@endif
 @endsection
 
 @section('footer_includes')

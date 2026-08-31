@@ -82,11 +82,13 @@
         </p>
     </confirm-modal>
 </div>
+@if(has_permisions('CREATE_USER'))
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
     <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Create User" href="{{base_url('admin/users/add/')}} ">
         <i class="large material-icons">add</i>
     </a>
 </div>
+@endif
 <script type="text/x-template" id="user-card-template">
     <div class="card page-card user-card">
 		<div class="card-image">

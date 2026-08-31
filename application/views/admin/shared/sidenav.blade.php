@@ -43,6 +43,7 @@
             </div>
         </li>
         @endif
+        @if(has_permisions('SELECT_PAGES') || has_permisions('CREATE_PAGE'))
         <li class="{{ isSectionActive('pages') }}">
             <div class="collapsible-header waves-effect">
                 <i class="material-icons" aria-hidden="true">web</i>
@@ -63,6 +64,7 @@
                 </ul>
             </div>
         </li>
+        @endif
         @if(has_permisions('SELECT_SITEFORMS'))
         <li class="{{ isSectionActive('siteforms') }}">
             <div class="collapsible-header waves-effect">

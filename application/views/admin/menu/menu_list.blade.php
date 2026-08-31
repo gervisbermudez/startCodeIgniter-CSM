@@ -46,8 +46,12 @@
                             <td>
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + menu.menu_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + menu.menu_id' class='dropdown-content'>
+                                    @if(has_permisions('UPDATE_MENU'))
                                     <li><a :href="base_url('admin/menus/editar/' + menu.menu_id)"><?php echo lang('edit'); ?></a></li>
+                                    @endif
+                                    @if(has_permisions('DELETE_MENU'))
                                     <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(menu, index);">Borrar</a></li>
+                                    @endif
                                     <li v-if="menu.status == 2"><a :href="base_url('admin/menus/preview?menu_id=' + menu.menu_id)" target="_blank">Preview</a></li>
                                     <li v-if="menu.path"><a :href="base_url(menu.path)" target="_blank"><?php echo lang('view_in_site'); ?></a></li>
                                 </ul>
@@ -68,8 +72,12 @@
                         <a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href='#!' :data-target='"dropdown" + menu.menu_id'>
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown" + menu.menu_id' class='dropdown-content'>
+                            @if(has_permisions('UPDATE_MENU'))
                             <li><a :href="base_url('admin/menus/editar/' + menu.menu_id)">Editar</a></li>
+                            @endif
+                            @if(has_permisions('DELETE_MENU'))
                             <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(menu, index);">Borrar</a></li>
+                            @endif
                             <li v-if="menu.path"><a :href="base_url(menu.path)" target="_blank"><?php echo lang('view_in_site'); ?></a></li>
                         </ul>
                     </div>
@@ -122,11 +130,13 @@
         </p>
     </confirm-modal>
 </div>
+@if(has_permisions('CREATE_MENU'))
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
     <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="Crear Menu" href="<?php echo base_url('admin/menus/nuevo/') ?>">
         <i class="large material-icons">add</i>
     </a>
 </div>
+@endif
 @endsection
 
 @section('footer_includes')

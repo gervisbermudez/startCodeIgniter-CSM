@@ -5,26 +5,32 @@ class PagesController extends MY_Controller
 {
 
     public $routes_permisions = [
-        "index" => [ 
-            "patern" => '/admin\/paginas/',
+        "index" => [
+            "patern" => '/^admin\/pages\/?$/',
             "required_permissions" => ["SELECT_PAGES"],
             "conditions" => [],
         ],
-        "nueva" => [ 
-            "patern" => '/admin\/paginas\/nueva/',
+        "nueva" => [
+            "patern" => '/^admin\/pages\/(nueva|new)\/?$/',
             "required_permissions" => ["CREATE_PAGE"],
             "conditions" => [],
         ],
-        "editar" => [ 
-            "patern" => '/admin\/paginas\/editar\/(\d+)/',
+        "editar" => [
+            "patern" => '/^admin\/pages\/(editar|edit)\/(\d+)/',
             "required_permissions" => ["UPDATE_PAGE"],
             "conditions" => ["check_self_permissions"],
+        ],
+        "view" => [
+            "patern" => '/^admin\/pages\/view\/(\d+)/',
+            "required_permissions" => ["SELECT_PAGES"],
+            "conditions" => [],
         ],
     ];
 
     public function __construct()
     {
         parent::__construct();
+        $this->check_permisions();
         $this->load->model('Admin/PageModel');
     }
 

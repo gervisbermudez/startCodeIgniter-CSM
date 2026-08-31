@@ -70,6 +70,10 @@ class MenusController extends REST_Controller
      */
     public function index_get($menu_id = null)
     {
+        if (!$this->require_menu_permision('SELECT_MENUS')) {
+            return;
+        }
+
         $menu = new MenuModel();
         if ($menu_id) {
             $result = $menu->find_with(array('menu_id' => $menu_id));
@@ -92,6 +96,12 @@ class MenusController extends REST_Controller
      */
     public function index_post()
     {
+        $menu_id = $this->input->post('menu_id');
+        $is_update = ($menu_id !== null && $menu_id !== '' && $menu_id !== false);
+        if (!$this->require_menu_permision($is_update ? 'UPDATE_MENU' : 'CREATE_MENU')) {
+            return;
+        }
+
         $this->load->library('FormValidator');
         $form = new FormValidator();
         $config = array(
@@ -101,7 +111,7 @@ class MenusController extends REST_Controller
         );
         $form->set_rules($config);
         if (!$form->run()) {
-            $this->response_error(lang('validations_error'), ['errors' => $form->_error_array], REST_Controller::HTTP_BAD_REQUEST);
+            $this->response_error(lang('validations_error'), ['errors' => $form->_error_array], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
         $menu = new MenuModel();
@@ -173,6 +183,10 @@ class MenusController extends REST_Controller
      */
     public function index_delete($menu_id = null)
     {
+        if (!$this->require_menu_permision('DELETE_MENU')) {
+            return;
+        }
+
         if ($menu_id) {
             $menu = new MenuModel();
             $result = $menu->find($menu_id);
@@ -238,6 +252,10 @@ class MenusController extends REST_Controller
      */
     public function subcategorie_get($menu_id, $submenu_id = null)
     {
+        if (!$this->require_menu_permision('SELECT_MENUS')) {
+            return;
+        }
+
         $menu = new MenuModel();
         if ($submenu_id) {
             $result = $menu->where(array('menu_item_parent_id' => $menu_id, 'menu_id' => $submenu_id));
@@ -342,6 +360,10 @@ class MenusController extends REST_Controller
      */
     public function type_get($type = 0)
     {
+        if (!$this->require_menu_permision('SELECT_MENUS')) {
+            return;
+        }
+
         $menu = new MenuModel();
         $result = $menu->where(array('menu_item_parent_id' => '0', 'type' => $type));
         if ($result) {;
@@ -400,6 +422,10 @@ class MenusController extends REST_Controller
      */
     public function filter_get()
     {
+        if (!$this->require_menu_permision('SELECT_MENUS')) {
+            return;
+        }
+
         $menu = new MenuModel();
         $result = $menu->where($_GET);
         if ($result) {
@@ -411,6 +437,10 @@ class MenusController extends REST_Controller
 
     public function templates_get()
     {
+        if (!$this->require_menu_permision('SELECT_MENUS')) {
+            return;
+        }
+
         $this->load->helper('directory');
         $directory = APPPATH . '/views/site/templates/menu';
         if (getThemePath()) {
@@ -418,6 +448,19 @@ class MenusController extends REST_Controller
         }
         $map = directory_map($directory);
         $this->response_ok($map);
+    }
+
+    /**
+     * @param mixed $permision
+     * @return bool
+     */
+    protected function require_menu_permision($permision)
+    {
+        if (!function_exists('has_permisions') || !has_permisions($permision)) {
+            $this->response_error('You do not have permission to perform this action', array(), REST_Controller::HTTP_FORBIDDEN, REST_Controller::HTTP_FORBIDDEN);
+            return false;
+        }
+        return true;
     }
 
 }

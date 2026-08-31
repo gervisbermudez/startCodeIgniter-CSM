@@ -13,6 +13,9 @@
     :index_data="index_data"
     :pagination="true"
     :show_empty_input="false"
+    :show_fab="canCreate"
+    :can_update="canUpdate"
+    :can_delete="canDelete"
     v-on:new="newEvent"
     v-on:edit="editEvent"
     v-on:delete="deleteItem"
@@ -27,7 +30,9 @@
   <div class="container center" v-show="tableEmpty" v-cloak>
     <i class="material-icons large grey-text">event</i>
     <p class="page-header">{{ lang('events_empty') }}</p>
+    @if(has_permisions('CREATE_EVENT'))
     <a href="{{ base_url('admin/events/add') }}" class="btn">{{ lang('events_empty_cta') }}</a>
+    @endif
   </div>
 </div>
 <script>
@@ -38,6 +43,11 @@ window.EVENTS_I18N = {
   status: <?= json_encode(lang('events_status')); ?>,
   options: <?= json_encode(lang('events_options')); ?>,
   online: <?= json_encode(lang('events_online')); ?>
+};
+window.EVENTS_PERMS = {
+  create: <?= has_permisions('CREATE_EVENT') ? 'true' : 'false' ?>,
+  update: <?= has_permisions('UPDATE_EVENT') ? 'true' : 'false' ?>,
+  delete: <?= has_permisions('DELETE_EVENT') ? 'true' : 'false' ?>
 };
 </script>
 @endsection

@@ -53,7 +53,6 @@ class VideosController extends REST_Controller
     {
         $id = $this->input->post('id');
         $is_update = ($id !== null && $id !== '' && $id !== false);
-
         if (!$this->require_video_permision($is_update ? 'UPDATE_VIDEO' : 'CREATE_VIDEO')) {
             return;
         }

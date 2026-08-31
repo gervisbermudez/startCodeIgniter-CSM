@@ -4,25 +4,24 @@
 
 class GalleryController extends MY_Controller
 {
-
     public $routes_permisions = [
         "index" => [
-            "patern" => '/admin\/gallery/',
+            "patern" => '/^admin\/gallery\/?$/',
             "required_permissions" => ["SELECT_GALLERY"],
             "conditions" => [],
         ],
         "items" => [
-            "patern" => '/admin\/gallery\/items/',
+            "patern" => '/^admin\/gallery\/items\/(\d+)/',
             "required_permissions" => ["SELECT_GALLERY"],
             "conditions" => [],
         ],
         "nuevo" => [
-            "patern" => '/admin\/gallery\/(new|nuevo)/',
+            "patern" => '/^admin\/gallery\/(nuevo|new)\/?$/',
             "required_permissions" => ["CREATE_GALLERY"],
             "conditions" => [],
         ],
         "editar" => [
-            "patern" => '/admin\/gallery\/(edit|editar)\/(\d+)/',
+            "patern" => '/^admin\/gallery\/(editar|edit)\/(\d+)/',
             "required_permissions" => ["UPDATE_GALLERY"],
             "conditions" => [],
         ],

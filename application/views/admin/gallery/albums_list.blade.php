@@ -72,8 +72,12 @@
                             <td>
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + album.album_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + album.album_id' class='dropdown-content'>
+                                    @if(has_permisions('UPDATE_GALLERY'))
                                     <li><a :href="base_url('admin/gallery/editar/' + album.album_id)">{{ lang('edit') }}</a></li>
+                                    @endif
+                                    @if(has_permisions('DELETE_GALLERY'))
                                     <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(album, index);">{{ lang('delete') }}</a></li>
+                                    @endif
                                 </ul>
                             </td>
                         </tr>
@@ -93,8 +97,12 @@
                         <a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href='#!' :data-target='"dropdown" + album.album_id'>
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown" + album.album_id' class='dropdown-content'>
+                            @if(has_permisions('UPDATE_GALLERY'))
                             <li><a :href="base_url('admin/gallery/editar/' + album.album_id)">{{ lang('edit') }}</a></li>
+                            @endif
+                            @if(has_permisions('DELETE_GALLERY'))
                             <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(album, index);">{{ lang('delete') }}</a></li>
+                            @endif
                         </ul>
                     </div>
                     <div class="card-content">

@@ -515,12 +515,14 @@
         </p>
     </confirm-modal>
 </div>
+@if(has_permisions('CREATE_PAGE'))
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
     <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left"
         data-delay="50" data-tooltip="New Page" href="{{base_url('admin/pages/nueva/')}}">
         <i class="large material-icons">add</i>
     </a>
 </div>
+@endif
 @endsection
 
 @section('footer_includes')

@@ -7,10 +7,13 @@ var SiteFormList = new Vue({
       index_data: "siteform_id",
       fabTooltip: i18n.newTooltip || "",
       emptyTitle: i18n.empty || "",
-      emptyCta: i18n.emptyCta || "",
-      emptyHref: BASEURL + "admin/siteforms/nuevo/",
+      emptyCta: window.SITEFORMS_PERMS && window.SITEFORMS_PERMS.create ? i18n.emptyCta || "" : "",
+      emptyHref: window.SITEFORMS_PERMS && window.SITEFORMS_PERMS.create ? BASEURL + "admin/siteforms/nuevo/" : "",
       confirmTitle: i18n.confirmDelete || "",
       confirmBody: i18n.confirmDeleteBody || "",
+      canCreate: !!(window.SITEFORMS_PERMS && window.SITEFORMS_PERMS.create),
+      canUpdate: !!(window.SITEFORMS_PERMS && window.SITEFORMS_PERMS.update),
+      canDelete: !!(window.SITEFORMS_PERMS && window.SITEFORMS_PERMS.delete),
       colums: [
         {
           colum: "name",
@@ -48,6 +51,7 @@ var SiteFormList = new Vue({
           icon: "edit",
           url: "admin/siteforms/editar/",
           url_param: "siteform_id",
+          perm: "update",
         },
         {
           label: i18n.viewSubmissions || "Submissions",
@@ -69,8 +73,18 @@ var SiteFormList = new Vue({
           label: i18n.delete || "Delete",
           icon: "delete",
           action: "delete",
+          perm: "delete",
         },
-      ],
+      ].filter(function (opt) {
+        var perms = window.SITEFORMS_PERMS || {};
+        if (opt.perm === "update") {
+          return !!perms.update;
+        }
+        if (opt.perm === "delete" || opt.action === "delete") {
+          return !!perms.delete;
+        }
+        return true;
+      }),
     };
   },
   mixins: [mixins],

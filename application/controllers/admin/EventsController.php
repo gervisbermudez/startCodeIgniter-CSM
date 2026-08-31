@@ -7,17 +7,17 @@ class EventsController extends MY_Controller
 
     public $routes_permisions = [
         "index" => [
-            "patern" => '/admin\/events/',
+            "patern" => '/^admin\/events\/?$/',
             "required_permissions" => ["SELECT_EVENTS"],
             "conditions" => [],
         ],
         "agregar" => [
-            "patern" => '/admin\/events\/add/',
+            "patern" => '/^admin\/events\/(add|agregar)\/?$/',
             "required_permissions" => ["CREATE_EVENT"],
             "conditions" => [],
         ],
         "editar" => [
-            "patern" => '/admin\/events\/edit\/(\d+)/',
+            "patern" => '/^admin\/events\/(edit|editar)\/(\d+)/',
             "required_permissions" => ["UPDATE_EVENT"],
             "conditions" => [],
         ],

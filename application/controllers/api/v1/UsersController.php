@@ -70,6 +70,10 @@ class UsersController extends REST_Controller
      */
     public function index_get($user_id = null)
     {
+        if (!$this->require_user_permision('SELECT_USERS')) {
+            return;
+        }
+
         if ($user_id) {
             $result = $this->User->get_full_info($user_id);
             if ($result) {
@@ -146,6 +150,12 @@ class UsersController extends REST_Controller
      */
     public function index_post()
     {
+        $user_id = $this->input->post('user_id');
+        $is_update = ($user_id !== null && $user_id !== '' && $user_id !== false);
+        if (!$this->require_user_permision($is_update ? 'UPDATE_USER' : 'CREATE_USER')) {
+            return;
+        }
+
         $this->load->library('FormValidator');
         $form = new FormValidator();
         $config = array(
@@ -223,6 +233,10 @@ class UsersController extends REST_Controller
      */
     public function index_delete($user_id = null)
     {
+        if (!$this->require_user_permision('DELETE_USER')) {
+            return;
+        }
+
         $user = new UserModel();
         $user->find($user_id);
         if ($user->delete()) {
@@ -455,6 +469,10 @@ class UsersController extends REST_Controller
      */
     public function timeline_get($user_id = null)
     {
+        if (!$this->require_user_permision('SELECT_USERS')) {
+            return;
+        }
+
         $user = new UserModel();
         if ($user_id) {
             $result = $user->find($user_id);
@@ -470,6 +488,10 @@ class UsersController extends REST_Controller
 
     public function avatar_post()
     {
+        if (!$this->require_user_permision('UPDATE_USER')) {
+            return;
+        }
+
         $user_id = $this->input->post('user_id');
         $avatar = $this->input->post('avatar');
         $user = new UserModel();
@@ -488,6 +510,10 @@ class UsersController extends REST_Controller
 
     public function changePassword_post()
     {
+        if (!$this->require_user_permision('UPDATE_USER')) {
+            return;
+        }
+
         $user_id = $this->input->post('user_id');
         $currentPassword = $this->input->post('currentPassword');
         $user = new UserModel();
