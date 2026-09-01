@@ -80,7 +80,7 @@
         <a class="btn waves-effect" href="{{ base_url('admin/users/newGroup') }}">{{ lang('usergroups_new') }}</a>
         @endif
     </div>
-    <div class="container" v-cloak v-if="!loader && (filter || currentStatus !== null) && filterUsergroups.length === 0">
+    <div class="container" v-cloak v-if="!loader && !filter && currentStatus !== null && filterUsergroups.length === 0">
         <p class="page-header">{{ lang('usergroups_no_results') }}</p>
         <a href="#!" class="btn-flat" v-on:click.prevent="resetFilter(); setStatus(null)">{{ lang('filter_empty_cta') }}</a>
     </div>
