@@ -26,7 +26,7 @@ public function index_get($page_id = null) { /* find o where; response_ok */ }
 
 - Éxito: `$this->response_ok($model)` → `{ code: 200, data: ... }`.
 - Error: `$this->response_error(lang('not_found_error'))`. Validación: HTTP 400 + `errors` de `FormValidator`.
-- Auth: header `Authorization` o `userdata('token')`. Login es la excepción (`api/v1/LoginController`).
+- Auth: JWT flaco `sub`+`exp` en `Authorization` (Bearer opcional) **o** sesión cookie. Login es la excepción (`api/v1/LoginController`).
 - Tras mutar: `system_logger('pages', $page->page_id, 'created', 'A page has been created');`
 - Autor: `$page->user_id = userdata('user_id');`
 - Rutas nuevas: `application/config/routes.php` (`$route['api/v1/foo'] = 'api/v1/FooController';`).

@@ -121,7 +121,7 @@ mysql -h 127.0.0.1 -u ci_user -pci_pass start_cms_db -e "UPDATE user SET passwor
 
 ## Producción
 
-1. `.env` con secretos reales (`JWT_SECRET_KEY`, clave de admin, DB).
+1. `.env` con secretos reales (`JWT_SECRET_KEY` **sí** se lee de `.env`, clave de admin, DB).
 2. `APP_ENV=production`.
 3. Reverse proxy TLS delante de Apache.
 4. Backups: [AUTOMATIC_BACKUPS.md](AUTOMATIC_BACKUPS.md).
