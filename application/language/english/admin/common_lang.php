@@ -148,6 +148,7 @@ $lang['upload_files'] = 'Upload Files';
 $lang['files_add'] = 'Add file';
 $lang['files_my_drive'] = 'My Drive';
 $lang['files_all'] = 'All files';
+$lang['files_themes'] = 'Themes';
 $lang['files_recents'] = 'Recents';
 $lang['files_important'] = 'Important';
 $lang['files_trash'] = 'Deleted files';

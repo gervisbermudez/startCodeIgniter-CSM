@@ -45,8 +45,21 @@
                 </div>
             </div>
             <div class="row selector-content" >
-                <div v-if="getFolders.length && ( mode == 'folders' || mode == 'all' )">
-                    <div class="col s6 m6 l4 xl3 folder" v-if="curDir == root">
+                <div class="col s6 m6 l4 xl3 folder library-themes" v-if="curDir == root && !selectedRoot"
+                    @click="navigateFiles(libraryThemesPath())">
+                    <div class="card-panel">
+                        <div class="card-icon">
+                            <div class="icon">
+                                <i class="material-icons">palette</i>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <span>{{ lang('files_themes') }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="getFolders.length && ( mode == 'folders' || mode == 'all' || mode == 'files' )">
+                    <div class="col s6 m6 l4 xl3 folder" v-if="curDir == root && mode != 'files'">
                         <label class="checkbox">
                             <input type="checkbox" v-model="selectedRoot" />
                             <span>&nbsp;</span>
@@ -68,7 +81,7 @@
                     <div class="col s6 m6 l4 xl3 folder" v-if="!selectedRoot" v-for="(item, index) in getFolders"
                         :key="index">
                         <label class="checkbox">
-                            <input type="checkbox" v-model="item.selected" v-if="showCheckbox(item)"/>
+                            <input type="checkbox" v-model="item.selected" v-if="mode != 'files' && showCheckbox(item)"/>
                             <span>&nbsp;</span>
                         </label>
                         <div class="card-panel" @click="navigateFiles(item.file_path + item.file_name + '/')">

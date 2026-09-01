@@ -585,6 +585,7 @@ class FilesController extends REST_Controller
     private function canMutateFile($file)
     {
         $uploads = realpath(FCPATH . 'uploads');
+        $themes = realpath(FCPATH . 'themes');
         $legacyTrash = realpath(FCPATH . 'trash');
         if ($file->file_type === 'folder') {
             $abs = $file->relativeToAbsolute(rtrim($file->file_path, '/') . '/' . $file->file_name);
@@ -592,10 +593,13 @@ class FilesController extends REST_Controller
             $abs = $file->resolveDiskPath($file->file_path, $file->file_name, $file->file_type);
         }
         $resolved = realpath($abs);
-        if ($resolved !== false && $uploads !== false && strpos($resolved, $uploads) === 0) {
+        if ($resolved !== false && $uploads !== false && ($resolved === $uploads || strpos($resolved, $uploads . DIRECTORY_SEPARATOR) === 0)) {
             return true;
         }
-        if ($resolved !== false && $legacyTrash !== false && strpos($resolved, $legacyTrash) === 0) {
+        if ($resolved !== false && $themes !== false && ($resolved === $themes || strpos($resolved, $themes . DIRECTORY_SEPARATOR) === 0)) {
+            return true;
+        }
+        if ($resolved !== false && $legacyTrash !== false && ($resolved === $legacyTrash || strpos($resolved, $legacyTrash . DIRECTORY_SEPARATOR) === 0)) {
             return true;
         }
         $path = $file->file_type === 'folder'

@@ -3,6 +3,7 @@ window.ADMIN_LANG = Object.assign({}, window.ADMIN_LANG || {}, {
   files_add: <?php echo json_encode(lang('files_add')); ?>,
   files_my_drive: <?php echo json_encode(lang('files_my_drive')); ?>,
   files_all: <?php echo json_encode(lang('files_all')); ?>,
+  files_themes: <?php echo json_encode(lang('files_themes')); ?>,
   files_recents: <?php echo json_encode(lang('files_recents')); ?>,
   files_important: <?php echo json_encode(lang('files_important')); ?>,
   files_trash: <?php echo json_encode(lang('files_trash')); ?>,

@@ -37,6 +37,7 @@
                             </li>
                             <li><a class="subheader">@{{ t('files_my_drive') }}</a></li>
                             <li><a href="#!" :class="sidebarActive(null)" @click="navigateFiles(root)"><i class="material-icons left">folder</i> @{{ t('files_all') }}</a></li>
+                            <li><a href="#!" :class="sidebarActive('themes')" @click="navigateFiles(libraryThemesPath())"><i class="material-icons left">palette</i> @{{ t('files_themes') }}</a></li>
                             <li>
                                 <a href="#!" :class="sidebarActive('recent')" @click="filterFiles('recent')"><i class="material-icons left">history</i> @{{ t('files_recents') }}</a>
                             </li>
@@ -61,6 +62,7 @@
                                             @endif
                                         </li>
                                         <li><a href="#!" class="waves-effect waves-teal" @click="navigateFiles(root)"><i class="material-icons">folder</i> @{{ t('files_all') }}</a></li>
+                                        <li><a href="#!" class="waves-effect waves-teal" @click="navigateFiles(libraryThemesPath())"><i class="material-icons">palette</i> @{{ t('files_themes') }}</a></li>
                                         <li><a href="#!" class="waves-effect waves-teal" @click="filterFiles('recent')"><i class="material-icons">history</i> @{{ t('files_recents') }}</a></li>
                                         <li><a class="waves-effect waves-teal" href="#!" @click="filterFiles('important')"><i class="material-icons">star</i> @{{ t('files_important') }}</a></li>
                                         <li><a class="waves-effect waves-teal" href="#!" @click="filterFiles('trash')"><i class="material-icons">delete</i> @{{ t('files_trash') }}</a></li>
@@ -153,26 +155,31 @@
                             <div class="col s12 center" v-bind:class="{ hide: !fileloader }">
                                 <preloader />
                             </div>
-                            <div v-bind:class="{ hide: fileloader }" v-if="recentlyFiles.length && !activeFilter && curDir == root">
+                            <div class="recent-files" v-bind:class="{ hide: fileloader }" v-if="recentlyFiles.length && !activeFilter && curDir == root">
                                 <div class="col s12">
                                     <h5>@{{ t('files_recently') }}</h5>
                                 </div>
-                                <div class="col s12 m6 l4 xl3" v-for="(item, index) in recentlyFiles" :key="'r'+item.file_id" @click="setSideRightBarSelectedFile(item)">
-                                    <div class="card">
-                                        <div class="card-image">
+                                <div class="col s12 m6 l4 xl3 file" v-for="(item, index) in recentlyFiles"
+                                    :key="'r'+item.file_id" :class="{ selected: isSelected(item) }">
+                                    @include('admin.files.file_card', ['menuId' => 'recent_options'])
+                                </div>
+                            </div>
+                            <div v-bind:class="{ hide: fileloader }" v-if="getFolders.length || (curDir == root && !activeFilter)">
+                                <div class="col s12">
+                                    <h5>@{{ t('files_folders') }}</h5>
+                                </div>
+                                <div class="col s12 m6 l4 xl3 folder library-themes" v-if="curDir == root && !activeFilter"
+                                    @click="navigateFiles(libraryThemesPath())">
+                                    <div class="card-panel">
+                                        <div class="card-icon">
                                             <div class="icon">
-                                                <i :class="getIcon(item)"></i>
+                                                <i class="material-icons">palette</i>
                                             </div>
                                         </div>
                                         <div class="card-content">
-                                            <p>@{{item.file_name}}@{{getExtention(item)}}</p>
+                                            <span>@{{ t('files_themes') }}</span>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div v-bind:class="{ hide: fileloader }" v-if="getFolders.length">
-                                <div class="col s12">
-                                    <h5>@{{ t('files_folders') }}</h5>
                                 </div>
                                 <div class="col s12 m6 l4 xl3 folder" v-for="(item, index) in getFolders" :key="'f'+item.file_id"
                                     :class="{ selected: isSelected(item) }">
@@ -198,7 +205,7 @@
                                                 <i class="material-icons">folder</i>
                                             </div>
                                         </div>
-                                        <div class="card-content">
+                                        <div class="card-content" :title="item.file_name">
                                             <span>@{{item.file_name}}</span>
                                         </div>
                                     </div>
@@ -221,85 +228,7 @@
                                     <div class="row">
                                         <div class="col s12 m6 l4 xl3 file" v-for="(item, index) in getFiles"
                                             :key="'file'+item.file_id" :class="{ selected: isSelected(item) }">
-                                            <div class="card">
-                                                <label class="checkbox file-check" @click.stop>
-                                                    <input type="checkbox" :checked="isSelected(item)" @change="toggleSelect(item, $event)">
-                                                    <span>&nbsp;</span>
-                                                </label>
-                                                <a class="grey-text text-darken-4 dropdown-trigger" href="#!"
-                                                    :data-target="'file_options' + item.file_id"><i class="material-icons right">more_vert</i></a>
-                                                <ul :id="'file_options' + item.file_id" class="dropdown-content"
-                                                    v-if="!inTrash">
-                                                    <li><a href="#!" @click="setSideRightBarSelectedFile(item)">
-                                                            <i class="material-icons">visibility</i> @{{ t('files_view') }}</a>
-                                                    </li>
-                                                    <li><a href="#!" @click="downloadFile(item)">
-                                                            <i class="material-icons">file_download</i> @{{ t('files_download') }}</a>
-                                                    </li>
-                                                    @if(has_permisions('UPDATE_FILE'))
-                                                    <li>
-                                                        <a class="waves-effect waves-light modal-trigger" href="#modal1"
-                                                            @click="renameFile(item);">
-                                                            <i class="material-icons">edit</i>
-                                                            @{{ t('files_rename') }}</a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="waves-effect waves-light modal-trigger"
-                                                            @click="setFileToMove(item);" href="#folderSelectorMove">
-                                                            <i class="material-icons">content_cut</i>
-                                                            @{{ t('files_move') }}</a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="waves-effect waves-light modal-trigger"
-                                                            @click="setFileToMove(item);" href="#folderSelectorCopy">
-                                                            <i class="material-icons">content_copy</i>
-                                                            @{{ t('files_copy') }}</a>
-                                                    </li>
-                                                    <li><a href="#!" @click="featuredFileServe(item);">
-                                                            <i class="material-icons">@{{ item.featured == 1 ? 'star' : 'star_border' }}</i>
-                                                            @{{ t('files_important') }}</a></li>
-                                                    @endif
-                                                    @if(has_permisions('DELETE_FILE'))
-                                                    <li>
-                                                        <a class="waves-effect waves-light modal-trigger"
-                                                            href="#deleteFileModal" @click="trashFile(item);">
-                                                            <i class="material-icons">delete</i> @{{ t('files_delete') }}
-                                                        </a>
-                                                    </li>
-                                                    @endif
-                                                </ul>
-                                                <ul :id="'file_options' + item.file_id" class="dropdown-content" v-else>
-                                                    @if(has_permisions('UPDATE_FILE'))
-                                                    <li>
-                                                        <a class="waves-effect waves-light modal-trigger"
-                                                            @click="setFileToMove(item);" href="#folderSelectorMove">
-                                                            <i class="material-icons">content_cut</i>
-                                                            @{{ t('files_move') }}</a>
-                                                    </li>
-                                                    @endif
-                                                    @if(has_permisions('DELETE_FILE'))
-                                                    <li>
-                                                        <a class="waves-effect waves-light modal-trigger"
-                                                            href="#deleteFileModal" @click="trashFile(item);">
-                                                            <i class="material-icons">delete</i> @{{ t('files_delete') }}
-                                                        </a>
-                                                    </li>
-                                                    @endif
-                                                </ul>
-                                                <div class="card-image waves-effect waves-block waves-light"
-                                                    v-if="!isImage(item)" @click="setSideRightBarSelectedFile(item)">
-                                                    <div class="file icon activator">
-                                                        <i :class="getIcon(item)"></i>
-                                                    </div>
-                                                </div>
-                                                <div class="card-image" v-if="isImage(item)">
-                                                    <a :href="getImagePath(item)" data-lightbox="roadtrip"><img
-                                                            :src="getImagePath(item)"></a>
-                                                </div>
-                                                <div class="card-content" @click="setSideRightBarSelectedFile(item);">
-                                                    @{{(item.file_name + getExtention(item)) | shortName}}
-                                                </div>
-                                            </div>
+                                            @include('admin.files.file_card', ['menuId' => 'file_options'])
                                         </div>
                                     </div>
                                 </div>

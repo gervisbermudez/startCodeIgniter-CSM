@@ -51,6 +51,9 @@ var FileExplorerModule = new Vue({
         return file.file_type != "folder";
       });
     },
+    inThemes: function () {
+      return this.curDir.indexOf("./themes/") === 0;
+    },
     inTrash: function () {
       return (
         this.curDir.indexOf("/trash/") !== -1 || this.activeFilter === "trash"
@@ -316,8 +319,10 @@ var FileExplorerModule = new Vue({
           icon = "fab fa-php";
           break;
         case "js":
-        case "json":
           icon = "fab fa-js";
+          break;
+        case "json":
+          icon = "far fa-file-code";
           break;
         case "pdf":
           icon = "far fa-file-pdf";
@@ -620,6 +625,7 @@ var FileExplorerModule = new Vue({
       this.fetchLibraryFiles({ type: "recent" }, function (response) {
         if (response.code == 200) {
           self.recentlyFiles = (response.data || []).slice(0, 8);
+          self.initMT();
         }
       });
     },
@@ -775,6 +781,12 @@ var FileExplorerModule = new Vue({
       this.deleteFile(this.moveToTrash);
     },
     sidebarActive: function (name) {
+      if (name === "themes") {
+        return this.inThemes ? "current" : "";
+      }
+      if (name === null) {
+        return !this.activeFilter && !this.inThemes ? "current" : "";
+      }
       return this.activeFilter === name ? "current" : "";
     },
     initMT: function () {

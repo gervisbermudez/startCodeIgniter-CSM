@@ -193,9 +193,11 @@ Vue.component("FileExplorerSelector", {
           icon = "fab fa-php";
           break;
         case "js":
-        case "json":
         case "min.js":
           icon = "fab fa-js";
+          break;
+        case "json":
+          icon = "far fa-file-code";
           break;
         case "eot":
         case "otf":

@@ -814,6 +814,9 @@ var mixins = {
     libraryRoot: function () {
       return "./uploads/";
     },
+    libraryThemesPath: function () {
+      return "./themes/";
+    },
     libraryTrashPath: function () {
       return "./uploads/trash/";
     },

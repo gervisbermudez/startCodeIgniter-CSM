@@ -8,6 +8,7 @@ class FileModel extends MY_Model
     public $current_folder = '';
     public $primaryKey = 'file_id';
     public $uploads_root = './uploads/';
+    public $themes_root = './themes/';
     public $trash_path = './uploads/trash/';
     public $computed = array(
         'file_full_path' => 'getFileFullPath',
@@ -32,13 +33,13 @@ class FileModel extends MY_Model
         'temp\\',
         'backups\\',
         'backups/',
-        'themes/',
         'public/vendors/',
     );
 
     /**
-     * Rutas de assets internos que el file manager indexó (vendors, tema demo).
-     * No son uploads del editor; pedirlas como thumbnails llena la consola de 404.
+     * Rutas de assets internos que el file manager indexó (vendors).
+     * Themes se pueden navegar en el explorer; estos prefijos solo ocultan
+     * basura de vendors en filtros globales (picker de imágenes).
      */
     public $exclude_file_path_prefixes = array(
         './public/vendors/',
@@ -152,14 +153,24 @@ class FileModel extends MY_Model
     }
 
     /**
-     * Writable library paths: uploads (including trash).
+     * @param string $path
+     * @return bool
+     */
+    public function isUnderThemes($path)
+    {
+        $normalized = $this->normalizeDirPath($path);
+        return $normalized === $this->themes_root || strpos($normalized, $this->themes_root) === 0;
+    }
+
+    /**
+     * Writable library paths: uploads (including trash) and site themes.
      *
      * @param string $path
      * @return bool
      */
     public function isAllowedLibraryPath($path)
     {
-        return $this->isUnderUploads($path);
+        return $this->isUnderUploads($path) || $this->isUnderThemes($path);
     }
 
     /**
@@ -169,7 +180,7 @@ class FileModel extends MY_Model
     public function clampToUploads($path)
     {
         $normalized = $this->normalizeDirPath($path);
-        if ($this->isUnderUploads($normalized) || $this->isTrashPath($normalized)) {
+        if ($this->isUnderUploads($normalized) || $this->isUnderThemes($normalized) || $this->isTrashPath($normalized)) {
             return $normalized;
         }
         return $this->uploads_root;
@@ -182,6 +193,9 @@ class FileModel extends MY_Model
     public function resolveUploadTargetDir($curDir)
     {
         $curDir = $this->clampToUploads($curDir);
+        if ($this->isUnderThemes($curDir)) {
+            return $curDir;
+        }
         if (preg_match('#/\d{4}-\d{2}-\d{2}/?$#', $curDir)) {
             return $curDir;
         }
@@ -268,11 +282,14 @@ class FileModel extends MY_Model
         $result = $this->where(array('file_path' => $file_path, 'status' => 1));
         $items = array();
         $seen_folders = array();
+        $seen_files = array();
         if ($result) {
             foreach ($result as $row) {
                 $items[] = $row;
                 if (isset($row->file_type) && $row->file_type === 'folder') {
                     $seen_folders[$row->file_name] = true;
+                } else {
+                    $seen_files[$row->file_name . '.' . $row->file_type] = true;
                 }
             }
         }
@@ -285,6 +302,18 @@ class FileModel extends MY_Model
                     $folder['rand_key'] = $insert_array['rand_key'];
                 }
                 $items[] = $folder;
+            }
+        }
+        foreach ($this->scan_disk_files($file_path) as $file) {
+            $disk_name = $file['file_name'] . '.' . $file['file_type'];
+            if (!isset($seen_files[$disk_name])) {
+                $insert_array = $this->get_array_save_file($disk_name, $file_path);
+                if (!empty($insert_array['file_name'])) {
+                    $this->set_data($insert_array);
+                    $file['file_id'] = $this->db->insert_id();
+                    $file['rand_key'] = $insert_array['rand_key'];
+                }
+                $items[] = $file;
             }
         }
         return $items;
@@ -338,6 +367,55 @@ class FileModel extends MY_Model
     }
 
     /**
+     * Files on disk at this path that the indexer has not stored yet.
+     *
+     * @param string $file_path
+     * @return array
+     */
+    private function scan_disk_files($file_path)
+    {
+        $relative = preg_replace('#^\./#', '', str_replace('\\', '/', (string) $file_path));
+        $absolute = rtrim(FCPATH . $relative, '/\\') . DIRECTORY_SEPARATOR;
+        if (!is_dir($absolute)) {
+            return array();
+        }
+        $files = array();
+        $entries = @scandir($absolute);
+        if ($entries === false) {
+            return array();
+        }
+        foreach ($entries as $name) {
+            if ($name === '.' || $name === '..' || $name[0] === '.') {
+                continue;
+            }
+            if (!is_file($absolute . $name)) {
+                continue;
+            }
+            $ext = $this->get_substr_file_ext($name);
+            if (in_array($ext, $this->exclude_file_types, true)) {
+                continue;
+            }
+            $base = $this->get_substr_file_name($name);
+            if ($base === false || $base === '') {
+                continue;
+            }
+            $files[] = array(
+                'file_id' => 0,
+                'file_name' => $base,
+                'file_path' => $file_path,
+                'file_type' => $ext,
+                'parent_name' => $file_path,
+                'featured' => 0,
+                'status' => 1,
+            );
+        }
+        usort($files, function ($a, $b) {
+            return strcasecmp($a['file_name'], $b['file_name']);
+        });
+        return $files;
+    }
+
+    /**
      * @param array $dir_maped
      * @param string $curdir
      */
@@ -373,6 +451,9 @@ class FileModel extends MY_Model
         }
         if (substr($path, -1) !== '/') {
             $path .= '/';
+        }
+        if ($this->isUnderThemes($path)) {
+            return false;
         }
         foreach ($this->exclude_file_path_prefixes as $prefix) {
             if (strpos($path, $prefix) === 0) {

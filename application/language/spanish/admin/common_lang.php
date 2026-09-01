@@ -208,6 +208,7 @@ $lang['upload_files'] = 'Subir Archivos';
 $lang['files_add'] = 'Agregar archivo';
 $lang['files_my_drive'] = 'Mi unidad';
 $lang['files_all'] = 'Todos los archivos';
+$lang['files_themes'] = 'Temas';
 $lang['files_recents'] = 'Recientes';
 $lang['files_important'] = 'Importantes';
 $lang['files_trash'] = 'Eliminados';
