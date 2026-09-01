@@ -15,6 +15,11 @@ class FilesController extends MY_Controller
             "required_permissions" => ["CREATE_FILE"],
             "conditions" => [],
         ],
+        "ajax_replace_file" => [
+            "patern" => '/^admin\/files\/ajax_replace_file/',
+            "required_permissions" => ["UPDATE_FILE"],
+            "conditions" => [],
+        ],
     ];
 
     public function __construct()
@@ -27,7 +32,7 @@ class FilesController extends MY_Controller
 
     public function index()
     {
-        $this->renderAdminView('admin.files.file_explorer', 'Archivos', '');
+        $this->renderAdminView('admin.files.file_explorer', lang('menu_files'), '');
     }
 
     public function ajax_upload_file()
@@ -35,7 +40,7 @@ class FilesController extends MY_Controller
         $this->output->enable_profiler(false);
 
         $result = $this->uploadFile();
-        
+
         if (!isset($result['error'])) {
             $result = $this->persistFileToDatabase($result);
         }
@@ -43,11 +48,43 @@ class FilesController extends MY_Controller
         $this->sendJsonResponse($result);
     }
 
-    /**
-     * Sube el archivo usando la biblioteca FileUploader
-     * 
-     * @return array Resultado de la subida
-     */
+    public function ajax_replace_file()
+    {
+        $this->output->enable_profiler(false);
+
+        $file_id = $this->input->post('file_id');
+        $file = new FileModel();
+        if (!$file_id || !$file->find($file_id) || $file->file_type === 'folder') {
+            $this->sendJsonResponse(array('error' => lang('toast_error')));
+            return;
+        }
+        if (!$file->isAllowedLibraryPath($file->file_path) && !$file->isTrashPath($file->file_path)) {
+            $this->sendJsonResponse(array('error' => lang('toast_error')));
+            return;
+        }
+        if (!isset($_FILES['file']) || !is_uploaded_file($_FILES['file']['tmp_name'])) {
+            $this->sendJsonResponse(array('error' => lang('toast_error')));
+            return;
+        }
+
+        $info = pathinfo($_FILES['file']['name']);
+        $ext = isset($info['extension']) ? strtolower($info['extension']) : $file->file_type;
+        $oldAbsolute = $file->resolveDiskPath($file->file_path, $file->file_name, $file->file_type);
+        $newAbsolute = $file->resolveDiskPath($file->file_path, $file->file_name, $ext);
+        if (!move_uploaded_file($_FILES['file']['tmp_name'], $newAbsolute)) {
+            $this->sendJsonResponse(array('error' => lang('file_read_error')));
+            return;
+        }
+        if ($oldAbsolute !== $newAbsolute && is_file($oldAbsolute)) {
+            @unlink($oldAbsolute);
+        }
+        $file->file_type = $ext;
+        $file->date_update = date('Y-m-d H:i:s');
+        $file->save();
+        $file->logActivity($file->file_id, 'replace', 'The file contents were replaced');
+        $this->sendJsonResponse(array('ok' => true, 'file_type' => $ext));
+    }
+
     private function uploadFile()
     {
         $this->load->library('FileUploader');
@@ -55,114 +92,41 @@ class FilesController extends MY_Controller
         return $loaderClient->upload();
     }
 
-    /**
-     * Persiste la información del archivo en la base de datos
-     * 
-     * @param array $result Resultado de la subida
-     * @return array Resultado actualizado con el objeto del archivo
-     */
     private function persistFileToDatabase($result)
     {
+        if (empty($result['savedFileName']) || empty($result['savedDir'])) {
+            return $result;
+        }
+
         $file = new FileModel();
-        $fileName = $this->generateFileName($_POST['fileName']);
-        $filePath = $this->generateFilePath($_POST['curDir']);
-        
-        $insert_array = $file->get_array_save_file($fileName, $filePath);
-        $existingFile = $this->findExistingFile($file, $insert_array);
+        $insert_array = $file->get_array_save_file($result['savedFileName'], $result['savedDir']);
+        $existingFile = $file->find_with([
+            'file_path' => $insert_array['file_path'],
+            'file_name' => $insert_array['file_name'],
+            'file_type' => $insert_array['file_type'],
+        ]);
 
         if (!$existingFile) {
-            $result['file_object'] = $this->createNewFileRecord($insert_array);
-            $this->logFileActivity($result['file_object'][0]->file_id, 'upload', 'The file was upload');
+            $file->set_data($insert_array);
+            $insert_id = $this->db->insert_id();
+            $created = $file->get_data(['file_id' => $insert_id]);
+            $result['file_object'] = $created;
+            if ($insert_id) {
+                $file->logActivity($insert_id, 'upload', 'The file was upload');
+            }
         } else {
-            $file->date_update = date("Y-m-d H:i:s");
+            $file->date_update = date('Y-m-d H:i:s');
+            $file->save();
             $result['file_object'] = $file->as_data();
         }
 
         return $result;
     }
 
-    /**
-     * Genera el nombre del archivo con timestamp
-     * 
-     * @param string $fileName Nombre original del archivo
-     * @return string Nombre del archivo procesado
-     */
-    private function generateFileName($fileName)
-    {
-        $filenameParts = explode(".", $fileName);
-        return slugify($filenameParts[0]) . '-' . date("Y-m-d-His") . '.' . $filenameParts[1];
-    }
-
-    /**
-     * Genera la ruta del archivo
-     * 
-     * @param string $currentDir Directorio actual
-     * @return string Ruta del archivo
-     */
-    private function generateFilePath($currentDir)
-    {
-        return rtrim($currentDir, '/') . '/' . date("Y-m-d");
-    }
-
-    /**
-     * Busca si el archivo ya existe en la base de datos
-     * 
-     * @param File $file Instancia del modelo File
-     * @param array $insert_array Datos del archivo a buscar
-     * @return mixed Resultado de la búsqueda
-     */
-    private function findExistingFile($file, $insert_array)
-    {
-        return $file->find_with([
-            "file_path" => $insert_array['file_path'],
-            "file_name" => $insert_array['file_name'],
-            "file_type" => $insert_array['file_type'],
-        ]);
-    }
-
-    /**
-     * Crea un nuevo registro de archivo en la base de datos
-     * 
-     * @param array $insert_array Datos del archivo
-     * @return array Objeto del archivo creado
-     */
-    private function createNewFileRecord($insert_array)
-    {
-        $this->File->set_data($insert_array, $this->File->table);
-        return $this->File->get_data(['file_id' => $this->db->insert_id()]);
-    }
-
-    /**
-     * Registra la actividad del archivo
-     * 
-     * @param int $file_id ID del archivo
-     * @param string $action Acción realizada
-     * @param string $description Descripción de la acción
-     * @return void
-     */
-    private function logFileActivity($file_id, $action, $description)
-    {
-        $file_activity = new FileActivityModel();
-        $file_activity->file_id = $file_id;
-        $file_activity->user_id = userdata('user_id');
-        $file_activity->action = $action;
-        $file_activity->description = $description;
-        $file_activity->date_create = date("Y-m-d H:i:s");
-        $file_activity->status = 1;
-        $file_activity->save();
-    }
-
-    /**
-     * Envía una respuesta JSON
-     * 
-     * @param array $data Datos a enviar
-     * @return void
-     */
     private function sendJsonResponse($data)
     {
         $this->output
             ->set_content_type('application/json')
             ->set_output(json_encode($data));
     }
-
 }

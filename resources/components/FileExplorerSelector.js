@@ -15,7 +15,7 @@ Vue.component("FileExplorerSelector", {
       debug: DEBUGMODE,
       title: "Seleccionar",
       selectedRoot: false,
-      root: "./",
+      root: "./uploads/",
       curDir: "",
       fileloader: false,
       files: [],
@@ -59,36 +59,22 @@ Vue.component("FileExplorerSelector", {
       });
     },
     getBackPath() {
-      if (this.getbreadcrumb.length > 0) {
-        return this.getbreadcrumb[this.getbreadcrumb.length - 1].path;
-      } else {
-        return this.root;
+      if (this.getbreadcrumb.length > 1) {
+        return this.getbreadcrumb[this.getbreadcrumb.length - 2].path;
       }
+      return this.root;
     },
     getbreadcrumb() {
-      let breadcrumb = this.curDir.split("/").filter((value) => {
+      var breadcrumb = this.curDir.split("/").filter(function (value) {
         return value != "" && value != ".";
       });
-      breadcrumb = breadcrumb.map((element, index) => {
-        let tempArray = [];
-        for (let i = 0; i < index; i++) {
-          tempArray.push(breadcrumb[i]);
-        }
-
-        let path = tempArray.join("/");
-        if (path) {
-          return {
-            path: this.root + path + "/",
-            folder: element,
-          };
-        } else {
-          return {
-            path: this.root + path,
-            folder: element,
-          };
-        }
+      return breadcrumb.map(function (element, index) {
+        var parts = breadcrumb.slice(0, index + 1);
+        return {
+          path: "./" + parts.join("/") + "/",
+          folder: element,
+        };
       });
-      return breadcrumb;
     },
   },
   methods: {
@@ -118,29 +104,25 @@ Vue.component("FileExplorerSelector", {
     },
     showCheckbox(file) {
       if (
-        this.mode == "folders" && //Only folders
-        !this.multiple && //Single folder selected
-        this.selected.length > 0 && //There are almost one folder seleted
-        file.file_id != this.selected[0].file_id //The current file is not the selected
+        this.mode == "folders" &&
+        !this.multiple &&
+        this.selected.length > 0 &&
+        file.file_id != this.selected[0].file_id
       ) {
-        false;
-      } else if (
-        this.mode == "folders" && //Only folders
-        !this.multiple && //Single folder selected
-        this.selected.length > 0 && //There are almost one folder seleted
-        file.file_id == this.selected[0].file_id //The current file is the selected
+        return false;
+      }
+      if (
+        this.mode == "folders" &&
+        !this.multiple &&
+        this.selected.length > 0 &&
+        file.file_id == this.selected[0].file_id
       ) {
-        true;
+        return true;
       }
       if (this.multiple || this.selected.length == 0) {
         return true;
       }
-
-      if (file.file_id == this.selected[0].file_id) {
-        return true;
-      } else {
-        return false;
-      }
+      return file.file_id == this.selected[0].file_id;
     },
     getSelected() {
       return this.selected;
@@ -151,7 +133,7 @@ Vue.component("FileExplorerSelector", {
         file_id: "0",
         rand_key: "",
         file_name: "",
-        file_path: "./",
+        file_path: this.root || "./uploads/",
         file_type: "",
         parent_name: "./",
         user_id: "",
@@ -211,9 +193,11 @@ Vue.component("FileExplorerSelector", {
           icon = "fab fa-php";
           break;
         case "js":
-        case "json":
         case "min.js":
           icon = "fab fa-js";
+          break;
+        case "json":
+          icon = "far fa-file-code";
           break;
         case "eot":
         case "otf":
@@ -231,21 +215,16 @@ Vue.component("FileExplorerSelector", {
       }
     },
     isImage(file) {
-      if (
-        file.file_type == "jpg" ||
-        file.file_type == "jpeg" ||
-        file.file_type == "png" ||
-        file.file_type == "gif"
-      ) {
-        return true;
-      }
-      return false;
+      return this.fileIsImage(file);
+    },
+    setSideRightBarSelectedFile(file) {
+      this.$set(file, "selected", !file.selected);
     },
     getImagePath(file) {
-      if (this.isImage(file)) {
+      if (this.isImage(file) && file.file_path) {
         return (
           BASEURL +
-          file.file_path.substr(2) +
+          String(file.file_path).replace(/^\.\//, "") +
           file.file_name +
           "." +
           file.file_type
@@ -271,8 +250,8 @@ Vue.component("FileExplorerSelector", {
         dataType: "json",
         success: function (response) {
           self.fileloader = false;
-          if (response.code == 200 && response.data.length) {
-            self.files = response.data;
+          if (response.code == 200) {
+            self.files = response.data || [];
           } else {
             self.files = [];
           }
@@ -281,38 +260,25 @@ Vue.component("FileExplorerSelector", {
       });
     },
     filterFiles(filter) {
-      switch (filter) {
-        case "important":
-          this.getFilterFiles("featured", ["1"]);
-          break;
-        case "trash":
-          this.getFilterFiles("file_path", ["./trash/"]);
-          this.curDir = "./trash/";
-          break;
-        case "images":
-          this.getFilterFiles("file_type", ["jpg", "png", "gif"]);
-          break;
-        case "doc":
-          this.getFilterFiles("file_type", ["pdf", "doc"]);
-          break;
-        case "docs":
-          this.getFilterFiles("file_type", ["pdf", "doc", "xls"]);
-          break;
-        case "audio":
-          this.getFilterFiles("file_type", ["acc, mp3"]);
-          break;
-        case "video":
-          this.getFilterFiles("file_type", ["mp4"]);
-          break;
-        case "zip":
-          this.getFilterFiles("file_type", ["zip", "rar"]);
-          break;
-        default:
-          break;
-      }
+      var self = this;
+      var type = this.normalizeLibraryType(filter);
+      this.fileloader = true;
+      this.fetchLibraryFiles(
+        { type: type, q: this.search || "" },
+        function (response) {
+          self.fileloader = false;
+          if (response.code == 200) {
+            self.files = response.data || [];
+            self.init();
+          }
+        },
+        function () {
+          self.fileloader = false;
+        }
+      );
     },
     resetSearch() {
-      this.search = null;
+      this.search = "";
       var self = this;
       if (self.filter) {
         this.filterFiles(self.filter);
@@ -321,39 +287,54 @@ Vue.component("FileExplorerSelector", {
       }
     },
     searchfiles() {
+      var self = this;
       if (this.search) {
-        this.getFilterFiles("file_name", [this.search]);
+        this.fileloader = true;
+        this.fetchLibraryFiles(
+          { type: this.filter || "", q: this.search },
+          function (response) {
+            self.fileloader = false;
+            self.files = response.code == 200 ? response.data || [] : [];
+            self.init();
+          }
+        );
+      } else if (this.filter) {
+        this.filterFiles(this.filter);
       } else {
         this.navigateFiles(this.root);
       }
     },
     getFilterFiles(filter_name, filter_value) {
       var self = this;
-      $.ajax({
-        type: "GET",
-        url: BASEURL + "api/v1/files/filter_files",
-        data: {
-          filter_name: filter_name,
-          filter_value: filter_value,
-        },
-        dataType: "json",
-        success: (response) => {
-          if (response.code == 200) {
-            self.files = response.data;
-            self.init();
-          }
-        },
-        error: (error) => {
-          console.log({ error });
-        },
+      var opts = {};
+      if (filter_name === "file_name") {
+        opts.q = Array.isArray(filter_value) ? filter_value[0] : filter_value;
+        opts.type = this.filter || "";
+      } else if (filter_name === "file_type" || filter_name === "featured") {
+        opts.filter_name = filter_name;
+        opts.filter_value = filter_value;
+      } else {
+        opts.type = filter_name;
+      }
+      this.fetchLibraryFiles(opts, function (response) {
+        if (response.code == 200) {
+          self.files = response.data || [];
+          self.init();
+        }
       });
     },
     init() {
-      setTimeout(() => {
+      var self = this;
+      this.$nextTick(function () {
         var elems = document.querySelectorAll(".materialboxed");
-        M.Materialbox.init(elems, {});
-        M.Tabs.init(document.getElementById("selectorTabs_" + this.modal), {});
-      }, 3000);
+        if (window.M && M.Materialbox) {
+          M.Materialbox.init(elems, {});
+        }
+        var tabs = document.getElementById("selectorTabs_" + self.modal);
+        if (tabs && window.M && M.Tabs) {
+          M.Tabs.init(tabs, {});
+        }
+      });
     },
     initUploader() {
       $(`#${this.input_id}`)
