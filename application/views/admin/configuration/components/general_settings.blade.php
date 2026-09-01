@@ -3,15 +3,15 @@
         <preloader />
     </div>
     <nav class="page-navbar" v-show="!loader">
-        <div class="nav-wrapper">
-            <form @submit.prevent>
-                <div class="input-field">
-                    <input id="config-search" class="input-search" type="search" placeholder="<?php echo lang('search_placeholder'); ?>" v-model="filter" aria-label="<?php echo lang('search'); ?>">
-                    <label class="label-icon" for="config-search"><i class="material-icons">search</i></label>
-                    <i class="material-icons" v-on:click="resetFilter();">close</i>
-                </div>
+        <div class="page-navbar__inner">
+            <form class="page-navbar__filter" @submit.prevent>
+                <i class="material-icons page-navbar__filter-icon" aria-hidden="true">filter_list</i>
+                <input id="config-search" class="page-navbar__filter-input browser-default" type="search" placeholder="<?php echo lang('filter_placeholder'); ?>" v-model="filter" aria-label="<?php echo lang('filter'); ?>" autocomplete="off">
+                <button type="button" class="page-navbar__filter-clear" v-show="filter" v-on:click="resetFilter();" aria-label="<?php echo lang('filter_empty_cta'); ?>">
+                    <i class="material-icons" aria-hidden="true">close</i>
+                </button>
             </form>
-            <ul class="right page-navbar-actions">
+            <ul class="page-navbar-actions">
                 <li>
                     <a href="#!" v-on:click.prevent="getconfigurations();" class="tooltipped" data-position="bottom" data-tooltip="<?php echo lang('refresh'); ?>" aria-label="<?php echo lang('refresh'); ?>">
                         <i class="material-icons">refresh</i>
@@ -30,7 +30,7 @@
     </nav>
     <div class="page-search-empty" v-if="!loader && filter && listedConfigurations.length === 0" v-cloak>
         <p class="page-header"><?php echo htmlspecialchars(trim(preg_replace('/%s|"/', '', lang('search_no_results'))), ENT_QUOTES, 'UTF-8'); ?> «<strong>@{{ filter }}</strong>»</p>
-        <a href="#!" class="btn-flat" v-on:click.prevent="resetFilter()"><?php echo lang('search_empty_cta'); ?></a>
+        <a href="#!" class="btn-flat" v-on:click.prevent="resetFilter()"><?php echo lang('filter_empty_cta'); ?></a>
     </div>
     <div class="configurations" v-if="!loader && listedConfigurations.length > 0">
         <div class="row">
