@@ -1,6 +1,6 @@
 Vue.component("fileExplorerCollection", {
   template: "#fileExplorerCollection-template",
-  props: ["files"],
+  props: ["files", "total"],
   data: function () {
     return {
       debug: DEBUGMODE,

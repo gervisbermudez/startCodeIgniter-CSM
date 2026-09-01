@@ -1,6 +1,6 @@
 Vue.component("usersCollection", {
   template: "#user-collection-template",
-  props: ["users"],
+  props: ["users", "total"],
   data: function () {
     return {
       debug: DEBUGMODE,

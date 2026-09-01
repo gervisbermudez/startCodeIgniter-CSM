@@ -248,6 +248,11 @@ nav.page-navbar {
   }
 }
 
+// Vue 2 named slot needs one root. Flatten so two groups sit in the toolbar row.
+.page-navbar__filters > .filter-groups {
+  display: contents;
+}
+
 .filter-group {
   display: inline-flex;
   flex-wrap: wrap;

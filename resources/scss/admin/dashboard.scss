@@ -27,8 +27,12 @@ body {
   grid-template-columns: 70% 30%;
   column-gap: 15px;
 
-  &.showLoader {
+  &.showLoader,
+  &.dashboard-single {
     grid-template-columns: 100%;
+  }
+
+  &.showLoader {
     padding: 1rem;
   }
 

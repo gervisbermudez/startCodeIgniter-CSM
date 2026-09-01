@@ -230,6 +230,21 @@ var EventNewForm = new Vue({
           self.loader = false;
         });
     },
+    applyDateFromQuery: function () {
+      if (typeof editMode !== "undefined" && editMode == "edit") {
+        return;
+      }
+      if (typeof event_id !== "undefined" && event_id) {
+        return;
+      }
+      var params = new URLSearchParams(window.location.search);
+      var date = params.get("date");
+      if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        return;
+      }
+      this.date_start_date = date;
+      this.all_day = true;
+    },
     checkEditMode() {
       var self = this;
       if (event_id && editMode == "edit") {
@@ -328,6 +343,12 @@ var EventNewForm = new Vue({
       bindTime("event_time_start", "date_start_time");
       bindTime("event_time_end", "date_end_time");
       bindTime("timepublish", "timepublish");
+      if (self.date_start_date) {
+        var startEl = document.getElementById("event_date_start");
+        if (startEl) {
+          startEl.value = self.date_start_date;
+        }
+      }
     },
     initPlugins() {
       this.initDateTimePickers();
@@ -350,6 +371,7 @@ var EventNewForm = new Vue({
     },
   },
   mounted: function () {
+    this.applyDateFromQuery();
     this.$nextTick(function () {
       this.getCategories();
       this.initPlugins();
