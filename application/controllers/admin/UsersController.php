@@ -67,7 +67,9 @@ class UsersController extends MY_Controller
         $user = $this->User->get_full_info($user_id);
         if ($user && $user_id) {
             $user = (object) $user->first();
-            $data['title'] = ADMIN_TITLE . " | " . $user->user_data->nombre . ' ' . $user->user_data->apellido;
+            $user->user_data = $this->profile_user_data($user);
+            $full_name = trim($user->user_data->nombre . ' ' . $user->user_data->apellido);
+            $data['title'] = ADMIN_TITLE . " | " . ($full_name !== '' ? $full_name : $user->username);
             $data['user'] = $user;
             //Make the menu options
             $data['dropdown_id'] = 'dropdown' . random_string('alnum', 16);
@@ -112,7 +114,7 @@ class UsersController extends MY_Controller
     {
         $user = $this->findOrFail(new UserModel(), $id, 'User not found');
         
-        $this->renderAdminView('admin.user.form', 'Edit User', 'Edit User', [
+        $this->renderAdminView('admin.user.form', lang('users_form_edit'), lang('users_form_edit'), [
             'userdata' => $user,
             'action' => 'Admin/User/save/',
             'mode' => 'new',
@@ -134,11 +136,34 @@ class UsersController extends MY_Controller
     {
         $this->load->model('Admin/UsergroupModel');
         
-        $this->renderAdminView('admin.user.form', 'New User', 'New User', [
+        $this->renderAdminView('admin.user.form', lang('users_form_new'), lang('users_form_new'), [
             'action' => 'Admin/User/save/',
             'userdata' => false,
             'mode' => 'new',
         ]);
+    }
+
+    /**
+     * Profile Blade reads EAV keys that optional signup may omit.
+     *
+     * @param object $user
+     * @return object
+     */
+    protected function profile_user_data($user)
+    {
+        $ud = isset($user->user_data) ? $user->user_data : null;
+        if (is_array($ud)) {
+            $ud = (object) $ud;
+        }
+        if (!is_object($ud)) {
+            $ud = new stdClass();
+        }
+        foreach (array('nombre', 'apellido', 'telefono', 'direccion', 'avatar', 'cargo', 'bio') as $key) {
+            if (!isset($ud->{$key})) {
+                $ud->{$key} = '';
+            }
+        }
+        return $ud;
     }
 
     public function ajax_check_field()
@@ -146,12 +171,27 @@ class UsersController extends MY_Controller
         $this->output->enable_profiler(false);
         $field = $this->input->post('field');
         $value = $this->input->post('value');
-        $result = $this->User->where(array($field => $value));
+        $user_id = (int) $this->input->post('user_id');
+        $allowed = array('username', 'email');
+        $available = true;
+        if (!in_array($field, $allowed, true)) {
+            $available = false;
+        } else {
+            $result = $this->User->where(array($field => $value, 'status !=' => 0));
+            if ($result) {
+                foreach ($result as $row) {
+                    if (!$user_id || (int) $row->user_id !== $user_id) {
+                        $available = false;
+                        break;
+                    }
+                }
+            }
+        }
 
         $response = array(
             'code' => 200,
             'error_message' => '',
-            'data' => $result ? false : true,
+            'data' => $available,
         );
 
         $this->output

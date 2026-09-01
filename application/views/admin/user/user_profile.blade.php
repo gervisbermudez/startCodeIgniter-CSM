@@ -52,10 +52,10 @@
                     <a href="#!"><?=$user->email?></a>
                 </li>
                 <li class="collection-item"><i class="material-icons left">contact_phone</i>
-                    <a href="#!"><?=$user->user_data->telefono?></a>
+                    <a href="#!"><?= isset($user->user_data->telefono) ? $user->user_data->telefono : '' ?></a>
                 </li>
                 <li class="collection-item"><i class="material-icons left">location_on</i>
-                    <a href="#!"><?=$user->user_data->direccion?></a>
+                    <a href="#!"><?= isset($user->user_data->direccion) ? $user->user_data->direccion : '' ?></a>
                 </li>
             </ul>
         </div>
