@@ -38,6 +38,7 @@ Estos archivos nacieron como spec de implementación. El corte ya está en `mast
 | Doc | Rol |
 |---|---|
 | [DESIGN.md](DESIGN.md) | Tokens, patrones y deuda UX del **admin** (el tema público no comparte paleta) |
+| [CMS_PRODUCT_COPY_PLAN.md](CMS_PRODUCT_COPY_PLAN.md) | Spec en curso: voz de producto, page-intro, copy híbrido editor/dev (`feat/cms-product-copy`) |
 
 ## API y datos
 
