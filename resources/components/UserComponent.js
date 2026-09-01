@@ -23,8 +23,11 @@ Vue.component("userCard", {
     getUserUrl: function () {
       return BASEURL + "admin/users/ver/" + this.user.user_id;
     },
-    requestDelete: function () {
-      this.$emit("tempDelete", this.user, this.index);
+    requestDelete: function (event) {
+      if (event && event.preventDefault) {
+        event.preventDefault();
+      }
+      this.$emit("temp-delete", this.user, this.index);
     },
     hasValue: function (value) {
       if (value === null || value === undefined) {
@@ -85,6 +88,20 @@ var usersModule = new Vue({
       this.deleteListItem(user, index);
     },
     userDisplayName: userDisplayName,
+    onRequestDelete: function (user, index) {
+      this.tempDelete(user, index);
+      this.$nextTick(function () {
+        var el = document.getElementById("deleteModal");
+        if (!el || typeof M === "undefined" || !M.Modal) {
+          return;
+        }
+        var inst = M.Modal.getInstance(el);
+        if (!inst) {
+          inst = M.Modal.init(el, {});
+        }
+        inst.open();
+      });
+    },
   },
   mounted: function () {
     this.$nextTick(function () {

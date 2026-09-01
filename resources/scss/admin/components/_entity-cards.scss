@@ -248,8 +248,14 @@ $entity-card-image-radius: 8px;
   min-height: 0;
   height: 100%;
   margin: 0;
+  overflow: visible;
   display: flex;
   flex-direction: column;
+
+  .card-image {
+    overflow: visible;
+    z-index: 2;
+  }
 
   .card-title {
     color: var(--st-chrome);

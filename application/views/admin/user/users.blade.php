@@ -54,7 +54,7 @@
                                     <li><a :href="base_url('admin/users/edit/' + user.user_id)"><?= lang('btn_edit') ?></a></li>
                                     @endif
                                     @if(has_permisions('DELETE_USER'))
-                                    <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(user, index);"><?= lang('btn_delete') ?></a></li>
+                                    <li><a href="#!" v-on:click.prevent="onRequestDelete(user, index)"><?= lang('btn_delete') ?></a></li>
                                     @endif
                                 </ul>
                             </td>
@@ -70,7 +70,7 @@
             :key="user.user_id"
             :user="user"
             :index="index"
-            v-on:tempDelete="tempDelete"
+            v-on:temp-delete="onRequestDelete"
         />
     </div>
     <div class="container center" v-if="!loader && users.length == 0 && !filter" v-cloak>
@@ -111,7 +111,7 @@
                 <li><a :href="base_url('admin/users/edit/' + user.user_id)"><?= lang('btn_edit') ?></a></li>
                 @endif
                 @if(has_permisions('DELETE_USER'))
-                <li><a class="modal-trigger" href="#deleteModal" v-on:click="requestDelete"><?= lang('btn_delete') ?></a></li>
+                <li><a href="#!" v-on:click.prevent="requestDelete"><?= lang('btn_delete') ?></a></li>
                 @endif
             </ul>
         </div>
