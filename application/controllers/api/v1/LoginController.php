@@ -10,6 +10,7 @@ class LoginController extends REST_Controller
     public function __construct()
     {
         parent::__construct();
+        $this->load->driver('cache', array('adapter' => 'file'));
         $this->load->database();
         $this->load->model('Admin/LoginModModel', 'LoginMod');
     }
@@ -29,16 +30,9 @@ class LoginController extends REST_Controller
      * HTTP/1.1 200 OK
      * {
      *     "status": 200,
-     *     "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiMTgifQ.NftK7Sr9Iez248IvAaSg4qmZRYVA9IlDoWOSS-sARWQ"
+     *     "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.signature"
      * }
      *
-     * @apiError UserOrPasswordNotFound The <code>username</code> or <code>password</code> was not found.
-     * @apiErrorExample {json} Error-Response:
-     * HTTP/1.1 401 Unauthorized
-     * {
-     *   "error_message": "Username or password not found",
-     *   "error_code": 3
-     * }
      * @apiError Unauthorized Invalid <code>username</code> or <code>password</code>
      * @apiErrorExample {json} Error-Response:
      * HTTP/1.1 401 Unauthorized
@@ -51,53 +45,61 @@ class LoginController extends REST_Controller
     {
         $this->lang->load('login_lang', 'english');
 
-        if ($this->input->post('username') && $this->input->post('username')) {
-            $password = $this->input->post('password');
-            $username = $this->input->post('username');
-            $login_data = $this->LoginMod->isLoged($username, $password);
-            if ($login_data) {
-                $this->session->set_userdata('logged_in', true);
-                foreach ($login_data[0] as $key => $value) {
-                    if ($key != 'user_data') {
-                        $this->session->set_userdata($key, $value);
-                    } else {
-                        foreach ($value as $index => $val) {
-                            $this->session->set_userdata($index, $val);
-                        }
-                    }
-                }
-                $this->load->model('Admin/UserModel');
-                $user = new UserModel();
-                $user->find_with(["username" => $username]);
-                $user->lastseen = date("Y-m-d H:i:s");
-                $user->save();
-                $this->load->model('Admin/UsergroupModel');
-                $usergroup = new UsergroupModel();
-                $usergroup->usergroup_id = $user->usergroup_id;
-                $result = $usergroup->find_with(array("usergroup_id" => $user->usergroup_id));
-                $this->session->set_userdata("usergroup_permisions", $usergroup->usergroup_permisions());
+        $username = trim((string) $this->input->post('username'));
+        $password = (string) $this->input->post('password');
+        $unauth = array(
+            'error_message' => lang('username_or_password_invalid'),
+            'error_code' => 2,
+        );
 
-                $rand_key = random_string('alnum', 16);
-                // Check if valid user
-                // Create a token from the user data and send it as reponse
-                $token = AUTHORIZATION::generateToken(['userdata' => $this->session->all_userdata(), 'rand_key' => $rand_key]);
-                $this->session->set_userdata('token', $token);
-                // Prepare the response
-                $status = parent::HTTP_OK;
-                $response = ['status' => $status, 'userdata' => $login_data, 'token' => $token, 'auth' => 'valid', 'redirect' => 'admin'];
-                $this->response($response, $status);
-                //$this->response($data, REST_Controller::HTTP_OK);
-            } else {
-                $this->session->sess_destroy();
-                $data = array('error_message' => lang('username_or_password_invalid'), 'error_code' => 2);
-                $this->response($data, REST_Controller::HTTP_UNAUTHORIZED);
-            }
-        } else {
-            $this->session->sess_destroy();
-            $data = array('error_message' => lang('username_or_password_not_found'), 'error_code' => 3);
-            $this->response($data, REST_Controller::HTTP_UNAUTHORIZED);
+        if ($this->is_login_rate_limited($username)) {
+            $this->response($unauth, REST_Controller::HTTP_UNAUTHORIZED);
+            return;
         }
 
+        if ($username === '' || $password === '') {
+            $this->hit_login_rate_limit($username);
+            $this->response($unauth, REST_Controller::HTTP_UNAUTHORIZED);
+            return;
+        }
+
+        $login_data = $this->LoginMod->isLoged($username, $password);
+        if (!$login_data) {
+            $this->hit_login_rate_limit($username);
+            $this->response($unauth, REST_Controller::HTTP_UNAUTHORIZED);
+            return;
+        }
+
+        $this->load->model('Admin/UserModel');
+        $user = new UserModel();
+        if (!$user->find((int) $login_data[0]['user_id']) || (int) $user->status !== 1) {
+            $this->hit_login_rate_limit($username);
+            $this->response($unauth, REST_Controller::HTTP_UNAUTHORIZED);
+            return;
+        }
+
+        $this->hydrate_admin_session($user);
+        $this->session->sess_regenerate(true);
+        $user->lastseen = date('Y-m-d H:i:s');
+        $user->save();
+
+        $token = AUTHORIZATION::generateToken(array(
+            'sub' => (string) $user->user_id,
+            'jti' => bin2hex(random_bytes(16)),
+        ));
+        $this->session->set_userdata('token', $token);
+        $this->clear_login_rate_limit($username);
+        system_logger('users', $user->user_id, 'login', 'User logged in');
+
+        $status = parent::HTTP_OK;
+        $response = array(
+            'status' => $status,
+            'userdata' => $login_data,
+            'token' => $token,
+            'auth' => 'valid',
+            'redirect' => 'admin',
+        );
+        $this->response($response, $status);
     }
 
     /**
@@ -108,6 +110,10 @@ class LoginController extends REST_Controller
     public function logout_get()
     {
         $this->session->sess_destroy();
+        if (!$this->input->is_ajax_request()) {
+            redirect('admin/login');
+            return;
+        }
         $this->response_ok(true);
     }
 

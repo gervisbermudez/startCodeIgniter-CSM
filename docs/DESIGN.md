@@ -183,6 +183,8 @@ Estructura canónica:
 
 Acciones por ítem: FAB coral `more_vert` en la imagen (esquina superior derecha), criterio de las cards de páginas. Estilos compartidos en `resources/scss/admin/components/_entity-cards.scss` (`.page-card`, `.custom-badge`). Pills de status/visibilidad: `admin.components.entity_card_badges`. Grid: wrapper `.pages`.
 
+Listas **sin imagen** (fragmentos): `.page-card.fragment-card` en `.fragments-grid` (`auto-fill`, 280–340px). Sin `min-height: 410px` ni offset de imagen colgante; un solo `more_vert`; tipo editorial como chip; excerpt a 2 líneas. No reutilizar la card de páginas tal cual.
+
 ### Formulario de edición
 
 Referencia: `pages/new.blade.php` (a refinar, no a clonar ciegas).

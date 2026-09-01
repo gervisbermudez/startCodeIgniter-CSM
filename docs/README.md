@@ -40,6 +40,12 @@ Estos archivos nacieron como spec de implementación. El corte ya está en `mast
 | [DESIGN.md](DESIGN.md) | Tokens, patrones y deuda UX del **admin** (el tema público no comparte paleta) |
 | [CMS_PRODUCT_COPY_PLAN.md](CMS_PRODUCT_COPY_PLAN.md) | Spec en curso: voz de producto, page-intro, copy híbrido editor/dev (`feat/cms-product-copy`) |
 
+## Planes en curso
+
+| Doc | Rol |
+|---|---|
+| [AUTH_LOGIN_JWT_HARDEN_PLAN.md](AUTH_LOGIN_JWT_HARDEN_PLAN.md) | Endurecer login admin + JWT (sesión cookie + claims RFC). Prompt: [AUTH_LOGIN_JWT_HARDEN_PROMPT.md](AUTH_LOGIN_JWT_HARDEN_PROMPT.md) |
+
 ## API y datos
 
 - Colección Postman: [api/postman-collection.json](api/postman-collection.json)

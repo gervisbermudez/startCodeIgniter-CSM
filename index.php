@@ -59,6 +59,11 @@ include __DIR__ . '/application/third_party/DevCoder.php';
 
 define('ENVIRONMENT', getenv('APP_ENV'));
 
+// CI 3.1 Session.php in this image does not always honor cookie_samesite /
+// cookie_httponly config keys. Mirror them via ini so session cookies stay Lax + HttpOnly.
+ini_set('session.cookie_httponly', '1');
+ini_set('session.cookie_samesite', 'Lax');
+
 /*
  *---------------------------------------------------------------
  * ERROR REPORTING
