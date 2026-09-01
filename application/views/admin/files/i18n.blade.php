@@ -64,6 +64,8 @@ window.ADMIN_LANG = Object.assign({}, window.ADMIN_LANG || {}, {
   files_folder_name: <?php echo json_encode(lang('files_folder_name')); ?>,
   files_agree: <?php echo json_encode(lang('files_agree')); ?>,
   files_recently: <?php echo json_encode(lang('files_recently')); ?>,
+  filter_empty_cta: <?php echo json_encode(lang('filter_empty_cta')); ?>,
+  list_filter_empty: <?php echo json_encode(lang('list_filter_empty')); ?>,
   search_files: <?php echo json_encode(lang('search_files')); ?>,
   upload_files: <?php echo json_encode(lang('upload_files')); ?>,
   no_files: <?php echo json_encode(lang('no_files')); ?>,

@@ -60,11 +60,11 @@
                 </div>
                 <div v-if="getFolders.length && ( mode == 'folders' || mode == 'all' || mode == 'files' )">
                     <div class="col s6 m6 l4 xl3 folder" v-if="curDir == root && mode != 'files'">
-                        <label class="checkbox">
-                            <input type="checkbox" v-model="selectedRoot" />
-                            <span>&nbsp;</span>
-                        </label>
                         <div class="card-panel" @click="navigateFiles(root)">
+                            <label class="checkbox" @click.stop>
+                                <input type="checkbox" class="filled-in" v-model="selectedRoot" />
+                                <span>&nbsp;</span>
+                            </label>
                             <div class="card-icon">
                                 <div class="icon">
                                     <i class="material-icons">folder</i>
@@ -80,11 +80,11 @@
                     </div>
                     <div class="col s6 m6 l4 xl3 folder" v-if="!selectedRoot" v-for="(item, index) in getFolders"
                         :key="index">
-                        <label class="checkbox">
-                            <input type="checkbox" v-model="item.selected" v-if="mode != 'files' && showCheckbox(item)"/>
-                            <span>&nbsp;</span>
-                        </label>
                         <div class="card-panel" @click="navigateFiles(item.file_path + item.file_name + '/')">
+                            <label class="checkbox" @click.stop>
+                                <input type="checkbox" class="filled-in" v-model="item.selected" v-if="mode != 'files' && showCheckbox(item)"/>
+                                <span>&nbsp;</span>
+                            </label>
                             <div class="card-icon">
                                 <div class="icon">
                                     <i class="material-icons">folder</i>

@@ -3,7 +3,7 @@
 @endphp
 <div class="card">
     <label class="checkbox file-check" @click.stop>
-        <input type="checkbox" :checked="isSelected(item)" @change="toggleSelect(item, $event)">
+        <input type="checkbox" class="filled-in" :checked="isSelected(item)" @change="toggleSelect(item, $event)">
         <span>&nbsp;</span>
     </label>
     <a class="grey-text text-darken-4 dropdown-trigger" href="#!"
