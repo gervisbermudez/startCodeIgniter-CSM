@@ -65,7 +65,7 @@ var FragmentsLists = new Vue({
       if (!fragment || !fragment.name) {
         return "";
       }
-      return "{{fragment(" + fragment.name + ")}}";
+      return "{{" + "fragment(" + fragment.name + ")}}";
     },
     copyToken: function (fragment) {
       var text = this.fragmentToken(fragment);
