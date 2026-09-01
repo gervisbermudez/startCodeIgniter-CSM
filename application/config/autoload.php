@@ -54,7 +54,7 @@ $autoload['packages'] = array();
 |    $autoload['libraries'] = array('database', 'session', 'xmlrpc');
  */
 
-$autoload['libraries'] = array('database', 'session', 'Blade', 'ThemeController_Base');
+$autoload['libraries'] = array('database', 'session');
 
 /*
 | -------------------------------------------------------------------
@@ -107,7 +107,7 @@ $autoload['language'] = array('site', 'admin/common');
 |
  */
 
-$autoload['model'] = array('Admin/SiteConfigModel');
+$autoload['model'] = array();
 
 /* End of file autoload.php */
 /* Location: ./application/config/autoload.php */

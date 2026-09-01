@@ -194,6 +194,7 @@ class Cron extends CI_Controller
             'config_value' => $value,
             'date_update' => date('Y-m-d H:i:s')
         ]);
+        invalidate_site_config_cache();
     }
     
     /**

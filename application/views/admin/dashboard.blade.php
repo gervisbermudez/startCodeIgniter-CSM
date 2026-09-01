@@ -629,10 +629,6 @@ window.CURRENT_USER = <?= json_encode(array(
 ), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS) ?>;
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="<?=base_url('resources/components/widget/AlbumsWidgetComponent.js?v=' . ADMIN_VERSION)?>"></script>
-<script src="<?=base_url('resources/components/widget/CreateContents.js?v=' . ADMIN_VERSION)?>"></script>
-<script src="<?=base_url('resources/components/widget/FileExplorerCollection.js?v=' . ADMIN_VERSION)?>"></script>
-<script src="<?=base_url('resources/components/widget/PageCardComponent.js?v=' . ADMIN_VERSION)?>"></script>
-<script src="<?=base_url('resources/components/widget/UsersCollection.js?v=' . ADMIN_VERSION)?>"></script>
+<script src="<?=base_url('public/js/dashboard-widgets.js?v=' . ADMIN_VERSION)?>"></script>
 <script src="<?=base_url('resources/components/DashboardModule.js?v=' . ADMIN_VERSION)?>"></script>
 @endsection

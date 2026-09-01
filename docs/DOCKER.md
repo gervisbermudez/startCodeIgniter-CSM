@@ -7,6 +7,7 @@ Compose levanta **solo** Apache + PHP 7.4. MySQL corre en el host. El contenedor
 | Pieza | Dónde |
 |---|---|
 | PHP 7.4 + Apache + Composer | Imagen del `Dockerfile`, contenedor `ci_php56` |
+| OPcache | `docker/php-opcache.ini` (solo aplica al **rebuild** de la imagen; no hace falta recrear el contenedor para el resto de esta feature) |
 | Código | Volume `.:/var/www/html` |
 | MySQL 5.7+ | **Host** (no hay servicio `db` en `docker-compose.yml`) |
 | Red al host | `extra_hosts: host.docker.internal:host-gateway` |
