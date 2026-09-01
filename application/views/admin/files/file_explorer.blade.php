@@ -19,6 +19,7 @@
         'titleKey' => 'menu_files',
         'ledeKey' => 'files_lede',
     ])
+    <input type="file" class="hide" ref="replaceInput" @change="replaceFileServe">
     <div class="row">
         <div class="col s12">
             <div class="row">
@@ -31,72 +32,46 @@
                             <li class="uploadbtn">
                                 @if(has_permisions('CREATE_FILE'))
                                 <a class="waves-effect waves-teal btn btn-default modal-trigger" href="#uploaderModal">
-                                    <i class="material-icons left">file_upload</i> Add File</a>
+                                    <i class="material-icons left">file_upload</i> @{{ t('files_add') }}</a>
                                 @endif
                             </li>
-                            <li><a class="subheader">My Drive</a></li>
-                            <li><a href="#!" @click="navigateFiles('./')"><i class="far fa-folder left"></i> All
-                                    Files</a></li>
+                            <li><a class="subheader">@{{ t('files_my_drive') }}</a></li>
+                            <li><a href="#!" :class="sidebarActive(null)" @click="navigateFiles(root)"><i class="material-icons left">folder</i> @{{ t('files_all') }}</a></li>
+                            <li><a href="#!" :class="sidebarActive('themes')" @click="navigateFiles(libraryThemesPath())"><i class="material-icons left">palette</i> @{{ t('files_themes') }}</a></li>
                             <li>
-                                <a href="#!"><i class="fas fa-history"></i> Recents</a>
+                                <a href="#!" :class="sidebarActive('recent')" @click="filterFiles('recent')"><i class="material-icons left">history</i> @{{ t('files_recents') }}</a>
                             </li>
-                            <li><a class="waves-effect" href="#!" @click="filterFiles('important')"><i
-                                        class="fas fa-star"></i> Important</a></li>
-                            <li><a class="waves-effect" href="#!" @click="filterFiles('trash')"><i
-                                        class="fas fa-trash"></i> Deleted Files</a></li>
-                            <li><a class="subheader">Labels</a></li>
-                            <li><a class="waves-effect" href="#!" @click="filterFiles('images')"><i
-                                        class="far fa-images"></i>
-                                    Images</a></li>
-                            <li><a class="waves-effect" href="#!" @click="filterFiles('docs')"><i
-                                        class="far fa-file-word"></i> Document</a></li>
-                            <li><a class="waves-effect" href="#!" @click="filterFiles('audio')"><i
-                                        class="far fa-file-audio"></i> Audios</a></li>
-                            <li><a class="waves-effect" href="#!" @click="filterFiles('video')"><i
-                                        class="fas fa-file-video"></i> Videos</a></li>
-                            <li><a class="waves-effect" href="#!" @click="filterFiles('zip')"><i
-                                        class="fas fa-file-archive"></i> Zip Files</a></li>
+                            <li><a class="waves-effect" href="#!" :class="sidebarActive('important')" @click="filterFiles('important')"><i class="material-icons left">star</i> @{{ t('files_important') }}</a></li>
+                            <li><a class="waves-effect" href="#!" :class="sidebarActive('trash')" @click="filterFiles('trash')"><i class="material-icons left">delete</i> @{{ t('files_trash') }}</a></li>
+                            <li><a class="subheader">@{{ t('files_labels') }}</a></li>
+                            <li><a class="waves-effect" href="#!" :class="sidebarActive('images')" @click="filterFiles('images')"><i class="material-icons left">image</i> @{{ t('files_images') }}</a></li>
+                            <li><a class="waves-effect" href="#!" :class="sidebarActive('docs')" @click="filterFiles('docs')"><i class="material-icons left">description</i> @{{ t('files_docs') }}</a></li>
+                            <li><a class="waves-effect" href="#!" :class="sidebarActive('audio')" @click="filterFiles('audio')"><i class="material-icons left">audiotrack</i> @{{ t('files_audio') }}</a></li>
+                            <li><a class="waves-effect" href="#!" :class="sidebarActive('video')" @click="filterFiles('video')"><i class="material-icons left">movie</i> @{{ t('files_videos') }}</a></li>
+                            <li><a class="waves-effect" href="#!" :class="sidebarActive('archives')" @click="filterFiles('archives')"><i class="material-icons left">archive</i> @{{ t('files_archives') }}</a></li>
                         </ul>
                         <ul class="collapsible hide-on-med-and-up">
                             <li>
-                                <div class="collapsible-header"><a class="subheader"><i class="fas fa-cloud"></i> My
-                                        Drive</a></div>
+                                <div class="collapsible-header"><a class="subheader"><i class="material-icons">cloud</i> @{{ t('files_my_drive') }}</a></div>
                                 <div class="collapsible-body">
                                     <ul class="suboptions">
                                         <li>
                                             @if(has_permisions('CREATE_FILE'))
-                                            <a href="#" class="waves-effect waves-teal">
-                                                <i class="fas fa-file-upload"></i> Add File</a>
+                                            <a href="#uploaderModal" class="waves-effect waves-teal modal-trigger">
+                                                <i class="material-icons">file_upload</i> @{{ t('files_add') }}</a>
                                             @endif
                                         </li>
-                                        <li><a href="#!" class="waves-effect waves-teal" @click="navigateFiles('./')"><i
-                                                    class="far fa-folder left"></i>
-                                                All
-                                                Files</a></li>
-                                        <li>
-                                            <a href="#!" class="waves-effect waves-teal"><i class="fas fa-history"></i>
-                                                Recents</a>
-                                        </li>
-                                        <li><a class="waves-effect waves-teal" href="#!"
-                                                @click="filterFiles('important')"><i class="fas fa-star"></i>
-                                                Important</a></li>
-                                        <li><a class="waves-effect waves-teal" href="#!"
-                                                @click="filterFiles('trash')"><i class="fas fa-trash"></i> Deleted
-                                                Files</a></li>
-                                        <li><a class="subheader">Labels</a></li>
-                                        <li><a class="waves-effect waves-teal" href="#!"
-                                                @click="filterFiles('images')"><i class="far fa-images"></i>
-                                                Images</a></li>
-                                        <li><a class="waves-effect waves-teal" href="#!" @click="filterFiles('docs')"><i
-                                                    class="far fa-file-word"></i> Document</a></li>
-                                        <li><a class="waves-effect waves-teal" href="#!"
-                                                @click="filterFiles('audio')"><i class="far fa-file-audio"></i>
-                                                Audios</a></li>
-                                        <li><a class="waves-effect waves-teal" href="#!"
-                                                @click="filterFiles('video')"><i class="fas fa-file-video"></i>
-                                                Videos</a></li>
-                                        <li><a class="waves-effect waves-teal" href="#!" @click="filterFiles('zip')"><i
-                                                    class="fas fa-file-archive"></i> Zip Files</a></li>
+                                        <li><a href="#!" class="waves-effect waves-teal" @click="navigateFiles(root)"><i class="material-icons">folder</i> @{{ t('files_all') }}</a></li>
+                                        <li><a href="#!" class="waves-effect waves-teal" @click="navigateFiles(libraryThemesPath())"><i class="material-icons">palette</i> @{{ t('files_themes') }}</a></li>
+                                        <li><a href="#!" class="waves-effect waves-teal" @click="filterFiles('recent')"><i class="material-icons">history</i> @{{ t('files_recents') }}</a></li>
+                                        <li><a class="waves-effect waves-teal" href="#!" @click="filterFiles('important')"><i class="material-icons">star</i> @{{ t('files_important') }}</a></li>
+                                        <li><a class="waves-effect waves-teal" href="#!" @click="filterFiles('trash')"><i class="material-icons">delete</i> @{{ t('files_trash') }}</a></li>
+                                        <li><a class="subheader">@{{ t('files_labels') }}</a></li>
+                                        <li><a class="waves-effect waves-teal" href="#!" @click="filterFiles('images')"><i class="material-icons">image</i> @{{ t('files_images') }}</a></li>
+                                        <li><a class="waves-effect waves-teal" href="#!" @click="filterFiles('docs')"><i class="material-icons">description</i> @{{ t('files_docs') }}</a></li>
+                                        <li><a class="waves-effect waves-teal" href="#!" @click="filterFiles('audio')"><i class="material-icons">audiotrack</i> @{{ t('files_audio') }}</a></li>
+                                        <li><a class="waves-effect waves-teal" href="#!" @click="filterFiles('video')"><i class="material-icons">movie</i> @{{ t('files_videos') }}</a></li>
+                                        <li><a class="waves-effect waves-teal" href="#!" @click="filterFiles('archives')"><i class="material-icons">archive</i> @{{ t('files_archives') }}</a></li>
                                     </ul>
                                 </div>
                             </li>
@@ -108,22 +83,26 @@
                             <div class="container">
                                 <div class="row">
                                     <div class="col s12">
-                                        <div v-if="showFile.file_content">
-                                            <h4>@{{showFile.file_name + '.' + showFile.file_type }}</h4>
-                                            <div v-if="!showFile.isImagen">
-                                                <pre :class="'language-' + showFile.file_type">
-                                                <code :class="'language-' + showFile.file_type" v-html="showFile.file_content"></code>
-                                                </pre>
-                                            </div>
-                                            <div v-else>
-
+                                        <div v-if="showFile.file_name">
+                                            <h4>@{{showFile.file_name + (showFile.file_type && showFile.file_type !== 'folder' ? '.' + showFile.file_type : '') }}</h4>
+                                            <div v-if="showFile.isImagen">
                                                 <a :href="getImagePath(showFile)" data-lightbox="roadtrip">
                                                     <img :src="getFullFilePath(showFile)">
                                                 </a>
                                             </div>
+                                            <div v-else-if="fileIsText(showFile)">
+                                                <textarea class="materialize-textarea file-content-editor" rows="18" v-model="showFile.file_content"></textarea>
+                                                @if(has_permisions('UPDATE_FILE'))
+                                                <button class="btn waves-effect" type="button" @click="saveFileContent()" :disabled="savingContent">@{{ t('files_save') }}</button>
+                                                @endif
+                                            </div>
+                                            <div v-else>
+                                                <p>@{{ t('files_no_preview') }}</p>
+                                                <a href="#!" class="btn" @click="downloadFile(showFile)">@{{ t('files_download') }}</a>
+                                            </div>
                                         </div>
                                         <div class="preloader">
-                                            <preloader v-show="!showFile.file_content" />
+                                            <preloader v-show="!showFile.file_name && showSideRightBar" />
                                         </div>
                                     </div>
                                 </div>
@@ -131,185 +110,137 @@
                         </div>
                         <div class="row search">
                             <div class="col s12">
-                                <nav v-if="!backto" class="search-nav">
+                                <nav class="search-nav">
                                     <div class="nav-wrapper">
                                         <div class="input-field">
-                                            <input class="input-search" type="search" placeholder="Buscar Archivos..."
+                                            <input class="input-search" type="search" :placeholder="t('search_files')"
                                                 v-model="search" v-on:keyup="searchfiles()">
-                                            <label class="label-icon" for="search"><i
-                                                    class="material-icons">search</i></label>
+                                            <label class="label-icon" for="search"><i class="material-icons">search</i></label>
                                             <i class="material-icons" @click="resetSearch()">close</i>
                                         </div>
                                         <ul class="right hide-on-med-and-down">
-                                            <li><a href="#!" v-on:click="toggleView();"><i
-                                                        class="material-icons">view_module</i></a></li>
-                                            <li><a href="#!" v-on:click="reloadFileExplorer();"><i
-                                                        class="material-icons">refresh</i></a></li>
+                                            @if(has_permisions('CREATE_FILE'))
+                                            <li><a href="#!" @click="startNewFolder()" :title="t('files_new_folder')"><i class="material-icons">create_new_folder</i></a></li>
+                                            @endif
+                                            <li><a href="#!" v-on:click="listView = !listView"><i class="material-icons">@{{ listView ? 'view_module' : 'view_list' }}</i></a></li>
+                                            <li><a href="#!" v-on:click="reloadFileExplorer();"><i class="material-icons">refresh</i></a></li>
                                         </ul>
                                     </div>
                                 </nav>
-                                <nav v-if="backto" class="navigation-nav">
+                                <nav v-if="curDir != root || getbreadcrumb.length" class="navigation-nav">
                                     <div class="nav-wrapper">
-                                        <div class="col s12 breadcrumb-nav" v-if="getbreadcrumb">
-                                            <a href="#!" class="breadcrumb" @click="navigateFiles(getBackPath)"><i
-                                                    class="material-icons">arrow_back</i></a>
-                                        </div>
-                                        <div class="col s12 breadcrumb-nav" v-if="getbreadcrumb">
+                                        <div class="col s12 breadcrumb-nav">
+                                            <a href="#!" class="breadcrumb" @click="navigateFiles(root)"><i class="material-icons">home</i></a>
                                             <a href="#!" class="breadcrumb" v-for="(item, index) in getbreadcrumb"
                                                 :key="index"
-                                                @click="navigateFiles(item.path + item.folder + '/')">@{{item.folder}}</a>
+                                                @click="navigateFiles(item.path)">@{{item.folder}}</a>
                                         </div>
                                     </div>
                                 </nav>
                             </div>
                         </div>
-                        <div class="row filelist">
+                        <div class="file-bulk-bar" v-if="selectedCount">
+                            <span>@{{ selectedCount }} @{{ t('files_selected') }}</span>
+                            <a href="#!" @click="selectAllVisible()">@{{ t('files_select_all') }}</a>
+                            <a href="#!" @click="clearSelection()">@{{ t('files_clear_selection') }}</a>
+                            <a href="#!" @click="downloadZip()"><i class="material-icons left">archive</i> @{{ t('files_download_zip') }}</a>
+                            @if(has_permisions('UPDATE_FILE'))
+                            <a class="modal-trigger" href="#folderSelectorMove" @click="fileToMove = {}">@{{ t('files_move') }}</a>
+                            @endif
+                            @if(has_permisions('DELETE_FILE'))
+                            <a class="modal-trigger" href="#deleteFileModal" @click="trashSelected()">@{{ t('files_delete') }}</a>
+                            @endif
+                        </div>
+                        <div class="row filelist" :class="{ 'list-view': listView }">
                             <div class="col s12 center" v-bind:class="{ hide: !fileloader }">
                                 <preloader />
                             </div>
-                            <div v-bind:class="{ hide: fileloader }" v-if="recentlyFiles.length">
+                            <div class="recent-files" v-bind:class="{ hide: fileloader }" v-if="recentlyFiles.length && !activeFilter && curDir == root">
                                 <div class="col s12">
-                                    <h5>Recently Accessed Files</h5>
+                                    <h5>@{{ t('files_recently') }}</h5>
                                 </div>
-                                <div class="col s12 m6 l4 xl3" v-for="(item, index) in recentlyFiles" :key="index">
-                                    <div class="card">
-                                        <div class="card-image">
+                                <div class="col s12 m6 l4 xl3 file" v-for="(item, index) in recentlyFiles"
+                                    :key="'r'+item.file_id" :class="{ selected: isSelected(item) }">
+                                    @include('admin.files.file_card', ['menuId' => 'recent_options'])
+                                </div>
+                            </div>
+                            <div v-bind:class="{ hide: fileloader }" v-if="getFolders.length || (curDir == root && !activeFilter)">
+                                <div class="col s12">
+                                    <h5>@{{ t('files_folders') }}</h5>
+                                </div>
+                                <div class="col s12 m6 l4 xl3 folder library-themes" v-if="curDir == root && !activeFilter"
+                                    @click="navigateFiles(libraryThemesPath())">
+                                    <div class="card-panel">
+                                        <div class="card-icon">
                                             <div class="icon">
-                                                <i class="material-icons">@{{getIcon(item)}}</i>
+                                                <i class="material-icons">palette</i>
                                             </div>
                                         </div>
                                         <div class="card-content">
-                                            <p>
-                                                @{{item.file_name}}@{{getExtention(item)}}
-                                            </p>
+                                            <span>@{{ t('files_themes') }}</span>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div v-bind:class="{ hide: fileloader }" v-if="getFolders.length">
-                                <div class="col s12">
-                                    <h5>Folders</h5>
-                                </div>
-                                <div class="col s12 m6 l4 xl3 folder" v-for="(item, index) in getFolders" :key="index"
-                                    @click="navigateFiles(item.file_path + item.file_name + '/')">
-                                    <div class="card-panel">
+                                <div class="col s12 m6 l4 xl3 folder" v-for="(item, index) in getFolders" :key="'f'+item.file_id"
+                                    :class="{ selected: isSelected(item) }">
+                                    <label class="checkbox" @click.stop>
+                                        <input type="checkbox" :checked="isSelected(item)" @change="toggleSelect(item, $event)">
+                                        <span>&nbsp;</span>
+                                    </label>
+                                    <a class="grey-text text-darken-4 dropdown-trigger folder-menu" href="#!"
+                                        :data-target="'folder_options' + item.file_id" @click.stop><i class="material-icons right">more_vert</i></a>
+                                    <ul :id="'folder_options' + item.file_id" class="dropdown-content">
+                                        @if(has_permisions('UPDATE_FILE'))
+                                        <li><a class="modal-trigger" href="#modal1" @click="renameFile(item)">@{{ t('files_rename') }}</a></li>
+                                        <li><a class="modal-trigger" href="#folderSelectorMove" @click="setFileToMove(item)">@{{ t('files_move') }}</a></li>
+                                        @endif
+                                        <li><a href="#!" @click="downloadZip([item.file_id])">@{{ t('files_download_zip') }}</a></li>
+                                        @if(has_permisions('DELETE_FILE'))
+                                        <li><a class="modal-trigger" href="#deleteFileModal" @click="trashFile(item)">@{{ t('files_delete') }}</a></li>
+                                        @endif
+                                    </ul>
+                                    <div class="card-panel" @click="navigateFiles(item.file_path + item.file_name + '/')">
                                         <div class="card-icon">
                                             <div class="icon">
                                                 <i class="material-icons">folder</i>
                                             </div>
                                         </div>
+                                        <div class="card-content" :title="item.file_name">
+                                            <span>@{{item.file_name}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col s12 m6 l4 xl3 folder new-folder" v-if="creatingFolder">
+                                    <div class="card-panel">
+                                        <div class="card-icon"><i class="material-icons">folder</i></div>
                                         <div class="card-content">
-                                            <span>
-                                                @{{item.file_name}}
-                                            </span>
+                                            <input type="text" ref="folderNameInput" v-model="newFolderName"
+                                                v-on:keyup.enter="makeFolderServer()" v-on:blur="makeFolderServer()">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div v-if="getFiles.length" v-bind:class="{ hide: fileloader }">
                                 <div class="col s12">
-                                    <h5>Files</h5>
+                                    <h5>@{{ t('files_files') }}</h5>
                                 </div>
                                 <div class="col s12">
                                     <div class="row">
                                         <div class="col s12 m6 l4 xl3 file" v-for="(item, index) in getFiles"
-                                            :key="index">
-                                            <div class="card">
-                                                <!-- Dropdown Structure -->
-                                                <a class="grey-text text-darken-4 dropdown-trigger" href='#!'
-                                                    :data-target="'file_options' + index"><i
-                                                        class="material-icons right">more_vert</i></a>
-                                                <ul :id="'file_options' + index" class='dropdown-content'
-                                                    v-if="curDir != './trash/'">
-                                                    <li><a href="#!" @click="getFileContent(item)">
-                                                            <i class="fas fa-share-alt"></i> view file</a>
-                                                    </li>
-                                                    @if(has_permisions('UPDATE_FILE'))
-                                                    <li>
-                                                        <a class="waves-effect waves-light modal-trigger" href="#modal1"
-                                                            @click="renameFile(item);">
-                                                            <i class="far fa-edit"></i>
-                                                            Rename</a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="waves-effect waves-light modal-trigger"
-                                                            @click="setFileToMove(item);" href="#folderSelectorMove">
-                                                            <i class="fas fa-cut"></i>
-                                                            Move</a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="waves-effect waves-light modal-trigger"
-                                                            @click="setFileToMove(item);" href="#folderSelectorCopy">
-                                                            <i class="fas fa-copy"></i>
-                                                            Copy</a>
-                                                    </li>
-                                                    <li><a href="#!" @click="featuredFileServe(item);">
-                                                            <i class="fa-star"
-                                                                :class='[item.featured == 1 ? "fas" : "far"]'></i>
-                                                            Important</a></li>
-                                                    @endif
-                                                    @if(has_permisions('DELETE_FILE'))
-                                                    <li>
-                                                        <a class="waves-effect waves-light modal-trigger"
-                                                            href="#deleteFileModal" @click="trashFile(item);">
-                                                            <i class="fas fa-trash"></i> Delete
-                                                        </a>
-                                                    </li>
-                                                    @endif
-                                                </ul>
-                                                <ul :id="'file_options' + index" class='dropdown-content' v-else>
-                                                    @if(has_permisions('UPDATE_FILE'))
-                                                    <li>
-                                                        <a class="waves-effect waves-light modal-trigger"
-                                                            @click="setFileToMove(item);" href="#folderSelectorMove">
-                                                            <i class="fas fa-cut"></i>
-                                                            Move</a>
-                                                    </li>
-                                                    @endif
-                                                    @if(has_permisions('DELETE_FILE'))
-                                                    <li>
-                                                        <a class="waves-effect waves-light modal-trigger"
-                                                            href="#deleteFileModal" @click="trashFile(item);">
-                                                            <i class="fas fa-trash"></i> Delete
-                                                        </a>
-                                                    </li>
-                                                    @endif
-                                                </ul>
-                                                <div class="card-image waves-effect waves-block waves-light"
-                                                    v-if="!isImage(item)">
-                                                    <div class="file icon activator">
-                                                        <i :class="getIcon(item)"></i>
-                                                    </div>
-                                                </div>
-                                                <div class="card-image" v-if="isImage(item)">
-                                                    <a :href="getImagePath(item)" data-lightbox="roadtrip"><img
-                                                            :src="getImagePath(item)"></a>
-                                                </div>
-                                                <div class="card-content" @click="setSideRightBarSelectedFile(item);">
-                                                    @{{(item.file_name + getExtention(item)) | shortName}}
-                                                </div>
-                                                <div class="card-reveal">
-                                                    <span
-                                                        class="card-title grey-text text-darken-4">@{{item.file_name}}<i
-                                                            class="material-icons right">close</i></span>
-                                                    <p>
-                                                        <b>Type</b>: @{{item.file_type}} <br />
-                                                        <b>Create</b>: @{{item.date_create}} <br />
-                                                        <b>Update</b>: @{{item.date_update}} <br />
-                                                        <b>shared</b> with: @{{item.shared_user_group_id}} <br />
-                                                        <b>User</b>: @{{item.user_id}} <br />
-                                                        <a :href="getFullFilePath(item)" target="_blank">Open File</a>
-                                                    </p>
-                                                </div>
-                                            </div>
+                                            :key="'file'+item.file_id" :class="{ selected: isSelected(item) }">
+                                            @include('admin.files.file_card', ['menuId' => 'file_options'])
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div v-if="getFiles.length == 0 && !fileloader" v-bind:class="{ hide: fileloader }">
+                            <div v-if="getFiles.length == 0 && getFolders.length == 0 && !fileloader">
                                 <div class="row">
-                                    <div class="col s12">
-                                        <h5><?php echo lang('no_files'); ?></h5>
+                                    <div class="col s12 file-empty">
+                                        <h5>@{{ t('files_empty') }}</h5>
+                                        <p>@{{ t('files_empty_cta') }}</p>
+                                        @if(has_permisions('CREATE_FILE'))
+                                        <a class="btn modal-trigger" href="#uploaderModal">@{{ t('files_add') }}</a>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -322,7 +253,7 @@
                                 @if(has_permisions('DELETE_FILE'))
                                 <a class="waves-effect waves-light modal-trigger right" href="#deleteFileModal"
                                     @click="trashFile(sideRightBarSelectedFile);">
-                                    <i class="fas fa-trash grey-text text-darken-4 "></i></a>
+                                    <i class="material-icons grey-text text-darken-4">delete</i></a>
                                 @endif
                             </div>
                             <br />
@@ -330,9 +261,9 @@
                                 <div class="col s12">
                                     <ul class="tabs" id="filetabs">
                                         <li class="tab col s6"><a class="active" href="#fileinfo"><i
-                                                    class="material-icons">info_outline</i> Info</a></li>
+                                                    class="material-icons">info_outline</i> @{{ t('files_info') }}</a></li>
                                         <li class="tab col s6"><a href="#filehistory"><i
-                                                    class="material-icons">linear_scale</i> History</a></li>
+                                                    class="material-icons">linear_scale</i> @{{ t('files_history') }}</a></li>
                                     </ul>
                                 </div>
                                 <div class="tabsbody">
@@ -347,56 +278,57 @@
                                         </div>
                                         <ul class="file_options">
                                             <li>
-                                                <a :href="getFullFilePath(sideRightBarSelectedFile)" target="_blank"><i
-                                                        class="fas fa-cloud-download-alt"></i> Download File</a>
+                                                <a href="#!" @click="downloadFile(sideRightBarSelectedFile)"><i
+                                                        class="material-icons">file_download</i> @{{ t('files_download') }}</a>
                                             </li>
-                                            <li><a href="#!" @click="shareFile(sideRightBarSelectedFile)">
-                                                    <i class="fas fa-share-alt"></i> Share file</a>
+                                            <li><a href="#!" @click="copyFileLink(sideRightBarSelectedFile)">
+                                                    <i class="material-icons">link</i> @{{ t('files_copy_link') }}</a>
                                             </li>
                                             @if(has_permisions('UPDATE_FILE'))
                                             <li>
                                                 <a class="waves-effect waves-light modal-trigger" href="#modal1"
                                                     @click="renameFile(sideRightBarSelectedFile);">
-                                                    <i class="far fa-edit"></i>
-                                                    Rename</a>
+                                                    <i class="material-icons">edit</i>
+                                                    @{{ t('files_rename') }}</a>
                                             </li>
+                                            <li><a href="#!" @click="pickReplaceFile(sideRightBarSelectedFile)">
+                                                    <i class="material-icons">swap_horiz</i> @{{ t('files_replace') }}</a></li>
                                             <li><a href="#!" @click="featuredFileServe(sideRightBarSelectedFile);">
-                                                    <i class="fa-star"
-                                                        :class='[sideRightBarSelectedFile.featured == 1 ? "fas" : "far"]'></i>
-                                                    Important</a></li>
+                                                    <i class="material-icons">@{{ sideRightBarSelectedFile.featured == 1 ? 'star' : 'star_border' }}</i>
+                                                    @{{ t('files_important') }}</a></li>
                                             @endif
                                             @if(has_permisions('DELETE_FILE'))
-                                            <li v-if="curDir != './trash/'">
+                                            <li v-if="!inTrash">
                                                 <a class="waves-effect waves-light modal-trigger"
                                                     href="#deleteFileModal"
                                                     @click="trashFile(sideRightBarSelectedFile);">
-                                                    <i class="fas fa-trash"></i> Delete
+                                                    <i class="material-icons">delete</i> @{{ t('files_delete') }}
                                                 </a>
                                             </li>
                                             @endif
                                         </ul>
                                         <ul class="collection">
-                                            <li class="collection-item">Type: <span
+                                            <li class="collection-item">@{{ t('files_type') }}: <span
                                                     class="secondary-content">@{{sideRightBarSelectedFile.file_type}}</span>
                                             </li>
-                                            <li class="collection-item">Create: <span
+                                            <li class="collection-item">@{{ t('files_created') }}: <span
                                                     class="secondary-content">@{{timeAgo(sideRightBarSelectedFile.date_create)}}</span>
                                             </li>
-                                            <li class="collection-item">Update: <span
+                                            <li class="collection-item">@{{ t('files_updated') }}: <span
                                                     class="secondary-content">@{{timeAgo(sideRightBarSelectedFile.date_update)}}</span>
                                             </li>
-                                            <li class="collection-item">Folder: <span
+                                            <li class="collection-item">@{{ t('files_folder') }}: <span
                                                     class="secondary-content">@{{(sideRightBarSelectedFile.file_path)}}</span>
                                             </li>
-                                            <li class="collection-item">File key: <span
+                                            <li class="collection-item">@{{ t('files_key') }}: <span
                                                     class="secondary-content">@{{(sideRightBarSelectedFile.rand_key)}}</span>
                                             </li>
                                             <li class="collection-item" v-if="sideRightBarSelectedFile.user_group">
-                                                Shared with: <span
+                                                @{{ t('files_shared_with') }}: <span
                                                     class="secondary-content">@{{sideRightBarSelectedFile.user_group.name}}</span>
                                             </li>
                                             <li class="collection-item" v-if="sideRightBarSelectedFile.user">
-                                                Create by: <br />
+                                                @{{ t('files_created_by') }}: <br />
                                                 <user-info :user="sideRightBarSelectedFile.user" />
                                             </li>
                                         </ul>
@@ -411,8 +343,7 @@
                                                     class="material-icons circle teal">@{{getFileHistoryIcon(history.action)}}</i>
                                                 <span class="title">@{{history.description}}</span>
                                                 <p>
-                                                    <a :href="history.user.get_profileurl()">@{{history.user.get_fullname()}}
-                                                    </a>
+                                                    <span v-if="history.user">@{{history.user.get_fullname()}}</span>
                                                     <br>
                                                     @{{timeAgo(history.date_create)}}
                                                 </p>
@@ -428,47 +359,41 @@
             </div>
         </div>
     </div>
-    <!-- Modal Structure -->
     <div id="modal1" class="modal">
         <div class="modal-content">
-            <h4>Rename File</h4>
-            <p>
+            <h4>@{{ t('files_rename') }}</h4>
             <div class="input-field col s6">
-                <input placeholder="Placeholder" id="first_name" type="text" v-on:keyup.enter="renameFileServe()"
+                <input :placeholder="t('files_rename')" id="file_rename_input" type="text" v-on:keyup.enter="renameFileServe()"
                     v-model="editFile.new_name" class="validate">
-                <label for="first_name">Rename</label>
+                <label for="file_rename_input">@{{ t('files_rename') }}</label>
             </div>
-            </p>
         </div>
         <div class="modal-footer">
-            <a href="#!" @click="renameFileServe()" class="modal-close waves-effect waves-green btn-flat">Agree</a>
+            <a href="#!" @click="renameFileServe()" class="modal-close waves-effect waves-green btn-flat">@{{ t('files_agree') }}</a>
         </div>
     </div>
     <div id="deleteFileModal" class="modal">
         <div class="modal-content">
-            <h4>Delete File</h4>
-            <p v-if="curDir != './trash/'">Move this file to trash?</p>
-            <p v-else>Delete this file permanently?</p>
+            <h4>@{{ t('files_delete') }}</h4>
+            <p v-if="!inTrash">@{{ moveToTrash && moveToTrash.bulk ? t('files_confirm_trash_many') : t('files_confirm_trash') }}</p>
+            <p v-else>@{{ t('files_confirm_delete') }}</p>
         </div>
         <div class="modal-footer">
-            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
-            <a href="#!" v-if="curDir != './trash/'" @click="moveFileTo(moveToTrash, './trash/');"
-                class="modal-close waves-effect waves-green btn-flat">Move</a>
-            <a href="#!" v-else @click="deleteFile(moveToTrash);"
-                class="modal-close waves-effect waves-green btn-flat red white-text">Delete</a>
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">@{{ t('cancel') }}</a>
+            <a href="#!" v-if="!inTrash" @click="confirmTrash();"
+                class="modal-close waves-effect waves-green btn-flat">@{{ t('files_move') }}</a>
+            <a href="#!" v-else @click="confirmDelete();"
+                class="modal-close waves-effect waves-green btn-flat red white-text">@{{ t('files_delete') }}</a>
         </div>
     </div>
-    <!-- Modal Structure -->
     <file-explorer-selector :modal="'folderSelectorMove'" :preselected="[]" :mode="'folders'" :multiple="false"
         v-on:notify="moveCallcack">
     </file-explorer-selector>
-    <!-- Modal Structure -->
     <file-explorer-selector :modal="'folderSelectorCopy'" :preselected="[]" :mode="'folders'" :multiple="false"
         v-on:notify="copyCallcack">
     </file-explorer-selector>
 
 </div>
-<!-- Modal Structure -->
 <div id="uploaderModal" class="modal bottom-sheet">
     <div class="modal-content">
         <h4><?php echo lang('upload_files'); ?></h4>
@@ -478,8 +403,6 @@
         <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat"><?php echo lang('cancel'); ?></a>
     </div>
 </div>
-
-
 
 @include('admin.components.file_explorer_selector_component')
 
@@ -500,59 +423,15 @@ $(document).on('ready', function() {
     $("#input-100").fileinput({
         uploadUrl: BASEURL + "admin/files/ajax_upload_file",
         enableResumableUpload: true,
-        resumableUploadOptions: {
-            // uncomment below if you wish to test the file for previous partial uploaded chunks
-            // to the server and resume uploads from that point afterwards
-            // testUrl: "http://localhost/test-upload.php"
-        },
+        resumableUploadOptions: {},
         uploadExtraData: {
-            'uploadToken': 'SOME-TOKEN', // for access control / security
+            'uploadToken': 'SOME-TOKEN',
             'curDir': './uploads'
         },
         showCancel: true,
         initialPreview: [],
-        fileActionSettings: {
-            showRemove: true,
-            showUpload: true,
-            showDownload: true,
-            showZoom: true,
-            showDrag: true,
-            removeIcon: '<i class="fas fa-trash"></i>',
-            removeClass: 'btn btn-sm btn-kv btn-default btn-outline-secondary',
-            removeErrorClass: 'btn btn-sm btn-kv btn-danger',
-            removeTitle: 'Remove file',
-            uploadIcon: '<i class="fas fa-upload"></i>',
-            uploadClass: 'btn btn-sm btn-kv btn-default btn-outline-secondary',
-            uploadTitle: 'Upload file',
-            uploadRetryIcon: '<i class="glyphicon glyphicon-repeat"></i>',
-            uploadRetryTitle: 'Retry upload',
-            downloadIcon: '<i class="fas fa-download"></i>',
-            downloadClass: 'btn btn-sm btn-kv btn-default btn-outline-secondary',
-            downloadTitle: 'Download file',
-            zoomIcon: '<i class="fas fa-search-plus"></i>',
-            zoomClass: 'btn btn-sm btn-kv btn-default btn-outline-secondary',
-            zoomTitle: 'View Details',
-            dragIcon: '<i class="fas fa-arrows-alt"></i>',
-            dragClass: 'text-info',
-            dragTitle: 'Move / Rearrange',
-            dragSettings: {},
-            indicatorNew: '<i class="glyphicon glyphicon-plus-sign text-warning"></i>',
-            indicatorSuccess: '<i class="glyphicon glyphicon-ok-sign text-success"></i>',
-            indicatorError: '<i class="glyphicon glyphicon-exclamation-sign text-danger"></i>',
-            indicatorLoading: '<i class="glyphicon glyphicon-hourglass text-muted"></i>',
-            indicatorPaused: '<i class="glyphicon glyphicon-pause text-primary"></i>',
-            indicatorNewTitle: 'Not uploaded yet',
-            indicatorSuccessTitle: 'Uploaded',
-            indicatorErrorTitle: 'Upload Error',
-            indicatorLoadingTitle: 'Uploading ...',
-            indicatorPausedTitle: 'Upload Paused'
-        },
-        uploadIcon: '<i class="fas fa-upload"></i>',
-        removeIcon: '<i class="fas fa-trash"></i>',
+        deleteUrl: "",
         overwriteInitial: false,
-        // initialPreview: [],          // if you have previously uploaded preview files
-        // initialPreviewConfig: [],    // if you have previously uploaded preview files
-        deleteUrl: "http://localhost/file-delete.php",
         progressClass: 'determinate progress-bar bg-success progress-bar-success progress-bar-striped active',
         progressInfoClass: 'determinate progress-bar bg-info progress-bar-info progress-bar-striped active',
         progressCompleteClass: 'determinate progress-bar bg-success progress-bar-success',
@@ -560,9 +439,7 @@ $(document).on('ready', function() {
         progressErrorClass: 'determinate progress-bar bg-danger progress-bar-danger',
     }).on('fileuploaded', function(event, previewId, index, fileId) {
         FileExplorerModule.reloadFileExplorer();
-        M.toast({
-            html: "File Uploaded!"
-        });
+        FileExplorerModule.toast("files_uploaded");
         M.Modal.getInstance($('#uploaderModal')[0]).close();
     });
 });
