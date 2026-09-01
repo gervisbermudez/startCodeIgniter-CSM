@@ -3,122 +3,100 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class FileUploader
 {
-
     public function __construct()
     {
-
     }
 
-    // main upload function used above
-    // upload the bootstrap-fileinput files
-    // returns associative array
     public function upload()
     {
-        $preview = $config = $errors = [];
-        $targetDir = rtrim($_POST['curDir'], '/') . '/' . date("Y-m-d");
-        if (!file_exists($targetDir)) {
-            if (!mkdir($targetDir, 0775, true) && !is_dir($targetDir)) {
-                return [
-                    'error' => 'Failed to create upload directory: ' . $targetDir,
-                ];
-            }
+        $CI = &get_instance();
+        $CI->load->model('Admin/FileModel');
+        $fileModel = new FileModel();
+
+        $curDir = isset($_POST['curDir']) ? $_POST['curDir'] : $fileModel->uploads_root;
+        $targetDirRel = $fileModel->resolveUploadTargetDir($curDir);
+        if (!$fileModel->isAllowedLibraryPath($targetDirRel)) {
+            $targetDirRel = $fileModel->resolveUploadTargetDir($fileModel->uploads_root);
         }
-        $fileBlob = 'fileBlob'; // the parameter name that stores the file blob
-        if (isset($_FILES[$fileBlob]) && isset($_POST['uploadToken'])) {
-            $token = $_POST['uploadToken']; // gets the upload token
-            $file = $_FILES[$fileBlob]['tmp_name']; // the path for the uploaded file chunk
-            $fileName = $_POST['fileName']; // you receive the file name as a separate post data
-            $fileSize = $_POST['fileSize']; // you receive the file size as a separate post data
-            $fileId = $_POST['fileId']; // you receive the file identifier as a separate post data
-            $index = $_POST['chunkIndex']; // the current file chunk index
-            $totalChunks = $_POST['chunkCount']; // the total number of chunks for this file
-            $filenameParts = explode(".", $fileName);
-            $processedFileName = slugify($filenameParts[0]) . '-' . date("Y-m-d-His") . '.' . $filenameParts[1];
-            $targetFile = $targetDir . '/' . $processedFileName; // your target file path
-            $targetFileBase = $targetFile; // store the base filename without chunk suffix
-            if ($totalChunks > 1) { // create chunk files only if chunks are greater than 1
-                $targetFile .= '_' . str_pad($index, 4, '0', STR_PAD_LEFT);
-            }
-            $thumbnail = 'unknown.jpg';
-            
-            // Verify directory is writable
-            if (!is_writable($targetDir)) {
-                return [
-                    'error' => 'Upload directory is not writable: ' . $targetDir,
-                ];
-            }
-            
-            if (move_uploaded_file($file, $targetFile)) {
-                // get list of all chunks uploaded so far to server
-                $chunks = glob($targetFileBase . "_*");
-                // check uploaded chunks so far (do not combine files if only one chunk received)
-                $allChunksUploaded = $totalChunks > 1 && count($chunks) == $totalChunks;
-                if ($allChunksUploaded) { // all chunks were uploaded
-                    // combines all file chunks to one file
-                    $this->combineChunks($chunks, $targetFileBase);
-                }
-                // if you wish to generate a thumbnail image for the file
-                $targetUrl = $this->getThumbnailUrl($targetFile, $fileName);
-                // separate link for the full blown image file
-                $zoomUrl = './uploads/' . $fileName;
-                return [
-                    'chunkIndex' => $index, // the chunk index processed
-                    'append' => true,
-                    'post' => $_POST,
-                ];
-            } else {
-                return [
-                    'error' => 'Error uploading chunk ' . $_POST['chunkIndex'],
-                ];
-            }
+        if (!$fileModel->ensureDirectory($targetDirRel)) {
+            return array(
+                'error' => 'Failed to create upload directory: ' . $targetDirRel,
+            );
         }
-        return [
-            'error' => 'No file found',
-        ];
+
+        $targetDir = rtrim($fileModel->relativeToAbsolute($targetDirRel), '/\\');
+        $fileBlob = 'fileBlob';
+        if (!isset($_FILES[$fileBlob]) || !isset($_POST['uploadToken'])) {
+            return array(
+                'error' => 'No file found',
+            );
+        }
+
+        $file = $_FILES[$fileBlob]['tmp_name'];
+        $fileName = isset($_POST['fileName']) ? $_POST['fileName'] : '';
+        $fileId = isset($_POST['fileId']) ? preg_replace('/[^a-zA-Z0-9_-]/', '', (string) $_POST['fileId']) : '';
+        $index = isset($_POST['chunkIndex']) ? $_POST['chunkIndex'] : 0;
+        $totalChunks = isset($_POST['chunkCount']) ? (int) $_POST['chunkCount'] : 1;
+        if ($fileId === '') {
+            $fileId = random_string('alnum', 12);
+        }
+
+        $info = pathinfo($fileName);
+        $base = isset($info['filename']) ? slugify($info['filename']) : 'file';
+        $ext = isset($info['extension']) ? strtolower($info['extension']) : '';
+        if ($base === '') {
+            $base = 'file';
+        }
+        $processedFileName = $ext !== '' ? ($base . '-' . $fileId . '.' . $ext) : ($base . '-' . $fileId);
+        $targetFileBase = $targetDir . DIRECTORY_SEPARATOR . $processedFileName;
+        $targetFile = $targetFileBase;
+        if ($totalChunks > 1) {
+            $targetFile .= '_' . str_pad((string) $index, 4, '0', STR_PAD_LEFT);
+        }
+
+        if (!is_writable($targetDir)) {
+            return array(
+                'error' => 'Upload directory is not writable: ' . $targetDirRel,
+            );
+        }
+
+        if (!move_uploaded_file($file, $targetFile)) {
+            return array(
+                'error' => 'Error uploading chunk ' . $index,
+            );
+        }
+
+        if ($totalChunks > 1) {
+            $chunks = glob($targetFileBase . '_*');
+            if (is_array($chunks) && count($chunks) == $totalChunks) {
+                sort($chunks, SORT_STRING);
+                $this->combineChunks($chunks, $targetFileBase);
+            }
+        } else {
+            @chmod($targetFileBase, 0644);
+        }
+
+        return array(
+            'chunkIndex' => $index,
+            'append' => true,
+            'savedFileName' => $processedFileName,
+            'savedDir' => $targetDirRel,
+        );
     }
 
-    // combine all chunks
-    // no exception handling included here - you may wish to incorporate that
     private function combineChunks($chunks, $targetFile)
     {
-        // open target file handle
-        $handle = fopen($targetFile, 'a+');
-
+        $handle = fopen($targetFile, 'wb');
+        if ($handle === false) {
+            return;
+        }
         foreach ($chunks as $file) {
             fwrite($handle, file_get_contents($file));
         }
-
-        // you may need to do some checks to see if file
-        // is matching the original (e.g. by comparing file size)
-
-        // after all are done delete the chunks
+        fclose($handle);
         foreach ($chunks as $file) {
             @unlink($file);
         }
-
-        // close the file handle
-        fclose($handle);
-        
-        // Set proper permissions for the combined file
         @chmod($targetFile, 0644);
-    }
-
-    // generate and fetch thumbnail for the file
-    private function getThumbnailUrl($path, $fileName)
-    {
-        // assuming this is an image file or video file
-        // generate a compressed smaller version of the file
-        // here and return the status
-        $sourceFile = $path . '/' . $fileName;
-        $targetFile = $path . '/thumbs/' . $fileName;
-        //
-        // generateThumbnail: method to generate thumbnail (not included)
-        // using $sourceFile and $targetFile
-        //
-        /* if (generateThumbnail($sourceFile, $targetFile) === true) {
-    return 'http://localhost/uploads/thumbs/' . $fileName;
-    } else {
-    return 'http://localhost/uploads/' . $fileName; // return the original file
-    } */
     }
 }

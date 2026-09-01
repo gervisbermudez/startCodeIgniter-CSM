@@ -4,8 +4,8 @@
     <div class="row">
     <div class="col s12">
       <ul class="tabs" :id="'selectorTabs_' + modal">
-        <li class="tab col s3"><a  class="active" :href="'#selector' + input_id" @click="destroyFileinputInstance();"><i class="material-icons">folder_open</i> My Files</a></li>
-        <li class="tab col s3"><a :href="'#uploader_' + input_id" @click="initUploader();"  v-if="uploader"><i class="material-icons">cloud_upload</i> Upload</a></li>
+        <li class="tab col s3"><a  class="active" :href="'#selector' + input_id" @click="destroyFileinputInstance();"><i class="material-icons">folder_open</i> {{ lang('files_my_files') }}</a></li>
+        <li class="tab col s3"><a :href="'#uploader_' + input_id" @click="initUploader();"  v-if="uploader"><i class="material-icons">cloud_upload</i> {{ lang('upload_files') }}</a></li>
       </ul>
     </div>
     <div :id="'selector' + input_id" class="col s12">
@@ -38,27 +38,27 @@
                                     class="material-icons">arrow_back</i></a>
                             <div class="col s12 breadcrumb-nav" v-if="getbreadcrumb">
                                 <a href="#!" class="breadcrumb" v-for="(item, index) in getbreadcrumb" :key="index"
-                                    @click="navigateFiles(item.path + item.folder + '/')">@{{ item.folder }}</a>
+                                    @click="navigateFiles(item.path)">@{{ item.folder }}</a>
                             </div>
                         </div>
                     </nav>
                 </div>
             </div>
             <div class="row selector-content" >
-                <div v-if="getFolders.length && ( mode == 'folders' || mode == 'all' )"">
-                    <div class="col s6 m6 l4 xl3 folder" v-if="curDir == './'">
+                <div v-if="getFolders.length && ( mode == 'folders' || mode == 'all' )">
+                    <div class="col s6 m6 l4 xl3 folder" v-if="curDir == root">
                         <label class="checkbox">
                             <input type="checkbox" v-model="selectedRoot" />
                             <span>&nbsp;</span>
                         </label>
-                        <div class="card-panel" @click="navigateFiles('./')">
+                        <div class="card-panel" @click="navigateFiles(root)">
                             <div class="card-icon">
                                 <div class="icon">
                                     <i class="material-icons">folder</i>
                                 </div>
                             </div>
                             <div class="card-content">
-                                <span> root </span>
+                                <span> {{ lang('files_root') }} </span>
                             </div>
                         </div>
                     </div>
@@ -145,9 +145,9 @@
     </div>
     <div class="modal-footer">
         <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat"><?php echo lang('cancel'); ?></a>
-        <a href="#!" class="modal-action waves-effect waves-green btn" v-if="(mode != 'files')" @click="makeNewFolder()"><i class="material-icons left">create_new_folder</i> New Folder</a>
+        <a href="#!" class="modal-action waves-effect waves-green btn" v-if="(mode != 'files')" @click="makeNewFolder()"><i class="material-icons left">create_new_folder</i> <?php echo lang('files_new_folder'); ?></a>
         <button class="btn waves-effect waves-light" type="submit" v-on:click="onClickButton()" name="action">
-            Seleccionar
+            <?php echo lang('files_select'); ?>
             <i class="material-icons right">send</i>
         </button>
     </div>

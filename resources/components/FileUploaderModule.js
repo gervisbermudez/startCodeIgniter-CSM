@@ -17,6 +17,7 @@ var FileUploaderModule = new Vue({
     doneSelection: false,
     preventLoadFilesOnLoad: true,
   },
+  mixins: [mixins],
   computed: {
     getFolders() {
       return this.files.filter((fileobject) => {
@@ -302,35 +303,15 @@ var FileUploaderModule = new Vue({
       });
     },
     filterFiles(filter) {
-      switch (filter) {
-        case "important":
-          this.getFilterFiles("featured", ["1"]);
-          break;
-        case "trash":
-          this.getFilterFiles("file_path", ["./trash/"]);
-          this.curDir = "./trash/";
-          break;
-        case "images":
-          this.getFilterFiles("file_type", ["jpg", "png", "gif"]);
-          break;
-        case "doc":
-          this.getFilterFiles("file_type", ["pdf", "doc"]);
-          break;
-        case "docs":
-          this.getFilterFiles("file_type", ["pdf", "doc", "xls"]);
-          break;
-        case "audio":
-          this.getFilterFiles("file_type", ["acc, mp3"]);
-          break;
-        case "video":
-          this.getFilterFiles("file_type", ["mp4"]);
-          break;
-        case "zip":
-          this.getFilterFiles("file_type", ["zip", "rar"]);
-          break;
-        default:
-          break;
-      }
+      var self = this;
+      this.fetchLibraryFiles({ type: this.normalizeLibraryType(filter) }, function (response) {
+        if (response.code == 200) {
+          self.files = response.data || [];
+          if (typeof self.initMT === "function") {
+            self.initMT();
+          }
+        }
+      });
     },
     resetSearch() {
       this.search = null;

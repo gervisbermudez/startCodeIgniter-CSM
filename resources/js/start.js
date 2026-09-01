@@ -801,6 +801,80 @@ var mixins = {
         console.error(xhr);
       }
     },
+    libraryRoot: function () {
+      return "./uploads/";
+    },
+    libraryTrashPath: function () {
+      return "./uploads/trash/";
+    },
+    normalizeLibraryType: function (filter) {
+      if (filter === "doc") {
+        return "docs";
+      }
+      if (filter === "zip") {
+        return "archives";
+      }
+      if (filter === "starred") {
+        return "important";
+      }
+      if (filter === "recents") {
+        return "recent";
+      }
+      return filter;
+    },
+    fileIsImage: function (file) {
+      if (!file) {
+        return false;
+      }
+      var t = String(file.file_type || "").toLowerCase();
+      return (
+        ["jpg", "jpeg", "png", "gif", "webp", "svg", "bmp"].indexOf(t) !== -1
+      );
+    },
+    fileIsText: function (file) {
+      if (!file) {
+        return false;
+      }
+      var t = String(file.file_type || "").toLowerCase();
+      return (
+        [
+          "txt",
+          "md",
+          "css",
+          "js",
+          "json",
+          "svg",
+          "xml",
+          "html",
+          "csv",
+          "scss",
+          "log",
+          "htaccess",
+        ].indexOf(t) !== -1
+      );
+    },
+    fetchLibraryFiles: function (opts, onSuccess, onError) {
+      var data = {};
+      opts = opts || {};
+      if (opts.type) {
+        data.type = this.normalizeLibraryType(opts.type);
+      }
+      if (opts.q) {
+        data.q = opts.q;
+      }
+      if (opts.filter_name && !opts.type) {
+        data.filter_name = opts.filter_name;
+        data.filter_value = opts.filter_value;
+      }
+      $.ajax({
+        type: "GET",
+        url: BASEURL + "api/v1/files/filter_files",
+        data: data,
+        dataType: "json",
+        success: onSuccess,
+        error: onError || function () {},
+      });
+    },
     reinitPlugin: function (selector, Plugin, options) {
       if (!window.M || !Plugin) {
         return;

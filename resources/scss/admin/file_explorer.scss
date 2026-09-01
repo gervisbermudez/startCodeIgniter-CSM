@@ -98,10 +98,61 @@
     }
   }
 
-  .files {
-    .search>div {
-      padding: 0px !important;
+  .search>div {
+    padding: 0px !important;
+  }
+
+  .file-bulk-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    margin: 0 0 12px;
+    background: var(--st-surface);
+    border: 1px solid var(--st-border);
+    border-radius: var(--st-radius-sm);
+
+    span {
+      font-weight: 600;
     }
+
+    a {
+      color: var(--st-interactive);
+      display: inline-flex;
+      align-items: center;
+    }
+  }
+
+  .file-empty {
+    text-align: center;
+    padding: 40px 16px;
+  }
+
+  .file.selected .card,
+  .folder.selected .card-panel {
+    outline: 2px solid var(--st-interactive);
+  }
+
+  .file .file-check {
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    z-index: 10;
+  }
+
+  .folder-menu {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    z-index: 9;
+  }
+
+  textarea.file-content-editor {
+    min-height: 280px;
+    font-family: monospace;
+    font-size: 13px;
+  }
 
     .folder {
       cursor: pointer;
@@ -131,7 +182,6 @@
     .filelist {
       padding: 0px 20px 0px 0px;
     }
-  }
 
   .file {
     .card {

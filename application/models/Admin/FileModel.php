@@ -7,6 +7,8 @@ class FileModel extends MY_Model
     public $current_dir = './';
     public $current_folder = '';
     public $primaryKey = 'file_id';
+    public $uploads_root = './uploads/';
+    public $trash_path = './uploads/trash/';
     public $computed = array(
         'file_full_path' => 'getFileFullPath',
         'file_front_path' => 'getFileFrontPath',
@@ -67,8 +69,178 @@ class FileModel extends MY_Model
         $this->load->model('Admin/SiteConfigModel');
     }
 
+    /**
+     * @param string $type
+     * @return array
+     */
+    public static function typeExtensions($type)
+    {
+        $map = array(
+            'images' => array('jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp'),
+            'docs' => array('pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'odt', 'csv', 'rtf'),
+            'doc' => array('pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'odt', 'csv', 'rtf'),
+            'audio' => array('mp3', 'aac', 'wav', 'ogg', 'm4a', 'flac'),
+            'video' => array('mp4', 'webm', 'mov', 'avi', 'mkv'),
+            'archives' => array('zip', 'rar', '7z', 'tar', 'gz'),
+            'zip' => array('zip', 'rar', '7z', 'tar', 'gz'),
+        );
+        return isset($map[$type]) ? $map[$type] : array();
+    }
+
+    /**
+     * @return array
+     */
+    public static function textExtensions()
+    {
+        return array('txt', 'md', 'css', 'js', 'json', 'svg', 'xml', 'html', 'csv', 'scss', 'log', 'htaccess');
+    }
+
+    /**
+     * @param string $path
+     * @return string
+     */
+    public function normalizeDirPath($path)
+    {
+        $path = str_replace('\\', '/', (string) $path);
+        $path = trim($path);
+        if ($path === '' || $path === '.' || $path === './') {
+            return $this->uploads_root;
+        }
+        if (strpos($path, './') !== 0) {
+            $path = './' . ltrim($path, '/');
+        }
+        $parts = array();
+        foreach (explode('/', $path) as $seg) {
+            if ($seg === '' || $seg === '.') {
+                continue;
+            }
+            if ($seg === '..') {
+                array_pop($parts);
+                continue;
+            }
+            $parts[] = $seg;
+        }
+        $out = './' . implode('/', $parts);
+        if ($out === './') {
+            return $this->uploads_root;
+        }
+        if (substr($out, -1) !== '/') {
+            $out .= '/';
+        }
+        return $out;
+    }
+
+    /**
+     * @param string $path
+     * @return bool
+     */
+    public function isUnderUploads($path)
+    {
+        $normalized = $this->normalizeDirPath($path);
+        return $normalized === $this->uploads_root || strpos($normalized, $this->uploads_root) === 0;
+    }
+
+    /**
+     * @param string $path
+     * @return bool
+     */
+    public function isTrashPath($path)
+    {
+        $normalized = $this->normalizeDirPath($path);
+        return strpos($normalized, $this->trash_path) === 0
+            || strpos($normalized, './trash/') === 0;
+    }
+
+    /**
+     * Writable library paths: uploads (including trash).
+     *
+     * @param string $path
+     * @return bool
+     */
+    public function isAllowedLibraryPath($path)
+    {
+        return $this->isUnderUploads($path);
+    }
+
+    /**
+     * @param string $path
+     * @return string
+     */
+    public function clampToUploads($path)
+    {
+        $normalized = $this->normalizeDirPath($path);
+        if ($this->isUnderUploads($normalized) || $this->isTrashPath($normalized)) {
+            return $normalized;
+        }
+        return $this->uploads_root;
+    }
+
+    /**
+     * @param string $curDir
+     * @return string
+     */
+    public function resolveUploadTargetDir($curDir)
+    {
+        $curDir = $this->clampToUploads($curDir);
+        if (preg_match('#/\d{4}-\d{2}-\d{2}/?$#', $curDir)) {
+            return $curDir;
+        }
+        return rtrim($curDir, '/') . '/' . date('Y-m-d') . '/';
+    }
+
+    /**
+     * @param string $relative
+     * @return string
+     */
+    public function relativeToAbsolute($relative)
+    {
+        $relative = str_replace('\\', '/', (string) $relative);
+        return rtrim(FCPATH, '/\\') . '/' . preg_replace('#^\./#', '', $relative);
+    }
+
+    /**
+     * @param string $dirRelative
+     * @param int $mode
+     * @return bool
+     */
+    public function ensureDirectory($dirRelative, $mode = 0775)
+    {
+        $absolute = $this->relativeToAbsolute($dirRelative);
+        if (is_dir($absolute)) {
+            return true;
+        }
+        return @mkdir($absolute, $mode, true) || is_dir($absolute);
+    }
+
+    /**
+     * @param string $name
+     * @return string
+     */
+    public function sanitizeBaseName($name)
+    {
+        $name = str_replace(array('\\', '/'), '', (string) $name);
+        $name = trim($name);
+        $name = preg_replace('/\.\.+/', '.', $name);
+        return $name;
+    }
+
+    /**
+     * Apply indexer exclude prefixes to the current query.
+     *
+     * @return void
+     */
+    public function applyExcludedPathPrefixes($column = 'file_path')
+    {
+        foreach ($this->exclude_file_path_prefixes as $prefix) {
+            $this->db->not_like($column, $prefix, 'after');
+        }
+    }
+
     public function map_files()
     {
+        if ($this->current_folder === '' || $this->current_folder === './') {
+            $this->current_folder = 'uploads/';
+        }
         $directorio = directory_map($this->current_dir . $this->current_folder);
         if (!is_array($directorio)) {
             $directorio = array();
@@ -106,6 +278,12 @@ class FileModel extends MY_Model
         }
         foreach ($this->scan_disk_folders($file_path) as $folder) {
             if (!isset($seen_folders[$folder['file_name']])) {
+                $insert_array = $this->get_array_save_folder($folder['file_name'], $file_path);
+                if (!empty($insert_array['file_name'])) {
+                    $this->set_data($insert_array);
+                    $folder['file_id'] = $this->db->insert_id();
+                    $folder['rand_key'] = $insert_array['rand_key'];
+                }
                 $items[] = $folder;
             }
         }
@@ -231,24 +409,180 @@ class FileModel extends MY_Model
 
     public function get_filter_files($column, $filters, $limit = '', $order = array())
     {
+        $allowed = array('file_name', 'file_type', 'file_path', 'featured', 'file_id');
+        if (!in_array($column, $allowed, true)) {
+            return array();
+        }
+        if (!is_array($filters)) {
+            $filters = ($filters === null || $filters === '') ? array() : array($filters);
+        }
+        $clean = array();
+        foreach ($filters as $value) {
+            if ($value === null || $value === '') {
+                continue;
+            }
+            if (is_string($value) && strpos($value, ',') !== false && $column === 'file_type') {
+                foreach (explode(',', $value) as $part) {
+                    $part = trim($part);
+                    if ($part !== '') {
+                        $clean[] = $part;
+                    }
+                }
+                continue;
+            }
+            $clean[] = $value;
+        }
+        if (!$clean) {
+            return array();
+        }
+
         $this->db->select('*');
         $this->db->from($this->table);
         $this->db->where('status', 1);
-        $limit ? $this->db->limit($limit) : null;
+        if ($limit) {
+            $this->db->limit($limit);
+        }
         if ($order) {
             $this->db->order_by($order[0], $order[1]);
         } else {
             $this->db->order_by($this->primaryKey, 'ASC');
         }
-        $this->db->group_start();
-        $this->db->like($column, $filters[0]);
-        for ($i = 1; $i < count($filters); $i++) {
-            $this->db->or_like($column, $filters[$i]);
+        if ($column === 'featured') {
+            $this->db->where('featured', (int) $clean[0]);
+        } elseif ($column === 'file_type') {
+            $this->db->where_in('file_type', $clean);
+        } elseif ($column === 'file_path' && count($clean) === 1) {
+            $this->db->group_start();
+            $this->db->like('file_path', $clean[0], 'after');
+            if (strpos($clean[0], 'trash') !== false) {
+                $this->db->or_like('file_path', './trash/', 'after');
+                $this->db->or_like('file_path', $this->trash_path, 'after');
+            }
+            $this->db->group_end();
+        } else {
+            $this->db->group_start();
+            $this->db->like($column, $clean[0]);
+            for ($i = 1; $i < count($clean); $i++) {
+                $this->db->or_like($column, $clean[$i]);
+            }
+            $this->db->group_end();
         }
-        $this->db->group_end();
-        foreach ($this->exclude_file_path_prefixes as $prefix) {
-            $this->db->not_like('file_path', $prefix, 'after');
+        $this->applyExcludedPathPrefixes();
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $this->keep_existing_files($query->result_array());
         }
+        return array();
+    }
+
+    /**
+     * Library search used by explorer + picker. Type filters keep non-excluded
+     * indexed files so the image selector still finds public/img assets.
+     *
+     * @param string $type
+     * @param string $q
+     * @param int $limit
+     * @return array
+     */
+    public function filterLibrary($type, $q = '', $limit = 250)
+    {
+        $type = strtolower(trim((string) $type));
+        $q = trim((string) $q);
+
+        if ($type === 'recent' || $type === 'recents') {
+            return $this->listRecent($limit, $q);
+        }
+
+        $this->db->select('*');
+        $this->db->from($this->table);
+        $this->db->where('status', 1);
+
+        if ($type === 'important' || $type === 'starred') {
+            $this->db->where('featured', 1);
+        } elseif ($type === 'trash') {
+            $this->db->group_start();
+            $this->db->like('file_path', $this->trash_path, 'after');
+            $this->db->or_like('file_path', './trash/', 'after');
+            $this->db->group_end();
+        } else {
+            $ext = self::typeExtensions($type);
+            if ($ext) {
+                $this->db->where_in('file_type', $ext);
+            } elseif ($type !== '') {
+                return array();
+            }
+        }
+
+        if ($q !== '') {
+            $this->db->like('file_name', $q);
+        }
+
+        $this->applyExcludedPathPrefixes();
+        $this->db->order_by('date_update', 'DESC');
+        if ($limit) {
+            $this->db->limit((int) $limit);
+        }
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            return $this->keep_existing_files($query->result_array());
+        }
+        return array();
+    }
+
+    /**
+     * @param int $limit
+     * @param string $q
+     * @return array
+     */
+    public function listRecent($limit = 20, $q = '')
+    {
+        $this->db->select('file.*');
+        $this->db->from('file_activity');
+        $this->db->join('file', 'file.file_id = file_activity.file_id');
+        $this->db->where('file.status', 1);
+        $this->db->where('file.file_type !=', 'folder');
+        if ($q !== '') {
+            $this->db->like('file.file_name', $q);
+        }
+        $this->applyExcludedPathPrefixes('file.file_path');
+        $this->db->order_by('file_activity.date_create', 'DESC');
+        $this->db->limit(max((int) $limit, 1) * 3);
+        $query = $this->db->get();
+        if ($query->num_rows() < 1) {
+            return array();
+        }
+        $unique = array();
+        $rows = array();
+        foreach ($query->result_array() as $row) {
+            $id = (int) $row['file_id'];
+            if (isset($unique[$id])) {
+                continue;
+            }
+            $unique[$id] = true;
+            $rows[] = $row;
+            if (count($rows) >= (int) $limit) {
+                break;
+            }
+        }
+        return $this->keep_existing_files($rows);
+    }
+
+    /**
+     * Descendants of a folder (for zip).
+     *
+     * @param object|array $folder
+     * @return array
+     */
+    public function listDescendantFiles($folder)
+    {
+        $path = is_array($folder) ? $folder['file_path'] : $folder->file_path;
+        $name = is_array($folder) ? $folder['file_name'] : $folder->file_name;
+        $prefix = rtrim($path, '/') . '/' . $name . '/';
+        $this->db->select('*');
+        $this->db->from($this->table);
+        $this->db->where('status', 1);
+        $this->db->where('file_type !=', 'folder');
+        $this->db->like('file_path', $prefix, 'after');
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
             return $this->keep_existing_files($query->result_array());
@@ -351,25 +685,28 @@ class FileModel extends MY_Model
 
     private function get_substr_file_name($file)
     {
-        if ($this->is_file($file)) {
-            $substr = substr($file, 0, strpos($file, '.'));
-            return $substr;
+        if (is_array($file) || !is_string($file) || $file === '') {
+            return false;
         }
-        return false;
+        $info = pathinfo($file);
+        if (empty($info['filename'])) {
+            return false;
+        }
+        return $info['filename'];
     }
 
     private function get_substr_file_ext($file)
     {
-        if ($this->is_file($file)) {
-            $substr = substr($file, strpos($file, '.') + 1);
-            return $substr;
+        if (is_array($file)) {
+            return 'folder';
         }
-
         if ($this->is_folder($file)) {
             return 'folder';
-
         }
-
+        $info = pathinfo((string) $file);
+        if (!empty($info['extension'])) {
+            return strtolower($info['extension']);
+        }
         return 'file';
     }
 
@@ -387,12 +724,29 @@ class FileModel extends MY_Model
 
     private function is_file($file)
     {
-        if (is_array($file)) {
+        if (is_array($file) || !is_string($file) || $file === '') {
             return false;
-        } else {
-            return strpos($file, '.');
         }
-        return false;
+        return strpos($file, '.') !== false;
+    }
+
+    /**
+     * @param int $file_id
+     * @param string $action
+     * @param string $description
+     * @return void
+     */
+    public function logActivity($file_id, $action, $description)
+    {
+        $this->load->model('Admin/FileActivityModel');
+        $file_activity = new FileActivityModel();
+        $file_activity->file_id = $file_id;
+        $file_activity->user_id = userdata('user_id');
+        $file_activity->action = $action;
+        $file_activity->description = $description;
+        $file_activity->date_create = date('Y-m-d H:i:s');
+        $file_activity->status = 1;
+        $file_activity->save();
     }
 
     public function getFileFullPath()
@@ -457,12 +811,28 @@ class FileModel extends MY_Model
     public function getFileFrontPath()
     {
         try {
-            // Quitar ./ y agregar / inicial para ruta absoluta desde document root
-            $path = substr($this->file_path . $this->getFileFullName(), 2);
-            return '/' . $path;
+            $relative = $this->file_path . $this->getFileFullName();
+            $relative = preg_replace('#^\./#', '', str_replace('\\', '/', $relative));
+            return '/' . ltrim($relative, '/');
         } catch (\Throwable $th) {
             return "";
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTextFile()
+    {
+        return in_array(strtolower((string) $this->file_type), self::textExtensions(), true);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isImageFile()
+    {
+        return in_array(strtolower((string) $this->file_type), self::typeExtensions('images'), true);
     }
 
     public function getFileFullName()
