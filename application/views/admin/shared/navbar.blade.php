@@ -97,6 +97,21 @@
             </div>
             <ul class="menu">
                 <li class="divider" tabindex="-1"></li>
+                @if(has_permisions('UPDATE_DASHBOARD_LAYOUT'))
+                <li>
+                    <a href="{{ base_url('admin') }}?customize=1"
+                       onclick="if (window.DashboardModule && typeof DashboardModule.startEditLayout === 'function') { DashboardModule.startEditLayout(); var t=document.querySelector('a.dropdown-trigger[data-target=user_dropdown]'); var i=t && window.M && M.Dropdown.getInstance(t); if (i) { i.close(); } return false; }">
+                        <i class="material-icons">dashboard</i>{{ lang('dashboard_layout_edit') }}
+                    </a>
+                </li>
+                @endif
+                @if(has_permisions('SELECT_ANALYTICS'))
+                <li>
+                    <a href="{{ base_url('admin/analytics') }}">
+                        <i class="material-icons">assessment</i>{{ lang('dashboard_view_analytics') }}
+                    </a>
+                </li>
+                @endif
                 <li><a href="{{ base_url('admin/configuration') }}"><i class="material-icons">settings</i>
                         Settings</a></li>
                 <li><a target="_blank" href="{{ base_url() }}"><i class="material-icons">launch</i> View site</a></li>
