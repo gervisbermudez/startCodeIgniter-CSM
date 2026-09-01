@@ -19,6 +19,29 @@ class SiteConfigModel extends MY_Model
     }
 
     /**
+     * Flat name => value map. No user hydration (all() N+1).
+     *
+     * @return array
+     */
+    public function get_map()
+    {
+        $this->db->reset_query();
+        $this->db->select('config_name, config_value');
+        $this->db->from($this->table);
+        $this->db->where('status', 1);
+        $query = $this->db->get();
+        $map = array();
+        if ($query && $query->num_rows() > 0) {
+            foreach ($query->result() as $row) {
+                if (isset($row->config_name) && $row->config_name !== '') {
+                    $map[$row->config_name] = $row->config_value;
+                }
+            }
+        }
+        return $map;
+    }
+
+    /**
      * Update all config data
      */
     public function update_config($data)

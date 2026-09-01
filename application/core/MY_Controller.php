@@ -11,6 +11,9 @@ class MY_Controller extends CI_Controller
     {
         parent::__construct();
 
+        $this->load->library('Blade');
+        load_site_config_map();
+
         // Carga el archivo de idioma para el panel de administración en inglés
         $this->lang->load('admin/admin', 'english');
 
@@ -40,10 +43,19 @@ class MY_Controller extends CI_Controller
         if (!$usergroup_id) {
             return;
         }
-        $this->load->model('Admin/UsergroupModel');
-        $usergroup = new UsergroupModel();
-        $usergroup->usergroup_id = $usergroup_id;
-        $this->session->set_userdata('usergroup_permisions', $usergroup->usergroup_permisions());
+        $cache_key = 'usergroup_permisions_' . (int) $usergroup_id;
+        $perms = get_cached($cache_key);
+        if (!is_array($perms)) {
+            $this->load->model('Admin/UsergroupModel');
+            $usergroup = new UsergroupModel();
+            $usergroup->usergroup_id = $usergroup_id;
+            $perms = $usergroup->usergroup_permisions();
+            if (!is_array($perms)) {
+                $perms = array();
+            }
+            set_cached($cache_key, $perms, 3600);
+        }
+        $this->session->set_userdata('usergroup_permisions', $perms);
     }
 
     // Verifica los permisos requeridos para la ruta actual
@@ -212,6 +224,8 @@ class Base_Controller extends CI_Controller
     {
         parent::__construct();
 
+        $this->load->library('Blade');
+
         // Carga la configuración
         $this->load_config();
 
@@ -225,6 +239,9 @@ class Base_Controller extends CI_Controller
         }
 
         // Carga el controlador de temas local
+        if (!class_exists('ThemeController_Base', false)) {
+            require_once APPPATH . 'libraries/ThemeController_Base.php';
+        }
         $themeControllerPath = getThemePath() . DIRECTORY_SEPARATOR . 'controller' . DIRECTORY_SEPARATOR . 'ThemeController.php';
         if (!file_exists($themeControllerPath)) {
 
@@ -417,8 +434,19 @@ class Base_Controller extends CI_Controller
 
         if (!empty($data['page']->content)) {
             $this->load->helper('general');
-            $data['page']->content = expand_page_embeds($data['page']->content);
-            $data['page']->content = expand_content_helpers($data['page']->content);
+            $page_id = isset($data['page']->page_id) ? (int) $data['page']->page_id : 0;
+            $content_key = $page_id > 0 ? ('page_content_' . $page_id) : '';
+            $cached_content = $content_key !== '' ? get_cached($content_key) : null;
+            if (is_string($cached_content)) {
+                $data['page']->content = $cached_content;
+            } else {
+                $expanded = expand_page_embeds($data['page']->content);
+                $expanded = expand_content_helpers($expanded);
+                $data['page']->content = $expanded;
+                if ($content_key !== '') {
+                    set_cached($content_key, $expanded, 86400);
+                }
+            }
         }
 
         // Se devuelve el array con la información de la página
@@ -430,35 +458,75 @@ class Base_Controller extends CI_Controller
      */
     private function load_config()
     {
-        // Cargar la configuración de la base de datos
-        $config = $this->SiteConfigModel->all();
-        $config = $config ? $config : [];
-        foreach ($config as $value) {
-            $this->config->set_item($value->config_name, $value->config_value);
+        load_site_config_map();
+        $this->load_theme_overrides();
+    }
+
+    /**
+     * Theme PHP config/routes. Small files; not cached so theme edits apply immediately.
+     *
+     * @return void
+     */
+    private function load_theme_overrides()
+    {
+        $theme_path = getThemePath();
+        if (!$theme_path) {
+            return;
         }
 
-        $config = [];
-        // Cargar la configuración del tema específico
-        if (getThemePath()) {
-            $configPath = getThemePath() . '/config/';
-            $this->load->helper('directory');
-            $map = directory_map($configPath);
-            if ($map) {
-                foreach ($map as $key => $file) {
-                    if (strpos($file, '.php')) {
-                        include $configPath . $file;
-                        foreach ($config as $config_name => $config_value) {
-                            $this->config->set_item($config_name, $config_value);
-                        }
-                    }
+        $config = array();
+        $route = array();
+        $configPath = $theme_path . '/config/';
+        $this->load->helper('directory');
+        $map = directory_map($configPath);
+        if ($map) {
+            foreach ($map as $file) {
+                if (is_string($file) && strpos($file, '.php') !== false) {
+                    include $configPath . $file;
                 }
             }
-
-            // Agregar rutas al enrutador si se definen
-            if (isset($route)) {
-                $this->router->routes = array_merge($this->router->routes, $route);
+        }
+        if (!empty($config) && is_array($config)) {
+            foreach ($config as $config_name => $config_value) {
+                $this->config->set_item($config_name, $config_value);
             }
         }
+        if (!empty($route) && is_array($route)) {
+            $this->router->routes = array_merge($this->router->routes, $route);
+        }
+    }
+
+    /**
+     * Serve anonymous HTML from cache, or build and store it.
+     * $builder returns HTML string or null (404).
+     *
+     * @param string $cache_key
+     * @param callable $builder
+     * @param int $alias_page_id Refresh page_html_id_* on cache hit when known
+     * @return bool false when builder returned null
+     */
+    protected function echo_public_html($cache_key, $builder, $alias_page_id = 0)
+    {
+        $alias_page_id = (int) $alias_page_id;
+        if (can_cache_public_html()) {
+            $html = get_cached($cache_key);
+            if (is_string($html) && $html !== '') {
+                if ($alias_page_id > 0) {
+                    remember_page_html_alias($alias_page_id, $cache_key);
+                }
+                echo $html;
+                return true;
+            }
+        }
+        $html = call_user_func($builder);
+        if ($html === null) {
+            return false;
+        }
+        if (can_cache_public_html() && is_string($html) && $html !== '') {
+            set_cached($cache_key, $html, 3600);
+        }
+        echo $html;
+        return true;
     }
 
 }

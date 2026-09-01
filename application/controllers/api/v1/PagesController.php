@@ -156,6 +156,7 @@ class PagesController extends REST_Controller
         }
 
         if ($page->save()) {
+            invalidate_page_cache($page);
             system_logger('pages', $page->page_id, ($is_update ? "updated" : "created"), ($is_update ? "A page has been updated" : "A page has been created"));
             $this->response_ok($page);
             return;
@@ -183,6 +184,7 @@ class PagesController extends REST_Controller
         }
 
         if ($page->delete()) {
+            invalidate_page_cache($page);
             system_logger('pages', $page->page_id, ("deleted"), ("A page has been deleted"));
             $this->response_ok($page);
             return;
@@ -204,6 +206,7 @@ class PagesController extends REST_Controller
 
         $page->status = 3;
         if ($page->save()) {
+            invalidate_page_cache($page);
             system_logger('pages', $page->page_id, ("archive"), ("A page has been archived"));
             $this->response_ok($page);
             return;
@@ -225,6 +228,7 @@ class PagesController extends REST_Controller
 
         $page->status = 2;
         if ($page->save()) {
+            invalidate_page_cache($page);
             system_logger('pages', $page->page_id, ("restore"), ("A page has been restored"));
             $this->response_ok($page);
             return;
@@ -353,6 +357,7 @@ class PagesController extends REST_Controller
         $page->map = false;
 
         if ($page->save()) {
+            invalidate_page_cache($page);
             system_logger('pages', $page->page_id, ("duplicate"), ("A page has been duplicated"));
             $fresh = new PageModel();
             $fresh->find($page->page_id);
