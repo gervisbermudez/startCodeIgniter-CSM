@@ -3,3 +3,4 @@
 $lang['validations_error'] = 'There are validation errors.';
 $lang['unexpected_error'] = 'An unexpected error has occurred';
 $lang['not_found_error'] = 'Resource not found';
+$lang['file_read_error'] = 'The file could not be read from disk.';
