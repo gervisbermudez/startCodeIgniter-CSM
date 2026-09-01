@@ -5,6 +5,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | Closed catalog for the admin home. Widths are Materialize presets (3–9, 12).
 | permission: SELECT_* / CREATE_* (string or list). Empty = always allowed.
 | in_default false: available in the picker, not packed into the default home.
+| category: picker grouping (overview, analytics, content, media, people, calendar, site).
 */
 $config['dashboard_widget_catalog'] = array(
     array(
@@ -15,6 +16,7 @@ $config['dashboard_widget_catalog'] = array(
         'o' => 1,
         'lang' => 'dashboard_widget_kpis',
         'icon' => 'assessment',
+        'category' => 'analytics',
     ),
     array(
         'id' => 'kpi_visitors',
@@ -25,6 +27,7 @@ $config['dashboard_widget_catalog'] = array(
         'in_default' => false,
         'lang' => 'dashboard_widget_kpi_visitors',
         'icon' => 'people',
+        'category' => 'analytics',
     ),
     array(
         'id' => 'kpi_visits',
@@ -35,6 +38,7 @@ $config['dashboard_widget_catalog'] = array(
         'in_default' => false,
         'lang' => 'dashboard_widget_kpi_visits',
         'icon' => 'visibility',
+        'category' => 'analytics',
     ),
     array(
         'id' => 'kpi_pages',
@@ -45,6 +49,7 @@ $config['dashboard_widget_catalog'] = array(
         'in_default' => false,
         'lang' => 'dashboard_widget_kpi_pages',
         'icon' => 'pages',
+        'category' => 'analytics',
     ),
     array(
         'id' => 'kpi_bounce',
@@ -55,6 +60,7 @@ $config['dashboard_widget_catalog'] = array(
         'in_default' => false,
         'lang' => 'dashboard_widget_kpi_bounce',
         'icon' => 'exit_to_app',
+        'category' => 'analytics',
     ),
     array(
         'id' => 'welcome',
@@ -64,6 +70,7 @@ $config['dashboard_widget_catalog'] = array(
         'o' => 2,
         'lang' => 'dashboard_widget_welcome',
         'icon' => 'home',
+        'category' => 'overview',
     ),
     array(
         'id' => 'charts',
@@ -73,6 +80,7 @@ $config['dashboard_widget_catalog'] = array(
         'o' => 3,
         'lang' => 'dashboard_widget_charts',
         'icon' => 'insert_chart',
+        'category' => 'analytics',
     ),
     array(
         'id' => 'chart_visits',
@@ -83,6 +91,7 @@ $config['dashboard_widget_catalog'] = array(
         'in_default' => false,
         'lang' => 'dashboard_widget_chart_visits',
         'icon' => 'show_chart',
+        'category' => 'analytics',
     ),
     array(
         'id' => 'chart_requests',
@@ -93,6 +102,7 @@ $config['dashboard_widget_catalog'] = array(
         'in_default' => false,
         'lang' => 'dashboard_widget_chart_requests',
         'icon' => 'bar_chart',
+        'category' => 'analytics',
     ),
     array(
         'id' => 'chart_devices',
@@ -103,6 +113,7 @@ $config['dashboard_widget_catalog'] = array(
         'in_default' => false,
         'lang' => 'dashboard_widget_chart_devices',
         'icon' => 'devices',
+        'category' => 'analytics',
     ),
     array(
         'id' => 'chart_urls',
@@ -113,6 +124,7 @@ $config['dashboard_widget_catalog'] = array(
         'in_default' => false,
         'lang' => 'dashboard_widget_chart_urls',
         'icon' => 'link',
+        'category' => 'analytics',
     ),
     array(
         'id' => 'chart_top_pages',
@@ -123,6 +135,7 @@ $config['dashboard_widget_catalog'] = array(
         'in_default' => false,
         'lang' => 'dashboard_widget_chart_top_pages',
         'icon' => 'trending_up',
+        'category' => 'analytics',
     ),
     array(
         'id' => 'chart_referrers',
@@ -133,6 +146,7 @@ $config['dashboard_widget_catalog'] = array(
         'in_default' => false,
         'lang' => 'dashboard_widget_chart_referrers',
         'icon' => 'share',
+        'category' => 'analytics',
     ),
     array(
         'id' => 'users',
@@ -142,6 +156,7 @@ $config['dashboard_widget_catalog'] = array(
         'o' => 4,
         'lang' => 'dashboard_widget_users',
         'icon' => 'people',
+        'category' => 'people',
     ),
     array(
         'id' => 'files',
@@ -151,6 +166,7 @@ $config['dashboard_widget_catalog'] = array(
         'o' => 5,
         'lang' => 'dashboard_widget_files',
         'icon' => 'folder',
+        'category' => 'media',
     ),
     array(
         'id' => 'albums',
@@ -160,6 +176,7 @@ $config['dashboard_widget_catalog'] = array(
         'o' => 6,
         'lang' => 'dashboard_widget_albums',
         'icon' => 'photo_library',
+        'category' => 'media',
     ),
     array(
         'id' => 'events',
@@ -170,6 +187,19 @@ $config['dashboard_widget_catalog'] = array(
         'in_default' => false,
         'lang' => 'dashboard_widget_events',
         'icon' => 'event',
+        'category' => 'calendar',
+    ),
+    array(
+        'id' => 'calendar',
+        'component' => 'dashboardCalendar',
+        'permission' => array('SELECT_EVENTS', 'SELECT_CALENDAR'),
+        'permission_mode' => 'any',
+        'w' => 6,
+        'o' => 24,
+        'in_default' => false,
+        'lang' => 'dashboard_widget_calendar',
+        'icon' => 'event_note',
+        'category' => 'calendar',
     ),
     array(
         'id' => 'site_status',
@@ -180,6 +210,7 @@ $config['dashboard_widget_catalog'] = array(
         'in_default' => false,
         'lang' => 'dashboard_widget_site_status',
         'icon' => 'info',
+        'category' => 'overview',
     ),
     array(
         'id' => 'quick_settings',
@@ -190,6 +221,18 @@ $config['dashboard_widget_catalog'] = array(
         'in_default' => false,
         'lang' => 'dashboard_widget_quick_settings',
         'icon' => 'settings',
+        'category' => 'site',
+    ),
+    array(
+        'id' => 'inbox',
+        'component' => 'dashboardInbox',
+        'permission' => 'SELECT_SITEFORMS',
+        'w' => 4,
+        'o' => 26,
+        'in_default' => false,
+        'lang' => 'dashboard_widget_inbox',
+        'icon' => 'assignment',
+        'category' => 'site',
     ),
     array(
         'id' => 'collections',
@@ -200,6 +243,18 @@ $config['dashboard_widget_catalog'] = array(
         'o' => 7,
         'lang' => 'dashboard_widget_collections',
         'icon' => 'view_module',
+        'category' => 'content',
+    ),
+    array(
+        'id' => 'fragments',
+        'component' => 'dashboardFragments',
+        'permission' => 'SELECT_FRAGMENTS',
+        'w' => 4,
+        'o' => 25,
+        'in_default' => false,
+        'lang' => 'dashboard_widget_fragments',
+        'icon' => 'bookmark_border',
+        'category' => 'content',
     ),
     array(
         'id' => 'creator',
@@ -210,6 +265,7 @@ $config['dashboard_widget_catalog'] = array(
         'o' => 8,
         'lang' => 'dashboard_widget_creator',
         'icon' => 'edit',
+        'category' => 'content',
     ),
     array(
         'id' => 'drafts',
@@ -219,6 +275,7 @@ $config['dashboard_widget_catalog'] = array(
         'o' => 9,
         'lang' => 'dashboard_widget_drafts',
         'icon' => 'description',
+        'category' => 'content',
     ),
     array(
         'id' => 'timeline',
@@ -228,5 +285,6 @@ $config['dashboard_widget_catalog'] = array(
         'o' => 10,
         'lang' => 'dashboard_widget_timeline',
         'icon' => 'history',
+        'category' => 'content',
     ),
 );

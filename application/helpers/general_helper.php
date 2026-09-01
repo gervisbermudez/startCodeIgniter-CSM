@@ -688,6 +688,8 @@ if (!function_exists('dashboard_capabilities')) {
             'select_categories' => 'SELECT_CATEGORIES',
             'select_fragments' => 'SELECT_FRAGMENTS',
             'select_config' => 'SELECT_CONFIG',
+            'select_calendar' => 'SELECT_CALENDAR',
+            'select_siteforms' => 'SELECT_SITEFORMS',
             'create_page' => 'CREATE_PAGE',
             'create_user' => 'CREATE_USER',
             'create_form_custom' => 'CREATE_FORM_CUSTOM',
@@ -870,12 +872,14 @@ if (!function_exists('dashboard_hydrate_widget')) {
     function dashboard_hydrate_widget($id, $def)
     {
         $lang_key = isset($def['lang']) ? $def['lang'] : $id;
+        $category = isset($def['category']) ? $def['category'] : 'content';
         return array(
             'id' => (string) $id,
             'component' => $def['component'],
             'lang' => $lang_key,
             'title' => function_exists('lang') ? lang($lang_key) : $lang_key,
             'icon' => isset($def['icon']) ? $def['icon'] : 'widgets',
+            'category' => $category,
         );
     }
 }
@@ -1197,6 +1201,7 @@ if (!function_exists('dashboard_layout_payload')) {
             }
             $w = isset($widget['w']) ? dashboard_clamp_width($widget['w']) : 12;
             $lang_key = isset($widget['lang']) ? $widget['lang'] : $widget['id'];
+            $category = isset($widget['category']) ? $widget['category'] : 'content';
             $catalog[] = array(
                 'id' => $widget['id'],
                 'w' => $w,
@@ -1205,6 +1210,7 @@ if (!function_exists('dashboard_layout_payload')) {
                 'lang' => $lang_key,
                 'title' => function_exists('lang') ? lang($lang_key) : $lang_key,
                 'icon' => $widget['icon'],
+                'category' => $category,
                 'col' => dashboard_widget_col_class($w),
                 'in_layout' => !empty($in_layout[$widget['id']]),
             );

@@ -58,7 +58,23 @@ var DashboardModule = new Vue({
       events: 0,
       albumes: 0,
       content: 0,
+      fragments: 0,
+      inbox: 0,
     },
+    calendarEvents: [],
+    fragments: [],
+    inbox: [],
+    pickerQuery: "",
+    pickerCategory: "",
+    pickerCategoryOrder: [
+      "overview",
+      "analytics",
+      "content",
+      "media",
+      "people",
+      "calendar",
+      "site",
+    ],
     capabilities:
       typeof DASHBOARD_CAPS !== "undefined" && DASHBOARD_CAPS
         ? DASHBOARD_CAPS
@@ -143,6 +159,80 @@ var DashboardModule = new Vue({
         return !ids[w.id];
       });
     },
+    filteredAddableWidgets: function () {
+      var q = (this.pickerQuery || "").toLowerCase().trim();
+      var cat = this.pickerCategory || "";
+      var self = this;
+      return this.addableWidgets.filter(function (w) {
+        var widgetCat = w.category || "content";
+        if (cat && widgetCat !== cat) {
+          return false;
+        }
+        if (!q) {
+          return true;
+        }
+        var title = (self.widgetTitle(w) || "").toLowerCase();
+        var catLabel = (self.categoryTitle(widgetCat) || "").toLowerCase();
+        var id = (w.id || "").toLowerCase();
+        return (
+          title.indexOf(q) !== -1 ||
+          catLabel.indexOf(q) !== -1 ||
+          id.indexOf(q) !== -1
+        );
+      });
+    },
+    pickerChipCats: function () {
+      var seen = {};
+      var cats = [];
+      this.addableWidgets.forEach(function (w) {
+        var cat = w.category || "content";
+        if (!seen[cat]) {
+          seen[cat] = true;
+          cats.push(cat);
+        }
+      });
+      var order = this.pickerCategoryOrder || [];
+      cats.sort(function (a, b) {
+        var ia = order.indexOf(a);
+        var ib = order.indexOf(b);
+        if (ia === -1) ia = 99;
+        if (ib === -1) ib = 99;
+        return ia - ib;
+      });
+      return cats;
+    },
+    pickerGroups: function () {
+      var groups = {};
+      var self = this;
+      this.filteredAddableWidgets.forEach(function (w) {
+        var cat = w.category || "content";
+        if (!groups[cat]) {
+          groups[cat] = [];
+        }
+        groups[cat].push(w);
+      });
+      var out = [];
+      var order = this.pickerCategoryOrder || [];
+      order.forEach(function (cat) {
+        if (groups[cat] && groups[cat].length) {
+          out.push({
+            id: cat,
+            title: self.categoryTitle(cat),
+            widgets: groups[cat],
+          });
+        }
+      });
+      Object.keys(groups).forEach(function (cat) {
+        if (order.indexOf(cat) === -1) {
+          out.push({
+            id: cat,
+            title: self.categoryTitle(cat),
+            widgets: groups[cat],
+          });
+        }
+      });
+      return out;
+    },
   },
   methods: {
     widgetTitle: function (item) {
@@ -150,6 +240,13 @@ var DashboardModule = new Vue({
       if (item.title) return item.title;
       var key = item.lang || item.id;
       return typeof lang === "function" ? lang(key) : key;
+    },
+    categoryTitle: function (cat) {
+      var key = "dashboard_widget_cat_" + (cat || "content");
+      return typeof lang === "function" ? lang(key) : cat;
+    },
+    setPickerCategory: function (cat) {
+      this.pickerCategory = this.pickerCategory === cat ? "" : cat;
     },
     widgetActionLabel: function (key) {
       return typeof lang === "function" ? lang(key) : key;
@@ -161,6 +258,10 @@ var DashboardModule = new Vue({
         files: "files",
         albums: "albumes",
         collections: "content",
+        fragments: "fragments",
+        inbox: "inbox",
+        events: "events",
+        calendar: "events",
       };
       var key = map[item.id];
       return key ? this.counts[key] : undefined;
@@ -268,6 +369,9 @@ var DashboardModule = new Vue({
         forms_types: this.forms_types,
         content: this.content,
         events: this.events,
+        calendarEvents: this.calendarEvents,
+        fragments: this.fragments,
+        inbox: this.inbox,
         site: this.site,
         total: this.widgetTotal(item),
         kpis: this.kpis,
@@ -317,13 +421,24 @@ var DashboardModule = new Vue({
     openPicker: function (ri, ci) {
       this.pickerRi = ri;
       this.pickerCi = ci;
+      this.pickerQuery = "";
+      this.pickerCategory = "";
       if (!this.pickerOpen) {
         document.addEventListener("keydown", this.onPickerKey);
       }
       this.pickerOpen = true;
+      var self = this;
+      this.$nextTick(function () {
+        var input = self.$el.querySelector(".dashboard-picker__search-input");
+        if (input) {
+          input.focus();
+        }
+      });
     },
     closePicker: function () {
       this.pickerOpen = false;
+      this.pickerQuery = "";
+      this.pickerCategory = "";
       document.removeEventListener("keydown", this.onPickerKey);
     },
     pickWidget: function (id) {
@@ -538,6 +653,38 @@ var DashboardModule = new Vue({
           self.init();
         });
       });
+    },
+    saveLayoutAsDefault: function () {
+      var self = this;
+      this.postLayout(
+        this.api_data.dashboard + "layout_default",
+        { layout: this.slimDraft() },
+        function (data) {
+          self.applyLayoutPayload(data);
+          M.toast({
+            html:
+              (typeof lang === "function" && lang("dashboard_layout_saved_default")) ||
+              "Saved as the default for your group",
+          });
+          self.$nextTick(function () {
+            self.renderCharts();
+            self.init();
+          });
+        }
+      );
+    },
+    maybeStartCustomize: function () {
+      var query = window.location.search || "";
+      if (query.indexOf("customize=1") === -1) {
+        return;
+      }
+      if (!this.canEditLayout) {
+        return;
+      }
+      this.startEditLayout();
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
     },
     renderCharts: function () {
       var data = this.chartPayload || {};
@@ -986,6 +1133,7 @@ var DashboardModule = new Vue({
         .then((response) => {
           let data = response.data || {};
           this.applyLayoutPayload(data);
+          this.maybeStartCustomize();
           this.chartPayload = data;
           if (data.capabilities) {
             this.capabilities = data.capabilities;
@@ -1022,6 +1170,9 @@ var DashboardModule = new Vue({
             })
             : [];
           this.events = data.events ? data.events : [];
+          this.calendarEvents = data.calendar_events ? data.calendar_events : [];
+          this.fragments = data.fragments ? data.fragments : [];
+          this.inbox = data.inbox ? data.inbox : [];
           if (data.site) {
             this.site = Object.assign({}, this.site, data.site);
           }
@@ -1064,6 +1215,7 @@ var DashboardModule = new Vue({
             this.timeline = this.getTimeLine(data.timeline);
           }
           this.$nextTick(function () {
+            self.maybeStartCustomize();
             self.renderCharts();
             self.init();
           });

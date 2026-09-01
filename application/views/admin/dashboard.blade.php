@@ -247,16 +247,8 @@ if (!isset($dashboard_fab)) {
             <div class="overview">
                 <span>{{ lang('dashboard_overview') }}</span>
             </div>
-            <div class="dashboard-layout-toolbar__actions">
-                @if(has_permisions('SELECT_ANALYTICS'))
-                <a href="{{ base_url('admin/analytics') }}" class="btn-flat waves-effect teal-text">
-                    <i class="material-icons left">assessment</i>{{ lang('dashboard_view_analytics') }}
-                </a>
-                @endif
-                <a v-if="canEditLayout && !layoutEditing" href="#!" class="btn-flat waves-effect teal-text" @click.prevent="startEditLayout">
-                    <i class="material-icons left">dashboard</i>{{ lang('dashboard_layout_edit') }}
-                </a>
-                <a v-if="layoutEditing" href="#!" class="btn-flat waves-effect" @click.prevent="cancelEditLayout">
+            <div v-if="layoutEditing" class="dashboard-layout-toolbar__actions">
+                <a href="#!" class="btn-flat waves-effect" @click.prevent="cancelEditLayout">
                     {{ lang('dashboard_layout_done') }}
                 </a>
             </div>
@@ -273,6 +265,9 @@ if (!isset($dashboard_fab)) {
             <div class="dashboard-layout-toolbar__actions">
                 <button class="btn waves-effect waves-light" :class="{disabled: layoutSaving}" @click="saveLayout">
                     {{ lang('dashboard_layout_save') }}
+                </button>
+                <button type="button" class="btn-flat waves-effect" :class="{disabled: layoutSaving}" @click="saveLayoutAsDefault">
+                    {{ lang('dashboard_layout_save_default') }}
                 </button>
                 <button class="btn-flat waves-effect" :class="{disabled: layoutSaving}" @click="resetLayout">
                     {{ lang('dashboard_layout_reset') }}
@@ -374,21 +369,55 @@ if (!isset($dashboard_fab)) {
             <i class="material-icons">close</i>
         </button>
     </div>
-    <p v-if="addableWidgets.length" class="dashboard-picker__hint">{{ lang('dashboard_layout_picker_hint') }}</p>
+    <div v-if="addableWidgets.length" class="dashboard-picker__search">
+        <i class="material-icons" aria-hidden="true">search</i>
+        <input
+            type="search"
+            class="dashboard-picker__search-input"
+            v-model="pickerQuery"
+            placeholder="{{ lang('dashboard_layout_picker_search') }}"
+            aria-label="{{ lang('dashboard_layout_picker_search') }}"
+            autocomplete="off"
+        >
+    </div>
+    <div v-if="addableWidgets.length && pickerChipCats.length > 1" class="dashboard-picker__chips" role="tablist" aria-label="{{ lang('dashboard_widget_cat_all') }}">
+        <button type="button" class="dashboard-picker-chip" :class="{ active: !pickerCategory }" @click="pickerCategory = ''">
+            {{ lang('dashboard_widget_cat_all') }}
+        </button>
+        <button
+            type="button"
+            class="dashboard-picker-chip"
+            v-for="cat in pickerChipCats"
+            :key="'chip-'+cat"
+            :class="{ active: pickerCategory === cat }"
+            @click="setPickerCategory(cat)"
+        >
+            @{{ categoryTitle(cat) }}
+        </button>
+    </div>
+    <p v-if="addableWidgets.length && filteredAddableWidgets.length" class="dashboard-picker__hint">{{ lang('dashboard_layout_picker_hint') }}</p>
     <div v-if="!addableWidgets.length" class="dashboard-empty">
         <i class="material-icons">check</i>
         <p>{{ lang('dashboard_layout_picker_empty') }}</p>
     </div>
+    <div v-else-if="!filteredAddableWidgets.length" class="dashboard-empty">
+        <i class="material-icons">search</i>
+        <p>{{ lang('dashboard_layout_picker_no_match') }}</p>
+        <button type="button" class="btn-flat waves-effect teal-text" @click="pickerQuery = ''; pickerCategory = ''">{{ lang('filter_empty_cta') }}</button>
+    </div>
     <div class="dashboard-picker__list">
-        <button type="button" class="dashboard-picker-card" v-for="w in addableWidgets" :key="'pick-'+w.id" @click="pickWidget(w.id)">
-            <span class="dashboard-picker-card__title">
-                <i class="material-icons tiny">@{{ w.icon }}</i>
-                @{{ widgetTitle(w) }}
-            </span>
-            <div class="dashboard-picker-card__preview">
-                <dashboard-widget-preview :widget-id="w.id"></dashboard-widget-preview>
-            </div>
-        </button>
+        <section class="dashboard-picker-group" v-for="group in pickerGroups" :key="'grp-'+group.id">
+            <h3 class="dashboard-picker-group__title">@{{ group.title }}</h3>
+            <button type="button" class="dashboard-picker-card" v-for="w in group.widgets" :key="'pick-'+w.id" @click="pickWidget(w.id)">
+                <span class="dashboard-picker-card__title">
+                    <i class="material-icons tiny">@{{ w.icon }}</i>
+                    @{{ widgetTitle(w) }}
+                </span>
+                <div class="dashboard-picker-card__preview">
+                    <dashboard-widget-preview :widget-id="w.id"></dashboard-widget-preview>
+                </div>
+            </button>
+        </section>
     </div>
     </aside>
 </div>
@@ -960,6 +989,101 @@ if (!isset($dashboard_fab)) {
             <span>{{ lang('config_general') }}</span>
             <span>{{ lang('config_appearance') }}</span>
         </div>
+        <div v-else-if="widgetId === 'calendar'" class="dash-preview-cal">
+            <span></span><span></span><span class="is-on"></span><span></span><span></span><span class="is-on"></span><span></span>
+            <span class="is-on"></span><span></span><span></span><span></span><span class="is-on"></span><span></span><span></span>
+        </div>
+        <div v-else-if="widgetId === 'fragments'" class="dash-preview-list">
+            <div>about_me</div>
+            <div>hero</div>
+        </div>
+        <div v-else-if="widgetId === 'inbox'" class="dash-preview-list">
+            <div>Contact</div>
+            <div>Newsletter</div>
+        </div>
+    </div>
+</script>
+
+<script type="text/x-template" id="dashboard-calendar-template">
+    <div class="panel dashboard-list-panel dashboard-calendar">
+        <div class="title panel-title-row">
+            <h5>{{ lang('dashboard_widget_calendar') }}</h5>
+            <a href="{{ base_url('admin/calendar') }}" class="btn-flat waves-effect teal-text">{{ lang('menu_calendar') }}</a>
+        </div>
+        <div class="dash-cal">
+            <div class="dash-cal__nav">
+                <button type="button" class="dashboard-icon-btn" aria-label="{{ lang('dashboard_cal_prev') }}" @click="shiftMonth(-1)">
+                    <i class="material-icons">chevron_left</i>
+                </button>
+                <strong>@{{ monthLabel }}</strong>
+                <button type="button" class="dashboard-icon-btn" aria-label="{{ lang('dashboard_cal_next') }}" @click="shiftMonth(1)">
+                    <i class="material-icons">chevron_right</i>
+                </button>
+            </div>
+            <div class="dash-cal__dow">
+                <span v-for="(d, i) in weekdays" :key="'dow-'+i">@{{ d }}</span>
+            </div>
+            <div class="dash-cal__grid">
+                <button
+                    type="button"
+                    class="dash-cal__day"
+                    v-for="cell in cells"
+                    :key="cell.key + '-' + cell.pad"
+                    :class="{ mute: !cell.inMonth, today: cell.isToday, selected: cell.inMonth && cell.key === selectedKey, dotted: cell.hasEvents }"
+                    :disabled="!cell.inMonth"
+                    @click="selectDay(cell)"
+                >
+                    <span>@{{ cell.day }}</span>
+                </button>
+            </div>
+            <ul class="collection dashboard-plain-list">
+                <li class="collection-item" v-for="ev in selectedEvents" :key="ev.event_id">
+                    <a :href="ev.link" class="truncate teal-text">@{{ ev.name }}</a>
+                    <span class="badge">@{{ ev.date_start }}</span>
+                </li>
+                <li v-if="!selectedEvents.length" class="collection-item dashboard-empty">{{ lang('dashboard_no_calendar_events') }}</li>
+            </ul>
+        </div>
+    </div>
+</script>
+
+<script type="text/x-template" id="dashboard-fragments-template">
+    <div class="panel dashboard-list-panel dashboard-side-panel">
+        <div class="title panel-title-row">
+            <h5>{{ lang('dashboard_widget_fragments') }}</h5>
+            <a href="{{ base_url('admin/fragments') }}" class="btn-flat waves-effect teal-text">{{ lang('menu_fragments') }}</a>
+        </div>
+        <ul class="collection dashboard-plain-list">
+            <li class="collection-item" v-for="item in fragments" :key="item.fragment_id">
+                <a :href="item.link" class="truncate teal-text">@{{ item.name }}</a>
+                <span class="badge">@{{ item.type }}</span>
+            </li>
+            <li v-if="!fragments.length" class="collection-item dashboard-empty">
+                <p>{{ lang('dashboard_no_fragments') }}</p>
+                @if(has_permisions('CREATE_FRAGMENT'))
+                <a href="{{ base_url('admin/fragments/new') }}" class="btn-small waves-effect waves-light">{{ lang('dashboard_fragments_empty_cta') }}</a>
+                @endif
+            </li>
+        </ul>
+    </div>
+</script>
+
+<script type="text/x-template" id="dashboard-inbox-template">
+    <div class="panel dashboard-list-panel dashboard-side-panel">
+        <div class="title panel-title-row">
+            <h5>{{ lang('dashboard_widget_inbox') }}</h5>
+            <a href="{{ base_url('admin/siteforms/submit') }}" class="btn-flat waves-effect teal-text">{{ lang('menu_siteforms_submissions') }}</a>
+        </div>
+        <ul class="collection dashboard-plain-list">
+            <li class="collection-item" v-for="item in inbox" :key="item.siteform_submit_id">
+                <a :href="item.link" class="truncate teal-text">@{{ item.preview || item.form_name }}</a>
+                <span class="badge">@{{ item.form_name }}</span>
+            </li>
+            <li v-if="!inbox.length" class="collection-item dashboard-empty">
+                <p>{{ lang('dashboard_no_inbox') }}</p>
+                <a href="{{ base_url('admin/siteforms') }}" class="btn-small waves-effect waves-light">{{ lang('dashboard_inbox_empty_cta') }}</a>
+            </li>
+        </ul>
     </div>
 </script>
 
@@ -970,6 +1094,7 @@ if (!isset($dashboard_fab)) {
 (function () {
     var extra = <?= json_encode(array(
         'dashboard_layout_saved' => lang('dashboard_layout_saved'),
+        'dashboard_layout_saved_default' => lang('dashboard_layout_saved_default'),
         'dashboard_layout_forbidden' => lang('dashboard_layout_forbidden'),
         'dashboard_save_error' => lang('dashboard_save_error'),
         'dashboard_layout_up' => lang('dashboard_layout_up'),
@@ -988,7 +1113,18 @@ if (!isset($dashboard_fab)) {
         'dashboard_layout_picker' => lang('dashboard_layout_picker'),
         'dashboard_layout_picker_empty' => lang('dashboard_layout_picker_empty'),
         'dashboard_layout_picker_hint' => lang('dashboard_layout_picker_hint'),
+        'dashboard_layout_picker_search' => lang('dashboard_layout_picker_search'),
+        'dashboard_layout_picker_no_match' => lang('dashboard_layout_picker_no_match'),
         'dashboard_layout_close_picker' => lang('dashboard_layout_close_picker'),
+        'dashboard_widget_cat_all' => lang('dashboard_widget_cat_all'),
+        'dashboard_widget_cat_overview' => lang('dashboard_widget_cat_overview'),
+        'dashboard_widget_cat_analytics' => lang('dashboard_widget_cat_analytics'),
+        'dashboard_widget_cat_content' => lang('dashboard_widget_cat_content'),
+        'dashboard_widget_cat_media' => lang('dashboard_widget_cat_media'),
+        'dashboard_widget_cat_people' => lang('dashboard_widget_cat_people'),
+        'dashboard_widget_cat_calendar' => lang('dashboard_widget_cat_calendar'),
+        'dashboard_widget_cat_site' => lang('dashboard_widget_cat_site'),
+        'filter_empty_cta' => lang('filter_empty_cta'),
         'dashboard_widget_kpis' => lang('dashboard_widget_kpis'),
         'dashboard_widget_welcome' => lang('dashboard_widget_welcome'),
         'dashboard_widget_charts' => lang('dashboard_widget_charts'),
@@ -1012,6 +1148,15 @@ if (!isset($dashboard_fab)) {
         'dashboard_widget_events' => lang('dashboard_widget_events'),
         'dashboard_widget_site_status' => lang('dashboard_widget_site_status'),
         'dashboard_widget_quick_settings' => lang('dashboard_widget_quick_settings'),
+        'dashboard_widget_calendar' => lang('dashboard_widget_calendar'),
+        'dashboard_widget_fragments' => lang('dashboard_widget_fragments'),
+        'dashboard_widget_inbox' => lang('dashboard_widget_inbox'),
+        'dashboard_cal_dow' => lang('dashboard_cal_dow'),
+        'dashboard_cal_prev' => lang('dashboard_cal_prev'),
+        'dashboard_cal_next' => lang('dashboard_cal_next'),
+        'dashboard_no_calendar_events' => lang('dashboard_no_calendar_events'),
+        'dashboard_no_fragments' => lang('dashboard_no_fragments'),
+        'dashboard_no_inbox' => lang('dashboard_no_inbox'),
     ), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS) ?>;
     window.ADMIN_LANG = Object.assign(window.ADMIN_LANG || {}, extra);
 })();

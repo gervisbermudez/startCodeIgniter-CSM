@@ -28,6 +28,15 @@ Vue.component("createContents", {
     getFormsTypeUrl: function (formObject) {
       return BASEURL + "admin/custommodels/addData/" + formObject.custom_model_id;
     },
+    itemUrl: function (item) {
+      var mid =
+        (item && item.custom_model_id) ||
+        (item && item.custom_model && item.custom_model.custom_model_id);
+      if (mid) {
+        return BASEURL + "admin/custommodels/items/" + mid;
+      }
+      return BASEURL + "admin/custommodels/";
+    },
     base_url: function (path) {
       return BASEURL + path;
     },
