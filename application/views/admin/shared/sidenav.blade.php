@@ -88,14 +88,6 @@
             </div>
         </li>
         @endif
-        @if(has_permisions('SELECT_CALENDAR'))
-        <li class="{{ isSectionActive('calendar') }}">
-            <a class="waves-effect" href="{{ base_url('admin/calendar') }}" {!! navCurrentAttr('admin/calendar*') !!}>
-                <i class="material-icons" aria-hidden="true">event_note</i>
-                <span>{{ lang('menu_calendar') }}</span>
-            </a>
-        </li>
-        @endif
         @if(has_permisions('SELECT_ANALYTICS'))
         <li class="{{ isSectionActive('analytics') }}">
             <a class="waves-effect" href="{{ base_url('admin/analytics') }}" {!! navCurrentAttr('admin/analytics*') !!}>
@@ -174,7 +166,7 @@
             </div>
         </li>
         @endif
-        @if(has_permisions('SELECT_EVENTS'))
+        @if(has_permisions('SELECT_EVENTS') || has_permisions('SELECT_CALENDAR'))
         <li class="{{ isSectionActive('events') }}">
             <div class="collapsible-header waves-effect">
                 <i class="material-icons" aria-hidden="true">event</i>
@@ -182,12 +174,21 @@
             </div>
             <div class="collapsible-body">
                 <ul>
+                    @if(has_permisions('SELECT_EVENTS'))
                     <li class="{{ isNavItemActive(array('admin/events', 'admin/events/edit*')) }}">
                         <a class="waves-effect" href="{{ base_url('admin/events/') }}" {!! navCurrentAttr(array('admin/events', 'admin/events/edit*')) !!}>{{ lang('menu_all') }}</a>
                     </li>
+                    @endif
+                    @if(has_permisions('SELECT_CALENDAR'))
+                    <li class="{{ isNavItemActive(array('admin/events/calendar', 'admin/calendar')) }}">
+                        <a class="waves-effect" href="{{ base_url('admin/events/calendar') }}" {!! navCurrentAttr(array('admin/events/calendar', 'admin/calendar')) !!}>{{ lang('menu_calendar') }}</a>
+                    </li>
+                    @endif
+                    @if(has_permisions('CREATE_EVENT'))
                     <li class="{{ isNavItemActive('admin/events/add') }}">
                         <a class="waves-effect" href="{{ base_url('admin/events/add/') }}" {!! navCurrentAttr('admin/events/add') !!}>{{ lang('menu_new') }}</a>
                     </li>
+                    @endif
                 </ul>
             </div>
         </li>

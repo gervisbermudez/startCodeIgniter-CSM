@@ -1,0 +1,213 @@
+// Admin calendar (FullCalendar). Tokens only — no vendor edits.
+
+.calendar-page {
+  max-width: 96%;
+  margin: 0 auto 4rem;
+  box-sizing: border-box;
+}
+
+.calendar-page .status-filters {
+  width: 100%;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.calendar-page .status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+  color: inherit;
+
+  .material-icons.tiny {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+  }
+}
+
+.calendar-hint {
+  margin: 0 0 0.75rem;
+  color: var(--st-text-secondary);
+  font-size: 13px;
+}
+
+.calendar-page a.status-chip.active {
+  color: var(--st-on-accent);
+}
+
+.calendar-shell {
+  position: relative;
+  min-height: 560px;
+  background: var(--st-surface);
+  border: 1px solid var(--st-border);
+  border-radius: var(--st-radius-md);
+  padding: 0.75rem;
+}
+
+.calendar-shell__loader {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--st-surface);
+}
+
+.calendar-page-fab.fixed-action-btn {
+  position: fixed;
+  bottom: 45px;
+  right: 24px;
+}
+
+.calendar-events-list__link {
+  margin-left: 0.5rem;
+  color: var(--st-interactive);
+}
+
+.calendar-fc-event--draft {
+  opacity: 0.75;
+}
+
+.calendar-popover {
+  position: fixed;
+  z-index: 20;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: var(--st-overlay);
+}
+
+.calendar-popover__card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  padding: 1.25rem 1.5rem 1.5rem;
+  background: var(--st-surface);
+  color: var(--st-text);
+  border-radius: var(--st-radius-md);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.calendar-popover__close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.25rem;
+  color: var(--st-text-secondary);
+}
+
+.calendar-popover__when,
+.calendar-popover__place {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  margin: 0.5rem 0;
+  color: var(--st-text-secondary);
+}
+
+.calendar-popover__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.calendar-page {
+  .fc {
+    color: var(--st-text);
+  }
+
+  .fc .fc-toolbar-title {
+    font-size: 1.15rem;
+    font-weight: 400;
+    color: var(--st-text);
+  }
+
+  .fc .fc-button {
+    background: var(--st-surface);
+    border-color: var(--st-border);
+    color: var(--st-text);
+    text-transform: none;
+    box-shadow: none;
+  }
+
+  .fc .fc-button:hover {
+    background: var(--st-canvas);
+    color: var(--st-text);
+  }
+
+  .fc .fc-button-primary:not(:disabled).fc-button-active,
+  .fc .fc-button-primary:not(:disabled):active {
+    background: var(--st-interactive);
+    border-color: var(--st-interactive);
+    color: var(--st-on-accent);
+  }
+
+  .fc-theme-standard td,
+  .fc-theme-standard th,
+  .fc-theme-standard .fc-scrollgrid {
+    border-color: var(--st-border);
+  }
+
+  .fc .fc-col-header-cell-cushion,
+  .fc .fc-daygrid-day-number,
+  .fc .fc-list-day-text,
+  .fc .fc-list-day-side-text {
+    color: var(--st-text);
+  }
+
+  .fc .fc-daygrid-day-number {
+    color: var(--st-text);
+  }
+
+  .fc .fc-day-today {
+    background: var(--st-canvas);
+  }
+
+  .fc .fc-list-event:hover td {
+    background: var(--st-canvas);
+  }
+}
+
+html.dark-mode .calendar-page {
+  .fc-theme-standard .fc-scrollgrid,
+  .fc-theme-standard td,
+  .fc-theme-standard th {
+    background: var(--st-surface);
+    border-color: var(--st-border);
+  }
+
+  .fc .fc-col-header-cell {
+    background: var(--st-surface);
+  }
+
+  .fc .fc-daygrid-day-frame,
+  .fc .fc-timegrid-slot,
+  .fc .fc-list-table td,
+  .fc .fc-list-day-cushion {
+    background: var(--st-surface);
+  }
+
+  .fc .fc-day-today {
+    background: var(--st-canvas);
+  }
+
+  .fc .fc-highlight {
+    background: var(--st-hover);
+  }
+
+  .fc .fc-list-event-dot {
+    border-color: var(--st-interactive);
+  }
+}
