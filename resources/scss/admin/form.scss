@@ -272,3 +272,138 @@
     font-weight: 400;
   }
 }
+
+.user-form {
+  overflow: visible;
+  padding-bottom: 4.75rem;
+
+  .page-header {
+    margin: 1rem 0 0;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.3;
+  }
+}
+
+.user-form__lede {
+  margin: 0.25rem 0 1.25rem;
+  color: var(--st-text-secondary);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.user-form__section {
+  margin-bottom: 2rem;
+}
+
+.user-form__section-title {
+  margin: 0 0 0.35rem;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--st-text);
+}
+
+.user-form__section-help,
+.user-form__hint,
+.user-form__aside p {
+  margin: 0 0 1rem;
+  color: var(--st-text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.user-form__optional {
+  margin-left: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--st-text-secondary);
+}
+
+.user-form__aside {
+  padding: 0.75rem 0 0;
+}
+
+.user-form-avatar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0.75rem 0 1.25rem;
+}
+
+.user-form-avatar__pick {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 1px solid var(--st-border);
+  background-color: var(--st-canvas);
+  color: var(--st-text-secondary);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .material-icons {
+    font-size: 48px;
+  }
+
+  &:hover,
+  &:focus {
+    border-color: var(--st-interactive);
+  }
+}
+
+.user-form-avatar__label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--st-text);
+}
+
+.user-form-avatar__help {
+  margin: 0.15rem 0 0.35rem;
+  color: var(--st-text-secondary);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.user-form-avatar__actions .btn-flat {
+  padding: 0 0.5rem 0 0;
+  color: var(--st-interactive);
+}
+
+.user-form .input-field {
+  position: relative;
+
+  #password {
+    padding-right: 2.5rem;
+  }
+}
+
+.user-form-password__toggle {
+  position: absolute;
+  top: 0.5rem;
+  right: 0;
+  padding: 0 0.5rem;
+  height: 2rem;
+  line-height: 2rem;
+  color: var(--st-text-secondary);
+
+  .material-icons {
+    font-size: 20px;
+    height: 20px;
+    line-height: 20px;
+  }
+}
+
+.user-form-password__generate {
+  padding-left: 0;
+  color: var(--st-interactive);
+}
