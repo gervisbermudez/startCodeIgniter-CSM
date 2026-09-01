@@ -228,4 +228,41 @@ class PageModel extends MY_Model
         });
         return $result;
     }
+
+    /**
+     * Filas cortas para el home: user + imagen, sin page_data ni json_content.
+     *
+     * @param array $where
+     * @param array $limit
+     * @param array $order
+     * @return Collection|false
+     */
+    public function dashboard_cards($where, $limit = array(), $order = array())
+    {
+        $this->db->select('page_id, title, status, user_id, date_create, date_update, content, mainImage');
+        $this->db->from($this->table);
+        if (!empty($where) && is_array($where)) {
+            $this->db->where($where);
+        }
+        if ($limit) {
+            if (is_array($limit)) {
+                isset($limit[1]) ? $this->db->limit($limit[0], $limit[1]) : $this->db->limit($limit[0]);
+            } else {
+                $this->db->limit($limit);
+            }
+        }
+        if ($order) {
+            $this->db->order_by($order[0], $order[1]);
+        } else {
+            $this->db->order_by($this->primaryKey, 'DESC');
+        }
+        $query = $this->db->get();
+        if ($query->num_rows() < 1) {
+            return false;
+        }
+        $collection = new Collection($query->result());
+        $collection = $this->loadUsersRelation($collection);
+        $collection = $this->loadFilesRelation($collection, 'mainImage', 'imagen_file');
+        return $collection;
+    }
 }

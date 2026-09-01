@@ -1,6 +1,6 @@
 Vue.component("albumesWidget", {
   template: "#albumes-widget-template",
-  props: ["albumes"],
+  props: ["albumes", "total"],
   data: function () {
     return {
       debug: DEBUGMODE,
@@ -23,7 +23,7 @@ Vue.component("albumesWidget", {
 
 Vue.component("createContents", {
   template: "#create-contents-template",
-  props: ["forms_types", "content"],
+  props: ["forms_types", "content", "total"],
   data: function () {
     return {
       debug: DEBUGMODE,
@@ -64,7 +64,7 @@ Vue.component("createContents", {
 
 Vue.component("fileExplorerCollection", {
   template: "#fileExplorerCollection-template",
-  props: ["files"],
+  props: ["files", "total"],
   data: function () {
     return {
       debug: DEBUGMODE,
@@ -128,35 +128,18 @@ Vue.component("fileExplorerCollection", {
       });
     },
     filterFiles(filter) {
-      switch (filter) {
-        case "important":
-          this.getFilterFiles("featured", ["1"]);
-          break;
-        case "trash":
-          this.getFilterFiles("file_path", ["./trash/"]);
-          this.curDir = "./trash/";
-          break;
-        case "images":
-          this.getFilterFiles("file_type", ["jpg", "png", "gif"]);
-          break;
-        case "doc":
-          this.getFilterFiles("file_type", ["pdf", "doc"]);
-          break;
-        case "docs":
-          this.getFilterFiles("file_type", ["pdf", "doc", "xls"]);
-          break;
-        case "audio":
-          this.getFilterFiles("file_type", ["acc, mp3"]);
-          break;
-        case "video":
-          this.getFilterFiles("file_type", ["mp4"]);
-          break;
-        case "zip":
-          this.getFilterFiles("file_type", ["zip", "rar"]);
-          break;
-        default:
-          break;
-      }
+      var self = this;
+      this.fetchLibraryFiles(
+        { type: this.normalizeLibraryType(filter) },
+        function (response) {
+          if (response.code == 200) {
+            var data = (response.data || []).map(function (file) {
+              return new ExplorerFile(file);
+            });
+            self.files = data;
+          }
+        }
+      );
     },
     featuredFileServe(file) {
       var self = this;
@@ -222,7 +205,7 @@ Vue.component("pageCard", {
 
 Vue.component("usersCollection", {
   template: "#user-collection-template",
-  props: ["users"],
+  props: ["users", "total"],
   data: function () {
     return {
       debug: DEBUGMODE,

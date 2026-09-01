@@ -26,6 +26,9 @@ window.ADMIN_LANG = {
   notifications_bell: <?php echo json_encode(lang('notifications_bell')); ?>,
   notifications_marked: <?php echo json_encode(lang('notifications_marked')); ?>
 };
+</script>
+@include('admin.files.i18n')
+<script>
 function lang(key) {
   var dict = window.ADMIN_LANG || {};
   return dict[key] ? dict[key] : key;

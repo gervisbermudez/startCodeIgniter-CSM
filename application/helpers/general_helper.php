@@ -668,6 +668,107 @@ if (!function_exists('has_permisions')) {
     }
 }
 
+if (!function_exists('dashboard_capabilities')) {
+    /**
+     * Flags de widgets/acciones del home, atados a permisions existentes.
+     *
+     * @return array
+     */
+    function dashboard_capabilities()
+    {
+        $map = array(
+            'select_analytics' => 'SELECT_ANALYTICS',
+            'select_users' => 'SELECT_USERS',
+            'select_pages' => 'SELECT_PAGES',
+            'select_files' => 'SELECT_FILES',
+            'select_events' => 'SELECT_EVENTS',
+            'select_gallery' => 'SELECT_GALLERY',
+            'select_form_customs' => 'SELECT_FORM_CUSTOMS',
+            'select_content_data' => 'SELECT_CONTENT_DATA',
+            'select_categories' => 'SELECT_CATEGORIES',
+            'select_fragments' => 'SELECT_FRAGMENTS',
+            'create_page' => 'CREATE_PAGE',
+            'create_user' => 'CREATE_USER',
+            'create_form_custom' => 'CREATE_FORM_CUSTOM',
+            'create_gallery' => 'CREATE_GALLERY',
+            'create_event' => 'CREATE_EVENT',
+            'create_categorie' => 'CREATE_CATEGORIE',
+            'create_fragment' => 'CREATE_FRAGMENT',
+        );
+        $caps = array();
+        foreach ($map as $key => $perm) {
+            $caps[$key] = function_exists('has_permisions') && has_permisions($perm);
+        }
+        $caps['can_use_creator'] = !empty($caps['create_page'])
+            || !empty($caps['create_gallery'])
+            || !empty($caps['create_categorie'])
+            || !empty($caps['create_fragment']);
+        $caps['can_use_rail'] = !empty($caps['can_use_creator']) || !empty($caps['select_pages']);
+        $caps['can_view_collections'] = !empty($caps['select_form_customs'])
+            || !empty($caps['select_content_data']);
+        return $caps;
+    }
+}
+
+if (!function_exists('dashboard_primary_create')) {
+    /**
+     * Destino del FAB principal según el primer CREATE_* disponible.
+     *
+     * @param array|null $caps
+     * @return array|null
+     */
+    function dashboard_primary_create($caps = null)
+    {
+        if (!is_array($caps)) {
+            $caps = dashboard_capabilities();
+        }
+        $options = array(
+            array('key' => 'create_page', 'url' => 'admin/pages/new/', 'icon' => 'add', 'tip' => 'tooltip_new_page'),
+            array('key' => 'create_gallery', 'url' => 'admin/gallery/new/', 'icon' => 'publish', 'tip' => 'tooltip_new_album'),
+            array('key' => 'create_categorie', 'url' => 'admin/categories/new/', 'icon' => 'receipt', 'tip' => 'tooltip_new_category'),
+            array('key' => 'create_fragment', 'url' => 'admin/fragments/new/', 'icon' => 'bookmark_border', 'tip' => 'tooltip_new_fragment'),
+            array('key' => 'create_event', 'url' => 'admin/events/add/', 'icon' => 'event', 'tip' => 'tooltip_new_event'),
+            array('key' => 'create_form_custom', 'url' => 'admin/custommodels/new', 'icon' => 'view_module', 'tip' => 'tooltip_new_collection'),
+            array('key' => 'create_user', 'url' => 'admin/users/add', 'icon' => 'perm_identity', 'tip' => 'tooltip_new_user'),
+        );
+        foreach ($options as $opt) {
+            if (!empty($caps[$opt['key']])) {
+                return array(
+                    'url' => base_url($opt['url']),
+                    'icon' => $opt['icon'],
+                    'tip' => lang($opt['tip']),
+                );
+            }
+        }
+        return null;
+    }
+}
+
+if (!function_exists('dashboard_perm_cache_key')) {
+    /**
+     * Hash estable del set de permisions de sesión (orden independiente).
+     *
+     * @return string
+     */
+    function dashboard_perm_cache_key()
+    {
+        $ci = &get_instance();
+        $perms = $ci->session->userdata('usergroup_permisions');
+        if (!is_array($perms)) {
+            $perms = array();
+        }
+        $names = array();
+        foreach ($perms as $perm) {
+            if (is_string($perm) && $perm !== '') {
+                $names[] = $perm;
+            }
+        }
+        $names = array_values(array_unique($names));
+        sort($names, SORT_STRING);
+        return md5(implode(',', $names));
+    }
+}
+
 if (!function_exists('slugify')) {
     function slugify($text)
     {

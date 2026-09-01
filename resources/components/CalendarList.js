@@ -1,331 +1,250 @@
-var calendar; 
-
 var CalendarList = new Vue({
   el: "#root",
   data: {
     loader: true,
-    searchResults: false,
-    events: [],
-    allEvents: [],
-    filters: {
+    booted: false,
+    types: {
       events: true,
-      pages: true,
-      albums: true,
-      users: true,
-      files: false,
-      categories: true,
-      menus: true,
-      siteforms: true,
-      siteform_submits: false,
-      form_customs: true,
-      form_contents: false
-    }
+    },
+    items: [],
+    rangeFrom: null,
+    rangeTo: null,
+    selected: null,
+    fc: null,
+    canCreate: !!(window.CALENDAR_PERMS && window.CALENDAR_PERMS.create),
+    canUpdate: !!(window.CALENDAR_PERMS && window.CALENDAR_PERMS.update),
+    selectEvents: !!(window.CALENDAR_PERMS && window.CALENDAR_PERMS.selectEvents),
   },
   mixins: [mixins],
-  computed: {},
+  computed: {
+    isEmpty: function () {
+      return !this.loader && this.items.length === 0;
+    },
+  },
+  created: function () {
+    if (!this.selectEvents) {
+      this.types.events = false;
+    }
+  },
   methods: {
-    parseDateTime(strDateTime) {
-      if (!strDateTime) return null;
-      
-      try {
-        var dateString = strDateTime;
-        var reggie = /(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/;
-        var dateArray = reggie.exec(dateString);
-        
-        if (!dateArray) {
-          console.warn('Invalid date format:', strDateTime);
-          return null;
-        }
-        
-        var dateObject = new Date(
-          +dateArray[1],
-          +dateArray[2] - 1, // Careful, month starts at 0!
-          +dateArray[3],
-          +dateArray[4],
-          +dateArray[5],
-          +dateArray[6]
-        );
-        
-        // Validate the date
-        if (isNaN(dateObject.getTime())) {
-          console.warn('Invalid date:', strDateTime);
-          return null;
-        }
-        
-        return dateObject;
-      } catch (error) {
-        console.error('Error parsing date:', strDateTime, error);
+    pad2: function (n) {
+      return n < 10 ? "0" + n : String(n);
+    },
+    formatDateTime: function (d) {
+      return (
+        d.getFullYear() +
+        "-" +
+        this.pad2(d.getMonth() + 1) +
+        "-" +
+        this.pad2(d.getDate()) +
+        " " +
+        this.pad2(d.getHours()) +
+        ":" +
+        this.pad2(d.getMinutes()) +
+        ":" +
+        this.pad2(d.getSeconds())
+      );
+    },
+    ymd: function (d) {
+      return d.getFullYear() + "-" + this.pad2(d.getMonth() + 1) + "-" + this.pad2(d.getDate());
+    },
+    addDaysYmd: function (ymdStr, days) {
+      var parts = String(ymdStr).split("-");
+      var d = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+      d.setDate(d.getDate() + days);
+      return this.ymd(d);
+    },
+    parseDateTime: function (strDateTime) {
+      if (!strDateTime) {
         return null;
       }
+      var raw = String(strDateTime).trim();
+      var m = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/.exec(raw);
+      if (m) {
+        var withTime = new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], m[6] ? +m[6] : 0);
+        if (!isNaN(withTime.getTime())) {
+          return withTime;
+        }
+      }
+      var dOnly = /^(\d{4})-(\d{2})-(\d{2})$/.exec(raw);
+      if (dOnly) {
+        var midnight = new Date(+dOnly[1], +dOnly[2] - 1, +dOnly[3], 0, 0, 0);
+        if (!isNaN(midnight.getTime())) {
+          return midnight;
+        }
+      }
+      var nativeDate = new Date(raw);
+      if (!isNaN(nativeDate.getTime())) {
+        return nativeDate;
+      }
+      return null;
     },
-    performSearch: function () {
+    isAllDay: function (item) {
+      return item && (item.allDay === true || item.allDay === 1 || item.allDay === "1");
+    },
+    eventColor: function (item) {
+      var status = parseInt(item.status, 10);
+      if (status === 2) {
+        return "#757575";
+      }
+      if (status === 3) {
+        return "#ff9800";
+      }
+      return "#26A69A";
+    },
+    toFcEvents: function (items) {
       var self = this;
-      self.loader = true;
+      var out = [];
+      (items || []).forEach(function (item) {
+        var startParsed = self.parseDateTime(item.start);
+        if (!startParsed) {
+          return;
+        }
+        var endParsed = self.parseDateTime(item.end) || startParsed;
+        var allDay = self.isAllDay(item);
+        var fcEvent = {
+          id: item.id,
+          title: item.title,
+          color: self.eventColor(item),
+          classNames: ["calendar-fc-event"],
+          extendedProps: { payload: item, type: item.type },
+        };
+        if (allDay) {
+          fcEvent.allDay = true;
+          fcEvent.start = self.ymd(startParsed);
+          fcEvent.end = self.addDaysYmd(self.ymd(endParsed), 1);
+        } else {
+          fcEvent.allDay = false;
+          fcEvent.start = startParsed;
+          if (item.end) {
+            fcEvent.end = endParsed;
+          }
+        }
+        if (parseInt(item.status, 10) === 2) {
+          fcEvent.classNames.push("calendar-fc-event--draft");
+        }
+        out.push(fcEvent);
+      });
+      return out;
+    },
+    typesCsv: function () {
+      return this.types.events ? "events" : "none";
+    },
+    loadFeed: function () {
+      var self = this;
+      if (!this.rangeFrom || !this.rangeTo) {
+        return;
+      }
+      if (!this.booted) {
+        this.loader = true;
+      }
       $.ajax({
         type: "GET",
-        url: BASEURL + "api/v1/search/?q=1",
-        data: {},
+        url: BASEURL + "api/v1/calendar",
+        data: {
+          from: this.rangeFrom,
+          to: this.rangeTo,
+          types: this.typesCsv(),
+        },
         dataType: "json",
         success: function (response) {
-          self.searchResults = response.data;
-          self.searchResults.users = response.data.users.map((element) => {
-            return new User(element);
-          });
-
-          if (response.data) {
-
-            // Events — date_start, not date_create. Color = --st-interactive
-            if (response.data.events && Array.isArray(response.data.events)) {
-              response.data.events.forEach((element) => {
-                const startDate = self.parseDateTime(element.date_start);
-                if (startDate) {
-                  const endDate = self.parseDateTime(element.date_end) || startDate;
-                  self.allEvents.push({
-                    id: "event_" + element.event_id,
-                    title: element.name,
-                    url: self.base_url("admin/events/edit/" + element.event_id),
-                    start: startDate,
-                    end: endDate,
-                    color: '#26A69A',
-                    extendedProps: {
-                      type: 'events'
-                    }
-                  });
-                }
-              });
-            }
-
-            // Pages
-            if (response.data.pages && Array.isArray(response.data.pages)) {
-              response.data.pages.forEach((element) => {
-                const startDate = self.parseDateTime(element.date_publish);
-                if (startDate) {
-                  self.allEvents.push({
-                    id: "page_" + element.page_id,
-                    title: "📄 " + element.title,
-                    url: self.base_url("admin/pages/view/" + element.page_id),
-                    start: startDate,
-                    end: startDate,
-                    color: '#1976d2',
-                    extendedProps: {
-                      type: 'pages'
-                    }
-                  });
-                }
-              });
-            }
-
-            // Albums
-            if (response.data.albumes && Array.isArray(response.data.albumes)) {
-              response.data.albumes.forEach((element) => {
-                const startDate = self.parseDateTime(element.date_create);
-                if (startDate) {
-                  self.allEvents.push({
-                    id: "album_" + element.album_id,
-                    title: "🖼️ " + element.name,
-                    url: self.base_url("admin/gallery/items/" + element.album_id),
-                    start: startDate,
-                    end: startDate,
-                    color: '#388e3c',
-                    extendedProps: {
-                      type: 'albums'
-                    }
-                  });
-                }
-              });
-            }
-
-            // Users
-            if (response.data.users && Array.isArray(response.data.users)) {
-              response.data.users.forEach((element) => {
-                const startDate = self.parseDateTime(element.date_create);
-                if (startDate) {
-                  self.allEvents.push({
-                    id: "user_" + element.user_id,
-                    title: "👤 " + element.get_fullname(),
-                    url: element.get_profileurl(),
-                    start: startDate,
-                    end: startDate,
-                    color: '#7b1fa2',
-                    extendedProps: {
-                      type: 'users'
-                    }
-                  });
-                }
-              });
-            }
-
-            // Files
-            if (response.data.files && Array.isArray(response.data.files)) {
-              response.data.files.forEach((element) => {
-                const startDate = self.parseDateTime(element.date_create);
-                if (startDate) {
-                  self.allEvents.push({
-                    id: "file_" + element.file_id,
-                    title: "📁 " + element.name,
-                    url: self.base_url("admin/files"),
-                    start: startDate,
-                    end: startDate,
-                    color: '#f57c00',
-                    extendedProps: {
-                      type: 'files'
-                    }
-                  });
-                }
-              });
-            }
-
-            // Categories
-            if (response.data.categories && Array.isArray(response.data.categories)) {
-              response.data.categories.forEach((element) => {
-                const startDate = self.parseDateTime(element.date_create);
-                if (startDate) {
-                  self.allEvents.push({
-                    id: "category_" + element.categorie_id,
-                    title: "🏷️ " + element.name,
-                    url: self.base_url("admin/categories/editar/" + element.categorie_id),
-                    start: startDate,
-                    end: startDate,
-                    color: '#c2185b',
-                    extendedProps: {
-                      type: 'categories'
-                    }
-                  });
-                }
-              });
-            }
-
-            // Menus
-            if (response.data.menus && Array.isArray(response.data.menus)) {
-              response.data.menus.forEach((element) => {
-                const startDate = self.parseDateTime(element.date_create);
-                if (startDate) {
-                  self.allEvents.push({
-                    id: "menu_" + element.menu_id,
-                    title: "🧭 " + element.name,
-                    url: self.base_url("admin/menus/editar/" + element.menu_id),
-                    start: startDate,
-                    end: startDate,
-                    color: '#0097a7',
-                    extendedProps: {
-                      type: 'menus'
-                    }
-                  });
-                }
-              });
-            }
-
-            // Site Forms
-            if (response.data.siteforms && Array.isArray(response.data.siteforms)) {
-              response.data.siteforms.forEach((element) => {
-                const startDate = self.parseDateTime(element.date_create);
-                if (startDate) {
-                  self.allEvents.push({
-                    id: "siteform_" + element.siteform_id,
-                    title: "📋 " + element.name,
-                    url: self.base_url("admin/siteforms/editar/" + element.siteform_id),
-                    start: startDate,
-                    end: startDate,
-                    color: '#5d4037',
-                    extendedProps: {
-                      type: 'siteforms'
-                    }
-                  });
-                }
-              });
-            }
-
-            // Form Submissions
-            if (response.data.siteform_submits && Array.isArray(response.data.siteform_submits)) {
-              response.data.siteform_submits.forEach((element) => {
-                const startDate = self.parseDateTime(element.date_create);
-                if (startDate) {
-                  self.allEvents.push({
-                    id: "siteform_submit_" + element.siteform_submit_id,
-                    title: "✉️ Form Submit #" + element.siteform_submit_id,
-                    url: self.base_url("admin/siteforms/editar/" + element.siteform_id),
-                    start: startDate,
-                    end: startDate,
-                    color: '#455a64',
-                    extendedProps: {
-                      type: 'siteform_submits'
-                    }
-                  });
-                }
-              });
-            }
-
-            // Custom Models
-            if (response.data.form_customs && Array.isArray(response.data.form_customs)) {
-              response.data.form_customs.forEach((element) => {
-                const startDate = self.parseDateTime(element.date_create);
-                if (startDate) {
-                  self.allEvents.push({
-                    id: "custom_model_" + element.custom_model_id,
-                    title: element.form_name,
-                    url: self.base_url("admin/custommodels/editForm/" + element.custom_model_id),
-                    start: startDate,
-                    end: startDate,
-                    color: '#d32f2f',
-                    extendedProps: {
-                      type: 'form_customs'
-                    }
-                  });
-                }
-              });
-            }
-
-            // Custom Model Contents
-            if (response.data.form_contents && Array.isArray(response.data.form_contents)) {
-              response.data.form_contents.forEach((element) => {
-                const startDate = self.parseDateTime(element.date_create);
-                if (startDate) {
-                  self.allEvents.push({
-                    id: "form_content_" + element.custom_model_content_id,
-                    title: element.title || ("#" + element.custom_model_content_id),
-                    url: self.base_url("admin/custommodels/editData/" + element.custom_model_id + "/" + element.custom_model_content_id),
-                    start: startDate,
-                    end: startDate,
-                    color: '#e64a19',
-                    extendedProps: {
-                      type: 'form_contents'
-                    }
-                  });
-                }
-              });
-            }
-            
+          self.booted = true;
+          self.loader = false;
+          if (response && response.code == 200 && response.data) {
+            self.items = response.data.items || [];
+          } else {
+            self.items = [];
           }
-
-          self.loader = false;
-          self.applyFilters();
-          self.init();
+          self.syncCalendar();
+          self.$nextTick(function () {
+            if (self.fc && typeof self.fc.updateSize === "function") {
+              self.fc.updateSize();
+            }
+          });
         },
-        error: function (error) {
+        error: function (xhr) {
+          self.booted = true;
           self.loader = false;
-          M.toast({ html: "Ocurrió un error inesperado" });
-          console.error(error);
+          self.items = [];
+          self.toastError(xhr);
         },
       });
     },
-    applyFilters() {
-      this.events = this.allEvents.filter(event => {
-        return this.filters[event.extendedProps.type];
-      });
-      if (calendar) {
-        calendar.removeAllEvents();
-        calendar.addEventSource(this.events);
+    syncCalendar: function () {
+      if (!this.fc) {
+        return;
+      }
+      this.fc.removeAllEvents();
+      this.fc.addEventSource(this.toFcEvents(this.items));
+    },
+    statusLabel: function (status) {
+      var n = parseInt(status, 10);
+      if (n === 1) {
+        return this.lang("published");
+      }
+      if (n === 2) {
+        return this.lang("draft");
+      }
+      if (n === 3) {
+        return this.lang("archived");
+      }
+      return String(status || "");
+    },
+    statusClass: function (status) {
+      var n = parseInt(status, 10);
+      if (n === 1) {
+        return "status-published";
+      }
+      if (n === 2) {
+        return "status-draft";
+      }
+      if (n === 3) {
+        return "status-archived";
+      }
+      return "status-draft";
+    },
+    canEditSelected: function (item) {
+      return !!(item && item.type === "events" && this.canUpdate);
+    },
+    formatSelectedWhen: function (item) {
+      if (!item) {
+        return "";
+      }
+      var start = this.parseDateTime(item.start);
+      var end = this.parseDateTime(item.end) || start;
+      if (!start) {
+        return "";
+      }
+      if (this.isAllDay(item)) {
+        var startDay = this.ymd(start);
+        var endDay = this.ymd(end);
+        var label = startDay === endDay ? startDay : startDay + " – " + endDay;
+        return label + " · " + this.lang("events_all_day");
+      }
+      var sameDay = this.ymd(start) === this.ymd(end);
+      var startHm = this.pad2(start.getHours()) + ":" + this.pad2(start.getMinutes());
+      var endHm = this.pad2(end.getHours()) + ":" + this.pad2(end.getMinutes());
+      if (sameDay) {
+        return this.ymd(start) + " " + startHm + " – " + endHm;
+      }
+      return this.ymd(start) + " " + startHm + " – " + this.ymd(end) + " " + endHm;
+    },
+    onEsc: function (ev) {
+      if (ev.key === "Escape" || ev.keyCode === 27) {
+        this.selected = null;
       }
     },
-    toggleFilter(type) {
-      this.filters[type] = !this.filters[type];
-      this.applyFilters();
-    },
-    init() {
+    init: function () {
+      var self = this;
       var calendarEl = document.getElementById("calendar");
-      calendar = new FullCalendar.Calendar(calendarEl, {
+      if (!calendarEl || typeof FullCalendar === "undefined") {
+        this.loader = false;
+        return;
+      }
+      this.fc = new FullCalendar.Calendar(calendarEl, {
         initialView: "dayGridMonth",
         schedulerLicenseKey: "GPL-My-Project-Is-Open-Source",
+        locale: window.CALENDAR_LOCALE || "en",
         headerToolbar: {
           left: "prev,next today",
           center: "title",
@@ -333,30 +252,50 @@ var CalendarList = new Vue({
         },
         views: {
           listMonth: {
-            buttonText: 'Lista'
+            buttonText: self.lang("calendar_list"),
+          },
+        },
+        eventTimeFormat: {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        },
+        datesSet: function (info) {
+          self.rangeFrom = self.formatDateTime(info.start);
+          self.rangeTo = self.formatDateTime(info.end);
+          self.loadFeed();
+        },
+        eventClick: function (info) {
+          info.jsEvent.preventDefault();
+          var payload = info.event.extendedProps && info.event.extendedProps.payload;
+          if (payload) {
+            self.selected = payload;
           }
         },
-        eventClick: function(info) {
-          info.jsEvent.preventDefault(); // don't let the browser navigate
-          if (info.event.url) {
-            window.location.href = info.event.url;
+        dateClick: function (info) {
+          if (!self.canCreate) {
+            return;
           }
+          var dateStr = info.dateStr ? String(info.dateStr).substr(0, 10) : self.ymd(info.date);
+          window.location.href = self.base_url("admin/events/add?date=" + dateStr);
         },
-        events: this.events,
-        eventTimeFormat: { // like '14:30'
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false
-        },
-        locale: 'es'
+        events: [],
       });
-
-      calendar.render();
+      this.fc.render();
     },
   },
   mounted: function () {
+    var self = this;
+    document.addEventListener("keydown", this.onEsc);
     this.$nextTick(function () {
-      this.performSearch();
+      self.init();
+      self.initPlugins();
     });
+  },
+  beforeDestroy: function () {
+    document.removeEventListener("keydown", this.onEsc);
+    if (this.fc) {
+      this.fc.destroy();
+    }
   },
 });

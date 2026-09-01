@@ -6,7 +6,7 @@ class CalendarController extends MY_Controller
 {
     public $routes_permisions = [
         "index" => [
-            "patern" => '/^admin\/calendar\/?$/',
+            "patern" => '/^admin\/(calendar|events\/calendar)\/?$/',
             "required_permissions" => ["SELECT_CALENDAR"],
             "conditions" => [],
         ],
@@ -20,7 +20,13 @@ class CalendarController extends MY_Controller
 
     public function index()
     {
-        $this->renderAdminView('admin.calendar.calendar', 'Calendario', 'Calendario');
+        $uri = trim(uri_string(), '/');
+        if ($uri === 'admin/calendar') {
+            redirect('admin/events/calendar');
+            return;
+        }
+
+        $this->renderAdminView('admin.calendar.calendar', lang('menu_events'), lang('menu_calendar'));
     }
 
 }

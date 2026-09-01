@@ -48,6 +48,7 @@ Estos archivos nacieron como spec de implementación. El corte ya está en `mast
 |---|---|
 | [AUTH_LOGIN_JWT_HARDEN_PLAN.md](AUTH_LOGIN_JWT_HARDEN_PLAN.md) | Endurecer login admin + JWT (sesión cookie + claims RFC). Prompt: [AUTH_LOGIN_JWT_HARDEN_PROMPT.md](AUTH_LOGIN_JWT_HARDEN_PROMPT.md) |
 | [CATEGORIES_CUT_A_PLAN.md](CATEGORIES_CUT_A_PLAN.md) | Categorías Corte A: parent_id INT, tipos page/event, listado admin |
+| [CALENDAR_ADMIN_PLAN.md](CALENDAR_ADMIN_PLAN.md) | Calendario admin events-first: feed propio, no `search/?q=1` (`feat/admin-calendar`) |
 
 ## API y datos
 
