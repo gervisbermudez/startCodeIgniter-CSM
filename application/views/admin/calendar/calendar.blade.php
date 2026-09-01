@@ -9,6 +9,10 @@
 
 @section('content')
 <div id="root" class="container">
+    @include('admin.components.page_intro', [
+        'titleKey' => 'menu_calendar',
+        'ledeKey' => 'calendar_lede',
+    ])
     <div class="col s12 center" v-bind:class="{ hide: !loader }" style="min-height: 160px;">    
         <br><br>
         <preloader />

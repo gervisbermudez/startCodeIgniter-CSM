@@ -5,6 +5,10 @@
 @section('content')
 @include('admin.components.data_table_component')
 <div id="root">
+    @include('admin.components.page_intro', [
+        'titleKey' => 'menu_events',
+        'ledeKey' => 'events_lede',
+    ])
   <data-table
     ref="eventsTable"
     :endpoint="endpoint"

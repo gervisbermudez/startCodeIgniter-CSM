@@ -8,6 +8,10 @@
 @section('content')
 @include('admin.custommodels.i18n')
 <div id="root">
+    @include('admin.components.page_intro', [
+        'title' => $h1,
+        'ledeKey' => 'collections_items_lede',
+    ])
     <div class="col s12 center" v-bind:class="{ hide: !loader }">
         <br><br>
         <preloader />
@@ -18,18 +22,13 @@
         'navbarShow' => '!loader && collectionItemCount > 0',
         'itemsExpr' => 'filterItems',
     ])
-    <div class="row" v-cloak v-show="!loader">
-        <div class="col s12">
-            <p>
-                <a href="{{ base_url('admin/custommodels/') }}"><?= lang('collections_back') ?></a>
-            </p>
-            <h3 class="page-header">{{ $h1 }}</h3>
-            <div class="status-filters" v-if="collectionItemCount > 0">
-                <button type="button" class="status-chip" :class="{active: statusFilter === null}" @click="setStatusFilter(null)"><?= lang('menu_all') ?></button>
-                <button type="button" class="status-chip" :class="{active: statusFilter === 1}" @click="setStatusFilter(1)"><?= lang('collections_published') ?></button>
-                <button type="button" class="status-chip" :class="{active: statusFilter === 2}" @click="setStatusFilter(2)"><?= lang('collections_draft') ?></button>
-            </div>
-        </div>
+    <p class="list-backlink" v-cloak v-show="!loader">
+        <a href="{{ base_url('admin/custommodels/') }}"><?= lang('collections_back') ?></a>
+    </p>
+    <div class="status-filters" v-cloak v-show="!loader" v-if="collectionItemCount > 0">
+        <button type="button" class="status-chip" :class="{active: statusFilter === null}" @click="setStatusFilter(null)"><?= lang('menu_all') ?></button>
+        <button type="button" class="status-chip" :class="{active: statusFilter === 1}" @click="setStatusFilter(1)"><?= lang('collections_published') ?></button>
+        <button type="button" class="status-chip" :class="{active: statusFilter === 2}" @click="setStatusFilter(2)"><?= lang('collections_draft') ?></button>
     </div>
     <div class="pages" v-cloak v-if="!loader && filterItems.length > 0">
         <div class="row" v-if="tableView">

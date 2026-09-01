@@ -4,6 +4,10 @@
 @endsection
 @section('content')
 <div id="root">
+    @include('admin.components.page_intro', [
+        'titleKey' => 'menu_siteforms_submissions',
+        'ledeKey' => 'siteforms_inbox_lede',
+    ])
     <router-view
         ref="view"
         :endpoint="endpoint"

@@ -7,6 +7,10 @@
 
 @section('content')
 <div id="root">
+    @include('admin.components.page_intro', [
+        'titleKey' => 'menu_users',
+        'ledeKey' => 'users_lede',
+    ])
     @include('admin.components.page_navbar', [
         'searchInputId' => 'users-search',
         'refreshMethod' => 'getUsers()',
