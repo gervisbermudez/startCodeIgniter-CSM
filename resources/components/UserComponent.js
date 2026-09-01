@@ -7,6 +7,18 @@ Vue.component("userCard", {
     };
   },
   mixins: [mixins],
+  computed: {
+    displayName: function () {
+      return userDisplayName(this.user);
+    },
+    phone: function () {
+      var data = this.user && this.user.user_data;
+      if (!data || typeof data !== "object") {
+        return "";
+      }
+      return this.hasValue(data.telefono) ? String(data.telefono).trim() : "";
+    },
+  },
   methods: {
     getUserUrl: function () {
       return BASEURL + "admin/users/ver/" + this.user.user_id;
@@ -14,8 +26,28 @@ Vue.component("userCard", {
     requestDelete: function () {
       this.$emit("tempDelete", this.user, this.index);
     },
+    hasValue: function (value) {
+      if (value === null || value === undefined) {
+        return false;
+      }
+      var text = String(value).trim();
+      return text !== "" && text.toLowerCase() !== "undefined" && text.toLowerCase() !== "null";
+    },
   },
 });
+
+function userDisplayName(user) {
+  if (!user) {
+    return "";
+  }
+  if (typeof user.get_fullname === "function") {
+    var full = user.get_fullname();
+    if (full) {
+      return full;
+    }
+  }
+  return user.username || "";
+}
 
 var usersModule = new Vue({
   el: "#root",
@@ -52,6 +84,7 @@ var usersModule = new Vue({
     deleteItem: function (user, index) {
       this.deleteListItem(user, index);
     },
+    userDisplayName: userDisplayName,
   },
   mounted: function () {
     this.$nextTick(function () {

@@ -126,6 +126,7 @@ $lang['tooltip_new_event'] = 'Nuevo evento';
 
 $lang['tooltip_new_collection'] = 'Nueva colección';
 $lang['tooltip_new_page'] = 'Nueva página';
+$lang['tooltip_new_user'] = 'Nuevo usuario';
 $lang['dashboard_latest_collection_items'] = 'Últimos ítems';
 $lang['dashboard_collection_items_total'] = 'ítems de colecciones';
 
