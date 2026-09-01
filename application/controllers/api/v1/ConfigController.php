@@ -23,6 +23,7 @@ class ConfigController extends REST_Controller
         $this->load->database();
         $this->load->helper('general');
         $this->load->model('Admin/SiteConfigModel');
+        $this->lang->load('admin/common', 'english');
     }
 
     /**
@@ -505,17 +506,9 @@ class ConfigController extends REST_Controller
             return;
         }
 
-        $data = [];
-
-        //Pages
-        $this->load->model('Admin/PageModel');
-        $pages = new PageModel();
-        $data['pages'] = $pages->all();
-
-        $config = new SiteConfigModel();
-        $data['config'] = $config->all();
-
-        $this->response_ok($data);
+        $this->load->library('content_export');
+        $unpublished = $this->input->get('unpublished_pages');
+        $this->response_ok($this->content_export->catalog(!empty($unpublished) && $unpublished !== '0'));
     }
 
     public function system_info_get()
@@ -601,73 +594,45 @@ class ConfigController extends REST_Controller
         $this->response_ok($results);
     }
 
-    private function getWhereStringFrom($arrayData, $id)
-    {
-        $whereString = "";
-        foreach ($arrayData as $key => $value) {
-            if (count($arrayData) === ($key + 1)) {
-                $whereString .= $id . " = " . $value . "";
-            } else {
-                $whereString .= $id . " = " . $value . " OR ";
-            }
-        }
-        return $whereString;
-    }
-
     public function generate_export_file_post()
     {
         if (!$this->require_config_permision('UPDATE_CONFIG')) {
             return;
         }
 
-        $exportData = $this->input->post("exportData");
-
-        function removeUser($item)
-        {
-            unset($item->user);
-            unset($item->imagen_file);
-
-            return $item;
+        $this->load->library('content_export');
+        $exportData = $this->input->post('exportData', false);
+        if (is_string($exportData)) {
+            $decoded = json_decode($exportData);
+            if (is_object($decoded) || is_array($decoded)) {
+                $exportData = $decoded;
+            }
         }
 
-        $data = [
-            "pages" => [],
-            "config" => [],
-        ];
-
-        if (isset($exportData["pages"])) {
-            //Pages
-            $this->load->model('Admin/PageModel');
-            $pages = new PageModel();
-            $data['pages'] = $pages->where($this->getWhereStringFrom($exportData["pages"], "page_id"));
-
-            $data['pages'] = array_map("removeUser", $data['pages']->toArray());
+        if ($this->content_export->selection_is_empty($exportData)) {
+            $this->response_error(lang('config_export_empty'), array(), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
+            return;
         }
 
-        if (isset($exportData["config"])) {
-            $config = new SiteConfigModel();
-            $data['config'] = $config->where($this->getWhereStringFrom($exportData["config"], "site_config_id"));
-            $data['config'] = array_map("removeUser", $data['config']->toArray());
+        $payload = $this->content_export->dump($exportData);
+        if ($this->content_export->payload_is_empty($payload)) {
+            $this->response_error(lang('config_export_empty'), array(), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
+            return;
         }
 
-        $json = json_encode($data);
-
-        $exportFilename = "export_data_" . date("Y-m-d_H-i-s") . ".json";
-
-        if (!file_exists("./temp/")) {
-            @mkdir("./temp/");
+        $json = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        if ($json === false) {
+            $this->response_error(lang('config_error'), array(), REST_Controller::HTTP_INTERNAL_SERVER_ERROR, REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+            return;
         }
 
-        if (file_put_contents("./temp/" . $exportFilename, $json)) {
-            $this->response_ok([
-                "message" => "JSON file created successfully",
-                "exportFilename" => $exportFilename,
-            ]);
-        } else {
-            $this->response_error([
-                "message" => "Oops! Error creating json file",
-            ]);
-        }
+        $filename = 'export_data_' . date('Y-m-d_H-i-s') . '.json';
+        system_logger('config', 0, 'export', 'Export generated: ' . $this->content_export->summarize_payload($payload));
+
+        $this->response_ok(array(
+            'filename' => $filename,
+            'exportJson' => $json,
+        ));
     }
 
     public function import_file_post()
@@ -676,78 +641,68 @@ class ConfigController extends REST_Controller
             return;
         }
 
-        $exportData = json_decode($this->input->post('exportData'));
-
-        if (!move_uploaded_file($_FILES["import_file"]["tmp_name"], "./uploads/" . $_FILES["import_file"]["name"])) {
-            $this->response_error([
-                "message" => "Oops! Error reading json file",
-            ]);
+        $this->load->library('content_export');
+        $selection = json_decode($this->input->post('exportData', false));
+        if ($this->content_export->selection_is_empty($selection)) {
+            $this->response_error(lang('config_import_empty'), array(), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
 
-        $string = file_get_contents("./uploads/" . $_FILES["import_file"]["name"]);
-
-        if ($string === false) {
-            $this->response_error([
-                "message" => "Oops! Error reading json file",
-            ]);
+        if (empty($_FILES['import_file']['tmp_name']) || !is_uploaded_file($_FILES['import_file']['tmp_name'])) {
+            $this->response_error(lang('config_import_invalid'), array(), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
 
+        $maxBytes = 8 * 1024 * 1024;
+        if (!empty($_FILES['import_file']['size']) && (int) $_FILES['import_file']['size'] > $maxBytes) {
+            $this->response_error(lang('config_import_invalid'), array(), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
+            return;
+        }
+
+        $raw = file_get_contents($_FILES['import_file']['tmp_name']);
+        if ($raw === false || $raw === '') {
+            $this->response_error(lang('config_import_invalid'), array(), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
+            return;
+        }
+
+        $file_content = json_decode($raw);
+        if (!is_object($file_content)) {
+            $this->response_error(lang('config_import_invalid'), array(), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
+            return;
+        }
+
+        $this->db->trans_begin();
         try {
-            $file_content = json_decode($string);
-            $bust_html = false;
-            if (isset($file_content->pages) && is_array($file_content->pages)) {
-                $this->load->model('Admin/PageModel');
-                $file_content->pages = array_filter($file_content->pages, function ($page) use ($exportData) {
-                    return in_array($page->page_id, $exportData->pages);
-                });
-                foreach ($file_content->pages as $key => $value) {
-                    $page = new PageModel();
-                    //field already exist in database, so let's update it
-                    $page->find($value->page_id);
-                    foreach ($value as $index => $val) {
-                        $page->{$index} = $val;
-                    }
-                    $page->save();
-                    $bust_html = true;
-                }
+            $counts = $this->content_export->import_payload($file_content, $selection);
+            if ($counts === false || $this->db->trans_status() === false) {
+                $this->db->trans_rollback();
+                $this->response_error(lang('config_error'), array(), REST_Controller::HTTP_INTERNAL_SERVER_ERROR, REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
+                return;
             }
 
-            if (isset($file_content->config) && is_array($file_content->config)) {
+            $this->db->trans_commit();
 
-                $file_content->config = array_filter($file_content->config, function ($Site_config) use ($exportData) {
-                    return in_array($SiteConfig->site_config_id, $exportData->config);
-                });
-                foreach ($file_content->config as $key => $value) {
-                    $SiteConfig = new SiteConfigModel();
-                    //field already exist in database, so let's update it
-                    $SiteConfig->find($value->site_config_id);
-                    foreach ($value as $index => $val) {
-                        $SiteConfig->{$index} = $val;
-                    }
-                    $SiteConfig->save();
-                }
+            if (!empty($counts['config'])) {
                 invalidate_site_config_cache();
-                $bust_html = true;
             }
-
-            if ($bust_html) {
+            $contentImported = 0;
+            foreach ($counts as $n) {
+                $contentImported += (int) $n;
+            }
+            if ($contentImported > 0) {
                 invalidate_public_html_cache();
             }
 
-            $this->response_ok(
-                [
-                    "message" => "JSON file created successfully",
-                ],
-                ["file_content" => $file_content]
-            );
+            system_logger('config', 0, 'import', 'Import applied: ' . $this->content_export->summarize_counts($counts));
+
+            $ok = array('message' => lang('config_import_ok'));
+            foreach ($counts as $key => $n) {
+                $ok[$key] = $n;
+            }
+            $this->response_ok($ok);
         } catch (\Throwable $th) {
-            $this->response_error([
-                "message" => "Oops! Error reading json file",
-                "error" => $th->getMessage(),
-                "trace" => $th->getTrace(),
-            ]);
+            $this->db->trans_rollback();
+            $this->response_error(lang('config_error'), array(), REST_Controller::HTTP_INTERNAL_SERVER_ERROR, REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
             return;
         }
     }
