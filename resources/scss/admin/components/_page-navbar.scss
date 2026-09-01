@@ -1,0 +1,192 @@
+// List toolbar: same canvas as the page. Not the global search (navbar / Ctrl+K).
+$page-toolbar-height: 44px;
+
+nav.page-navbar {
+  background-color: var(--st-page) !important;
+  color: var(--st-text);
+  width: 96%;
+  max-width: 96%;
+  height: $page-toolbar-height;
+  line-height: $page-toolbar-height;
+  box-sizing: border-box;
+  box-shadow: none !important;
+  margin: 1rem auto 0.75rem;
+
+  .page-navbar__inner,
+  .nav-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: 100%;
+    height: $page-toolbar-height;
+    padding: 0 4px;
+    box-sizing: border-box;
+  }
+
+  .page-navbar__filter,
+  form {
+    display: flex;
+    align-items: center;
+    float: none;
+    flex: 0 1 360px;
+    width: 100%;
+    min-width: 0;
+    max-width: 360px;
+    height: 36px;
+    margin: 0;
+    padding: 0 4px 0 10px;
+    background: var(--st-surface);
+    border: 1px solid var(--st-chrome);
+    border-radius: $radius-md;
+    box-shadow: none;
+    outline: none;
+
+    &:hover,
+    &:focus-within {
+      border-color: var(--st-interactive);
+      box-shadow: none;
+    }
+  }
+
+  .page-navbar__filter-icon {
+    flex: 0 0 auto;
+    display: inline-block;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    color: var(--st-interactive);
+  }
+
+  .page-navbar__filter-input,
+  input.page-navbar__filter-input.browser-default {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 34px;
+    margin: 0;
+    padding: 0 8px;
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0;
+    box-shadow: none !important;
+    outline: none !important;
+    color: var(--st-text);
+    font-size: 14px;
+    line-height: 34px;
+
+    &::placeholder {
+      color: var(--st-text-secondary);
+      opacity: 1;
+    }
+
+    &:hover,
+    &:focus,
+    &:focus-visible,
+    &:active {
+      appearance: none;
+      -webkit-appearance: none;
+      background: transparent !important;
+      border: 0 !important;
+      box-shadow: none !important;
+      outline: none !important;
+    }
+
+    &::-webkit-search-decoration,
+    &::-webkit-search-cancel-button {
+      -webkit-appearance: none;
+    }
+  }
+
+  .page-navbar__filter-clear {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--st-chrome);
+    cursor: pointer;
+    line-height: 1;
+
+    .material-icons {
+      display: inline-block;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      line-height: 18px;
+      color: inherit;
+    }
+
+    &:hover,
+    &:focus {
+      color: var(--st-interactive);
+      outline: none;
+    }
+  }
+
+  ul.page-navbar-actions {
+    display: flex;
+    float: none;
+    flex: 0 0 auto;
+    margin: 0 0 0 auto;
+    height: $page-toolbar-height;
+    position: relative;
+  }
+
+  .page-navbar-actions li {
+    height: $page-toolbar-height;
+  }
+
+  .page-navbar-actions a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: $page-toolbar-height;
+    line-height: $page-toolbar-height;
+    padding: 0 8px;
+    cursor: pointer;
+    color: var(--st-interactive);
+
+    i,
+    i.material-icons {
+      display: inline-block;
+      font-size: 24px;
+      height: 24px;
+      line-height: 24px;
+      color: var(--st-interactive);
+    }
+
+    &:hover,
+    &:focus {
+      background: var(--st-hover);
+      color: var(--st-accent);
+
+      i,
+      i.material-icons {
+        color: var(--st-accent);
+      }
+    }
+  }
+}
+
+// Same inset as `.page-intro` (96% + auto margins). Do not full-bleed.
+.col .page-navbar,
+.config-content .page-navbar {
+  max-width: 96%;
+  margin: 1rem auto 0.75rem;
+  width: 96%;
+}
+
+.page-search-empty {
+  padding: 2rem 1rem 1rem;
+  text-align: center;
+
+  .page-header {
+    margin-bottom: 0.5rem;
+  }
+}

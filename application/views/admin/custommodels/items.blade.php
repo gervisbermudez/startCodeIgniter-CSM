@@ -16,7 +16,6 @@
         'searchInputId' => 'custommodels-items-search',
         'refreshMethod' => 'getItems()',
         'navbarShow' => '!loader && collectionItemCount > 0',
-        'placeholder' => lang('custommodels_content_search_placeholder'),
         'itemsExpr' => 'filterItems',
     ])
     <div class="row" v-cloak v-show="!loader">

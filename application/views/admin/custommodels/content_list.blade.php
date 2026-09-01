@@ -14,7 +14,6 @@
     @include('admin.components.page_navbar', [
         'searchInputId' => 'custommodels-content-search',
         'refreshMethod' => 'getContents()',
-        'placeholder' => lang('custommodels_content_search_placeholder'),
         'itemsExpr' => 'filterContents',
     ])
     <div class="pages" v-cloak v-if="!loader && contents.length > 0">
