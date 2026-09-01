@@ -4,6 +4,13 @@ $lang['new_user_validations_error'] = 'Hay errores de validación';
 $lang['new_user_unexpected_error'] = 'Ocurrió un error inesperado';
 $lang['user_not_found_error'] = 'Usuario no encontrado';
 
+$lang['users_lede'] = 'Invitá personas y asigná qué pueden hacer en el admin.';
+$lang['users_empty'] = 'Todavía no hay usuarios';
+$lang['users_empty_cta'] = 'Nuevo usuario';
+$lang['users_confirm_delete'] = '¿Querés eliminar este usuario?';
+$lang['users_last_seen'] = 'Última vez';
+$lang['users_role'] = 'Rol';
+
 $lang['usergroups_new'] = 'Nuevo grupo';
 $lang['usergroups_edit'] = 'Editar grupo';
 $lang['usergroups_empty'] = 'Aún no hay grupos';

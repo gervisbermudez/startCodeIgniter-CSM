@@ -1096,11 +1096,14 @@ class User {
 
   // Método de la clase que retorna el nombre completo del usuario
   get_fullname = () => {
-    if (this.user_data.nombre && this.user_data.apellido) {
-      return this.user_data.nombre + " " + this.user_data.apellido;
-    } else {
-      return "";
+    var data = this.user_data && typeof this.user_data === "object" ? this.user_data : {};
+    var first = data.nombre ? String(data.nombre).trim() : "";
+    var last = data.apellido ? String(data.apellido).trim() : "";
+    var full = (first + " " + last).trim();
+    if (full) {
+      return full;
     }
+    return this.username || "";
   };
 
   // Método de la clase que retorna la URL del perfil del usuario

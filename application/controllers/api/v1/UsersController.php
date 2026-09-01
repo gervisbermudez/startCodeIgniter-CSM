@@ -238,7 +238,10 @@ class UsersController extends REST_Controller
         }
 
         $user = new UserModel();
-        $user->find($user_id);
+        if (!$user->find($user_id)) {
+            $this->response_error(lang('user_not_found_error'));
+            return;
+        }
         if ($user->delete()) {
             system_logger('users', $user->user_id, ("deleted"), ("A user has been deleted"));
             $this->response_ok($user);
