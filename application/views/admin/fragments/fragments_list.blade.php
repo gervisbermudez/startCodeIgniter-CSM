@@ -4,6 +4,10 @@
 @endsection
 @section('content')
 <div id="root">
+    @include('admin.components.page_intro', [
+        'titleKey' => 'menu_fragments',
+        'ledeKey' => 'fragments_lede',
+    ])
     <div class="col s12 center" v-show="loader">
         <br><br>
         <preloader />
@@ -13,6 +17,19 @@
         'refreshMethod' => 'getFragments()',
         'itemsExpr' => 'filterFragments',
     ])
+    <div class="row">
+        <div class="col s12">
+            <div class="status-filters" v-cloak v-show="!loader">
+                <button type="button" class="status-chip" :class="{active: currentStatus === null}" @click="setStatus(null)"><?php echo lang('menu_all'); ?></button>
+                <button type="button" class="status-chip" :class="{active: currentStatus === 1}" @click="setStatus(1)"><?php echo lang('published'); ?></button>
+                <button type="button" class="status-chip" :class="{active: currentStatus === 2}" @click="setStatus(2)"><?php echo lang('draft'); ?></button>
+            </div>
+            <div class="status-filters" v-cloak v-show="!loader">
+                <button type="button" class="status-chip" :class="{active: currentType === null}" @click="setType(null)"><?php echo lang('menu_all'); ?></button>
+                <button type="button" class="status-chip" :class="{active: currentType === fragment_type}" v-for="fragment_type in fragment_types" :key="fragment_type" @click="setType(fragment_type)">@{{ fragment_type }}</button>
+            </div>
+        </div>
+    </div>
     <div class="pages fragments" v-cloak v-if="!loader && fragments.length > 0">
         <div class="row" v-if="tableView">
             <div class="col s12">
@@ -36,7 +53,7 @@
                                 <span v-else>-</span>
                             </td>
                             <td>
-                                @{{fragment.date_publish ? fragment.date_publish : fragment.date_create}}
+                                @{{fragment.date_create}}
                             </td>
                             <td>
                                 <i v-if="fragment.status == 1" class="material-icons tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('published'); ?>">publish</i>
@@ -45,10 +62,14 @@
                             <td>
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + fragment.fragment_id'><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + fragment.fragment_id' class='dropdown-content'>
-                                    <li><a :href="base_url('admin/Fragments/editar/' + fragment.fragment_id)">{{ lang('edit') }}</a></li>
-                                    <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(fragment, index);">{{ lang('delete') }}</a></li>
-                                    <li v-if="fragment.status == 2"><a :href="base_url('admin/Fragments/preview?fragment_id=' + fragment.fragment_id)" target="_blank">{{ lang('preview') }}</a></li>
-                                    <li v-if="fragment.path"><a :href="base_url(fragment.path)" target="_blank">{{ lang('view_in_site') }}</a></li>
+                                    @if(has_permisions('UPDATE_FRAGMENT'))
+                                    <li><a :href="base_url('admin/fragments/edit/' + fragment.fragment_id)"><?php echo lang('edit'); ?></a></li>
+                                    @endif
+                                    <li><a href="#!" v-on:click.prevent="openPreview(fragment);"><?php echo lang('fragments_preview'); ?></a></li>
+                                    <li><a href="#!" v-on:click.prevent="copyToken(fragment);"><?php echo lang('fragments_copy_token'); ?></a></li>
+                                    @if(has_permisions('DELETE_FRAGMENT'))
+                                    <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(fragment, index);"><?php echo lang('delete'); ?></a></li>
+                                    @endif
                                 </ul>
                             </td>
                         </tr>
@@ -56,65 +77,61 @@
                 </table>
             </div>
         </div>
-        <div class="row" v-else>
-            <div class="col s12 m4" v-for="(fragment, index) in filterFragments" :key="index">
-                <div class="card page-card">
-                    <div class="card-image">
-                        <div class="card-image-container">
-                            <img :src="getPageImagePath(fragment)" />
-                        </div>
-
-                        <a class="btn-floating halfway-fab waves-effect waves-light dropdown-trigger" href='#!' :data-target='"dropdown" + fragment.fragment_id'>
-                            <i class="material-icons">more_vert</i></a>
-                        <ul :id='"dropdown" + fragment.fragment_id' class='dropdown-content'>
-                            <li><a :href="base_url('admin/Fragments/editar/' + fragment.fragment_id)"><?php echo lang('edit'); ?></a></li>
-                            <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(fragment, index);"><?php echo lang('delete'); ?></a></li>
-                            <li v-if="fragment.status == 2"><a :href="base_url('admin/Fragments/preview?fragment_id=' + fragment.fragment_id)" target="_blank"><?php echo lang('preview'); ?></a></li>
-                            <li v-if="fragment.path"><a :href="base_url(fragment.path)" target="_blank"><?php echo lang('view_in_site'); ?></a></li>
-                        </ul>
-                    </div>
+        <div class="fragments-grid" v-else>
+            <div v-for="(fragment, index) in filterFragments" :key="index">
+                <div class="card page-card fragment-card">
                     <div class="card-content">
-                        <div>
-                            <span class="card-title"><a :href="base_url(fragment.name)" target="_blank">@{{fragment.name}}</a>
-                                @include('admin.components.entity_card_badges', ['item' => 'fragment'])
-                            </span>
-                            <div class="card-info">
-                                <p>
-                                    @{{getcontentText(fragment)}}
-                                </p>
-                                <span class="activator right"><i class="material-icons">more_vert</i></span>
-                                <user-info v-if="fragment.user" :user="fragment.user" />
-                            </div>
+                        <div class="fragment-card-head">
+                            <a class="card-title" :href="base_url('admin/fragments/edit/' + fragment.fragment_id)">@{{fragment.name}}</a>
+                            <a class="dropdown-trigger fragment-card-menu tooltipped" href="#!" :data-target='"dropdown-card" + fragment.fragment_id' data-position="left" data-delay="50" data-tooltip="<?php echo lang('options'); ?>" aria-label="<?php echo lang('options'); ?>">
+                                <i class="material-icons">more_vert</i>
+                            </a>
+                            <ul :id='"dropdown-card" + fragment.fragment_id' class="dropdown-content">
+                                @if(has_permisions('UPDATE_FRAGMENT'))
+                                <li><a :href="base_url('admin/fragments/edit/' + fragment.fragment_id)"><?php echo lang('edit'); ?></a></li>
+                                @endif
+                                <li><a href="#!" v-on:click.prevent="openPreview(fragment);"><?php echo lang('fragments_preview'); ?></a></li>
+                                <li><a href="#!" v-on:click.prevent="copyToken(fragment);"><?php echo lang('fragments_copy_token'); ?></a></li>
+                                @if(has_permisions('DELETE_FRAGMENT'))
+                                <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(fragment, index);"><?php echo lang('delete'); ?></a></li>
+                                @endif
+                            </ul>
                         </div>
-                    </div>
-                    <div class="card-reveal">
-                        <span class="card-title grey-text text-darken-4">
-                            <i class="material-icons right">close</i>
-                            @{{fragment.name}}
-                        </span>
-                        <span class="subtitle">
-                            @{{fragment.subtitle}}
-                        </span>
-                        <ul>
-                            <li><b><?php echo lang('publish_date'); ?>:</b> <br> @{{fragment.date_publish ? fragment.date_publish : fragment.date_create}}</li>
-                            <li><b><?php echo lang('status'); ?>:</b>
-                                <span v-if="fragment.status == 1">
-                                    <?php echo lang('published'); ?>
-                                </span>
-                                <span v-else>
-                                    <?php echo lang('draft'); ?>
-                                </span>
-                            </li>
-                        </ul>
+                        <div class="fragment-card-meta">
+                            @include('admin.components.entity_card_badges', ['item' => 'fragment'])
+                            <span class="custom-badge fragment-type-badge" v-if="fragment.type">@{{fragment.type}}</span>
+                        </div>
+                        <p class="fragment-card-excerpt">@{{getcontentText(fragment)}}</p>
+                        <div class="fragment-card-foot">
+                            <user-info v-if="fragment.user" :user="fragment.user" />
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="container" v-if="!loader && fragments.length == 0 && !filter" v-cloak>
-        <h4><?php echo lang('no_fragments'); ?></h4>
+    <div class="container center" v-if="!loader && fragments.length == 0 && !filter && currentStatus === null && currentType === null" v-cloak>
+        <i class="material-icons large grey-text">short_text</i>
+        <p class="page-header">{{ lang('fragments_empty') }}</p>
+        @if(has_permisions('CREATE_FRAGMENT'))
+        <a href="{{ base_url('admin/fragments/new/') }}" class="btn">{{ lang('fragments_empty_cta') }}</a>
+        @endif
+    </div>
+    <div class="container center" v-if="!loader && fragments.length == 0 && (filter || currentStatus !== null || currentType !== null)" v-cloak>
+        <i class="material-icons large grey-text">search</i>
+        <p class="page-header"><?php echo lang('fragments_filter_empty'); ?></p>
     </div>
     @include('admin.components.pagination')
+    <div id="fragmentPreviewModal" class="modal">
+        <div class="modal-content">
+            <p class="page-header"><?php echo lang('fragments_preview'); ?></p>
+            <div v-if="previewHtml" class="fragment-preview-html" v-html="previewHtml"></div>
+            <p v-else><?php echo lang('fragments_preview_empty'); ?></p>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close btn-flat"><?php echo lang('cancel'); ?></a>
+        </div>
+    </div>
     <confirm-modal
         id="deleteModal"
         title="<?php echo lang('confirm_delete'); ?>"
@@ -125,13 +142,20 @@
         </p>
     </confirm-modal>
 </div>
+@if(has_permisions('CREATE_FRAGMENT'))
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('create_fragment'); ?>" href="<?php echo base_url('admin/fragments/nueva/') ?>">
+    <a class="btn-floating btn-large waves-effect st-accent tooltipped" data-position="left" data-delay="50" data-tooltip="<?php echo lang('create_fragment'); ?>" href="<?php echo base_url('admin/fragments/new/') ?>">
         <i class="large material-icons">add</i>
     </a>
 </div>
+@endif
 @endsection
 
 @section('footer_includes')
+<script>
+window.ADMIN_LANG = Object.assign({}, window.ADMIN_LANG || {}, {
+  fragments_token_copied: <?php echo json_encode(lang('fragments_token_copied')); ?>
+});
+</script>
 <script src="{{base_url('resources/components/FragmentsLists.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

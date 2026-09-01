@@ -68,6 +68,10 @@ class ModelsController extends REST_Controller
      */
     public function index_get($form_id = null)
     {
+        if (!$this->require_model_permision('SELECT_FORM_CUSTOMS')) {
+            return;
+        }
+
         $form = new CustomModelModel();
         if ($form_id) {
             $result = $form->find($form_id);
@@ -86,6 +90,10 @@ class ModelsController extends REST_Controller
 
     public function templates_get()
     {
+        if (!$this->require_model_permision('SELECT_FORM_CUSTOMS')) {
+            return;
+        }
+
         $this->response_ok(list_collection_templates());
     }
 
@@ -134,6 +142,10 @@ class ModelsController extends REST_Controller
     {
         $raw = isset($_POST['data']) ? $_POST['data'] : '';
         $data = is_string($raw) ? json_decode($raw) : $raw;
+        $is_update = ($data && is_object($data) && !empty($data->custom_model_id));
+        if (!$this->require_model_permision($is_update ? 'UPDATE_FORM_CUSTOM' : 'CREATE_FORM_CUSTOM')) {
+            return;
+        }
         if (!$data || !is_object($data)) {
             $this->response_error(lang('validations_error'), array('errors' => array('data' => lang('collections_need_field'))), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
             return;
@@ -195,6 +207,10 @@ class ModelsController extends REST_Controller
      */
     public function index_delete($form_id = null)
     {
+        if (!$this->require_model_permision('DELETE_FORM_CUSTOM')) {
+            return;
+        }
+
         $form = new CustomModelModel();
         $result = $form->find($form_id);
         if ($result) {
@@ -216,6 +232,10 @@ class ModelsController extends REST_Controller
      */
     public function data_get($form_id = null)
     {
+        if (!$this->require_model_permision('SELECT_CONTENT_DATA')) {
+            return;
+        }
+
         $this->load->model('Admin/CustomModelContentModel');
         $Form_conten = new CustomModelContentModel();
         $custom_model_id = $this->input->get('custom_model_id');
@@ -253,6 +273,10 @@ class ModelsController extends REST_Controller
      */
     public function form_data_get($form_id = null)
     {
+        if (!$this->require_model_permision('SELECT_CONTENT_DATA')) {
+            return;
+        }
+
         $this->load->model('Admin/CustomModelContentModel');
         $this->load->model('Admin/CustomModelModel');
         if ($form_id) {
@@ -278,6 +302,18 @@ class ModelsController extends REST_Controller
      */
     public function data_post()
     {
+        $raw = isset($_POST['data']) ? $_POST['data'] : null;
+        $probe = $raw;
+        if (is_string($probe)) {
+            $probe = json_decode($probe);
+        } elseif (is_array($probe)) {
+            $probe = (object) $probe;
+        }
+        $is_update = ($probe && is_object($probe) && !empty($probe->custom_model_content_id));
+        if (!$this->require_model_permision($is_update ? 'UPDATE_CONTENT_DATA' : 'CREATE_CONTENT_DATA')) {
+            return;
+        }
+
         $this->load->model('Admin/CustomModelContentModel');
         $Form_conten = new CustomModelContentModel();
         $data = isset($_POST['data']) ? $_POST['data'] : null;
@@ -321,6 +357,10 @@ class ModelsController extends REST_Controller
      */
     public function data_delete($custom_model_content_id = null)
     {
+        if (!$this->require_model_permision('DELETE_CONTENT_DATA')) {
+            return;
+        }
+
         $this->load->model('Admin/CustomModelContentModel');
         $Form_conten = new CustomModelContentModel();
         $Form_conten->find($custom_model_content_id);
@@ -334,6 +374,10 @@ class ModelsController extends REST_Controller
 
     public function data_set_status_post($custom_model_content_id = null)
     {
+        if (!$this->require_model_permision('UPDATE_CONTENT_DATA')) {
+            return;
+        }
+
         $this->load->model('Admin/CustomModelContentModel');
         $Form_conten = new CustomModelContentModel();
         if (!$Form_conten->find($custom_model_content_id)) {
@@ -375,5 +419,14 @@ class ModelsController extends REST_Controller
             $errors['tabs'] = lang('collections_need_field');
         }
         return $errors;
+    }
+
+    protected function require_model_permision($permision)
+    {
+        if (!function_exists('has_permisions') || !has_permisions($permision)) {
+            $this->response_error('You do not have permission to perform this action', array(), REST_Controller::HTTP_FORBIDDEN, REST_Controller::HTTP_FORBIDDEN);
+            return false;
+        }
+        return true;
     }
 }

@@ -1,4 +1,5 @@
 @import "components/palette";
+@import "form-skeleton";
 
 .main-navbar {
   box-shadow: none;
@@ -78,19 +79,73 @@
   }
 }
 
+.form.page-form {
+  overflow: visible;
+  padding-bottom: 4.75rem;
+}
+
 .page-embed-toolbar {
-  margin: 1.25rem 0 0.75rem;
+  margin: 0.75rem 0 1.25rem;
 
   .page-embed-insert-btn {
-    width: 100%;
+    width: auto;
+    background-color: var(--st-interactive) !important;
+    color: var(--st-on-accent);
   }
 }
 
-.page-embed-modal {
+.page-form-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 4;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin: 0 -10px -0.5rem;
+  padding: 0.75rem 1rem;
+  background-color: var(--st-surface);
+  border-top: 1px solid var(--st-border);
+
+  .page-form-save {
+    background-color: var(--st-accent) !important;
+    color: var(--st-on-accent);
+
+    &:hover,
+    &:focus {
+      background-color: var(--st-accent-hover) !important;
+    }
+  }
+}
+
+.page-embed-modal.modal {
   color: var(--st-text);
+  background-color: var(--st-surface);
+  border: 1px solid var(--st-border);
+
+  .modal-content {
+    background-color: var(--st-surface);
+  }
+
+  .modal-footer {
+    background-color: var(--st-surface);
+    border-top: 1px solid var(--st-border);
+  }
 
   .page-header {
     margin: 0 0 1rem;
+  }
+
+  .tabs {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    background-color: var(--st-surface);
+  }
+
+  .tabs .tab {
+    flex: 0 0 auto;
   }
 
   .tabs .tab a {
@@ -115,6 +170,8 @@
     max-height: 320px;
     overflow-y: auto;
     margin: 0;
+    background-color: var(--st-surface);
+    border-color: var(--st-border);
   }
 
   .page-embed-list .collection-item {

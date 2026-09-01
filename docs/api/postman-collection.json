@@ -2,7 +2,8 @@
 	"info": {
 		"_postman_id": "cfe7d709-3301-4092-8fc9-beb2af0cbade",
 		"name": "Start CMS",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"description": "Authorization: Bearer {{token}} (raw JWT without Bearer is still accepted). Login POST returns a thin JWT (sub/iat/exp/jti/iss). Do not paste userdata blobs."
 	},
 	"item": [
 		{
@@ -18,8 +19,9 @@
 								"header": [
 									{
 										"key": "Authorization",
-										"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyZGF0YSI6eyJsb2dnZWRfaW4iOnRydWUsInVzZXJfaWQiOiIyIiwidXNlcm5hbWUiOiJ5ZHVyYW4iLCJlbWFpbCI6InlkdXJhbkBnbWFpbC5jb20iLCJsYXN0c2VlbiI6IjIwMjAtMTEtMjIgMTc6NTI6NDMiLCJ1c2VyZ3JvdXBfaWQiOiIyIiwic3RhdHVzIjoiMSIsIm5vbWJyZSI6Ill1bGUiLCJhcGVsbGlkbyI6IkR1cmFuIiwiZGlyZWNjaW9uIjoiTWFyYSIsInRlbGVmb25vIjoiMDQxMi05ODczOTIwIiwiY3JlYXRlIGJ5IjoiZ2VyYmVyIiwiYXZhdGFyIjoiLlwvcHVibGljXC9pbWdcL3Byb2ZpbGVcL3lkdXJhblwvMzAwXzExLmpwZyIsInJvbGUiOiJBZG1pbmlzdHJhZG9yIiwibGV2ZWwiOiIyIiwidXNlcmdyb3VwX3Blcm1pc2lvbnMiOlsiQ1JFQVRFIiwiVVBEQVRFIiwiREVMRVRFIiwiU0VMRUNUIiwiQ1JFQVRFX1VTRVIiLCJTRUxFQ1RfVVNFUlMiLCJVUERBVEVfVVNFUiJdfSwicmFuZF9rZXkiOiJNVDl5WnE1VWpEdktOMVZsIn0.eBPCY7RFAqn3y2wLt2vCpK1nZYqG7bLSY6Fg-_3Ry1k",
-										"type": "text"
+										"value": "Bearer {{token}}",
+										"type": "text",
+										"description": "Authorization: Bearer {{token}} (raw JWT without Bearer is still accepted). Login POST returns a thin JWT (sub/iat/exp/jti/iss). Do not paste userdata blobs."
 									}
 								],
 								"url": {
@@ -51,8 +53,9 @@
 								"header": [
 									{
 										"key": "Authorization",
-										"value": "",
-										"type": "text"
+										"value": "Bearer {{token}}",
+										"type": "text",
+										"description": "Authorization: Bearer {{token}} (raw JWT without Bearer is still accepted). Login POST returns a thin JWT (sub/iat/exp/jti/iss). Do not paste userdata blobs."
 									}
 								],
 								"url": {
@@ -300,7 +303,8 @@
 					"response": []
 				}
 			],
-			"protocolProfileBehavior": {}
+			"protocolProfileBehavior": {},
+			"description": "Authorization: Bearer {{token}} (raw JWT without Bearer is still accepted). Login POST returns a thin JWT (sub/iat/exp/jti/iss). Do not paste userdata blobs."
 		},
 		{
 			"name": "Config",
@@ -1021,6 +1025,12 @@
 			"key": "BASEURL",
 			"value": "http://localhost:8000/",
 			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string",
+			"description": "JWT from POST /api/v1/login. Header: Bearer {{token}} (raw token also works)."
 		}
 	],
 	"protocolProfileBehavior": {}

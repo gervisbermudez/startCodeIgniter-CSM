@@ -97,7 +97,7 @@ if ($has_form && isset($siteform->properties)) {
                 @if(has_permisions('SELECT_SITEFORMS'))
                 <li><a href="{{ base_url('admin/siteforms') }}"><i class="material-icons scms-adminbar-icon">assignment</i>Formularios</a></li>
                 @endif
-                @if(has_permisions('SELECT_MENU'))
+                @if(has_permisions('SELECT_MENUS'))
                 <li><a href="{{ base_url('admin/menus') }}"><i class="material-icons scms-adminbar-icon">menu</i>Menús</a></li>
                 @endif
                 @if(has_permisions('SELECT_GALLERY'))
@@ -135,7 +135,7 @@ if ($has_form && isset($siteform->properties)) {
                 @if(has_permisions('SELECT_GALLERY'))
                 <li><a href="{{ base_url('admin/gallery') }}"><i class="material-icons scms-adminbar-icon">photo_library</i>Media</a></li>
                 @endif
-                @if(has_permisions('SELECT_MENU'))
+                @if(has_permisions('SELECT_MENUS'))
                 <li><a href="{{ base_url('admin/menus/new') }}"><i class="material-icons scms-adminbar-icon">menu</i>Menú</a></li>
                 @endif
                 @if(has_permisions('SELECT_SITEFORMS'))

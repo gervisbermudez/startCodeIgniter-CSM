@@ -52,11 +52,15 @@
                                     :data-target='"dropdown_" + content.custom_model_content_id'><i
                                         class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown_" + content.custom_model_content_id' class='dropdown-content'>
+                                        @if(has_permisions('UPDATE_CONTENT_DATA'))
                                         <li><a
                                             :href="base_url('admin/custommodels/editData/' + content.custom_model_id + '/' + content.custom_model_content_id)">
                                             <?= lang('custommodels_content_edit') ?></a></li>
+                                        @endif
+                                        @if(has_permisions('DELETE_CONTENT_DATA'))
                                         <li><a class="modal-trigger" href="#deleteModal"
                                             v-on:click="tempDelete(content, index);"><?= lang('custommodels_content_delete') ?></a></li>
+                                        @endif
                                 </ul>
                             </td>
                         </tr>
@@ -76,11 +80,15 @@
                             :data-target='"dropdown" + content.custom_model_id'>
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown" + content.custom_model_id' class='dropdown-content'>
+                                @if(has_permisions('UPDATE_CONTENT_DATA'))
                                 <li><a
                                     :href="base_url('admin/custommodels/editData/' + content.custom_model_id + '/' + content.custom_model_content_id)">
                                     <?= lang('btn_edit') ?></a></li>
+                                @endif
+                                @if(has_permisions('DELETE_CONTENT_DATA'))
                                 <li><a class="modal-trigger" href="#deleteModal"
                                     v-on:click="tempDelete(content, index);"><?= lang('btn_delete') ?></a></li>
+                                @endif
                         </ul>
                     </div>
                     <div class="card-content">

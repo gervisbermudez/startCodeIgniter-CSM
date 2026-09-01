@@ -12,6 +12,7 @@ class UsersController extends REST_Controller
         parent::__construct();
         $this->output->enable_profiler(false);
         $this->lang->load('rest_lang', 'english');
+        $this->lang->load('admin/users');
 
         if (!$this->verify_request()) {
             $this->response([
@@ -22,6 +23,7 @@ class UsersController extends REST_Controller
 
         $this->load->database();
         $this->load->model('Admin/UserModel', 'User');
+        $this->refresh_editor_permisions();
 
     }
 
@@ -68,6 +70,10 @@ class UsersController extends REST_Controller
      */
     public function index_get($user_id = null)
     {
+        if (!$this->require_user_permision('SELECT_USERS')) {
+            return;
+        }
+
         if ($user_id) {
             $result = $this->User->get_full_info($user_id);
             if ($result) {
@@ -144,6 +150,12 @@ class UsersController extends REST_Controller
      */
     public function index_post()
     {
+        $user_id = $this->input->post('user_id');
+        $is_update = ($user_id !== null && $user_id !== '' && $user_id !== false);
+        if (!$this->require_user_permision($is_update ? 'UPDATE_USER' : 'CREATE_USER')) {
+            return;
+        }
+
         $this->load->library('FormValidator');
         $form = new FormValidator();
         $config = array(
@@ -221,6 +233,10 @@ class UsersController extends REST_Controller
      */
     public function index_delete($user_id = null)
     {
+        if (!$this->require_user_permision('DELETE_USER')) {
+            return;
+        }
+
         $user = new UserModel();
         $user->find($user_id);
         if ($user->delete()) {
@@ -233,25 +249,23 @@ class UsersController extends REST_Controller
 
     public function usergroups_get($usergroup_id = null)
     {
+        if (!$this->require_user_permision('SELECT_USERGROUPS')) {
+            return;
+        }
         $this->load->model('Admin/UsergroupModel');
         $usergroup = new UsergroupModel();
         if ($usergroup_id) {
-            $result = $usergroup->find_with(array("usergroup_id" => $usergroup_id));
-            $usergroup->usergroup_id = $usergroup_id;
-            $usergroup->{'usergroup_permisions'} = $usergroup->usergroup_permisions();
-            $result = $result ? $usergroup : false;
-        } else {
-            if (userdata('username') == 'root' || userdata('level') == 1) {
-                $result = $usergroup->all();
-            } else {
-                $result = $usergroup->where(['parent_id' => userdata("usergroup_id")]);
+            $result = $usergroup->find($usergroup_id);
+            if (!$result) {
+                $this->response_error(lang('not_found_error'));
+                return;
             }
-        }
-        if ($result) {
-            $this->response_ok($result);
+            $usergroup->{'usergroup_permisions'} = $usergroup->usergroup_permisions();
+            $this->response_ok($usergroup);
             return;
         }
-        $this->response_error(lang('none_user_groups_created'));
+        $result = $usergroup->all();
+        $this->response_ok($result ? $result : array());
     }
 
     /**
@@ -261,6 +275,11 @@ class UsersController extends REST_Controller
      */
     public function usergroups_post()
     {
+        $posted_id = $this->input->post('usergroup_id');
+        $is_create = !$posted_id;
+        if (!$this->require_user_permision($is_create ? 'CREATE_USERGROUP' : 'UPDATE_USERGROUP')) {
+            return;
+        }
         $this->load->library('FormValidator');
         $this->load->model('Admin/UsergroupModel');
 
@@ -272,40 +291,88 @@ class UsersController extends REST_Controller
         );
         $form->set_rules($config);
         if (!$form->run()) {
-            $this->response_error(lang('validations_error'), ['errors' => $form->_error_array], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
+            $this->response_error(lang('validations_error'), array('errors' => $form->_error_array), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
+
         $usergroup = new UsergroupModel();
-        $this->input->post('usergroup_id') ? $usergroup->find($this->input->post('usergroup_id')) : false;
+        if (!$is_create) {
+            $usergroup_id = (int) $posted_id;
+            if ($usergroup_id === 1 && (int) userdata('usergroup_id') !== 1) {
+                $this->response_error(lang('not_have_permissions'), array(), REST_Controller::HTTP_FORBIDDEN, REST_Controller::HTTP_FORBIDDEN);
+                return;
+            }
+            if (!$usergroup->find($usergroup_id)) {
+                $this->response_error(lang('not_found_error'));
+                return;
+            }
+        }
+
+        $final_ids = $this->build_merged_permision_ids($is_create ? 0 : (int) $usergroup->usergroup_id, $is_create);
+        if ($final_ids === false) {
+            return;
+        }
+
         $usergroup->name = $this->input->post('name');
         $usergroup->description = $this->input->post('description');
-        $usergroup->level = $this->input->post('level') ? $this->input->post('level') : userdata('level') + 1;
-        $usergroup->user_id = userdata('user_id');
-        $usergroup->parent_id = userdata('usergroup_id');
         $usergroup->status = $this->input->post('status');
-        $usergroup->date_create = date("Y-m-d H:i:s");
-        if ($usergroup->save()) {
-            $this->load->model('Admin/UsergroupPermissionsModel');
-            $UsergroupPermissions = new UsergroupPermissionsModel();
-            $UsergroupPermissions->delete_data(['usergroup_id' => $usergroup->usergroup_id]);
-            foreach ($this->input->post('permissions') as $key => $value) {
-                $UsergroupPermissions = new UsergroupPermissionsModel();
-                $UsergroupPermissions->permision_id = $value['permisions_id'];
-                $UsergroupPermissions->usergroup_id = $usergroup->usergroup_id;
-                $UsergroupPermissions->status = 1;
-                $UsergroupPermissions->save();
-            }
-            $this->response_ok($usergroup);
-        } else {
-            $this->response_error(lang('unexpected_error'), [], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
+        if ($is_create) {
+            $usergroup->level = $this->input->post('level') ? $this->input->post('level') : userdata('level') + 1;
+            $usergroup->user_id = userdata('user_id');
+            $usergroup->parent_id = userdata('usergroup_id');
+            $usergroup->date_create = date("Y-m-d H:i:s");
+            $usergroup->date_update = $usergroup->date_create;
         }
+        if ($usergroup->save()) {
+            $this->replace_usergroup_permisions($usergroup->usergroup_id, $final_ids);
+            system_logger(
+                'usergroups',
+                $usergroup->usergroup_id,
+                $is_create ? 'created' : 'updated',
+                $is_create ? 'A usergroup has been created' : 'A usergroup has been updated'
+            );
+            $this->response_ok($usergroup);
+            return;
+        }
+        $this->response_error(lang('unexpected_error'), array(), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
+    }
+
+    public function usergroups_delete($usergroup_id = null)
+    {
+        if (!$this->require_user_permision('DELETE_USERGROUP')) {
+            return;
+        }
+        $usergroup_id = (int) $usergroup_id;
+        if ($usergroup_id === 1) {
+            $this->response_error(lang('usergroups_cannot_delete_root'), array(), REST_Controller::HTTP_FORBIDDEN, REST_Controller::HTTP_FORBIDDEN);
+            return;
+        }
+        $this->load->model('Admin/UsergroupModel');
+        $usergroup = new UsergroupModel();
+        if (!$usergroup->find($usergroup_id)) {
+            $this->response_error(lang('not_found_error'));
+            return;
+        }
+        $this->db->from('user');
+        $this->db->where('usergroup_id', $usergroup_id);
+        $this->db->where('status !=', 0);
+        if ($this->db->count_all_results() > 0) {
+            $this->response_error(lang('usergroups_cannot_delete_has_users'), array(), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
+            return;
+        }
+        if ($usergroup->delete()) {
+            system_logger('usergroups', $usergroup_id, 'deleted', 'A usergroup has been deleted');
+            $this->response_ok($usergroup);
+            return;
+        }
+        $this->response_error(lang('unexpected_error'), array(), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
     }
 
     public function permissions_get()
     {
         $this->load->model('Admin/UsergroupPermissionsModel');
         $UsergroupPermissions = new UsergroupPermissionsModel();
-        $result = $UsergroupPermissions->get_permissions_info(['usergroup_id' => userdata('usergroup_id')]);
+        $result = $UsergroupPermissions->get_permissions_info(array('usergroup_id' => userdata('usergroup_id')));
 
         if ($result) {
             $this->response_ok($result);
@@ -317,6 +384,9 @@ class UsersController extends REST_Controller
 
     public function allpermissions_get()
     {
+        if (!$this->require_user_permision('SELECT_USERGROUPS')) {
+            return;
+        }
         $this->load->model('Admin/PermissionsModel');
         $Permissions = new PermissionsModel();
         $result = $Permissions->all();
@@ -399,6 +469,13 @@ class UsersController extends REST_Controller
      */
     public function timeline_get($user_id = null)
     {
+        $session_id = (int) userdata('user_id');
+        if ((int) $user_id !== $session_id) {
+            if (!$this->require_user_permision('SELECT_USERS')) {
+                return;
+            }
+        }
+
         $user = new UserModel();
         if ($user_id) {
             $result = $user->find($user_id);
@@ -415,6 +492,12 @@ class UsersController extends REST_Controller
     public function avatar_post()
     {
         $user_id = $this->input->post('user_id');
+        $session_id = (int) userdata('user_id');
+        if ((int) $user_id !== $session_id) {
+            if (!$this->require_user_permision('UPDATE_USER')) {
+                return;
+            }
+        }
         $avatar = $this->input->post('avatar');
         $user = new UserModel();
         $result = false;
@@ -433,38 +516,180 @@ class UsersController extends REST_Controller
     public function changePassword_post()
     {
         $user_id = $this->input->post('user_id');
+        $session_id = (int) userdata('user_id');
+        if ((int) $user_id !== $session_id) {
+            if (!$this->require_user_permision('UPDATE_USER')) {
+                return;
+            }
+        }
         $currentPassword = $this->input->post('currentPassword');
         $user = new UserModel();
         $result = false;
         $result_find = $user->find($user_id);
         if ($result_find) {
-            $this->load->model('Admin/LoginModModel');
+            $this->load->model('Admin/LoginModModel', 'LoginMod');
             $login_data = $this->LoginMod->isLoged($user->username, $currentPassword);
             if ($login_data) {
                 $result = $user->update_data(["user_id" => $user_id], ["password" => password_hash($this->input->post('password'), PASSWORD_DEFAULT)]);
                 if ($result) {
                     $response = array(
                         'code' => REST_Controller::HTTP_OK,
-                        'data' => $_POST,
+                        'data' => true,
                         'error_message' => "Password changed correctly",
                     );
                 } else {
                     $response = array(
                         'code' => REST_Controller::HTTP_BAD_REQUEST,
-                        'data' => $_POST,
+                        'data' => array(),
                         'error_message' => "An error has occurred",
                     );
                 }
             } else {
                 $response = array(
                     'code' => REST_Controller::HTTP_BAD_REQUEST,
-                    'data' => $_POST,
+                    'data' => array(),
                     'error_message' => "The current password is incorret",
                 );
             }
-            $this->response($response, REST_Controller::HTTP_OK);
+            $this->response($response, $response['code']);
             return;
         }
         $this->response_error(lang('user_not_found_error'), [], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
+    }
+
+    /**
+     * JWT userdata from login can predate new grants; reload names from DB.
+     *
+     * @return void
+     */
+    protected function refresh_editor_permisions()
+    {
+        $usergroup_id = userdata('usergroup_id');
+        if (!$usergroup_id) {
+            return;
+        }
+        $this->load->model('Admin/UsergroupModel');
+        $usergroup = new UsergroupModel();
+        $usergroup->usergroup_id = $usergroup_id;
+        $this->session->set_userdata('usergroup_permisions', $usergroup->usergroup_permisions());
+    }
+
+    protected function require_user_permision($permision)
+    {
+        if (!function_exists('has_permisions') || !has_permisions($permision)) {
+            $this->response_error(
+                lang('not_have_permissions'),
+                array(),
+                REST_Controller::HTTP_FORBIDDEN,
+                REST_Controller::HTTP_FORBIDDEN
+            );
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Merge posted permission ids with grants the editor cannot change.
+     *
+     * @param int $usergroup_id
+     * @param bool $is_create
+     * @return array|false
+     */
+    protected function build_merged_permision_ids($usergroup_id, $is_create)
+    {
+        $posted_ids = array();
+        $posted = $this->input->post('permissions');
+        if (is_array($posted)) {
+            foreach ($posted as $row) {
+                if (is_array($row) && isset($row['permisions_id'])) {
+                    $posted_ids[] = (int) $row['permisions_id'];
+                } elseif (is_object($row) && isset($row->permisions_id)) {
+                    $posted_ids[] = (int) $row->permisions_id;
+                } elseif (is_numeric($row)) {
+                    $posted_ids[] = (int) $row;
+                }
+            }
+        }
+        $posted_ids = array_values(array_unique($posted_ids));
+
+        $this->load->model('Admin/PermissionsModel');
+        $Permissions = new PermissionsModel();
+        $catalog_rows = $Permissions->all();
+        $catalog = array();
+        if ($catalog_rows) {
+            foreach ($catalog_rows as $row) {
+                $catalog[(int) $row->permisions_id] = $row->permision_name;
+            }
+        }
+
+        foreach ($posted_ids as $id) {
+            if ($id < 1 || !isset($catalog[$id])) {
+                $this->response_error(lang('validations_error'), array(), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
+                return false;
+            }
+        }
+
+        $editor_names = userdata('usergroup_permisions');
+        if (!is_array($editor_names)) {
+            $editor_names = array();
+        }
+
+        $editable_posted = array();
+        foreach ($posted_ids as $id) {
+            if (in_array($catalog[$id], $editor_names, true)) {
+                $editable_posted[] = $id;
+            }
+        }
+
+        $current_ids = array();
+        if (!$is_create && $usergroup_id) {
+            $this->load->model('Admin/UsergroupPermissionsModel');
+            $junction = new UsergroupPermissionsModel();
+            $current = $junction->get_data(array('usergroup_id' => $usergroup_id, 'status' => 1));
+            if ($current) {
+                foreach ($current as $row) {
+                    $current_ids[] = (int) $row->permision_id;
+                }
+            }
+        }
+
+        $untouchable = array();
+        foreach ($current_ids as $id) {
+            $name = isset($catalog[$id]) ? $catalog[$id] : null;
+            if ($name === null || !in_array($name, $editor_names, true)) {
+                $untouchable[] = $id;
+            }
+        }
+
+        $final = array();
+        foreach (array_unique(array_merge($untouchable, $editable_posted)) as $id) {
+            $id = (int) $id;
+            if ($id > 0) {
+                $final[] = $id;
+            }
+        }
+        return $final;
+    }
+
+    /**
+     * @param int $usergroup_id
+     * @param array $permision_ids
+     * @return void
+     */
+    protected function replace_usergroup_permisions($usergroup_id, $permision_ids)
+    {
+        $this->load->model('Admin/UsergroupPermissionsModel');
+        $UsergroupPermissions = new UsergroupPermissionsModel();
+        $UsergroupPermissions->delete_data(array('usergroup_id' => $usergroup_id));
+        foreach ($permision_ids as $permision_id) {
+            $row = new UsergroupPermissionsModel();
+            $row->permision_id = $permision_id;
+            $row->usergroup_id = $usergroup_id;
+            $row->status = 1;
+            $now = date('Y-m-d H:i:s');
+            $row->date_create = $now;
+            $row->date_update = $now;
+            $row->save();
+        }
     }
 }

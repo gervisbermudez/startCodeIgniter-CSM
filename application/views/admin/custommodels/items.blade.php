@@ -59,8 +59,12 @@
                                     :data-target='"dropdown_item_t_" + item.custom_model_content_id'
                                     :aria-label="'<?= lang('options') ?>'"><i class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown_item_t_" + item.custom_model_content_id' class="dropdown-content">
+                                    @if(has_permisions('UPDATE_CONTENT_DATA'))
                                     <li><a :href="base_url('admin/custommodels/editData/' + custom_model_id + '/' + item.custom_model_content_id)"><?= lang('btn_edit') ?></a></li>
+                                    @endif
+                                    @if(has_permisions('DELETE_CONTENT_DATA'))
                                     <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(item, index);"><?= lang('btn_delete') ?></a></li>
+                                    @endif
                                 </ul>
                             </td>
                         </tr>
@@ -80,8 +84,12 @@
                             :aria-label="'<?= lang('options') ?>'">
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown_item_c_" + item.custom_model_content_id' class="dropdown-content">
+                            @if(has_permisions('UPDATE_CONTENT_DATA'))
                             <li><a :href="base_url('admin/custommodels/editData/' + custom_model_id + '/' + item.custom_model_content_id)"><?= lang('btn_edit') ?></a></li>
+                            @endif
+                            @if(has_permisions('DELETE_CONTENT_DATA'))
                             <li><a class="modal-trigger" href="#deleteModal" v-on:click="tempDelete(item, index);"><?= lang('btn_delete') ?></a></li>
+                            @endif
                         </ul>
                     </div>
                     <div class="card-content">
@@ -98,7 +106,9 @@
     <div class="container center" v-if="!loader && isCollectionEmpty" v-cloak>
         <i class="material-icons large" aria-hidden="true">article</i>
         <h4 class="page-header"><?= lang('custommodels_content_no_contents') ?></h4>
+        @if(has_permisions('CREATE_CONTENT_DATA'))
         <a class="btn waves-effect st-accent" :href="base_url('admin/custommodels/addData/' + custom_model_id)"><?= lang('collections_add_item') ?></a>
+        @endif
     </div>
     <div class="container center" v-if="!loader && isStatusFilterEmpty" v-cloak>
         <i class="material-icons large" aria-hidden="true">filter_list</i>
@@ -109,6 +119,7 @@
         <p><?= lang('collections_confirm_delete_item') ?></p>
     </confirm-modal>
 </div>
+@if(has_permisions('CREATE_CONTENT_DATA'))
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
     <a class="btn-floating btn-large waves-effect st-accent tooltipped" data-position="left"
         data-delay="50" data-tooltip="<?= lang('collections_add_item') ?>"
@@ -116,6 +127,7 @@
         <i class="material-icons">add</i>
     </a>
 </div>
+@endif
 <script>
 window.COLLECTION_ITEMS_MODEL_ID = <?= json_encode((int) $custom_model_id) ?>;
 window.COLLECTION_ITEMS_COUNT = <?= json_encode(isset($items_count) ? (int) $items_count : 0) ?>;

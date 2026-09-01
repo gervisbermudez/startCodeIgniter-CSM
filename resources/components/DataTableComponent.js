@@ -103,6 +103,14 @@ var dataTable = Vue.component("dataTable", {
       type: Boolean,
       default: false,
     },
+    can_update: {
+      type: Boolean,
+      default: true,
+    },
+    can_delete: {
+      type: Boolean,
+      default: true,
+    },
   },
   data: function () {
     return {

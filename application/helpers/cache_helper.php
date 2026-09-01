@@ -150,7 +150,7 @@ if (!function_exists('get_fragment_cached')) {
         $ci = &get_instance();
         $ci->load->model('Admin/FragmentModel');
         $fragment = new FragmentModel();
-        $result = $fragment->find_with(['name' => $fragment_name]);
+        $result = $fragment->find_with(['name' => $fragment_name, 'status' => 1]);
         
         $fragment_content = '';
         if ($result) {

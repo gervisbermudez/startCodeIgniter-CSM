@@ -23,6 +23,7 @@
 				<input type="text" v-model="name" id="nombre" name="nombre_form" required="required" value="">
 			</div>
 			<p class="grey-text">{{ lang('siteforms_name_help') }}</p>
+			<p class="grey-text">{{ lang('siteforms_for_developers') }}</p>
 			<div class="input-field">
 				<select name="tipo_form" v-model="template">
 					<option value="" disabled>{{ lang('siteforms_select_template') }}</option>

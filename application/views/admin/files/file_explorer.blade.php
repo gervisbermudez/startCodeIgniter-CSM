@@ -25,8 +25,10 @@
                     <div class="col s12 m2 tree">
                         <ul class="sidenav hide-on-small-only">
                             <li class="uploadbtn">
+                                @if(has_permisions('CREATE_FILE'))
                                 <a class="waves-effect waves-teal btn btn-default modal-trigger" href="#uploaderModal">
                                     <i class="material-icons left">file_upload</i> Add File</a>
+                                @endif
                             </li>
                             <li><a class="subheader">My Drive</a></li>
                             <li><a href="#!" @click="navigateFiles('./')"><i class="far fa-folder left"></i> All
@@ -57,8 +59,11 @@
                                         Drive</a></div>
                                 <div class="collapsible-body">
                                     <ul class="suboptions">
-                                        <li><a href="#" class="waves-effect waves-teal">
+                                        <li>
+                                            @if(has_permisions('CREATE_FILE'))
+                                            <a href="#" class="waves-effect waves-teal">
                                                 <i class="fas fa-file-upload"></i> Add File</a>
+                                            @endif
                                         </li>
                                         <li><a href="#!" class="waves-effect waves-teal" @click="navigateFiles('./')"><i
                                                     class="far fa-folder left"></i>
@@ -215,6 +220,7 @@
                                                     <li><a href="#!" @click="getFileContent(item)">
                                                             <i class="fas fa-share-alt"></i> view file</a>
                                                     </li>
+                                                    @if(has_permisions('UPDATE_FILE'))
                                                     <li>
                                                         <a class="waves-effect waves-light modal-trigger" href="#modal1"
                                                             @click="renameFile(item);">
@@ -237,26 +243,33 @@
                                                             <i class="fa-star"
                                                                 :class='[item.featured == 1 ? "fas" : "far"]'></i>
                                                             Important</a></li>
+                                                    @endif
+                                                    @if(has_permisions('DELETE_FILE'))
                                                     <li>
                                                         <a class="waves-effect waves-light modal-trigger"
                                                             href="#deleteFileModal" @click="trashFile(item);">
                                                             <i class="fas fa-trash"></i> Delete
                                                         </a>
                                                     </li>
+                                                    @endif
                                                 </ul>
                                                 <ul :id="'file_options' + index" class='dropdown-content' v-else>
+                                                    @if(has_permisions('UPDATE_FILE'))
                                                     <li>
                                                         <a class="waves-effect waves-light modal-trigger"
                                                             @click="setFileToMove(item);" href="#folderSelectorMove">
                                                             <i class="fas fa-cut"></i>
                                                             Move</a>
                                                     </li>
+                                                    @endif
+                                                    @if(has_permisions('DELETE_FILE'))
                                                     <li>
                                                         <a class="waves-effect waves-light modal-trigger"
                                                             href="#deleteFileModal" @click="trashFile(item);">
                                                             <i class="fas fa-trash"></i> Delete
                                                         </a>
                                                     </li>
+                                                    @endif
                                                 </ul>
                                                 <div class="card-image waves-effect waves-block waves-light"
                                                     v-if="!isImage(item)">
@@ -302,9 +315,11 @@
                             <div class="side-header">
                                 <span
                                     class="filename">@{{(sideRightBarSelectedFile.file_name + getExtention(sideRightBarSelectedFile))}}</span>
+                                @if(has_permisions('DELETE_FILE'))
                                 <a class="waves-effect waves-light modal-trigger right" href="#deleteFileModal"
                                     @click="trashFile(sideRightBarSelectedFile);">
                                     <i class="fas fa-trash grey-text text-darken-4 "></i></a>
+                                @endif
                             </div>
                             <br />
                             <div class="row">
@@ -334,6 +349,7 @@
                                             <li><a href="#!" @click="shareFile(sideRightBarSelectedFile)">
                                                     <i class="fas fa-share-alt"></i> Share file</a>
                                             </li>
+                                            @if(has_permisions('UPDATE_FILE'))
                                             <li>
                                                 <a class="waves-effect waves-light modal-trigger" href="#modal1"
                                                     @click="renameFile(sideRightBarSelectedFile);">
@@ -344,6 +360,8 @@
                                                     <i class="fa-star"
                                                         :class='[sideRightBarSelectedFile.featured == 1 ? "fas" : "far"]'></i>
                                                     Important</a></li>
+                                            @endif
+                                            @if(has_permisions('DELETE_FILE'))
                                             <li v-if="curDir != './trash/'">
                                                 <a class="waves-effect waves-light modal-trigger"
                                                     href="#deleteFileModal"
@@ -351,6 +369,7 @@
                                                     <i class="fas fa-trash"></i> Delete
                                                 </a>
                                             </li>
+                                            @endif
                                         </ul>
                                         <ul class="collection">
                                             <li class="collection-item">Type: <span

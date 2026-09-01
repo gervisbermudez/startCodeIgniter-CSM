@@ -19,7 +19,9 @@
                 <a class='dropdown-trigger right' href='#!' :data-target='"album" + album.album_id'><i
                         class="material-icons">more_vert</i></a>
                 <ul :id='"album" + album.album_id' class='dropdown-content'>
+                    @if(has_permisions('UPDATE_GALLERY'))
                     <li><a :href="base_url('admin/gallery/editar/' + album.album_id)"><?php echo lang('edit'); ?></a></li>
+                    @endif
                 </ul>
             </div>
             <div class="col s12">
@@ -87,7 +89,9 @@
                                 <a class='dropdown-trigger' href='#!' :data-target='"dropdown" + item.album_item_id'><i
                                         class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown" + item.album_item_id' class='dropdown-content'>
+                                    @if(has_permisions('DELETE_GALLERY'))
                                     <li><a href="#!" v-on:click="deletePage(item, index);"><?php echo lang('delete'); ?></a></li>
+                                    @endif
                                 </ul>
                             </td>
                         </tr>
@@ -106,7 +110,9 @@
                             :data-target='"dropdown-card" + item.album_item_id'>
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown-card" + item.album_item_id' class='dropdown-content'>
+                            @if(has_permisions('DELETE_GALLERY'))
                             <li><a href="#!" v-on:click="deletePage(item, index);"><?php echo lang('delete'); ?></a></li>
+                            @endif
                         </ul>
                     </div>
                     <div class="card-content">

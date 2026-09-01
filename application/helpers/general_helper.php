@@ -173,7 +173,7 @@ function expand_helper_snippets($html)
         foreach ($patterns as $pattern) {
             $html = preg_replace_callback($pattern, function ($m) use (&$replaced) {
                 $fn = $m[1];
-                if (!is_callable($fn)) {
+                if (!in_array($fn, page_embed_whitelist(), true) || !function_exists($fn)) {
                     return $m[0];
                 }
                 $args = array();
@@ -386,6 +386,15 @@ function fragment(string $fragment_name)
     set_cached($cache_key, $content, 86400);
 
     return expand_helper_snippets($content);
+}
+
+function bust_fragment_cache($fragment_name)
+{
+    if ($fragment_name === null || $fragment_name === '') {
+        return;
+    }
+    delete_cached('fragment_raw_' . $fragment_name);
+    delete_cached('fragment_' . $fragment_name);
 }
 
 function set_notification($title, $description, $type = 'info', $url = null, $user_ids = null)
@@ -894,6 +903,19 @@ function render_menu($name)
     return $blade->view("site.templates.menu." . $menu->template, $data, true);
 }
 
+function page_embed_whitelist()
+{
+    return array(
+        'render_form',
+        'fragment',
+        'render_menu',
+        'render_album',
+        'render_video',
+        'render_event',
+        'get_collection',
+    );
+}
+
 /**
  * Expands whitelist tokens {{helper(name)}} in page HTML. Unknown helpers are left as-is.
  */
@@ -903,15 +925,7 @@ function expand_page_embeds($html)
         return is_string($html) ? $html : '';
     }
 
-    $whitelist = array(
-        'render_form',
-        'fragment',
-        'render_menu',
-        'render_album',
-        'render_video',
-        'render_event',
-        'get_collection',
-    );
+    $whitelist = page_embed_whitelist();
 
     if (!preg_match_all('/\{\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\((.*?)\)\s*\}\}/s', $html, $matches, PREG_SET_ORDER)) {
         return $html;
@@ -1018,6 +1032,22 @@ function render_album($name)
         return '';
     }
 
+    $needs_items = true;
+    if (isset($album->items) && $album->items) {
+        foreach ($album->items as $item) {
+            if (isset($item->file) && is_object($item->file) && !empty($item->file->file_front_path)) {
+                $needs_items = false;
+                break;
+            }
+        }
+    }
+    if ($needs_items && !empty($album->album_id)) {
+        $ci->load->model('Admin/AlbumItemsModel');
+        $album_items = new AlbumItemsModel();
+        $loaded = $album_items->where(array('album_id' => $album->album_id));
+        $album->items = $loaded ? $loaded : array();
+    }
+
     $items = array();
     if (!empty($album->items)) {
         foreach ($album->items as $item) {
@@ -1114,7 +1144,7 @@ function expand_content_helpers($content)
 
     $callback = function ($matches) {
         $fn = $matches[1];
-        if (!is_callable($fn)) {
+        if (!in_array($fn, page_embed_whitelist(), true) || !function_exists($fn)) {
             return $matches[0];
         }
         $args = parse_helper_args($matches[2]);

@@ -6,37 +6,37 @@ class CustomModelsController extends MY_Controller
 {
     public $routes_permisions = [
         "index" => [
-            "patern" => '/admin\/custommodels/',
+            "patern" => '/^admin\/custommodels\/?$/',
             "required_permissions" => ["SELECT_FORM_CUSTOMS"],
             "conditions" => [],
         ],
         "nuevo" => [
-            "patern" => '/admin\/custommodels\/(nuevo|new)/',
+            "patern" => '/^admin\/custommodels\/(nuevo|new)\/?$/',
             "required_permissions" => ["CREATE_FORM_CUSTOM"],
             "conditions" => [],
         ],
         "editForm" => [
-            "patern" => '/admin\/custommodels\/(editForm|edit)\/(\d+)/',
+            "patern" => '/^admin\/custommodels\/(editForm|edit)\/(\d+)/',
             "required_permissions" => ["UPDATE_FORM_CUSTOM"],
             "conditions" => ["check_self_permissions"],
         ],
         "items" => [
-            "patern" => '/admin\/custommodels\/items\/(\d+)/',
+            "patern" => '/^admin\/custommodels\/items\/(\d+)/',
             "required_permissions" => ["SELECT_CONTENT_DATA"],
             "conditions" => ["check_self_permissions"],
         ],
         "content" => [
-            "patern" => '/admin\/custommodels\/content/',
+            "patern" => '/^admin\/custommodels\/content\/?$/',
             "required_permissions" => ["SELECT_CONTENT_DATA"],
             "conditions" => ["check_self_permissions"],
         ],
         "addData" => [
-            "patern" => '/admin\/custommodels\/addData\/(\d+)/',
+            "patern" => '/^admin\/custommodels\/addData\/(\d+)/',
             "required_permissions" => ["CREATE_CONTENT_DATA"],
             "conditions" => ["check_self_permissions"],
         ],
         "editData" => [
-            "patern" => '/admin\/custommodels\/editData\/(\d+)\/(\d+)/',
+            "patern" => '/^admin\/custommodels\/editData\/(\d+)\/(\d+)/',
             "required_permissions" => ["UPDATE_CONTENT_DATA"],
             "conditions" => ["check_self_permissions"],
         ],

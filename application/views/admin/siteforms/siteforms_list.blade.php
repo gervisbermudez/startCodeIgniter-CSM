@@ -4,6 +4,10 @@
 @endsection
 @section('content')
 <div id="root">
+    @include('admin.components.page_intro', [
+        'titleKey' => 'menu_siteforms',
+        'ledeKey' => 'siteforms_lede',
+    ])
     <data-table
         :endpoint="endpoint"
         :colums="colums"
@@ -11,7 +15,9 @@
         :pagination="true"
         :client_search="true"
         :options="options"
-        :show_fab="true"
+        :show_fab="canCreate"
+        :can_update="canUpdate"
+        :can_delete="canDelete"
         :fab_accent="true"
         :fab_tooltip="fabTooltip"
         :empty_title="emptyTitle"

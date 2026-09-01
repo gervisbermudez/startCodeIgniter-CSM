@@ -89,6 +89,7 @@
                         <a class="btn-flat" href="#!" @click.prevent="copySnippet"><?= lang('collections_copy_snippet') ?></a>
                     </div>
                     <span class="helper-text"><?= lang('collections_snippet_help') ?></span>
+                    <span class="helper-text"><?= lang('collections_for_developers') ?></span>
                 </div>
             </div>
             <div class="col s9">

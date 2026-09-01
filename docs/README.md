@@ -37,18 +37,27 @@ Estos archivos nacieron como spec de implementación. El corte ya está en `mast
 | [AUTOMATIC_BACKUPS.md](AUTOMATIC_BACKUPS.md) | Cron y pseudo-cron |
 | [ANALYTICS_USAGE_EXAMPLES.md](ANALYTICS_USAGE_EXAMPLES.md) | Tracking y dashboard |
 | [USER_TRACKING_IMPROVEMENTS.md](USER_TRACKING_IMPROVEMENTS.md) | Schema y librería de analytics |
+| [FRAGMENTS_MODULE_PLAN.md](FRAGMENTS_MODULE_PLAN.md) | Fragments: token, preview, chips, permisos |
+| [USERGROUPS_ACCESS_PLAN.md](USERGROUPS_ACCESS_PLAN.md) | Grupos y permisos: matriz por módulo + enforcement |
 
 ## Diseño
 
 | Doc | Rol |
 |---|---|
 | [DESIGN.md](DESIGN.md) | Tokens, patrones y deuda UX del **admin** (el tema público no comparte paleta) |
+| [CMS_PRODUCT_COPY_PLAN.md](CMS_PRODUCT_COPY_PLAN.md) | Spec en curso: voz de producto, page-intro, copy híbrido editor/dev (`feat/cms-product-copy`) |
+
+## Planes en curso
+
+| Doc | Rol |
+|---|---|
+| [AUTH_LOGIN_JWT_HARDEN_PLAN.md](AUTH_LOGIN_JWT_HARDEN_PLAN.md) | Endurecer login admin + JWT (sesión cookie + claims RFC). Prompt: [AUTH_LOGIN_JWT_HARDEN_PROMPT.md](AUTH_LOGIN_JWT_HARDEN_PROMPT.md) |
 
 ## API y datos
 
 - Colección Postman: [api/postman-collection.json](api/postman-collection.json)
 - Schema seed: `application/database/start.sql`
-- Migraciones 3.0: `003_analytics_module.sql`, `005_collections.sql`, `006_notifications_inbox.sql`, `007_events_core.sql`, `008_siteforms_permissions.sql`
+- Migraciones 3.0: `003_analytics_module.sql`, `005_collections.sql`, `006_notifications_inbox.sql`, `007_events_core.sql`, `008_siteforms_permissions.sql`, `009_albums_videos_cut_a.sql`, `010_fragments_cut_b.sql`, `011_usergroups_access.sql`, `012_usergroups_access_crud.sql`, `013_categories_cut_a.sql`
 
 ## Notas viejas
 

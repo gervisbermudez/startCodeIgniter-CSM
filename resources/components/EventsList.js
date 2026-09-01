@@ -32,6 +32,9 @@ var EventsList = new Vue({
       },
     ],
     index_data: "event_id",
+    canCreate: !!(window.EVENTS_PERMS && window.EVENTS_PERMS.create),
+    canUpdate: !!(window.EVENTS_PERMS && window.EVENTS_PERMS.update),
+    canDelete: !!(window.EVENTS_PERMS && window.EVENTS_PERMS.delete),
   },
   mixins: [mixins],
   computed: {

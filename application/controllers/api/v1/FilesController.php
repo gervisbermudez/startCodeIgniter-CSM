@@ -36,6 +36,10 @@ class FilesController extends REST_Controller
      */
     public function index_get($file_id = null)
     {
+        if (!$this->require_file_permision('SELECT_FILES')) {
+            return;
+        }
+
         $file_path = $this->input->get('path');
         $where = array('file_path' => $file_path, 'status' => 1);
 
@@ -82,6 +86,9 @@ class FilesController extends REST_Controller
      */
     public function delete_post($file_id = null)
     {
+        if (!$this->require_file_permision('DELETE_FILE')) {
+            return;
+        }
 
         if (!$file_id) {
             $response = array(
@@ -108,6 +115,10 @@ class FilesController extends REST_Controller
 
     public function featured_file_post()
     {
+        if (!$this->require_file_permision('UPDATE_FILE')) {
+            return;
+        }
+
         $post_file = $this->input->post('file');
         $file = new FileModel();
         $result = $file->find($post_file['file_id']);
@@ -132,6 +143,10 @@ class FilesController extends REST_Controller
 
     public function reload_file_explorer_post($folder = null)
     {
+        if (!$this->require_file_permision('SELECT_FILES')) {
+            return;
+        }
+
         $File = new FileModel();
         if ($folder != null) {
             $File->current_folder = $folder . '/';
@@ -150,6 +165,10 @@ class FilesController extends REST_Controller
 
     public function move_file_post()
     {
+        if (!$this->require_file_permision('UPDATE_FILE')) {
+            return;
+        }
+
         $file = $this->input->post('file');
         $newPath = $this->input->post('newPath');
         $file_model = new FileModel();
@@ -178,6 +197,10 @@ class FilesController extends REST_Controller
 
     public function copy_file_post()
     {
+        if (!$this->require_file_permision('UPDATE_FILE')) {
+            return;
+        }
+
         $file = $this->input->post('file');
 
         $file_model = new FileModel();
@@ -200,6 +223,10 @@ class FilesController extends REST_Controller
 
     public function make_dir_post()
     {
+        if (!$this->require_file_permision('CREATE_FILE')) {
+            return;
+        }
+
         $path = $this->input->post('path');
         $new_folder_name = $this->input->post('new_folder_name');
         $result = false;
@@ -234,6 +261,10 @@ class FilesController extends REST_Controller
 
     public function rename_file_post()
     {
+        if (!$this->require_file_permision('UPDATE_FILE')) {
+            return;
+        }
+
         $file = $this->input->post('file');
         $file_model = new FileModel();
         $result = $file_model->find_with(array('rand_key' => $file['rand_key']));
@@ -261,6 +292,10 @@ class FilesController extends REST_Controller
 
     public function filter_files_get()
     {
+        if (!$this->require_file_permision('SELECT_FILES')) {
+            return;
+        }
+
         $filter_name = $this->input->get('filter_name');
         $filter_value = $this->input->get('filter_value');
         $result = $this->File->get_filter_files($filter_name, $filter_value, null, array('date_update', "DESC"));
@@ -269,6 +304,10 @@ class FilesController extends REST_Controller
 
     public function get_file_content_get()
     {
+        if (!$this->require_file_permision('SELECT_FILES')) {
+            return;
+        }
+
         $file = $this->input->get('file');
         $file_model = new FileModel();
         $result = $file_model->find($file["file_id"]);
@@ -297,6 +336,19 @@ class FilesController extends REST_Controller
             }
         }
 
+    }
+
+    /**
+     * @param mixed $permision
+     * @return bool
+     */
+    protected function require_file_permision($permision)
+    {
+        if (!function_exists('has_permisions') || !has_permisions($permision)) {
+            $this->response_error('You do not have permission to perform this action', array(), REST_Controller::HTTP_FORBIDDEN, REST_Controller::HTTP_FORBIDDEN);
+            return false;
+        }
+        return true;
     }
 
 }

@@ -338,6 +338,13 @@ abstract class REST_Controller extends \CI_Controller
     protected $_enable_xss = false;
 
     /**
+     * Login rate-limit file cache: null = not tried, true = usable, false = fail-open.
+     *
+     * @var bool|null
+     */
+    protected $_login_rate_cache = null;
+
+    /**
      * HTTP status codes and their respective description
      * Note: Only the widely used HTTP status codes are used
      *
@@ -579,29 +586,202 @@ abstract class REST_Controller extends \CI_Controller
 
     public function verify_request()
     {
-        // Get all the headers
-        $headers = $this->input->request_headers();
-        // Extract the token
-        $token = isset($headers['Authorization']) ? $headers['Authorization'] : '';
-        if (!$token && userdata('logged_in')) {
-            $token = userdata('token');
-        }
-        // Use try-catch
-        // JWT library throws exception if the token is not valid
-        try {
-            // Validate the token
-            // Successfull validation will return the decoded user data else returns false
-            $data = AUTHORIZATION::validateToken($token);
-            if ($data) {
-                foreach ($data->userdata as $key => $value) {
-                    $this->session->set_userdata($key, $value);
-                }
+        $token = $this->get_authorization_token();
+        if ($token) {
+            try {
+                $data = AUTHORIZATION::validateToken($token);
+            } catch (Exception $e) {
+                return false;
             }
-
+            if (!$data || empty($data->sub)) {
+                return false;
+            }
+            $this->load->model('Admin/UserModel');
+            $user = new UserModel();
+            if (!$user->find((int) $data->sub) || (int) $user->status !== 1) {
+                return false;
+            }
+            $this->hydrate_admin_session($user);
             return $data;
-        } catch (Exception $e) {
+        }
+        if (userdata('logged_in') && userdata('user_id')) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Authorization header, case-insensitive, Bearer optional.
+     *
+     * @return string|null
+     */
+    protected function get_authorization_token()
+    {
+        $headers = $this->input->request_headers(true);
+        if (!is_array($headers)) {
+            $headers = array();
+        }
+        $raw = '';
+        foreach ($headers as $name => $value) {
+            if (strtolower($name) === 'authorization') {
+                $raw = $value;
+                break;
+            }
+        }
+        if ($raw === '' && isset($_SERVER['HTTP_AUTHORIZATION'])) {
+            $raw = $_SERVER['HTTP_AUTHORIZATION'];
+        }
+        if ($raw === '' && isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+            $raw = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+        }
+        $raw = AUTHORIZATION::stripBearer($raw);
+        return ($raw !== '') ? $raw : null;
+    }
+
+    /**
+     * Session fields for the admin SPA. Permissions always come from DB.
+     *
+     * @param UserModel $user
+     * @return void
+     */
+    protected function hydrate_admin_session($user)
+    {
+        $this->session->set_userdata('logged_in', true);
+        $this->session->set_userdata('user_id', $user->user_id);
+        $this->session->set_userdata('username', $user->username);
+        $this->session->set_userdata('email', $user->email);
+        $this->session->set_userdata('lastseen', $user->lastseen);
+        $this->session->set_userdata('usergroup_id', $user->usergroup_id);
+        $this->session->set_userdata('status', $user->status);
+
+        $user_data = isset($user->user_data) ? $user->user_data : null;
+        if (is_array($user_data) || is_object($user_data)) {
+            foreach ($user_data as $index => $val) {
+                $this->session->set_userdata($index, $val);
+            }
+        }
+
+        $this->load->model('Admin/UsergroupModel');
+        $usergroup = new UsergroupModel();
+        if ($user->usergroup_id && $usergroup->find($user->usergroup_id)) {
+            $this->session->set_userdata('role', $usergroup->name);
+            $this->session->set_userdata('level', $usergroup->level);
+            $perms = $usergroup->usergroup_permisions();
+            $this->session->set_userdata('usergroup_permisions', is_array($perms) ? $perms : array());
+        } else {
+            $this->session->set_userdata('role', '');
+            $this->session->set_userdata('level', '');
+            $this->session->set_userdata('usergroup_permisions', array());
+        }
+    }
+
+    /**
+     * @param string $permision Historical spelling in permisions.permision_name
+     * @return bool
+     */
+    protected function require_permision($permision)
+    {
+        if (!function_exists('has_permisions') || !has_permisions($permision)) {
+            $this->lang->load('admin/admin', 'english');
+            $message = function_exists('lang') ? lang('not_have_permissions') : 'Forbidden';
+            if ($message === 'not_have_permissions') {
+                $message = 'You do not have permissions to see this';
+            }
+            $this->response(array(
+                'code' => REST_Controller::HTTP_FORBIDDEN,
+                'error_message' => $message,
+                'data' => array(),
+            ), REST_Controller::HTTP_FORBIDDEN);
             return false;
         }
+        return true;
+    }
+
+    /**
+     * @param string $username
+     * @return string
+     */
+    protected function login_rate_limit_key($username)
+    {
+        return 'login_rl_' . md5($this->input->ip_address() . '|' . strtolower((string) $username));
+    }
+
+    /**
+     * Load the file cache adapter once. Fail-open (and log) if it cannot be used.
+     *
+     * @return bool
+     */
+    protected function ensure_login_rate_cache()
+    {
+        if ($this->_login_rate_cache === false) {
+            return false;
+        }
+        if ($this->_login_rate_cache === true) {
+            return true;
+        }
+        if (!isset($this->cache)) {
+            $this->load->driver('cache', array('adapter' => 'file'));
+        }
+        if (!isset($this->cache) || !is_object($this->cache)) {
+            log_message('error', 'Login rate limit: cache driver unavailable; failing open');
+            $this->_login_rate_cache = false;
+            return false;
+        }
+        $this->_login_rate_cache = true;
+        return true;
+    }
+
+    /**
+     * @param string $username
+     * @return bool
+     */
+    protected function is_login_rate_limited($username)
+    {
+        if (!$this->ensure_login_rate_cache()) {
+            return false;
+        }
+        $hits = $this->cache->get($this->login_rate_limit_key($username));
+        if ($hits === false) {
+            return false;
+        }
+        return ((int) $hits >= 10);
+    }
+
+    /**
+     * Count a failed login. Returns true when the next attempt must be blocked.
+     *
+     * @param string $username
+     * @return bool
+     */
+    protected function hit_login_rate_limit($username)
+    {
+        if (!$this->ensure_login_rate_cache()) {
+            return false;
+        }
+        $key = $this->login_rate_limit_key($username);
+        $hits = $this->cache->get($key);
+        if ($hits === false) {
+            $hits = 0;
+        }
+        $hits = (int) $hits + 1;
+        if ($this->cache->save($key, $hits, 900) === false) {
+            log_message('error', 'Login rate limit: cache save failed; failing open');
+            $this->_login_rate_cache = false;
+            return false;
+        }
+        return ($hits >= 10);
+    }
+
+    /**
+     * @param string $username
+     * @return void
+     */
+    protected function clear_login_rate_limit($username)
+    {
+        if (!$this->ensure_login_rate_cache()) {
+            return;
+        }
+        $this->cache->delete($this->login_rate_limit_key($username));
     }
 
     public function failed_auth()
@@ -2149,7 +2329,6 @@ abstract class REST_Controller extends \CI_Controller
             'code' => $code,
             'data' => [],
             "error_message" => $error_message,
-            'requets_data' => $_POST,
         );
 
         $response = array_merge($response, $extradata);

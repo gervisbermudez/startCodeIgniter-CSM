@@ -67,7 +67,6 @@ class AlbumesController extends REST_Controller
     {
         $album_id = $this->input->post('album_id');
         $is_update = ($album_id !== null && $album_id !== '' && $album_id !== false);
-
         if (!$this->require_gallery_permision($is_update ? 'UPDATE_GALLERY' : 'CREATE_GALLERY')) {
             return;
         }

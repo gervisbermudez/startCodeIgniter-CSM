@@ -53,14 +53,13 @@ class VideosController extends REST_Controller
     {
         $id = $this->input->post('id');
         $is_update = ($id !== null && $id !== '' && $id !== false);
-
         if (!$this->require_video_permision($is_update ? 'UPDATE_VIDEO' : 'CREATE_VIDEO')) {
             return;
         }
 
         $nombre = $this->input->post('nombre');
         if (!$nombre) {
-            $this->response_error('Nombre is required', [], REST_Controller::HTTP_BAD_REQUEST);
+            $this->response_error('Nombre is required', [], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
 
@@ -110,7 +109,7 @@ class VideosController extends REST_Controller
             }
         }
 
-        $this->response_error(lang('unexpected_error'), [], REST_Controller::HTTP_BAD_REQUEST);
+        $this->response_error(lang('unexpected_error'), [], REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
     }
 
     public function index_delete($video_id = null)
