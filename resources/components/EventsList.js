@@ -3,6 +3,7 @@ var EventsList = new Vue({
   data: {
     when: "all",
     tableEmpty: false,
+    filterEmpty: false,
     colums: [
       {
         colum: "name",
@@ -136,9 +137,12 @@ var EventsList = new Vue({
       var table = this.$refs.eventsTable;
       if (!table) {
         this.tableEmpty = false;
+        this.filterEmpty = false;
         return;
       }
-      this.tableEmpty = !table.loader && !table.filter && table.data.length === 0;
+      var noRows = !table.loader && !table.filter && table.data.length === 0;
+      this.tableEmpty = noRows && this.when === "all";
+      this.filterEmpty = noRows && this.when !== "all";
     },
   },
   mounted: function () {
@@ -161,6 +165,9 @@ var EventsList = new Vue({
         },
         { deep: true }
       );
+      self.$watch("when", function () {
+        self.syncEmpty();
+      });
       self.syncEmpty();
     });
   },

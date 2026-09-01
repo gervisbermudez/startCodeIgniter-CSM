@@ -47,6 +47,11 @@ class SiteformsController extends REST_Controller
             return;
         }
 
+        $status = $this->get('status');
+        if ($status !== null && $status !== '') {
+            $this->respond_index_list($siteform, array('status' => $status));
+            return;
+        }
         $this->respond_index_list($siteform, array('status_in' => array(1, 2)));
     }
 
@@ -210,6 +215,11 @@ class SiteformsController extends REST_Controller
         }
 
         $where = array('status_in' => array(1, 2));
+        $status = $this->get('status');
+        if ($status !== null && $status !== '') {
+            unset($where['status_in']);
+            $where['status'] = $status;
+        }
         $formId = $this->get('siteform_id');
         if ($formId === null || $formId === '') {
             $formId = $this->get('form');

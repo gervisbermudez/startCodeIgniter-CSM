@@ -1,6 +1,6 @@
 <script>
 window.SITEFORMS_I18N = {
-    name: {!! json_encode(lang('siteforms_name')) !!},
+    all: {!! json_encode(lang('menu_all')) !!},
     template: {!! json_encode(lang('siteforms_template')) !!},
     submissions: {!! json_encode(lang('siteforms_submissions')) !!},
     created: {!! json_encode(lang('siteforms_created')) !!},

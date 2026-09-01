@@ -18,6 +18,7 @@ $lang['search_no_results'] = 'No results for "%s"';
 $lang['search_empty_cta'] = 'Clear search';
 $lang['filter_placeholder'] = 'Filter this list…';
 $lang['filter_empty_cta'] = 'Clear filter';
+$lang['list_filter_empty'] = 'No items match this filter';
 $lang['search_min_chars'] = 'Type at least 2 characters';
 $lang['search_type_all'] = 'All';
 $lang['search_type_pages'] = 'Pages';

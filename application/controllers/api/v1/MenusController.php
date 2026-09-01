@@ -86,7 +86,14 @@ class MenusController extends REST_Controller
             return;
         }
 
-        $this->respond_index_list($menu);
+        $status = $this->get('status');
+        $where = array();
+        $options = array('unfiltered' => true);
+        if ($status !== null && $status !== '') {
+            $where['status'] = $status;
+            $options = array();
+        }
+        $this->respond_index_list($menu, $where, array(), $options);
     }
 
     /**

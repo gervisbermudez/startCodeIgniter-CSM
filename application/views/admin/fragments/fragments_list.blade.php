@@ -15,17 +15,24 @@
     @include('admin.components.page_navbar', [
         'searchInputId' => 'fragments-search',
         'refreshMethod' => 'getFragments()',
-        'itemsExpr' => 'filterFragments',
+        'section' => 'nav-open',
     ])
-    <div class="status-filters" v-cloak v-show="!loader">
-        <button type="button" class="status-chip" :class="{active: currentStatus === null}" @click="setStatus(null)"><?php echo lang('menu_all'); ?></button>
-        <button type="button" class="status-chip" :class="{active: currentStatus === 1}" @click="setStatus(1)"><?php echo lang('published'); ?></button>
-        <button type="button" class="status-chip" :class="{active: currentStatus === 2}" @click="setStatus(2)"><?php echo lang('draft'); ?></button>
+    <div class="page-navbar__filters">
+        <div class="filter-group" role="group" aria-label="<?php echo htmlspecialchars(lang('status'), ENT_QUOTES, 'UTF-8'); ?>">
+            <button type="button" class="status-chip" :class="{active: currentStatus === null}" @click="setStatus(null)"><?php echo lang('menu_all'); ?></button>
+            <button type="button" class="status-chip" :class="{active: currentStatus === 1}" @click="setStatus(1)"><?php echo lang('published'); ?></button>
+            <button type="button" class="status-chip" :class="{active: currentStatus === 2}" @click="setStatus(2)"><?php echo lang('draft'); ?></button>
+        </div>
+        <div class="filter-group" role="group" aria-label="<?php echo htmlspecialchars(lang('type'), ENT_QUOTES, 'UTF-8'); ?>">
+            <button type="button" class="status-chip" :class="{active: currentType === null}" @click="setType(null)"><?php echo lang('menu_all'); ?></button>
+            <button type="button" class="status-chip" :class="{active: currentType === fragment_type}" v-for="fragment_type in fragment_types" :key="fragment_type" @click="setType(fragment_type)">@{{ fragment_type }}</button>
+        </div>
     </div>
-    <div class="status-filters" v-cloak v-show="!loader">
-        <button type="button" class="status-chip" :class="{active: currentType === null}" @click="setType(null)"><?php echo lang('menu_all'); ?></button>
-        <button type="button" class="status-chip" :class="{active: currentType === fragment_type}" v-for="fragment_type in fragment_types" :key="fragment_type" @click="setType(fragment_type)">@{{ fragment_type }}</button>
-    </div>
+    @include('admin.components.page_navbar', [
+        'refreshMethod' => 'getFragments()',
+        'itemsExpr' => 'filterFragments',
+        'section' => 'nav-close',
+    ])
     <div class="pages fragments" v-cloak v-if="!loader && fragments.length > 0">
         <div class="row" v-if="tableView">
             <div class="col s12">
@@ -113,10 +120,11 @@
         <a href="{{ base_url('admin/fragments/new/') }}" class="btn">{{ lang('fragments_empty_cta') }}</a>
         @endif
     </div>
-    <div class="container center" v-if="!loader && fragments.length == 0 && (filter || currentStatus !== null || currentType !== null)" v-cloak>
-        <i class="material-icons large grey-text">search</i>
-        <p class="page-header"><?php echo lang('fragments_filter_empty'); ?></p>
-    </div>
+    @include('admin.components.list_filter_empty', [
+        'showExpr' => '!loader && fragments.length == 0 && (filter || currentStatus !== null || currentType !== null)',
+        'clearMethod' => 'clearListFilters()',
+        'message' => lang('fragments_filter_empty'),
+    ])
     @include('admin.components.pagination')
     <div id="fragmentPreviewModal" class="modal">
         <div class="modal-content">

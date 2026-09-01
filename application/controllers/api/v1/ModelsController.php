@@ -85,7 +85,14 @@ class ModelsController extends REST_Controller
             return;
         }
 
-        $this->respond_index_list($form);
+        $status = $this->get('status');
+        $where = array();
+        $options = array('unfiltered' => true);
+        if ($status !== null && $status !== '') {
+            $where['status'] = $status;
+            $options = array();
+        }
+        $this->respond_index_list($form, $where, array(), $options);
     }
 
     public function templates_get()
@@ -263,7 +270,14 @@ class ModelsController extends REST_Controller
             return;
         }
 
-        $this->respond_index_list($Form_conten);
+        $status = $this->get('status');
+        $where = array();
+        $options = array('unfiltered' => true);
+        if ($status !== null && $status !== '') {
+            $where['status'] = $status;
+            $options = array();
+        }
+        $this->respond_index_list($Form_conten, $where, array(), $options);
     }
 
     /**

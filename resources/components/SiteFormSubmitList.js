@@ -30,6 +30,11 @@ var SiteFormSubmitList = new Vue({
       confirmTitle: i18n.confirmDelete || "",
       confirmBody: i18n.confirmDeleteBody || "",
       queryParams: formId ? { siteform_id: formId } : {},
+      statusFilters: [
+        { value: null, label: i18n.all || "All" },
+        { value: 1, label: i18n.statusNew || "New" },
+        { value: 2, label: i18n.statusSeen || "Seen" },
+      ],
       colums: [
         {
           colum: "siteform.name",

@@ -6,6 +6,7 @@ var CustomModelContentList = new Vue({
     tableView: false,
     loader: true,
     filter: "",
+    currentStatus: null,
     serverPagination: true,
     listEndpoint: "api/v1/models/data",
     listKey: "contents",
@@ -34,7 +35,14 @@ var CustomModelContentList = new Vue({
       var text = Object.values(content.data).join(" ");
       return text.substring(0, 90) + "...";
     },
-    getContents: function (page) {
+    getContents: function (status, page) {
+      if (typeof status === "undefined") {
+        status = this.currentStatus;
+      }
+      if (status !== this.currentStatus) {
+        page = 1;
+      }
+      this.currentStatus = status;
       this.fetchList(page);
     },
     deleteContent: function (content, index) {
