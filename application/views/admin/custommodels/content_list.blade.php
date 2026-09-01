@@ -17,8 +17,16 @@
     </div>
     @include('admin.components.page_navbar', [
         'searchInputId' => 'custommodels-content-search',
-        'refreshMethod' => 'getContents()',
+        'refreshMethod' => 'getContents(currentStatus)',
+        'section' => 'nav-open',
+    ])
+    @include('admin.components.list_status_chips', [
+        'click' => 'getContents',
+    ])
+    @include('admin.components.page_navbar', [
+        'refreshMethod' => 'getContents(currentStatus)',
         'itemsExpr' => 'filterContents',
+        'section' => 'nav-close',
     ])
     <div class="pages" v-cloak v-if="!loader && contents.length > 0">
         <div class="row" v-if="tableView">
@@ -134,9 +142,13 @@
             </div>
         </div>
     </div>
-    <div class="container" v-if="!loader && contents.length == 0 && !filter" v-cloak>
+    <div class="container" v-if="!loader && contents.length == 0 && !filter && currentStatus === null" v-cloak>
            <h4><?= lang('custommodels_content_no_contents') ?></h4>
     </div>
+    @include('admin.components.list_filter_empty', [
+        'showExpr' => '!loader && contents.length == 0 && (filter || currentStatus !== null)',
+        'clearMethod' => 'resetFilter(); getContents(null)',
+    ])
     @include('admin.components.pagination')
     <confirm-modal id="deleteModal" title="Confirmar Borrar" v-on:notify="confirmCallback">
         <p>

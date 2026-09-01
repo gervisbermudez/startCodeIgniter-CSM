@@ -1,38 +1,45 @@
 // List toolbar: same canvas as the page. Not the global search (navbar / Ctrl+K).
 $page-toolbar-height: 44px;
+$page-filter-height: 36px;
 
 nav.page-navbar {
   background-color: var(--st-page) !important;
   color: var(--st-text);
   width: 96%;
   max-width: 96%;
-  height: $page-toolbar-height;
-  line-height: $page-toolbar-height;
+  min-height: $page-toolbar-height;
+  height: auto;
+  line-height: normal;
   box-sizing: border-box;
   box-shadow: none !important;
+  overflow: visible;
   margin: 1rem auto 0.75rem;
 
   .page-navbar__inner,
   .nav-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 4px;
+    display: grid;
+    grid-template-columns: minmax(180px, 360px) minmax(0, 1fr) auto;
+    grid-template-areas: "search filters actions";
+    align-items: start;
+    column-gap: 12px;
+    row-gap: 8px;
     width: 100%;
-    height: $page-toolbar-height;
-    padding: 0 4px;
+    min-height: $page-toolbar-height;
+    height: auto;
+    padding: 4px;
     box-sizing: border-box;
   }
 
   .page-navbar__filter,
   form {
+    grid-area: search;
     display: flex;
     align-items: center;
     float: none;
-    flex: 0 1 360px;
     width: 100%;
     min-width: 0;
     max-width: 360px;
-    height: 36px;
+    height: $page-filter-height;
     margin: 0;
     padding: 0 4px 0 10px;
     background: var(--st-surface);
@@ -130,24 +137,24 @@ nav.page-navbar {
   }
 
   ul.page-navbar-actions {
+    grid-area: actions;
     display: flex;
     float: none;
-    flex: 0 0 auto;
-    margin: 0 0 0 auto;
-    height: $page-toolbar-height;
+    margin: 0;
+    height: $page-filter-height;
     position: relative;
   }
 
   .page-navbar-actions li {
-    height: $page-toolbar-height;
+    height: $page-filter-height;
   }
 
   .page-navbar-actions a {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: $page-toolbar-height;
-    line-height: $page-toolbar-height;
+    height: $page-filter-height;
+    line-height: $page-filter-height;
     padding: 0 8px;
     cursor: pointer;
     color: var(--st-interactive);
@@ -172,6 +179,85 @@ nav.page-navbar {
       }
     }
   }
+
+  @include phone-only {
+    .page-navbar__inner,
+    .nav-wrapper {
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas:
+        "search actions"
+        "filters filters";
+    }
+  }
+}
+
+.page-navbar__filters {
+  grid-area: filters;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  min-width: 0;
+  min-height: $page-filter-height;
+  padding: 5px 0;
+  box-sizing: border-box;
+
+  .btn-flat {
+    height: 26px;
+    line-height: 26px;
+    padding: 0 10px;
+    margin: 0;
+    font-size: 12px;
+  }
+
+  .status-chip {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    height: 26px;
+    padding: 0 10px;
+    border: 1px solid var(--st-border);
+    border-radius: var(--st-radius-sm);
+    background-color: var(--st-canvas);
+    color: var(--st-text-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 24px;
+    white-space: nowrap;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+
+    &:hover {
+      background-color: var(--st-hover);
+      color: var(--st-text);
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--st-interactive);
+      outline-offset: 1px;
+    }
+
+    &.active {
+      background-color: var(--st-interactive);
+      border-color: var(--st-interactive);
+      color: var(--st-on-accent);
+    }
+  }
+}
+
+.filter-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.filter-group + .filter-group {
+  padding-left: 12px;
+  border-left: 1px solid var(--st-border);
 }
 
 // Same inset as `.page-intro` (96% + auto margins). Do not full-bleed.

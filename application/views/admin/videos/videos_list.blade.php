@@ -18,26 +18,34 @@
         @include('admin.components.page_navbar', [
             'searchInputId' => 'videos-search',
             'refreshMethod' => 'getVideos(currentStatus)',
-            'navbarShow' => '!loader && videos.length > 0',
-            'itemsExpr' => 'filterAll',
+            'navbarShow' => '!loader',
+            'section' => 'nav-open',
         ])
-        <div class="status-filters" v-cloak v-show="!loader">
-            <button type="button" class="status-chip" :class="{active: currentStatus === null}" @click="getVideos(null)">
-                <?= lang('menu_all') ?>
-            </button>
-            <button type="button" class="status-chip" :class="{active: currentStatus === 1}" @click="getVideos(1)">
-                <?= lang('published') ?>
-            </button>
-            <button type="button" class="status-chip" :class="{active: currentStatus === 2}" @click="getVideos(2)">
-                <?= lang('draft') ?>
-            </button>
-            <button type="button" class="status-chip" :class="{active: currentStatus === 3}" @click="getVideos(3)">
-                <?= lang('archived') ?>
-            </button>
-            <button type="button" class="status-chip" :class="{active: currentStatus === 0}" @click="getVideos(0)">
-                <?= lang('deleted') ?>
-            </button>
+        <div class="page-navbar__filters">
+            <div class="filter-group" role="group" aria-label="<?= htmlspecialchars(lang('status'), ENT_QUOTES, 'UTF-8') ?>">
+                <button type="button" class="status-chip" :class="{active: currentStatus === null}" @click="getVideos(null)">
+                    <?= lang('menu_all') ?>
+                </button>
+                <button type="button" class="status-chip" :class="{active: currentStatus === 1}" @click="getVideos(1)">
+                    <?= lang('published') ?>
+                </button>
+                <button type="button" class="status-chip" :class="{active: currentStatus === 2}" @click="getVideos(2)">
+                    <?= lang('draft') ?>
+                </button>
+                <button type="button" class="status-chip" :class="{active: currentStatus === 3}" @click="getVideos(3)">
+                    <?= lang('archived') ?>
+                </button>
+                <button type="button" class="status-chip" :class="{active: currentStatus === 0}" @click="getVideos(0)">
+                    <?= lang('deleted') ?>
+                </button>
+            </div>
         </div>
+        @include('admin.components.page_navbar', [
+            'refreshMethod' => 'getVideos(currentStatus)',
+            'navbarShow' => '!loader',
+            'itemsExpr' => 'filterAll',
+            'section' => 'nav-close',
+        ])
         <div class="pages" v-cloak v-if="!loader && videos.length > 0">
             <div class="row" v-if="tableView">
                 <div class="col s12">
@@ -150,10 +158,15 @@
                 </div>
             </div>
         </div>
-        <div class="container center" v-cloak v-show="!loader && videos.length == 0">
+        <div class="container center" v-cloak v-if="!loader && videos.length == 0 && currentStatus === null && !filter">
             <i class="material-icons large grey-text">video_library</i>
             <p class="page-header"><?= lang('videos_empty') ?></p>
             <a href="<?= base_url('admin/videos/nuevo') ?>" class="btn"><?= lang('videos_empty_cta') ?></a>
+        </div>
+        <div class="container center" v-cloak v-if="!loader && videos.length == 0 && (currentStatus !== null || filter)">
+            <i class="material-icons large grey-text">search</i>
+            <p class="page-header"><?= lang('list_filter_empty') ?></p>
+            <a href="#!" class="btn-flat" v-on:click.prevent="getVideos(null); resetFilter();"><?= lang('filter_empty_cta') ?></a>
         </div>
         <confirm-modal id="deleteModal" title="<?= lang('delete_video_title') ?>" v-on:notify="confirmCallback">
             <p><?= lang('delete_video_confirm') ?></p>

@@ -52,6 +52,11 @@ var NotificationsLists = new Vue({
       this.statusFilter = status;
       this.getNotifications();
     },
+    clearListFilters: function () {
+      this.filter = "";
+      this.statusFilter = "all";
+      this.getNotifications();
+    },
     markRead: function (notification, index, navigate) {
       var self = this;
       if (!notification || notification.status == 2) {

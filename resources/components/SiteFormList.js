@@ -5,6 +5,7 @@ var SiteFormList = new Vue({
     return {
       endpoint: "api/v1/siteforms/",
       index_data: "siteform_id",
+      currentStatus: null,
       fabTooltip: i18n.newTooltip || "",
       emptyTitle: i18n.empty || "",
       emptyCta: window.SITEFORMS_PERMS && window.SITEFORMS_PERMS.create ? i18n.emptyCta || "" : "",
@@ -88,7 +89,24 @@ var SiteFormList = new Vue({
     };
   },
   mixins: [mixins],
+  computed: {
+    queryParams: function () {
+      if (this.currentStatus === null) {
+        return {};
+      }
+      return { status: this.currentStatus };
+    },
+  },
   methods: {
+    setStatus: function (status) {
+      this.currentStatus = status;
+      var self = this;
+      this.$nextTick(function () {
+        if (self.$refs.formsTable && typeof self.$refs.formsTable.getData === "function") {
+          self.$refs.formsTable.getData(1);
+        }
+      });
+    },
     newItem: function () {
       window.location = BASEURL + "admin/siteforms/nuevo/";
     },

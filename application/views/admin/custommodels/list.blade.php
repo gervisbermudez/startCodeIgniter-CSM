@@ -18,9 +18,23 @@
     </div>
     @include('admin.components.page_navbar', [
         'searchInputId' => 'custommodels-search',
-        'refreshMethod' => 'getModels()',
-        'navbarShow' => '!loader && models.length > 0',
+        'refreshMethod' => 'getModels(currentStatus)',
+        'navbarShow' => '!loader',
+        'section' => 'nav-open',
+    ])
+    @include('admin.components.list_status_chips', [
+        'click' => 'getModels',
+        'mode' => 'binary',
+        'onLabel' => lang('collections_enabled'),
+        'offLabel' => lang('collections_disabled'),
+        'onValue' => 1,
+        'offValue' => 3,
+    ])
+    @include('admin.components.page_navbar', [
+        'refreshMethod' => 'getModels(currentStatus)',
+        'navbarShow' => '!loader',
         'itemsExpr' => 'filterModels',
+        'section' => 'nav-close',
     ])
     <div class="pages" v-cloak v-if="!loader && models.length > 0">
         <div class="row" v-if="tableView">
@@ -115,7 +129,7 @@
             </div>
         </div>
     </div>
-    <div class="container center" v-if="!loader && models.length == 0" v-cloak>
+    <div class="container center" v-if="!loader && models.length == 0 && currentStatus === null && !filter" v-cloak>
         <i class="material-icons large" aria-hidden="true">view_module</i>
         <h4 class="page-header"><?= lang('collections_empty') ?></h4>
         <p><?= lang('collections_empty_cta') ?></p>
@@ -123,6 +137,10 @@
         <a class="btn waves-effect st-accent" href="{{ base_url('admin/custommodels/new') }}"><?= lang('collections_new') ?></a>
         @endif
     </div>
+    @include('admin.components.list_filter_empty', [
+        'showExpr' => '!loader && models.length == 0 && (filter || currentStatus !== null)',
+        'clearMethod' => 'resetFilter(); getModels(null)',
+    ])
     <confirm-modal id="deleteModal" :title="'<?= lang('collections_confirm_delete_title') ?>'" v-on:notify="confirmCallback">
         <p>
             <?= lang('collections_confirm_delete_message') ?>

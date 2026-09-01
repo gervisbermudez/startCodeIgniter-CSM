@@ -9,11 +9,27 @@
             'refreshMethod' => 'getData()',
             'showViewToggle' => false,
             'navbarIf' => 'search_input',
-            'section' => 'nav',
+            'section' => 'nav-open',
         ])
-        <div class="data-table-filters" v-if="$slots.filters">
+        <div class="page-navbar__filters" v-if="$slots.filters || hasStatusFilters">
             <slot name="filters"></slot>
+            <div class="filter-group" v-if="hasStatusFilters" role="group">
+                <button
+                    type="button"
+                    class="status-chip"
+                    v-for="chip in statusFilters"
+                    :key="'st-' + String(chip.value)"
+                    :class="{ active: chipFilter === chip.value }"
+                    @click="setStatusFilter(chip.value)"
+                >@{{ chip.label }}</button>
+            </div>
         </div>
+        @include('admin.components.page_navbar', [
+            'refreshMethod' => 'getData()',
+            'showViewToggle' => false,
+            'navbarIf' => 'search_input',
+            'section' => 'nav-close',
+        ])
         @include('admin.components.page_navbar', [
             'navbarIf' => 'search_input',
             'section' => 'empty',
@@ -62,10 +78,14 @@
                 </div>
             </div>
         </div>
-        <div class="container" v-if="!loader && !filter && data.length == 0 && show_empty_input" v-cloak>
+        <div class="container" v-if="!loader && !filter && data.length == 0 && show_empty_input && !isStatusChipActive" v-cloak>
             <h4 class="page-header">@{{ empty_title || 'No hay datos para mostrar' }}</h4>
             <a v-if="empty_cta && empty_href" class="btn waves-effect" :href="empty_href" style="background-color: var(--st-accent);">@{{ empty_cta }}</a>
         </div>
+        @include('admin.components.list_filter_empty', [
+            'showExpr' => '!loader && data.length == 0 && isStatusChipActive && !filter',
+            'clearMethod' => 'clearChipFilter()',
+        ])
         @include('admin.components.pagination')
         <confirm-modal
                 id="deleteModal"

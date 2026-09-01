@@ -19,17 +19,25 @@
     @include('admin.components.page_navbar', [
         'searchInputId' => 'custommodels-items-search',
         'refreshMethod' => 'getItems()',
-        'navbarShow' => '!loader && collectionItemCount > 0',
+        'navbarShow' => '!loader',
+        'section' => 'nav-open',
+    ])
+    <div class="page-navbar__filters">
+        <div class="filter-group" role="group" aria-label="<?= htmlspecialchars(lang('status'), ENT_QUOTES, 'UTF-8') ?>">
+            <button type="button" class="status-chip" :class="{active: statusFilter === null}" @click="setStatusFilter(null)"><?= lang('menu_all') ?></button>
+            <button type="button" class="status-chip" :class="{active: statusFilter === 1}" @click="setStatusFilter(1)"><?= lang('collections_published') ?></button>
+            <button type="button" class="status-chip" :class="{active: statusFilter === 2}" @click="setStatusFilter(2)"><?= lang('collections_draft') ?></button>
+        </div>
+    </div>
+    @include('admin.components.page_navbar', [
+        'refreshMethod' => 'getItems()',
+        'navbarShow' => '!loader',
         'itemsExpr' => 'filterItems',
+        'section' => 'nav-close',
     ])
     <p class="list-backlink" v-cloak v-show="!loader">
         <a href="{{ base_url('admin/custommodels/') }}"><?= lang('collections_back') ?></a>
     </p>
-    <div class="status-filters" v-cloak v-show="!loader" v-if="collectionItemCount > 0">
-        <button type="button" class="status-chip" :class="{active: statusFilter === null}" @click="setStatusFilter(null)"><?= lang('menu_all') ?></button>
-        <button type="button" class="status-chip" :class="{active: statusFilter === 1}" @click="setStatusFilter(1)"><?= lang('collections_published') ?></button>
-        <button type="button" class="status-chip" :class="{active: statusFilter === 2}" @click="setStatusFilter(2)"><?= lang('collections_draft') ?></button>
-    </div>
     <div class="pages" v-cloak v-if="!loader && filterItems.length > 0">
         <div class="row" v-if="tableView">
             <div class="col s12">
@@ -111,6 +119,7 @@
     <div class="container center" v-if="!loader && isStatusFilterEmpty" v-cloak>
         <i class="material-icons large" aria-hidden="true">filter_list</i>
         <h4 class="page-header">@{{ statusEmptyMessage }}</h4>
+        <a href="#!" class="btn-flat" v-on:click.prevent="clearListFilters()"><?= lang('filter_empty_cta') ?></a>
     </div>
     @include('admin.components.pagination')
     <confirm-modal id="deleteModal" :title="'<?= lang('custommodels_content_confirm_delete_title') ?>'" v-on:notify="confirmCallback">

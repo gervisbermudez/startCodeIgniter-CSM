@@ -9,20 +9,34 @@ var UserGroupsComponents = new Vue({
     tableView: true,
     loader: true,
     filter: "",
+    currentStatus: null,
   },
   computed: {
     filterUsergroups: function () {
+      var list = this.usergroups;
+      if (this.currentStatus === 1) {
+        list = list.filter(function (value) {
+          return parseInt(value.status, 10) === 1;
+        });
+      } else if (this.currentStatus === 2) {
+        list = list.filter(function (value) {
+          return parseInt(value.status, 10) === 2;
+        });
+      }
       if (this.filter) {
         var filterTerm = this.filter.toLowerCase();
         var self = this;
-        return this.usergroups.filter(function (value) {
+        return list.filter(function (value) {
           return self.searchInObject(value, filterTerm);
         });
       }
-      return this.usergroups;
+      return list;
     },
   },
   methods: {
+    setStatus: function (status) {
+      this.currentStatus = status;
+    },
     getUserGroups: function () {
       var self = this;
       self.loader = true;
