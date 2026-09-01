@@ -68,6 +68,67 @@ class UserModel extends MY_Model
     }
 
     /**
+     * Users visibles para el home (mismo filtro que get_full_info) con LIMIT.
+     *
+     * @param int $limit
+     * @return Collection|false
+     */
+    public function dashboard_users($limit = 8)
+    {
+        $gid = (int) userdata('usergroup_id');
+        $limit = (int) $limit;
+        if ($limit < 1) {
+            $limit = 8;
+        }
+        $sql = "SELECT u.`user_id`,
+            u.`username`,
+            u.`status`,
+            CONCAT('{', GROUP_CONCAT(s.data), '}') AS `user_data`,
+            g.name AS `role`
+            FROM (SELECT d.user_id, GROUP_CONCAT('\"', d._key, '\"', ':', '\"', d._value, '\"') AS `data` FROM user_data d GROUP BY d.user_id) s
+            INNER JOIN `user` u ON u.user_id = s.user_id
+            INNER JOIN `usergroup` g ON g.usergroup_id = u.usergroup_id
+            WHERE u.status = 1
+            AND u.usergroup_id >= ?
+            GROUP BY s.user_id
+            ORDER BY u.date_update DESC
+            LIMIT " . $limit;
+        $data = $this->db->query($sql, array($gid));
+        if ($data->num_rows() > 0) {
+            $rows = $data->result_array();
+            foreach ($rows as &$value) {
+                $decoded = json_decode($value['user_data'], true);
+                $value['user_data'] = is_array($decoded) ? $decoded : array();
+            }
+            unset($value);
+            return new Collection($rows);
+        }
+        return false;
+    }
+
+    /**
+     * @return int
+     */
+    public function dashboard_users_count()
+    {
+        $gid = (int) userdata('usergroup_id');
+        $sql = "SELECT COUNT(*) AS c FROM (
+            SELECT u.user_id
+            FROM (SELECT d.user_id FROM user_data d GROUP BY d.user_id) s
+            INNER JOIN `user` u ON u.user_id = s.user_id
+            WHERE u.status = 1
+            AND u.usergroup_id >= ?
+            GROUP BY s.user_id
+        ) t";
+        $query = $this->db->query($sql, array($gid));
+        if (!$query || $query->num_rows() === 0) {
+            return 0;
+        }
+        $row = $query->row_array();
+        return isset($row['c']) ? (int) $row['c'] : 0;
+    }
+
+    /**
      * Gets the user timeline, activities, models created by the user_id
      * @return Collection
      */

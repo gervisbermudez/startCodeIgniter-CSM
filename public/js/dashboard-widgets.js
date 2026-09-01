@@ -1,6 +1,6 @@
 Vue.component("albumesWidget", {
   template: "#albumes-widget-template",
-  props: ["albumes"],
+  props: ["albumes", "total"],
   data: function () {
     return {
       debug: DEBUGMODE,
@@ -23,7 +23,7 @@ Vue.component("albumesWidget", {
 
 Vue.component("createContents", {
   template: "#create-contents-template",
-  props: ["forms_types", "content"],
+  props: ["forms_types", "content", "total"],
   data: function () {
     return {
       debug: DEBUGMODE,
@@ -64,7 +64,7 @@ Vue.component("createContents", {
 
 Vue.component("fileExplorerCollection", {
   template: "#fileExplorerCollection-template",
-  props: ["files"],
+  props: ["files", "total"],
   data: function () {
     return {
       debug: DEBUGMODE,
@@ -222,7 +222,7 @@ Vue.component("pageCard", {
 
 Vue.component("usersCollection", {
   template: "#user-collection-template",
-  props: ["users"],
+  props: ["users", "total"],
   data: function () {
     return {
       debug: DEBUGMODE,

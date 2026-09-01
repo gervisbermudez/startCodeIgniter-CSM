@@ -35,7 +35,7 @@ var DashboardModule = new Vue({
     },
     topPages: {},
     referrers: { labels: [], datasets: [{ data: [] }] },
-    canViewAnalytics: true,
+    canViewAnalytics: false,
     hasAnalyticsData: false,
     analyticsUrl: (typeof BASEURL !== "undefined" ? BASEURL : "/") + "admin/analytics",
     timeline: [],
@@ -48,9 +48,21 @@ var DashboardModule = new Vue({
         fragment: "bookmark_border",
       },
       content: "",
-      mode: "page", // page, album, categorie, fragment
+      mode: "page",
       saving: false,
     },
+    counts: {
+      users: 0,
+      pages: 0,
+      files: 0,
+      events: 0,
+      albumes: 0,
+      content: 0,
+    },
+    capabilities:
+      typeof DASHBOARD_CAPS !== "undefined" && DASHBOARD_CAPS
+        ? DASHBOARD_CAPS
+        : {},
   },
   mixins: [mixins],
   computed: {
@@ -67,6 +79,18 @@ var DashboardModule = new Vue({
           };
         });
     },
+    creatorModes: function () {
+      var caps = this.capabilities || {};
+      var required = {
+        page: "create_page",
+        album: "create_gallery",
+        categorie: "create_categorie",
+        fragment: "create_fragment",
+      };
+      return this.creator.modes.filter(function (mode) {
+        return !!caps[required[mode]];
+      });
+    },
     hasReferrers: function () {
       return !!(
         this.referrers &&
@@ -77,7 +101,19 @@ var DashboardModule = new Vue({
   },
   methods: {
     setCreatorMode: function (mode) {
+      if (this.creatorModes.indexOf(mode) === -1) {
+        return;
+      }
       this.creator.mode = mode;
+    },
+    creatorModeTip: function (mode) {
+      var keys = {
+        page: "tooltip_new_page",
+        album: "tooltip_new_album",
+        categorie: "tooltip_new_category",
+        fragment: "menu_fragments",
+      };
+      return typeof lang === "function" ? lang(keys[mode] || mode) : mode;
     },
     string_to_slug: function (str) {
       if (str.length == 0) return "";
@@ -249,7 +285,8 @@ var DashboardModule = new Vue({
 
     saveDraft: function () {
       if (this.creator.content.length < 6) return;
-      if (this.creator.saving) return; // Prevenir doble click
+      if (this.creator.saving) return;
+      if (this.creatorModes.indexOf(this.creator.mode) === -1) return;
       
       // Sanitizar contenido básico (prevenir tags peligrosos)
       const sanitizedContent = this.creator.content
@@ -316,13 +353,13 @@ var DashboardModule = new Vue({
             }
           } else {
             self.creator.saving = false;
-            M.toast({ html: "An unexpected error occurred" });
+            M.toast({ html: (typeof lang === "function" && lang("dashboard_save_error")) || "An unexpected error occurred" });
           }
         },
         error: function (response) {
           self.loader = false;
           self.creator.saving = false;
-          M.toast({ html: "An unexpected error occurred" });
+          M.toast({ html: (typeof lang === "function" && lang("dashboard_save_error")) || "An unexpected error occurred" });
           console.error(response);
         },
       });
@@ -438,19 +475,25 @@ var DashboardModule = new Vue({
         .then((response) => response.json())
         .then((response) => {
           let data = response.data || {};
+          if (data.capabilities) {
+            this.capabilities = data.capabilities;
+          }
+          if (data.counts) {
+            this.counts = Object.assign({}, this.counts, data.counts);
+          }
           this.users = data.users
             ? data.users.map((user) => new User(user))
             : [];
           this.pages = data.pages
             ? data.pages.map((page) => {
-              page.user = new User(page.user);
+              page.user = new User(page.user || {});
               return page;
             })
             : [];
           this.forms_types = data.collections || data.forms_types || [];
           this.content = data.content
             ? data.content.map((element) => {
-              element.user = new User(element.user);
+              element.user = new User(element.user || {});
               element.status = element.status == "1";
               return element;
             })
@@ -462,7 +505,7 @@ var DashboardModule = new Vue({
             : [];
           this.albumes = data.albumes
             ? data.albumes.map((album) => {
-              album.user = new User(album.user);
+              album.user = new User(album.user || {});
               return album;
             })
             : [];
@@ -560,7 +603,9 @@ var DashboardModule = new Vue({
           this.loader = false;
           if (typeof M !== "undefined") {
             M.toast({
-              html: "Error loading dashboard data. Please refresh the page.",
+              html:
+                (typeof lang === "function" && lang("dashboard_load_error")) ||
+                "Error loading dashboard data. Please refresh the page.",
               classes: "red",
             });
           }
@@ -569,6 +614,12 @@ var DashboardModule = new Vue({
   },
   mounted: function () {
     this.$nextTick(() => {
+      if (
+        this.creatorModes.length &&
+        this.creatorModes.indexOf(this.creator.mode) === -1
+      ) {
+        this.creator.mode = this.creatorModes[0];
+      }
       this.initStaticPlugins();
       this.getDashboardData();
     });

@@ -1,9 +1,9 @@
 <script type="text/x-template" id="albumes-widget-template">
     <div class="panel albumes">
 		<div class="title">
-			<h5>Your Albums</h5>
+			<h5>{{ lang('dashboard_albums_title') }}</h5>
 			<div class="subtitle sub-header">
-				@{{albumes.length}} Albums
+				@{{typeof total === 'number' ? total : albumes.length}} {{ lang('dashboard_albums_total') }}
 			</div>
 			<img src="{{base_url()}}public/img/admin/dashboard/undraw_Photo_re_5blb.png" />
 		</div>
@@ -24,8 +24,10 @@
 				</div>
 				<div v-if="albumes.length === 0" class="col s12 center-align" style="padding: 60px 20px;">
 					<i class="material-icons" style="font-size: 64px; color: #9e9e9e;">photo_library</i>
-					<p style="color: #9e9e9e; margin-top: 15px; font-size: 16px;">No albums created yet</p>
-					<a href="{{base_url('admin/gallery/nuevo')}}" class="btn waves-effect waves-light" style="margin-top: 15px;">Create First Album</a>
+					<p style="color: #9e9e9e; margin-top: 15px; font-size: 16px;">{{ lang('dashboard_albums_empty') }}</p>
+					@if(has_permisions('CREATE_GALLERY'))
+					<a href="{{base_url('admin/gallery/nuevo')}}" class="btn waves-effect waves-light" style="margin-top: 15px;">{{ lang('dashboard_albums_empty_cta') }}</a>
+					@endif
 				</div>
 			</div>
 		</div>

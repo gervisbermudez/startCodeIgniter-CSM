@@ -163,6 +163,28 @@ $lang['dashboard_top_pages'] = 'Top pages';
 $lang['dashboard_traffic_sources'] = 'Traffic sources';
 $lang['dashboard_tracking_disabled'] = 'First-party tracking is off. Enable “Track visitors” in configuration to collect pageviews.';
 $lang['dashboard_enable_tracking'] = 'Open configuration';
+$lang['dashboard_creator_placeholder'] = 'Start a draft…';
+$lang['dashboard_create'] = 'Create';
+$lang['dashboard_creating'] = 'Creating…';
+$lang['dashboard_no_drafts'] = 'No drafts yet';
+$lang['dashboard_no_timeline'] = 'No recent activity';
+$lang['dashboard_draft_badge'] = 'Draft';
+$lang['dashboard_view_item'] = 'View';
+$lang['dashboard_users_title'] = 'Users';
+$lang['dashboard_users_total'] = 'Total users';
+$lang['dashboard_users_empty'] = 'No users yet';
+$lang['dashboard_users_empty_cta'] = 'Add first user';
+$lang['dashboard_files_title'] = 'Latest files';
+$lang['dashboard_files_total'] = 'Files';
+$lang['dashboard_files_empty'] = 'No files uploaded yet';
+$lang['dashboard_files_empty_cta'] = 'Upload files';
+$lang['dashboard_files_share'] = 'Share file';
+$lang['dashboard_albums_title'] = 'Your albums';
+$lang['dashboard_albums_total'] = 'Albums';
+$lang['dashboard_albums_empty'] = 'No albums created yet';
+$lang['dashboard_albums_empty_cta'] = 'Create first album';
+$lang['dashboard_load_error'] = 'Error loading dashboard data. Please refresh the page.';
+$lang['dashboard_save_error'] = 'An unexpected error occurred';
 
 // Tooltips / FAB
 $lang['tooltip_new_form'] = 'New Form';
@@ -172,6 +194,7 @@ $lang['tooltip_new_page'] = 'New Page';
 $lang['tooltip_new_album'] = 'New Album';
 $lang['tooltip_new_event'] = 'New Event';
 $lang['tooltip_new_category'] = 'New Category';
+$lang['tooltip_new_fragment'] = 'New Fragment';
 
 // Categories
 $lang['categories_new'] = 'New Category';

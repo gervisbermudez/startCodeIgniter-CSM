@@ -50,4 +50,38 @@ class AlbumModel extends MY_Model {
         return $collection;
     }
 
+    /**
+     * Álbumes del home con hasta 2 covers, sin el resto de items.
+     *
+     * @param int $limit
+     * @return Collection|false
+     */
+    public function dashboard_albums($limit = 6)
+    {
+        $limit = (int) $limit;
+        if ($limit < 1) {
+            $limit = 6;
+        }
+        $this->db->select('album_id, name, user_id, status, date_create');
+        $this->db->where('status', 1);
+        $this->db->order_by('album_id', 'DESC');
+        $this->db->limit($limit);
+        $query = $this->db->get($this->table);
+        if ($query->num_rows() < 1) {
+            return false;
+        }
+        $albums = $query->result();
+        $this->load->model('Admin/AlbumItemsModel');
+        foreach ($albums as $album) {
+            $item = new AlbumItemsModel();
+            $covers = $item->where(
+                array('album_id' => $album->album_id),
+                array(2),
+                array('album_item_id', 'ASC')
+            );
+            $album->items = $covers ? $covers : array();
+        }
+        return new Collection($albums);
+    }
+
 }

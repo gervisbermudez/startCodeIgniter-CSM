@@ -1,6 +1,6 @@
 Vue.component("createContents", {
   template: "#create-contents-template",
-  props: ["forms_types", "content"],
+  props: ["forms_types", "content", "total"],
   data: function () {
     return {
       debug: DEBUGMODE,
