@@ -7,6 +7,10 @@
 
 @section('content')
 <div id="root">
+    @include('admin.components.page_intro', [
+        'titleKey' => 'menu_albums',
+        'ledeKey' => 'albums_lede',
+    ])
     <div class="col s12 center" v-bind:class="{ hide: !loader }">
         <br><br>
         <preloader />
@@ -17,26 +21,22 @@
         'navbarShow' => '!loader && albums.length > 0',
         'itemsExpr' => 'filterData',
     ])
-    <div class="row">
-        <div class="col s12">
-            <div class="status-filters" v-cloak v-show="!loader">
-                <div class="status-chip" :class="{active: currentStatus === null}" @click="getAlbums(null)">
-                    <?php echo lang('menu_all'); ?>
-                </div>
-                <div class="status-chip" :class="{active: currentStatus === 1}" @click="getAlbums(1)">
-                    <?php echo lang('published'); ?>
-                </div>
-                <div class="status-chip" :class="{active: currentStatus === 2}" @click="getAlbums(2)">
-                    <?php echo lang('draft'); ?>
-                </div>
-                <div class="status-chip" :class="{active: currentStatus === 3}" @click="getAlbums(3)">
-                    <?php echo lang('archived'); ?>
-                </div>
-                <div class="status-chip" :class="{active: currentStatus === 0}" @click="getAlbums(0)">
-                    <?php echo lang('deleted'); ?>
-                </div>
-            </div>
-        </div>
+    <div class="status-filters" v-cloak v-show="!loader">
+        <button type="button" class="status-chip" :class="{active: currentStatus === null}" @click="getAlbums(null)">
+            <?php echo lang('menu_all'); ?>
+        </button>
+        <button type="button" class="status-chip" :class="{active: currentStatus === 1}" @click="getAlbums(1)">
+            <?php echo lang('published'); ?>
+        </button>
+        <button type="button" class="status-chip" :class="{active: currentStatus === 2}" @click="getAlbums(2)">
+            <?php echo lang('draft'); ?>
+        </button>
+        <button type="button" class="status-chip" :class="{active: currentStatus === 3}" @click="getAlbums(3)">
+            <?php echo lang('archived'); ?>
+        </button>
+        <button type="button" class="status-chip" :class="{active: currentStatus === 0}" @click="getAlbums(0)">
+            <?php echo lang('deleted'); ?>
+        </button>
     </div>
     <div class="pages" v-cloak v-if="!loader && albums.length > 0">
         <div class="row" v-if="tableView">

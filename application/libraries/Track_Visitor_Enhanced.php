@@ -203,7 +203,7 @@ class Track_Visitor_Enhanced
         }
 
         $this->ensure_session();
-        $this->log_visitor();
+        register_shutdown_function(array($this, 'log_visitor'));
     }
 
     /**
@@ -285,7 +285,7 @@ class Track_Visitor_Enhanced
         return false;
     }
 
-    private function log_visitor()
+    public function log_visitor()
     {
         $current_page = $this->get_visible_path();
         $previous_page = $this->ci->session->userdata('current_tracked_page');

@@ -4,6 +4,10 @@
 @endsection
 @section('content')
 <div id="root">
+    @include('admin.components.page_intro', [
+        'titleKey' => 'menu_categories',
+        'ledeKey' => 'categories_lede',
+    ])
     <div class="col s12 center" v-show="loader">
         <br><br>
         <preloader />

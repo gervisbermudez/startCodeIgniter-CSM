@@ -7,6 +7,10 @@
 
 @section('content')
 <div id="root">
+    @include('admin.components.page_intro', [
+        'titleKey' => 'menu_contents',
+        'ledeKey' => 'contents_lede',
+    ])
     <div class="col s12 center" v-bind:class="{ hide: !loader }">
         <br><br>
         <preloader />
@@ -14,7 +18,6 @@
     @include('admin.components.page_navbar', [
         'searchInputId' => 'custommodels-content-search',
         'refreshMethod' => 'getContents()',
-        'placeholder' => lang('custommodels_content_search_placeholder'),
         'itemsExpr' => 'filterContents',
     ])
     <div class="pages" v-cloak v-if="!loader && contents.length > 0">

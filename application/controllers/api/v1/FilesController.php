@@ -41,14 +41,13 @@ class FilesController extends REST_Controller
         }
 
         $file_path = $this->input->get('path');
-        $where = array('file_path' => $file_path, 'status' => 1);
 
         $file = new FileModel();
         if ($file_id) {
             $result = $file_path ? $file->find_with(['file_path' => $file_path, "file_id" => $file_id]) : $file->find($file_id);
             $result = $result ? $file : [];
         } else {
-            $result = $file_path ? $file->where($where) : $file->all();
+            $result = $file_path ? $file->listPath($file_path) : $file->all();
         }
 
         if ($result) {
@@ -151,16 +150,19 @@ class FilesController extends REST_Controller
         if ($folder != null) {
             $File->current_folder = $folder . '/';
         }
-        $allFiles = $File->all();
+        $mapped = $File->map_files();
 
-        foreach ($allFiles as $key => $file) {
-            if (!file_exists($file->file_path . $file->file_name . '.' . $file->file_type)) {
-                $File->find($file->file_id);
-                $File->delete();
+        $allFiles = $File->all();
+        if ($allFiles) {
+            foreach ($allFiles as $key => $file) {
+                if (!$file->existsOnDisk()) {
+                    $File->find($file->file_id);
+                    $File->delete();
+                }
             }
         }
 
-        $this->response_ok(['result' => $File->map_files()]);
+        $this->response_ok(['result' => $mapped]);
     }
 
     public function move_file_post()

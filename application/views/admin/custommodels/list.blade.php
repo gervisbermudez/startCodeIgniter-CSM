@@ -20,7 +20,6 @@
         'searchInputId' => 'custommodels-search',
         'refreshMethod' => 'getModels()',
         'navbarShow' => '!loader && models.length > 0',
-        'placeholder' => lang('custommodels_search_placeholder'),
         'itemsExpr' => 'filterModels',
     ])
     <div class="pages" v-cloak v-if="!loader && models.length > 0">

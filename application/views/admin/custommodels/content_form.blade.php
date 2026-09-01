@@ -95,14 +95,6 @@
 <script src="{{base_url('public/vendors/tinymce/js/tinymce/tinymce.min.js')}}"></script>
 <script src="{{base_url('resources/components/FileExplorerSelector.js')}}"></script>
 <!-- Load form field components before CustomModelContentModule -->
-<script src="{{base_url('resources/components/formComponents/formFieldTitle.js')}}"></script>
-<script src="{{base_url('resources/components/formComponents/formFieldTextArea.js')}}"></script>
-<script src="{{base_url('resources/components/formComponents/formTextFormat.js')}}"></script>
-<script src="{{base_url('resources/components/formComponents/formImageSelector.js')}}"></script>
-<script src="{{base_url('resources/components/formComponents/formFieldDate.js')}}"></script>
-<script src="{{base_url('resources/components/formComponents/formFieldTime.js')}}"></script>
-<script src="{{base_url('resources/components/formComponents/formFieldNumber.js')}}"></script>
-<script src="{{base_url('resources/components/formComponents/formFieldSelect.js')}}"></script>
-<script src="{{base_url('resources/components/formComponents/formFieldBoolean.js')}}"></script>
+<script src="{{base_url('public/js/form-fields.js?v=' . ADMIN_VERSION)}}"></script>
 <script src="{{base_url('resources/components/CustomModelContentModule.js?v=' . ADMIN_VERSION)}}"></script>
 @endsection

@@ -28,7 +28,7 @@ Aislamiento **local** (sin Cloud Agents). Al crear un worktree, Cursor corre `.c
 | `application/controllers/admin/` | Páginas HTML del panel. Extienden `MY_Controller`. |
 | `application/controllers/api/v1/` | REST. Extienden `REST_Controller`. Aquí vive el CRUD. |
 | `application/controllers/PageController.php` | Front público. Extiende `Base_Controller`. |
-| `application/core/MY_Controller.php` | `MY_Controller` (admin) + `Base_Controller` (sitio). |
+| `application/core/MY_Controller.php` | `MY_Controller` (admin) + `Base_Controller` (sitio). Blade se carga aquí, no en autoload. |
 | `application/core/MY_Model.php` | ORM propio. Todos los modelos heredan de aquí. |
 | `application/models/Admin/` | Modelos de dominio. Cargar con `$this->load->model('Admin/PageModel')`. |
 | `application/views/admin/` | Blade del admin (`admin.foo.bar` → `admin/foo/bar.blade.php`). |

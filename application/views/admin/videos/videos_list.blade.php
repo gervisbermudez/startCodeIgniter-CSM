@@ -7,6 +7,10 @@
 
 @section('content')
     <div id="root">
+        @include('admin.components.page_intro', [
+            'titleKey' => 'menu_videos',
+            'ledeKey' => 'videos_lede',
+        ])
         <div class="col s12 center" v-bind:class="{ hide: !loader }">
             <br><br>
             <preloader />
@@ -17,26 +21,22 @@
             'navbarShow' => '!loader && videos.length > 0',
             'itemsExpr' => 'filterAll',
         ])
-        <div class="row">
-            <div class="col s12">
-                <div class="status-filters" v-cloak v-show="!loader">
-                    <div class="status-chip" :class="{active: currentStatus === null}" @click="getVideos(null)">
-                        <?= lang('menu_all') ?>
-                    </div>
-                    <div class="status-chip" :class="{active: currentStatus === 1}" @click="getVideos(1)">
-                        <?= lang('published') ?>
-                    </div>
-                    <div class="status-chip" :class="{active: currentStatus === 2}" @click="getVideos(2)">
-                        <?= lang('draft') ?>
-                    </div>
-                    <div class="status-chip" :class="{active: currentStatus === 3}" @click="getVideos(3)">
-                        <?= lang('archived') ?>
-                    </div>
-                    <div class="status-chip" :class="{active: currentStatus === 0}" @click="getVideos(0)">
-                        <?= lang('deleted') ?>
-                    </div>
-                </div>
-            </div>
+        <div class="status-filters" v-cloak v-show="!loader">
+            <button type="button" class="status-chip" :class="{active: currentStatus === null}" @click="getVideos(null)">
+                <?= lang('menu_all') ?>
+            </button>
+            <button type="button" class="status-chip" :class="{active: currentStatus === 1}" @click="getVideos(1)">
+                <?= lang('published') ?>
+            </button>
+            <button type="button" class="status-chip" :class="{active: currentStatus === 2}" @click="getVideos(2)">
+                <?= lang('draft') ?>
+            </button>
+            <button type="button" class="status-chip" :class="{active: currentStatus === 3}" @click="getVideos(3)">
+                <?= lang('archived') ?>
+            </button>
+            <button type="button" class="status-chip" :class="{active: currentStatus === 0}" @click="getVideos(0)">
+                <?= lang('deleted') ?>
+            </button>
         </div>
         <div class="pages" v-cloak v-if="!loader && videos.length > 0">
             <div class="row" v-if="tableView">

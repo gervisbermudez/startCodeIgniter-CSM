@@ -16,6 +16,8 @@ $lang['search_view_all'] = 'Ver todos los resultados';
 $lang['search_no_query'] = 'Busca en todo el panel';
 $lang['search_no_results'] = 'Ningún resultado para "%s"';
 $lang['search_empty_cta'] = 'Limpiar búsqueda';
+$lang['filter_placeholder'] = 'Filtrar esta lista…';
+$lang['filter_empty_cta'] = 'Limpiar filtro';
 $lang['search_min_chars'] = 'Escribe al menos 2 caracteres';
 $lang['search_type_all'] = 'Todo';
 $lang['search_type_pages'] = 'Páginas';
@@ -344,6 +346,7 @@ $lang['pages_form_loading'] = 'Cargando formulario';
 
 // Notifications inbox
 $lang['notifications_title'] = 'Notificaciones';
+$lang['notifications_lede'] = 'Alertas de formularios, usuarios y backups.';
 $lang['notifications_all'] = 'Todas las notificaciones';
 $lang['notifications_unread'] = 'No leídas';
 $lang['notifications_read'] = 'Leídas';
@@ -370,6 +373,7 @@ $lang['siteforms_edit'] = 'Editar formulario';
 $lang['siteforms_inbox'] = 'Envíos de formularios';
 $lang['siteforms_not_found'] = 'Formulario no encontrado';
 $lang['siteforms_lede'] = 'Recibí mensajes de los visitantes.';
+$lang['siteforms_inbox_lede'] = 'Mensajes enviados desde los formularios públicos.';
 $lang['siteforms_name'] = 'Nombre';
 $lang['siteforms_name_help'] = 'Nombre interno. Usalo cuando insertás este formulario en una página.';
 $lang['siteforms_template'] = 'Plantilla';

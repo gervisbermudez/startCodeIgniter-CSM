@@ -1,4 +1,68 @@
+function patchMaterializePlugins() {
+  if (!window.M) {
+    return;
+  }
+
+  function dropdownTargetEl(trigger) {
+    if (!trigger || trigger.nodeType !== 1) {
+      return null;
+    }
+    var id =
+      typeof M.getIdFromTrigger === "function"
+        ? M.getIdFromTrigger(trigger)
+        : trigger.getAttribute("data-target");
+    if (!id) {
+      return null;
+    }
+    return document.getElementById(id);
+  }
+
+  function wrapPluginInit(Plugin, isReady) {
+    if (!Plugin || typeof Plugin.init !== "function" || Plugin.init._stPatched) {
+      return;
+    }
+    var origInit = Plugin.init.bind(Plugin);
+    var wrapped = function (els, options) {
+      if (els instanceof Element) {
+        if (!isReady(els)) {
+          return null;
+        }
+        return origInit(els, options);
+      }
+      if (!els || typeof els.length !== "number") {
+        return origInit(els, options);
+      }
+      var instances = [];
+      var i;
+      for (i = 0; i < els.length; i++) {
+        if (isReady(els[i])) {
+          instances.push(origInit(els[i], options));
+        }
+      }
+      return instances;
+    };
+    wrapped._stPatched = true;
+    Plugin.init = wrapped;
+  }
+
+  wrapPluginInit(M.Dropdown, function (el) {
+    return !!dropdownTargetEl(el);
+  });
+  wrapPluginInit(M.FormSelect, function (el) {
+    return !!(
+      el &&
+      el.tagName === "SELECT" &&
+      el.parentNode &&
+      document.body &&
+      document.body.contains(el)
+    );
+  });
+}
+
+patchMaterializePlugins();
+
 jQuery(document).ready(function ($) {
+  patchMaterializePlugins();
   // Disable AutoInit to prevent errors with dynamic Vue content
   // Each Vue component will handle its own Materialize initialization
   // M.AutoInit();
@@ -101,6 +165,13 @@ jQuery(document).ready(function ($) {
   if (sidenavElems.length > 0) {
     M.Sidenav.init(sidenavElems, {});
     $("#slide-out").removeAttr("style");
+  }
+
+  var navbarDropdowns = document.querySelectorAll(
+    ".main-navbar .dropdown-trigger"
+  );
+  if (navbarDropdowns.length > 0 && M.Dropdown) {
+    M.Dropdown.init(navbarDropdowns, { constrainWidth: false });
   }
 
   var collapsibleElems = document.querySelectorAll(".collapsible:not(#slide-out)");
@@ -750,7 +821,11 @@ var mixins = {
       this.$nextTick(function () {
         self.reinitPlugin(".collapsible:not(#slide-out)", M.Collapsible);
         self.reinitPlugin(".tooltipped", M.Tooltip);
-        self.reinitPlugin(".dropdown-trigger", M.Dropdown, { constrainWidth: false });
+        self.reinitPlugin(
+          ".dropdown-trigger:not(.select-dropdown)",
+          M.Dropdown,
+          { constrainWidth: false }
+        );
         self.reinitPlugin(".modal", M.Modal);
         if (M.Materialbox) {
           self.reinitPlugin(".materialboxed", M.Materialbox);
@@ -1021,11 +1096,14 @@ class User {
 
   // Método de la clase que retorna el nombre completo del usuario
   get_fullname = () => {
-    if (this.user_data.nombre && this.user_data.apellido) {
-      return this.user_data.nombre + " " + this.user_data.apellido;
-    } else {
-      return "";
+    var data = this.user_data && typeof this.user_data === "object" ? this.user_data : {};
+    var first = data.nombre ? String(data.nombre).trim() : "";
+    var last = data.apellido ? String(data.apellido).trim() : "";
+    var full = (first + " " + last).trim();
+    if (full) {
+      return full;
     }
+    return this.username || "";
   };
 
   // Método de la clase que retorna la URL del perfil del usuario

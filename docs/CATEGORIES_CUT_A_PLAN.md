@@ -113,9 +113,9 @@ Tipos vivos en este corte: **`page`**, **`event`**. El resto de strings en el pi
 
 ## 5. Schema + migración
 
-Archivo: `application/database/migrations/010_categories_cut_a.sql`.
+Archivo: `application/database/migrations/014_categories_cut_a.sql`.
 
-Si al mergear ya existiera un `010_*`, renumerar al siguiente libre. MySQL 5.7. Idempotente. Aplicar a mano (CI3 migrations no es el flujo).
+`010`–`013` ya están en `master` (`010_fragments_cut_b`, `013_perf_indexes`). MySQL 5.7. Idempotente. Aplicar a mano (CI3 migrations no es el flujo).
 
 **Sí** cambiar el `CREATE TABLE categories` en `application/database/start.sql` (el `CREATE` es corto, L127–139): `parent_id` de `tinyint(1)` a `int(11) NOT NULL DEFAULT '0'`. No reformatees el dump de `INSERT`.
 
@@ -143,7 +143,7 @@ Aplicar (cwd = este worktree; user/pass/db del `.env` copiado):
 
 ```bash
 docker exec -i ci_php56 mysql -h host.docker.internal -u start_cms_user -pstart_cms_pass start_cms_db \
-  < application/database/migrations/010_categories_cut_a.sql
+  < application/database/migrations/014_categories_cut_a.sql
 ```
 
 La DB es **compartida** con `:8081`. Este `MODIFY` es compatible. No `DROP`.
@@ -394,7 +394,7 @@ Copy visible: "categoría". URLs/API: `categorie`. Toasts: `lang()` / `this.toas
 
 | Archivo | Cambio |
 |---|---|
-| `application/database/migrations/010_categories_cut_a.sql` | Nuevo |
+| `application/database/migrations/014_categories_cut_a.sql` | Nuevo |
 | `application/database/start.sql` | `parent_id` INT en CREATE `categories` |
 | `application/controllers/api/v1/CategoriesController.php` | sección 6 |
 | `application/models/Admin/CategorieModel.php` | sección 7 |

@@ -4,6 +4,10 @@
 @endsection
 @section('content')
 <div id="root">
+    @include('admin.components.page_intro', [
+        'titleKey' => 'menu_usergroups',
+        'ledeKey' => 'usergroups_lede',
+    ])
     <div class="col s12 center" v-bind:class="{ hide: !loader }">
         <br><br>
         <preloader />

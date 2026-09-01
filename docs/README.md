@@ -14,13 +14,6 @@
 | [../CHANGELOG.md](../CHANGELOG.md) | 3.0 y notas 2.x | Actual |
 | [../AGENTS.md](../AGENTS.md) | Cómo partir una feature, convenciones, worktrees | Actual |
 
-## Cortes en curso (worktree)
-
-Spec para implementar en su rama. **No** reimplementar en `master` hasta merge.
-
-| Doc | Rama / worktree |
-|---|---|
-| [CATEGORIES_CUT_A_PLAN.md](CATEGORIES_CUT_A_PLAN.md) | `feat/categories-cut-a` — `/home/gervis/.cursor/worktrees/startCodeIgniter-CSM/categories-cut-a` |
 
 ## Producto (shipped)
 
@@ -52,12 +45,13 @@ Estos archivos nacieron como spec de implementación. El corte ya está en `mast
 | Doc | Rol |
 |---|---|
 | [AUTH_LOGIN_JWT_HARDEN_PLAN.md](AUTH_LOGIN_JWT_HARDEN_PLAN.md) | Endurecer login admin + JWT (sesión cookie + claims RFC). Prompt: [AUTH_LOGIN_JWT_HARDEN_PROMPT.md](AUTH_LOGIN_JWT_HARDEN_PROMPT.md) |
+| [CATEGORIES_CUT_A_PLAN.md](CATEGORIES_CUT_A_PLAN.md) | Categorías Corte A: parent_id INT, tipos page/event, listado admin |
 
 ## API y datos
 
 - Colección Postman: [api/postman-collection.json](api/postman-collection.json)
 - Schema seed: `application/database/start.sql`
-- Migraciones 3.0: `003_analytics_module.sql`, `005_collections.sql`, `006_notifications_inbox.sql`, `007_events_core.sql`, `008_siteforms_permissions.sql`, `009_albums_videos_cut_a.sql`, `010_fragments_cut_b.sql`, `011_usergroups_access.sql`, `012_usergroups_access_crud.sql`, `013_categories_cut_a.sql`
+- Migraciones 3.0: `003_analytics_module.sql`, `005_collections.sql`, `006_notifications_inbox.sql`, `007_events_core.sql`, `008_siteforms_permissions.sql`, `009_albums_videos_cut_a.sql`, `010_fragments_cut_b.sql`, `011_usergroups_access.sql`, `012_usergroups_access_crud.sql`, `013_perf_indexes.sql`
 
 ## Notas viejas
 

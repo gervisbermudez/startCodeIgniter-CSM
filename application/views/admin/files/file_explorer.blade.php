@@ -15,6 +15,10 @@
 
 @section('content')
 <div class="container explorer" id="root">
+    @include('admin.components.page_intro', [
+        'titleKey' => 'menu_files',
+        'ledeKey' => 'files_lede',
+    ])
     <div class="row">
         <div class="col s12">
             <div class="row">
