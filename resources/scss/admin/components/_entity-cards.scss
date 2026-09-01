@@ -119,6 +119,15 @@ $entity-card-image-radius: 8px;
   box-sizing: border-box;
 }
 
+a.status-chip {
+  text-decoration: none;
+  color: inherit;
+}
+
+a.status-chip.active {
+  color: var(--st-on-accent);
+}
+
 .status-chip {
   cursor: pointer;
   padding: 0 15px;

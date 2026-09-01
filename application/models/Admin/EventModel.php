@@ -260,4 +260,27 @@ class EventModel extends MY_Model
         $this->db->group_end();
     }
 
+    /**
+     * Flat rows that overlap [from, to). No relations.
+     *
+     * @param string $from Y-m-d H:i:s inclusive
+     * @param string $to Y-m-d H:i:s exclusive
+     * @return array
+     */
+    public function calendar_range($from, $to)
+    {
+        $this->db->select('event_id, name, slug, date_start, date_end, all_day, status, visibility, address, location_type, online_url');
+        $this->db->from($this->table);
+        $this->db->where('status !=', 0);
+        $this->db->where('date_start IS NOT NULL', null, false);
+        $this->db->where('date_start <', $to);
+        $this->db->where('COALESCE(date_end, date_start) >= ' . $this->db->escape($from), null, false);
+        $this->db->order_by('date_start', 'ASC');
+        $query = $this->db->get();
+        if ($query->num_rows() < 1) {
+            return array();
+        }
+        return $query->result();
+    }
+
 }
