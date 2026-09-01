@@ -70,27 +70,138 @@ class FileModel extends MY_Model
     public function map_files()
     {
         $directorio = directory_map($this->current_dir . $this->current_folder);
+        if (!is_array($directorio)) {
+            $directorio = array();
+        }
         foreach ($this->exclude_folders as $value) {
             unset($directorio[$value]);
         }
         $curdir = $this->current_dir . $this->current_folder;
         $this->save_dir($directorio, $curdir);
 
-        return $this->SiteConfigModel->update_data(array('config_name' => 'LAST_UPDATE_FILEMANAGER'), array('config_value' => date("Y-m-d H:i:s")), 'site_config');
+        $this->load->model('Admin/SiteConfigModel');
+        $ok = $this->SiteConfigModel->update_data(array('config_name' => 'LAST_UPDATE_FILEMANAGER'), array('config_value' => date("Y-m-d H:i:s")), 'site_config');
+        invalidate_site_config_cache();
+        return $ok;
+    }
+
+    /**
+     * DB rows for a path plus real subdirectories (Linux indexer never stored folders).
+     *
+     * @param string $file_path
+     * @return array
+     */
+    public function listPath($file_path)
+    {
+        $result = $this->where(array('file_path' => $file_path, 'status' => 1));
+        $items = array();
+        $seen_folders = array();
+        if ($result) {
+            foreach ($result as $row) {
+                $items[] = $row;
+                if (isset($row->file_type) && $row->file_type === 'folder') {
+                    $seen_folders[$row->file_name] = true;
+                }
+            }
+        }
+        foreach ($this->scan_disk_folders($file_path) as $folder) {
+            if (!isset($seen_folders[$folder['file_name']])) {
+                $items[] = $folder;
+            }
+        }
+        return $items;
+    }
+
+    /**
+     * @param string $file_path
+     * @return array
+     */
+    private function scan_disk_folders($file_path)
+    {
+        $relative = preg_replace('#^\./#', '', str_replace('\\', '/', (string) $file_path));
+        $absolute = rtrim(FCPATH . $relative, '/\\') . DIRECTORY_SEPARATOR;
+        if (!is_dir($absolute)) {
+            return array();
+        }
+        $folders = array();
+        $entries = @scandir($absolute);
+        if ($entries === false) {
+            return array();
+        }
+        foreach ($entries as $name) {
+            if ($name === '.' || $name === '..' || $name[0] === '.') {
+                continue;
+            }
+            if (!is_dir($absolute . $name)) {
+                continue;
+            }
+            $key = $name . '/';
+            if (in_array($key, $this->exclude_folders, true) || in_array($name . '\\', $this->exclude_folders, true)) {
+                continue;
+            }
+            $next = (substr($file_path, -1) === '/') ? $file_path . $name . '/' : $file_path . '/' . $name . '/';
+            if ($this->is_excluded_path($next)) {
+                continue;
+            }
+            $folders[] = array(
+                'file_id' => 0,
+                'file_name' => $name,
+                'file_path' => $file_path,
+                'file_type' => 'folder',
+                'parent_name' => $file_path,
+                'featured' => 0,
+                'status' => 1,
+            );
+        }
+        usort($folders, function ($a, $b) {
+            return strcasecmp($a['file_name'], $b['file_name']);
+        });
+        return $folders;
     }
 
     /**
      * @param array $dir_maped
+     * @param string $curdir
      */
     private function save_dir($dir_maped, $curdir)
     {
+        if (!is_array($dir_maped)) {
+            return;
+        }
         foreach ($dir_maped as $key => $value) {
+            if (is_string($key) && in_array($key, $this->exclude_folders, true)) {
+                continue;
+            }
+            $next_dir = is_array($value) ? $curdir . $key : $curdir;
+            if (is_array($value) && $this->is_excluded_path($next_dir)) {
+                continue;
+            }
             $this->save_file($value, $key, $curdir);
             if (is_array($value)) {
-                $this->save_dir($value, $curdir . $key);
+                $this->save_dir($value, $next_dir);
             }
         }
+    }
 
+    /**
+     * @param string $path
+     * @return bool
+     */
+    private function is_excluded_path($path)
+    {
+        $path = str_replace('\\', '/', (string) $path);
+        if ($path === '' || $path === './') {
+            return false;
+        }
+        if (substr($path, -1) !== '/') {
+            $path .= '/';
+        }
+        foreach ($this->exclude_file_path_prefixes as $prefix) {
+            if (strpos($path, $prefix) === 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function save_file($value, $key, $dir)
@@ -104,6 +215,10 @@ class FileModel extends MY_Model
             }
         } else {
             $insert_array = $this->get_array_save_file($value, $dir);
+        }
+
+        if ($insert_array['file_name'] === '' || $insert_array['file_name'] === false || $insert_array['file_name'] === null) {
+            return;
         }
 
         if (!in_array($insert_array["file_type"], $this->exclude_file_types)) {
@@ -193,7 +308,7 @@ class FileModel extends MY_Model
             'rand_key' => $file_key,
             'file_name' => $this->get_substr_folder_name($folder),
             'file_path' => $this->get_file_path($dir_name),
-            'file_type' => $this->get_substr_file_ext($folder),
+            'file_type' => 'folder',
             'parent_name' => $this->get_substr_file_parent_name($dir_name),
             'user_id' => userdata('user_id'),
             'shared_user_group_id' => userdata('usergroup_id'),
@@ -227,11 +342,11 @@ class FileModel extends MY_Model
 
     private function get_substr_folder_name($folder)
     {
-        if ($this->is_folder($folder)) {
-            $substr = substr($folder, 0, strpos($folder, '\\'));
-            return $substr;
+        if (is_array($folder)) {
+            return '';
         }
-        return false;
+        $folder = str_replace('\\', '/', (string) $folder);
+        return trim($folder, '/');
     }
 
     private function get_substr_file_name($file)
@@ -263,10 +378,11 @@ class FileModel extends MY_Model
         if (is_array($folder)) {
             return true;
         }
-        if (strpos($folder, '\\') !== false) {
-            return true;
+        if (!is_string($folder) || $folder === '') {
+            return false;
         }
-        return false;
+        $last = substr($folder, -1);
+        return ($last === '/' || $last === '\\' || strpos($folder, '\\') !== false);
     }
 
     private function is_file($file)
@@ -322,6 +438,20 @@ class FileModel extends MY_Model
         }
         $prefix = $root . DIRECTORY_SEPARATOR;
         return ($resolved === $root || strpos($resolved, $prefix) === 0);
+    }
+
+    /**
+     * Whether the indexed row still exists on disk (directory or file).
+     *
+     * @return bool
+     */
+    public function existsOnDisk()
+    {
+        if ($this->file_type === 'folder') {
+            $relative = preg_replace('#^\./#', '', $this->file_path . $this->file_name);
+            return is_dir(FCPATH . $relative);
+        }
+        return is_file($this->resolveDiskPath($this->file_path, $this->file_name, $this->file_type));
     }
 
     public function getFileFrontPath()

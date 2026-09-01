@@ -13,7 +13,10 @@ RUN a2enmod rewrite headers \
     && a2enconf allow-override
 
 # INSTALAR EXTENSIONES PHP (Esto es lo que podría faltar ahora)
-RUN docker-php-ext-install mysqli pdo pdo_mysql zip
+RUN docker-php-ext-install mysqli pdo pdo_mysql zip \
+    && docker-php-ext-enable opcache
+
+COPY docker/php-opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
 # Copiar archivos del proyecto
 WORKDIR /var/www/html

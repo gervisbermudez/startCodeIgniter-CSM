@@ -134,6 +134,6 @@
 @endsection
 
 @section('footer_includes')
-<script src="{{base_url('resources/components/formComponents/formFieldTitle.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('public/js/form-fields.js?v=' . ADMIN_VERSION)}}"></script>
 <script src="{{base_url('resources/components/DataFormModule.js')}}"></script>
 @endsection

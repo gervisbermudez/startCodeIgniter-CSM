@@ -148,6 +148,7 @@ class Auto_backup_hook
                     'config_value' => date('Y-m-d H:i:s'),
                     'date_update' => date('Y-m-d H:i:s')
                 ]);
+                invalidate_site_config_cache();
 
                 // Log the backup
                 system_logger('config', 'Backup automático creado (pseudo-cron)', [

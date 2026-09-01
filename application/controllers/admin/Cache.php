@@ -39,15 +39,8 @@ class Cache extends MY_Controller
                 throw new Exception('Sin permisos para limpiar caché');
             }
             
-            // Limpiar caché de la página
-            $cache_key = 'page_' . $page_id;
-            delete_cache($cache_key);
-            
-            // También limpiar variantes comunes
-            delete_cache('page_full_' . $page_id);
-            delete_cache('page_content_' . $page_id);
-            delete_cache('page_data_' . $page_id);
-            
+            invalidate_page_cache($page_id);
+
             // Log de la acción
             system_logger('cache', $page_id, 'clear_page_cache', 'Caché limpiado para página: ' . $page_id);
             
