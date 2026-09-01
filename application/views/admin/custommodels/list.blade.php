@@ -8,6 +8,10 @@
 @section('content')
 @include('admin.custommodels.i18n')
 <div id="root">
+    @include('admin.components.page_intro', [
+        'titleKey' => 'menu_collections',
+        'ledeKey' => 'collections_lede',
+    ])
     <div class="col s12 center" v-bind:class="{ hide: !loader }">
         <br><br>
         <preloader />

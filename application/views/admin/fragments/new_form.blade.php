@@ -29,6 +29,7 @@
 					<label class="active">{{ lang('fragments_copy_token') }}</label>
 					<input type="text" :value="fragmentToken" readonly id="fragment-token" @focus="$event.target.select()">
 					<p class="grey-text text-darken-1">{{ lang('fragments_token_hint') }}</p>
+					<p class="grey-text text-darken-1">{{ lang('fragments_for_developers') }}</p>
 					<button type="button" class="btn-flat" @click="copyToken()">{{ lang('fragments_copy_token') }}</button>
 				</div>
 				<div id="introduction" class="section scrollspy">

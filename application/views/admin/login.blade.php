@@ -7,13 +7,13 @@
             <div class="row">
                 <div class="col s12" v-show="!loader">
                     <div class="img-container brand-logo">
-                        <img src="{{base_url('public/img/admin/brand/logo.svg')}}" alt="Start CMS"> 
+                        <img src="{{base_url('public/img/admin/brand/logo.svg')}}" alt="<?= htmlspecialchars(ADMIN_BRAND_NAME, ENT_QUOTES, 'UTF-8') ?>"> 
                     </div>
                     <div class="brand">
-                        Start CMS
+                        <?= htmlspecialchars(ADMIN_BRAND_NAME, ENT_QUOTES, 'UTF-8') ?>
                     </div>
                     <div class="sub-brand">
-                        The Lightweight CMS
+                        <?= lang('login_tagline') ?>
                     </div>
                 </div>
             </div>
@@ -51,13 +51,13 @@
                             <div v-show="!userdata" class="input-field">
                                 <i class="material-icons prefix">perm_identity</i>
                                 <input id="username" type="text" v-model="username" name="username" required="required">
-                                <label for="username" class="">Username</label>
+                                <label for="username" class=""><?= lang('username') ?></label>
                             </div>
                             <div class="input-field">
                                 <i class="material-icons prefix">lock_outline</i>
                                 <input id="password" name="password" v-model="password" type="password"
                                     required="required">
-                                <label for="password" class="">Password</label>
+                                <label for="password" class=""><?= lang('password') ?></label>
                             </div>
                             <div class="input-field remember-check">
                                 <p>
@@ -75,7 +75,7 @@
                         </div>
                         <div class="action">
                             <button class="btn light-blue waves-effect waves-light" type="submit"
-                                :class="{disabled: !btnEnable}">Login</button>
+                                :class="{disabled: !btnEnable}"><?= lang('login') ?></button>
                         </div>
                     </form>
                 </div>

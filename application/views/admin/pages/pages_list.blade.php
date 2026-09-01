@@ -4,6 +4,10 @@
 
 @section('content')
 <div id="root">
+    @include('admin.components.page_intro', [
+        'titleKey' => 'menu_pages',
+        'ledeKey' => 'pages_lede',
+    ])
     <div class="col s12 center" v-show="loader">
         <br><br>
         <preloader />
@@ -16,28 +20,28 @@
     <div class="row">
         <div class="col s12">
             <div class="status-filters" v-cloak v-show="!loader">
-        <div class="status-chip" :class="{active: currentStatus === null}" @click="getPages(null)">
-            All Active
-        </div>
-        <div class="status-chip" :class="{active: currentStatus === 1}" @click="getPages(1)">
-            Published
-        </div>
-        <div class="status-chip" :class="{active: currentStatus === 2}" @click="getPages(2)">
-            Drafts
-        </div>
-        <div class="status-chip" :class="{active: currentStatus === 3}" @click="getPages(3)">
-            Archived
-        </div>
-        <div class="status-chip" :class="{active: currentStatus === 0}" @click="getPages(0)">
-            Trash (Deleted)
-        </div>
+        <button type="button" class="status-chip" :class="{active: currentStatus === null}" @click="getPages(null)">
+            <?= lang('menu_all') ?>
+        </button>
+        <button type="button" class="status-chip" :class="{active: currentStatus === 1}" @click="getPages(1)">
+            <?= lang('published') ?>
+        </button>
+        <button type="button" class="status-chip" :class="{active: currentStatus === 2}" @click="getPages(2)">
+            <?= lang('draft') ?>
+        </button>
+        <button type="button" class="status-chip" :class="{active: currentStatus === 3}" @click="getPages(3)">
+            <?= lang('archived') ?>
+        </button>
+        <button type="button" class="status-chip" :class="{active: currentStatus === 0}" @click="getPages(0)">
+            <?= lang('deleted') ?>
+        </button>
     </div>
         </div>
     </div>
     <div class="pages" v-cloak v-if="!loader && pages.length > 0">
         <div class="row">
             <div class="col s12">
-                <h4>Results</h4>
+                <h4><?= lang('pages_all') ?></h4>
             </div>
         </div>
         <div class="row" v-if="tableView">
@@ -193,7 +197,7 @@
     <div class="pages" v-cloak v-if="!loader && pages.length > 0 && !filterAll.length">
         <div class="row">
             <div class="col s12">
-                <h4>Pages</h4>
+                <h4><?= lang('pages') ?></h4>
             </div>
         </div>
         <div class="row" v-if="tableView">
@@ -351,7 +355,7 @@
     <div class="pages" v-cloak v-if="!loader && blogs.length > 0 && !filterAll.length">
         <div class="row">
             <div class="col s12">
-                <h4>Blogs</h4>
+                <h4><?= lang('pages_blogs') ?></h4>
             </div>
         </div>
         <div class="row" v-if="tableView">
@@ -500,25 +504,31 @@
             </div>
         </div>
     </div>
-    <div class="container" v-if="!loader && pages.length == 0 && !filter" v-cloak>
-        <h4>No pages found</h4>
+    <div class="container center" v-if="!loader && pages.length == 0 && !filter" v-cloak>
+        <i class="material-icons large grey-text" aria-hidden="true">web</i>
+        <p class="page-header"><?= lang('pages_empty') ?></p>
+        @if(has_permisions('CREATE_PAGE'))
+        <a class="btn waves-effect st-accent" href="{{ base_url('admin/pages/nueva/') }}"><?= lang('pages_empty_cta') ?></a>
+        @endif
     </div>
     @include('admin.components.pagination')
-    <confirm-modal id="deleteModal" title="Confirm Delete" v-on:notify="confirmDelete">
+    <confirm-modal id="deleteModal" title="<?= htmlspecialchars(lang('confirm_delete'), ENT_QUOTES, 'UTF-8') ?>" v-on:notify="confirmDelete">
         <p>
-            Do you want to delete this Page?
+            <?= htmlspecialchars(lang('pages_confirm_delete'), ENT_QUOTES, 'UTF-8') ?>
         </p>
     </confirm-modal>
-    <confirm-modal id="archiveModal" title="Confirm Archive" v-on:notify="confirmArchive">
+    <confirm-modal id="archiveModal" title="<?= htmlspecialchars(lang('archive'), ENT_QUOTES, 'UTF-8') ?>" v-on:notify="confirmArchive">
         <p>
-            Do you want to archive this Page?
+            <?= htmlspecialchars(lang('pages_confirm_archive'), ENT_QUOTES, 'UTF-8') ?>
         </p>
     </confirm-modal>
 </div>
 @if(has_permisions('CREATE_PAGE'))
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
-    <a class="btn-floating btn-large red waves-effect waves-teal btn-flat new tooltipped" data-position="left"
-        data-delay="50" data-tooltip="New Page" href="{{base_url('admin/pages/nueva/')}}">
+    <a class="btn-floating btn-large waves-effect st-accent tooltipped" data-position="left"
+        data-delay="50" data-tooltip="<?= htmlspecialchars(lang('tooltip_new_page'), ENT_QUOTES, 'UTF-8') ?>"
+        aria-label="<?= htmlspecialchars(lang('tooltip_new_page'), ENT_QUOTES, 'UTF-8') ?>"
+        href="{{base_url('admin/pages/nueva/')}}">
         <i class="large material-icons">add</i>
     </a>
 </div>

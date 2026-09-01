@@ -19,6 +19,22 @@ Stack visual: Materialize CSS + Vue 2 + Blade + SCSS en `resources/scss/admin/`.
 
 ---
 
+## Copy de producto
+
+El admin habla primero al **editor** (publica páginas, arma listas, recibe mensajes) y deja el código a un clic para el **implementador**.
+
+1. **Primero la tarea** (“Create a collection to show a team or FAQ on the site”), no la API.
+2. **Términos de CMS sí** (page, draft, publish, album). **Jerga de código no** en títulos, vacíos ni labels primarios (`slug`, `schema`, `snippet`, `token`, `embed`, nombres de función).
+3. **El código queda a un clic**: botón “Copy page code” + helper “For developers: `get_collection('team')`”.
+4. **Un idioma por pantalla**; extraer hardcoded a `lang()`.
+5. **No “corregir”** `permisions`, `categorie`, `albumes`, rutas `custommodels`, ni claves internas. Solo copy visible.
+
+Claves nuevas: `{module}_lede`, `{field}_help`, `{module}_empty`, `{module}_empty_cta`. No claves `custommodels_*` para copy nuevo. Inglés activo (`MY_Controller` carga `english`); el espejo ES se mantiene al día, no se cambia el locale en esta entrega.
+
+Campo difícil: `span.helper-text` en lenguaje de tarea (letras, números y guiones bajos; no regex). Snippets: label de producto + copiar + una línea “For developers” con el helper entre backticks.
+
+---
+
 ## Tokens
 
 Definidos en `resources/scss/admin/components/_tokens.scss` (SCSS compile-time) y emitidos como custom properties en `resources/scss/admin/components/palette.scss`. Materialize (`_variables.scss`) se alinea a estos valores; no al revés.
@@ -156,13 +172,14 @@ Referencia vertical: páginas. **No** copiar `pages_list.blade.php` tal cual: es
 Estructura canónica:
 
 1. Loader: `<preloader />` (o skeleton si la vista ya lo tiene).
-2. `nav.page-navbar` con búsqueda (`lang('search_placeholder')`), toggle vista, refresh. El icono de toggle refleja el modo actual (`view_module` ↔ `view_list`).
-3. Filtros de status como `.status-chip` (botones o `<button>`, no `<div>`).
-4. Grid de cards **o** tabla, un solo `v-for` sobre la lista filtrada.
-5. Vacío: título + una línea + botón a crear.
-6. Búsqueda sin resultados: “Ningún resultado para X” + limpiar filtro. Distinto del vacío total.
-7. FAB `btn-floating btn-large` accent + tooltip `lang(...)`.
-8. `confirm-modal` para delete/archive.
+2. `page-intro` (`admin.components.page_intro`, params `$titleKey` / `$ledeKey`): `h1.page-header` (20px, no display Materialize) + `p.page-intro__lede` (`--st-text-secondary`). Título = nombre del módulo; lede = una línea de beneficio. Un H1 por pantalla. Va **arriba** de `page-navbar` / `data_table` / el `$h1` suelto del formulario.
+3. `nav.page-navbar` con búsqueda (`lang('search_placeholder')`), toggle vista, refresh. El icono de toggle refleja el modo actual (`view_module` ↔ `view_list`).
+4. Filtros de status como `.status-chip` (botones o `<button>`, no `<div>`).
+5. Grid de cards **o** tabla, un solo `v-for` sobre la lista filtrada.
+6. Vacío: icono + título + una línea + botón a crear.
+7. Búsqueda sin resultados: “Ningún resultado para X” + limpiar filtro. Distinto del vacío total.
+8. FAB `btn-floating btn-large` accent + tooltip `lang(...)`.
+9. `confirm-modal` para delete/archive.
 
 Acciones por ítem: FAB coral `more_vert` en la imagen (esquina superior derecha), criterio de las cards de páginas. Estilos compartidos en `resources/scss/admin/components/_entity-cards.scss` (`.page-card`, `.custom-badge`). Pills de status/visibilidad: `admin.components.entity_card_badges`. Grid: wrapper `.pages`.
 
@@ -184,7 +201,8 @@ Referencia: `pages/new.blade.php` (a refinar, no a clonar ciegas).
 
 `admin.layouts.login`. Marca Coda + logo SVG. CTA `$color3`. Wallpaper solo desktop (`hide-on-med-and-down`).
 
-- Labels y botón también por `lang()`.
+- Marca: `ADMIN_BRAND_NAME`. Tagline: `lang('login_tagline')` (“The Lightweight CMS”).
+- Labels y botón también por `lang()` (`username`, `password`, `login`).
 - El submit debe ser `type="submit"` (hoy es `type="button"` + click: Enter es frágil).
 - `html lang` = idioma de sesión, no `"en"` fijo.
 
