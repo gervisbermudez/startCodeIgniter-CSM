@@ -254,6 +254,7 @@ $lang['config_import_invalid'] = 'The file is not a valid export.';
 $lang['config_export_search'] = 'Search by name or path…';
 $lang['config_export_group_empty'] = 'No published items in this group.';
 $lang['config_export_include_unpublished'] = 'Include draft and archived pages';
+$lang['config_export_all'] = 'Export all items';
 $lang['config_active'] = 'Active';
 $lang['config_not_active'] = 'Inactive';
 $lang['config_col_author'] = 'Author';

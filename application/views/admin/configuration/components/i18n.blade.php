@@ -13,6 +13,7 @@ window.CONFIG_I18N = {
     importEmpty: {!! json_encode(lang('config_import_empty')) !!},
     exportSearch: {!! json_encode(lang('config_export_search')) !!},
     exportGroupEmpty: {!! json_encode(lang('config_export_group_empty')) !!},
+    exportAll: {!! json_encode(lang('config_export_all')) !!},
     groupPages: {!! json_encode(lang('config_pages')) !!},
     groupConfig: {!! json_encode(lang('menu_configuration')) !!},
     groupMenus: {!! json_encode(lang('menu_menus')) !!},

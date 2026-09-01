@@ -13,7 +13,7 @@
                 <span>{{ lang('config_export_include_unpublished') }}</span>
             </label>
             <ul class="collapsible config-pick" data-collapsible="expandable">
-                <li class="active" v-for="group in pickerGroups" :key="'ex-' + group.key">
+                <li v-for="group in pickerGroups" :key="'ex-' + group.key">
                     <div class="collapsible-header config-pick-header">
                         <label class="config-pick-check" @click.stop aria-label="{{ lang('config_select_all') }}">
                             <input type="checkbox" class="filled-in"
@@ -49,6 +49,9 @@
                 </li>
             </ul>
             <div class="config-actions">
+                <button type="button" class="btn-flat waves-effect" @click="exportAllItems()" :disabled="!catalogHasItems">
+                    <i class="material-icons left">select_all</i> {{ lang('config_export_all') }}
+                </button>
                 <button type="button" class="btn waves-effect waves-light btn-accent" @click="generateFile()" :disabled="!btnEnable">
                     <i class="material-icons left">file_download</i> {{ lang('config_export') }}
                 </button>

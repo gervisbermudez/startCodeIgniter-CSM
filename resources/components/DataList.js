@@ -147,6 +147,15 @@ var DataList = new Vue({
       }
       return false;
     },
+    catalogHasItems: function () {
+      var i;
+      for (i = 0; i < PICKER_GROUPS.length; i++) {
+        if ((this.catalogData[PICKER_GROUPS[i].key] || []).length) {
+          return true;
+        }
+      }
+      return false;
+    },
     selectedData: function () {
       var src =
         this.sectionActive === "import" ? this.importData : this.catalogData;
@@ -236,6 +245,13 @@ var DataList = new Vue({
         e = document.querySelectorAll(".dropdown-trigger");
         M.Dropdown.init(e, {});
         e = document.querySelectorAll(".collapsible:not(#slide-out)");
+        var i;
+        for (i = 0; i < e.length; i++) {
+          var inst = M.Collapsible.getInstance(e[i]);
+          if (inst) {
+            inst.destroy();
+          }
+        }
         M.Collapsible.init(e, { accordion: false });
         e = document.querySelectorAll("select");
         M.FormSelect.init(e, {});
@@ -306,6 +322,28 @@ var DataList = new Vue({
         return item.checked;
       }).length;
       return n > 0 && n < items.length;
+    },
+    setStoreItemsChecked: function (storeName, checked) {
+      var next = Object.assign({}, this[storeName]);
+      var i;
+      for (i = 0; i < PICKER_GROUPS.length; i++) {
+        var key = PICKER_GROUPS[i].key;
+        next[key] = (next[key] || []).map(function (item) {
+          return Object.assign({}, item, { checked: !!checked });
+        });
+      }
+      this[storeName] = next;
+    },
+    exportAllItems: function () {
+      if (!this.catalogHasItems) {
+        M.toast({ html: configT("exportEmpty") });
+        return;
+      }
+      this.setStoreItemsChecked("catalogData", true);
+      var self = this;
+      this.$nextTick(function () {
+        self.generateFile();
+      });
     },
     onGroupSelectAll: function (storeName, group, event) {
       var checked = event.target.checked;
@@ -579,6 +617,7 @@ var DataList = new Vue({
         M.toast({ html: configT("error") });
       }
       this.loader = false;
+      this.initPlugins();
     },
     apiErrorMessage: function (response) {
       if (response && response.error_message) {

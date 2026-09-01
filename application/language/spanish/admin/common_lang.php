@@ -336,6 +336,7 @@ $lang['config_import_invalid'] = 'El archivo no es una exportación válida.';
 $lang['config_export_search'] = 'Buscar por nombre o path…';
 $lang['config_export_group_empty'] = 'No hay elementos publicados en este grupo.';
 $lang['config_export_include_unpublished'] = 'Incluir páginas en borrador y archivadas';
+$lang['config_export_all'] = 'Exportar todos los elementos';
 $lang['config_active'] = 'Activo';
 $lang['config_not_active'] = 'Inactivo';
 $lang['config_col_author'] = 'Autor';

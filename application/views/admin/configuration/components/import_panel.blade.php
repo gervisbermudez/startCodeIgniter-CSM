@@ -18,7 +18,7 @@
                 </div>
             </div>
             <ul class="collapsible config-pick" data-collapsible="expandable" v-show="selectedFile">
-                <li class="active" v-for="group in pickerGroups" :key="'im-' + group.key" v-if="showImportGroup(group)">
+                <li v-for="group in pickerGroups" :key="'im-' + group.key" v-if="showImportGroup(group)">
                     <div class="collapsible-header config-pick-header">
                         <label class="config-pick-check" @click.stop aria-label="{{ lang('config_select_all') }}">
                             <input type="checkbox" class="filled-in"
