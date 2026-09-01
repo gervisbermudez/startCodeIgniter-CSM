@@ -138,6 +138,62 @@ class PageModel extends MY_Model
         return $collection;
     }
 
+    /**
+     * Published blog posts whose EAV tags JSON contains $tag.
+     *
+     * @param string $tag
+     * @return Collection|bool
+     */
+    public function public_blogs_by_tag($tag)
+    {
+        $tag = trim((string) $tag);
+        if ($tag === '') {
+            return false;
+        }
+        $this->db->reset_query();
+        $this->db->select('page.*');
+        $this->db->from('page');
+        $this->db->join('page_data', 'page_data.page_id = page.page_id');
+        $this->db->where('page.page_type_id', 2);
+        $this->db->where('page.status', 1);
+        $this->db->where('page_data._key', 'tags');
+        $this->db->like('page_data._value', '"' . $this->db->escape_like_str($tag) . '"');
+        $query = $this->db->get();
+        if (!$query || $query->num_rows() < 1) {
+            return false;
+        }
+
+        $rows = array();
+        $seen = array();
+        foreach ($query->result() as $row) {
+            $pid = isset($row->page_id) ? (int) $row->page_id : 0;
+            if ($pid < 1 || isset($seen[$pid])) {
+                continue;
+            }
+            $seen[$pid] = true;
+            $rows[] = $row;
+        }
+        if (empty($rows)) {
+            return false;
+        }
+
+        $collection = $this->filter_results(new Collection($rows));
+        $filtered = $collection->filter(function ($page) use ($tag) {
+            if (!isset($page->page_data['tags'])) {
+                return false;
+            }
+            $tags = $page->page_data['tags'];
+            if (is_object($tags)) {
+                $tags = (array) $tags;
+            }
+            return is_array($tags) && in_array($tag, $tags, true);
+        });
+        if (count($filtered) === 0) {
+            return false;
+        }
+        return $filtered->values();
+    }
+
     public function get_cloud_tags()
     {
         $sql = 'SELECT * FROM `page_data` pd WHERE pd._key = "tags"';

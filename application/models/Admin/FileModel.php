@@ -76,7 +76,10 @@ class FileModel extends MY_Model
         $curdir = $this->current_dir . $this->current_folder;
         $this->save_dir($directorio, $curdir);
 
-        return $this->SiteConfigModel->update_data(array('config_name' => 'LAST_UPDATE_FILEMANAGER'), array('config_value' => date("Y-m-d H:i:s")), 'site_config');
+        $this->load->model('Admin/SiteConfigModel');
+        $ok = $this->SiteConfigModel->update_data(array('config_name' => 'LAST_UPDATE_FILEMANAGER'), array('config_value' => date("Y-m-d H:i:s")), 'site_config');
+        invalidate_site_config_cache();
+        return $ok;
     }
 
     /**

@@ -121,6 +121,8 @@ class ConfigController extends REST_Controller
         $configuration->date_create = date("Y-m-d H:i:s");
 
         if ($configuration->save()) {
+            invalidate_site_config_cache();
+            invalidate_public_html_cache();
             system_logger('config', $configuration->site_config_id, ($this->input->post('site_config_id') ? "updated" : "created"), "Configuración " . $configuration->config_name . " fue " . ($this->input->post('site_config_id') ? "actualizada" : "creada"));
             $this->response_ok($configuration);
             return;
@@ -315,6 +317,7 @@ class ConfigController extends REST_Controller
             $config->find_with(['config_name' => 'UPDATER_LAST_CHECK_UPDATE']);
             $config->config_value = date("Y-m-d H:i:s");
             $config->save();
+            invalidate_site_config_cache();
 
             $response = array(
                 'data' => [
@@ -693,6 +696,7 @@ class ConfigController extends REST_Controller
 
         try {
             $file_content = json_decode($string);
+            $bust_html = false;
             if (isset($file_content->pages) && is_array($file_content->pages)) {
                 $this->load->model('Admin/PageModel');
                 $file_content->pages = array_filter($file_content->pages, function ($page) use ($exportData) {
@@ -706,6 +710,7 @@ class ConfigController extends REST_Controller
                         $page->{$index} = $val;
                     }
                     $page->save();
+                    $bust_html = true;
                 }
             }
 
@@ -723,6 +728,12 @@ class ConfigController extends REST_Controller
                     }
                     $SiteConfig->save();
                 }
+                invalidate_site_config_cache();
+                $bust_html = true;
+            }
+
+            if ($bust_html) {
+                invalidate_public_html_cache();
             }
 
             $this->response_ok(
