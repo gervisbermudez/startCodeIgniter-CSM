@@ -14,7 +14,11 @@ var DataList = new Vue({
     searchQuery: "",
     creatingBackup: false,
     fileToDelete: null,
-    exportData: {
+    catalogData: {
+      pages: [],
+      config: [],
+    },
+    importData: {
       pages: [],
       config: [],
     },
@@ -24,18 +28,23 @@ var DataList = new Vue({
   mixins: [mixins],
   computed: {
     btnEnable: function () {
-      return true;
+      return (
+        this.selectedData.pages.length > 0 ||
+        this.selectedData.config.length > 0
+      );
     },
     selectedData: function () {
+      var src =
+        this.sectionActive === "import" ? this.importData : this.catalogData;
       return {
-        pages: this.exportData.pages
+        pages: src.pages
           .filter(function (item) {
             return item.checked;
           })
           .map(function (item) {
             return item.page_id;
           }),
-        config: this.exportData.config
+        config: src.config
           .filter(function (item) {
             return item.checked;
           })
@@ -236,11 +245,19 @@ var DataList = new Vue({
             try {
               self.selectedFile = true;
               var fileContent = JSON.parse(e.target.result);
-              if (fileContent["pages"]) {
-                self.exportData.pages = fileContent["pages"];
+              self.importData = {
+                pages: [],
+                config: [],
+              };
+              if (fileContent.pages && fileContent.pages.length) {
+                self.importData.pages = fileContent.pages.map(function (page) {
+                  return Object.assign({}, page, { checked: false });
+                });
               }
-              if (fileContent["config"]) {
-                self.exportData.config = fileContent["config"];
+              if (fileContent.config && fileContent.config.length) {
+                self.importData.config = fileContent.config.map(function (item) {
+                  return Object.assign({}, item, { checked: false });
+                });
               }
               self.initPlugins();
             } catch (ex) {
@@ -253,6 +270,10 @@ var DataList = new Vue({
     },
     saveData: function () {
       var self = this;
+      if (!this.btnEnable) {
+        M.toast({ html: configT("importEmpty") });
+        return;
+      }
       this.loader = true;
       var formData = new FormData();
       formData.append("exportData", JSON.stringify(this.selectedData));
@@ -268,13 +289,15 @@ var DataList = new Vue({
           if (response.code == 200) {
             M.toast({ html: configT("importOk") });
           } else {
-            M.toast({ html: configT("error") });
+            M.toast({
+              html: self.apiErrorMessage(response) || configT("error"),
+            });
           }
           self.loader = false;
         },
-        error: function () {
+        error: function (xhr) {
           self.loader = false;
-          M.toast({ html: configT("error") });
+          M.toast({ html: self.xhrErrorMessage(xhr) });
         },
       });
     },
@@ -287,37 +310,33 @@ var DataList = new Vue({
         data: {},
         dataType: "json",
         success: function (response) {
-          self.exportData = response.data;
-          self.exportData.pages = response.data.pages.map(function (page) {
-            return Object.assign({}, page, {
-              checked: false,
-              user: new User(page.user),
-            });
-          });
-          self.exportData.config = response.data.config.map(function (item) {
-            var parsed = {};
-            try {
-              parsed = JSON.parse(item.config_data);
-            } catch (err) {
-              parsed = {};
-            }
-            return Object.assign({}, item, {
-              checked: false,
-              user: new User(item.user),
-              config_data: parsed,
-            });
-          });
+          var data = response && response.data ? response.data : {};
+          var pages = data.pages && data.pages.length ? data.pages : [];
+          var config = data.config && data.config.length ? data.config : [];
+          self.catalogData = {
+            pages: pages.map(function (page) {
+              return Object.assign({}, page, { checked: false });
+            }),
+            config: config.map(function (item) {
+              return Object.assign({}, item, { checked: false });
+            }),
+          };
           self.loader = false;
           self.initPlugins();
         },
         error: function () {
           self.loader = false;
+          self.catalogData = { pages: [], config: [] };
           M.toast({ html: configT("error") });
         },
       });
     },
     generateFile: function () {
       var self = this;
+      if (!this.btnEnable) {
+        M.toast({ html: configT("exportEmpty") });
+        return;
+      }
       this.loader = true;
       $.ajax({
         type: "POST",
@@ -325,47 +344,75 @@ var DataList = new Vue({
         data: { exportData: this.selectedData },
         dataType: "json",
         success: function (response) {
-          if (response.code == 200) {
+          if (
+            response.code == 200 &&
+            response.data &&
+            response.data.exportJson
+          ) {
             M.toast({ html: configT("exportOk") });
-            self.download_export_file(response.data.exportFilename);
+            self.download_export_blob(
+              response.data.exportJson,
+              response.data.filename || "export_data.json"
+            );
           } else {
             self.loader = false;
-            M.toast({ html: configT("error") });
+            M.toast({
+              html: self.apiErrorMessage(response) || configT("error"),
+            });
           }
         },
-        error: function () {
+        error: function (xhr) {
           self.loader = false;
-          M.toast({ html: configT("error") });
+          M.toast({ html: self.xhrErrorMessage(xhr) });
         },
       });
     },
     toggleData: function (items, itemsName) {
-      this.exportData[itemsName] = items.map(function (item) {
+      var storeName =
+        this.sectionActive === "import" ? "importData" : "catalogData";
+      var next = Object.assign({}, this[storeName]);
+      next[itemsName] = items.map(function (item) {
         return Object.assign({}, item, { checked: !item.checked });
       });
+      this[storeName] = next;
     },
-    download_export_file: function (fileName) {
-      var self = this;
-      fetch(BASEURL + "temp/" + fileName)
-        .then(function (resp) {
-          return resp.blob();
-        })
-        .then(function (blob) {
-          var url = window.URL.createObjectURL(blob);
-          var a = document.createElement("a");
-          a.style.display = "none";
-          a.href = url;
-          a.download = fileName;
-          document.body.appendChild(a);
-          a.click();
-          window.URL.revokeObjectURL(url);
-          M.toast({ html: configT("downloadStarted") });
-          self.loader = false;
-        })
-        .catch(function () {
-          M.toast({ html: configT("error") });
-          self.loader = false;
+    download_export_blob: function (jsonText, fileName) {
+      try {
+        var blob = new Blob([jsonText], {
+          type: "application/json;charset=utf-8",
         });
+        var url = window.URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.style.display = "none";
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      } catch (err) {
+        M.toast({ html: configT("error") });
+      }
+      this.loader = false;
+    },
+    apiErrorMessage: function (response) {
+      if (response && response.error_message) {
+        if (typeof response.error_message === "string") {
+          return response.error_message;
+        }
+        if (response.error_message.message) {
+          return response.error_message.message;
+        }
+      }
+      return "";
+    },
+    xhrErrorMessage: function (xhr) {
+      try {
+        var body = JSON.parse(xhr.responseText);
+        return this.apiErrorMessage(body) || configT("error");
+      } catch (e) {
+        return configT("error");
+      }
     },
     readSectionFromUrl: function () {
       try {

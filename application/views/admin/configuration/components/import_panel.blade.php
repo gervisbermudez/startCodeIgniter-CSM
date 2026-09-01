@@ -18,10 +18,10 @@
                 </div>
             </div>
             <ul class="collapsible config-pick" v-show="selectedFile">
-                <li v-if="exportData.pages.length">
+                <li v-if="importData.pages.length">
                     <div class="collapsible-header config-pick-header">
                         <label class="config-pick-check" @click.stop aria-label="{{ lang('config_select_all') }}">
-                            <input type="checkbox" class="filled-in" v-on:change="toggleData(exportData.pages, 'pages')" />
+                            <input type="checkbox" class="filled-in" v-on:change="toggleData(importData.pages, 'pages')" />
                             <span></span>
                         </label>
                         <i class="material-icons" aria-hidden="true">web</i>
@@ -29,7 +29,7 @@
                     </div>
                     <div class="collapsible-body config-pick-body">
                         <ul class="config-pick-list">
-                            <li class="config-pick-row" v-for="(page, index) in exportData.pages" :key="'ip-' + index">
+                            <li class="config-pick-row" v-for="(page, index) in importData.pages" :key="'ip-' + index">
                                 <label class="config-pick-check">
                                     <input type="checkbox" class="filled-in" v-model="page.checked" />
                                     <span></span>
@@ -42,10 +42,10 @@
                         </ul>
                     </div>
                 </li>
-                <li v-if="exportData.config.length">
+                <li v-if="importData.config.length">
                     <div class="collapsible-header config-pick-header">
                         <label class="config-pick-check" @click.stop aria-label="{{ lang('config_select_all') }}">
-                            <input type="checkbox" class="filled-in" v-on:change="toggleData(exportData.config, 'config')" />
+                            <input type="checkbox" class="filled-in" v-on:change="toggleData(importData.config, 'config')" />
                             <span></span>
                         </label>
                         <i class="material-icons" aria-hidden="true">settings</i>
@@ -53,7 +53,7 @@
                     </div>
                     <div class="collapsible-body config-pick-body">
                         <ul class="config-pick-list">
-                            <li class="config-pick-row" v-for="(item, index) in exportData.config" :key="'ic-' + index">
+                            <li class="config-pick-row" v-for="(item, index) in importData.config" :key="'ic-' + index">
                                 <label class="config-pick-check">
                                     <input type="checkbox" class="filled-in" v-model="item.checked" />
                                     <span></span>

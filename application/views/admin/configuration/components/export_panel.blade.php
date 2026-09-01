@@ -12,7 +12,7 @@
                 <li>
                     <div class="collapsible-header config-pick-header">
                         <label class="config-pick-check" @click.stop aria-label="{{ lang('config_select_all') }}">
-                            <input type="checkbox" class="filled-in" v-on:change="toggleData(exportData.pages, 'pages')" />
+                            <input type="checkbox" class="filled-in" v-on:change="toggleData(catalogData.pages, 'pages')" />
                             <span></span>
                         </label>
                         <i class="material-icons" aria-hidden="true">web</i>
@@ -20,7 +20,7 @@
                     </div>
                     <div class="collapsible-body config-pick-body">
                         <ul class="config-pick-list">
-                            <li class="config-pick-row" v-for="(page, index) in exportData.pages" :key="'ep-' + index">
+                            <li class="config-pick-row" v-for="(page, index) in catalogData.pages" :key="'ep-' + index">
                                 <label class="config-pick-check">
                                     <input type="checkbox" class="filled-in" v-model="page.checked" />
                                     <span></span>
@@ -36,7 +36,7 @@
                 <li>
                     <div class="collapsible-header config-pick-header">
                         <label class="config-pick-check" @click.stop aria-label="{{ lang('config_select_all') }}">
-                            <input type="checkbox" class="filled-in" v-on:change="toggleData(exportData.config, 'config')" />
+                            <input type="checkbox" class="filled-in" v-on:change="toggleData(catalogData.config, 'config')" />
                             <span></span>
                         </label>
                         <i class="material-icons" aria-hidden="true">settings</i>
@@ -44,7 +44,7 @@
                     </div>
                     <div class="collapsible-body config-pick-body">
                         <ul class="config-pick-list">
-                            <li class="config-pick-row" v-for="(item, index) in exportData.config" :key="'ec-' + index">
+                            <li class="config-pick-row" v-for="(item, index) in catalogData.config" :key="'ec-' + index">
                                 <label class="config-pick-check">
                                     <input type="checkbox" class="filled-in" v-model="item.checked" />
                                     <span></span>
