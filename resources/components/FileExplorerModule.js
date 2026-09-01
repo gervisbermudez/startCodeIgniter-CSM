@@ -406,7 +406,13 @@ var FileExplorerModule = new Vue({
           path: self.root,
         },
         dataType: "json",
+        timeout: 120000,
         success: function (response) {
+          self.navigateFiles(self.curDir);
+        },
+        error: function (xhr) {
+          self.fileloader = false;
+          self.toastError(xhr);
           self.navigateFiles(self.curDir);
         },
       });
