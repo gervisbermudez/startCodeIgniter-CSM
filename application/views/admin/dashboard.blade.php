@@ -296,7 +296,7 @@ if (!isset($dashboard_fab)) {
                             <button type="button" class="dashboard-icon-btn tooltipped" :disabled="ri === visibleRows.length - 1" data-position="top" data-tooltip="{{ lang('dashboard_layout_down') }}" aria-label="{{ lang('dashboard_layout_down') }}" @click="moveRow(ri, 1)">
                                 <i class="material-icons">arrow_downward</i>
                             </button>
-                            <button type="button" class="dashboard-icon-btn tooltipped" :disabled="row.cols.length >= 3" data-position="top" data-tooltip="{{ lang('dashboard_layout_add_column') }}" aria-label="{{ lang('dashboard_layout_add_column') }}" @click="addColumn(ri)">
+                            <button type="button" class="dashboard-icon-btn tooltipped" :disabled="row.cols.length >= maxCols" data-position="top" data-tooltip="{{ lang('dashboard_layout_add_column') }}" aria-label="{{ lang('dashboard_layout_add_column') }}" @click="addColumn(ri)">
                                 <i class="material-icons">view_column</i>
                             </button>
                             <button type="button" class="dashboard-icon-btn tooltipped" data-position="top" data-tooltip="{{ lang('dashboard_layout_remove_row') }}" aria-label="{{ lang('dashboard_layout_remove_row') }}" @click="removeRow(ri)">
@@ -346,9 +346,18 @@ if (!isset($dashboard_fab)) {
                                 </button>
                             </div>
                         </div>
+                        <div v-if="layoutEditing && canEditLayout && row.cols.length < maxCols && leftoverWidth(row) > 0" :class="addColClass(row)">
+                            <button type="button" class="dashboard-slot-add tooltipped" data-position="top" data-tooltip="{{ lang('dashboard_layout_add_column') }}" aria-label="{{ lang('dashboard_layout_add_column') }}" @click="addColumn(ri)">
+                                <i class="material-icons">add</i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
+            <button v-if="layoutEditing && canEditLayout" type="button" class="dashboard-layout-add-row" @click="addRow">
+                <i class="material-icons">add</i>
+                <span>{{ lang('dashboard_layout_add_row') }}</span>
+            </button>
             <div v-if="layoutIsEmpty && !layoutEditing" class="col s12">
                 <div class="dashboard-empty">
                     <i class="material-icons">dashboard</i>
@@ -731,6 +740,148 @@ if (!isset($dashboard_fab)) {
         </div>
 </script>
 
+
+<script type="text/x-template" id="dashboard-kpi-card-template">
+    <a class="kpi-card kpi-card-link kpi-card-single" :href="analyticsUrl">
+        <template v-if="widgetId === 'kpi_visitors'">
+            <i class="material-icons kpi-icon">people</i>
+            <div class="kpi-value">@{{kpis.uniqueVisitors}}</div>
+            <div class="kpi-label">{{ lang('dashboard_unique_visitors') }}</div>
+            <div class="kpi-change" :class="{positive: kpis.dailyGrowth >= 0, negative: kpis.dailyGrowth < 0}">
+                <i class="material-icons tiny">@{{kpis.dailyGrowth >= 0 ? 'trending_up' : 'trending_down'}}</i>
+                @{{Math.abs(kpis.dailyGrowth)}}% {{ lang('dashboard_vs_yesterday') }}
+            </div>
+        </template>
+        <template v-else-if="widgetId === 'kpi_visits'">
+            <i class="material-icons kpi-icon">visibility</i>
+            <div class="kpi-value">@{{kpis.todayVisits}}</div>
+            <div class="kpi-label">{{ lang('dashboard_today_visits') }}</div>
+            <div class="kpi-change">{{ lang('dashboard_yesterday') }}: @{{kpis.yesterdayVisits}}</div>
+        </template>
+        <template v-else-if="widgetId === 'kpi_pages'">
+            <i class="material-icons kpi-icon">pages</i>
+            <div class="kpi-value">@{{kpis.pagesPerSession}}</div>
+            <div class="kpi-label">{{ lang('dashboard_pages_per_session') }}</div>
+            <div class="kpi-change">{{ lang('dashboard_engagement') }}</div>
+        </template>
+        <template v-else>
+            <i class="material-icons kpi-icon">exit_to_app</i>
+            <div class="kpi-value">@{{kpis.bounceRate}}%</div>
+            <div class="kpi-label">{{ lang('dashboard_bounce_rate') }}</div>
+            <div class="kpi-change" :class="{positive: kpis.bounceRate < 50, negative: kpis.bounceRate >= 50}">
+                <span v-if="kpis.bounceRate < 50">{{ lang('dashboard_bounce_good') }}</span>
+                <span v-else>{{ lang('dashboard_bounce_improve') }}</span>
+            </div>
+        </template>
+    </a>
+</script>
+
+<script type="text/x-template" id="dashboard-chart-panel-template">
+    <div class="panel dashboard-chart-panel">
+        <div class="title panel-title-row">
+            <h5 v-if="widgetId === 'chart_visits'">{{ lang('dashboard_visits_per_day') }}</h5>
+            <h5 v-else-if="widgetId === 'chart_requests'">{{ lang('dashboard_requests_count') }}</h5>
+            <h5 v-else-if="widgetId === 'chart_devices'">{{ lang('dashboard_devices') }}</h5>
+            <h5 v-else-if="widgetId === 'chart_urls'">{{ lang('dashboard_frequent_urls') }}</h5>
+            <h5 v-else-if="widgetId === 'chart_top_pages'">{{ lang('dashboard_top_pages') }}</h5>
+            <h5 v-else>{{ lang('dashboard_traffic_sources') }}</h5>
+            <a :href="analyticsUrl" class="btn-flat waves-effect teal-text">{{ lang('dashboard_view_analytics') }}</a>
+        </div>
+        <div class="dashboard-empty" v-if="canViewAnalytics && !hasAnalyticsData && !loader">
+            <i class="material-icons">insights</i>
+            <p>{{ lang('dashboard_no_analytics_data') }}</p>
+        </div>
+        <div v-show="hasAnalyticsData || widgetId === 'chart_top_pages' || widgetId === 'chart_referrers'">
+            <div v-if="widgetId === 'chart_visits'" class="chart chart-solo">
+                <div class="chart-body">
+                    <div class="col1"><canvas id="dashChartVisits"></canvas></div>
+                    <div class="col2">
+                        <span class="chart-title">{{ lang('dashboard_visitors') }}</span>
+                        <div class="chart-big-number">@{{stats.totalVisitors.toLocaleString()}}</div>
+                    </div>
+                </div>
+            </div>
+            <div v-else-if="widgetId === 'chart_requests'" class="chart chart-solo">
+                <div class="chart-body">
+                    <div class="col1"><canvas id="dashChartRequests"></canvas></div>
+                    <div class="col2">
+                        <span class="chart-title">{{ lang('dashboard_requests') }}</span>
+                        <div class="chart-big-number">@{{stats.totalRequests.toLocaleString()}}</div>
+                    </div>
+                </div>
+            </div>
+            <div v-else-if="widgetId === 'chart_devices'" class="chart chart-solo">
+                <div class="chart-body">
+                    <div class="col1"><canvas id="dashChartDevices"></canvas></div>
+                </div>
+            </div>
+            <div v-else-if="widgetId === 'chart_urls'" class="chart chart-solo">
+                <div class="chart-body">
+                    <div class="col1"><canvas id="dashChartUrls"></canvas></div>
+                </div>
+            </div>
+            <ul v-else-if="widgetId === 'chart_top_pages'" class="collection dashboard-plain-list">
+                <li class="collection-item" v-for="(count, url) in topPages" :key="url">
+                    <span class="truncate">@{{url}}</span>
+                    <span class="badge">@{{count}} {{ lang('analytics_visits') }}</span>
+                </li>
+                <li v-if="Object.keys(topPages).length === 0" class="collection-item dashboard-empty">{{ lang('dashboard_no_analytics_data') }}</li>
+            </ul>
+            <div v-else>
+                <div class="dashboard-empty" v-if="!hasReferrers">{{ lang('dashboard_no_analytics_data') }}</div>
+                <div v-show="hasReferrers" class="chart chart-solo">
+                    <canvas id="dashChartReferrers"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/x-template" id="dashboard-events-template">
+    <div class="panel dashboard-side-panel">
+        <div class="title panel-title-row">
+            <h5>{{ lang('dashboard_widget_events') }}</h5>
+            <a href="{{ base_url('admin/events') }}" class="btn-flat waves-effect teal-text">{{ lang('menu_events') }}</a>
+        </div>
+        <ul class="collection dashboard-plain-list">
+            <li class="collection-item" v-for="ev in events" :key="ev.event_id">
+                <a :href="ev.link" class="truncate teal-text">@{{ ev.name }}</a>
+                <span class="badge">@{{ ev.date_start }}</span>
+            </li>
+            <li v-if="!events.length" class="collection-item dashboard-empty">{{ lang('dashboard_no_events') }}</li>
+        </ul>
+    </div>
+</script>
+
+<script type="text/x-template" id="dashboard-site-status-template">
+    <div class="panel dashboard-side-panel">
+        <div class="title panel-title-row">
+            <h5>{{ lang('dashboard_widget_site_status') }}</h5>
+            <a href="{{ base_url('admin/configuration') }}" class="btn-flat waves-effect teal-text">{{ lang('dashboard_enable_tracking') }}</a>
+        </div>
+        <ul class="collection dashboard-plain-list">
+            <li class="collection-item">@{{ site.title }}</li>
+            <li class="collection-item" v-if="site.tracking">{{ lang('dashboard_tracking_on') }}</li>
+            <li class="collection-item" v-else>{{ lang('dashboard_tracking_disabled') }}</li>
+            <li class="collection-item" v-if="site.theme">@{{ site.theme }}</li>
+        </ul>
+    </div>
+</script>
+
+<script type="text/x-template" id="dashboard-quick-settings-template">
+    <div class="panel dashboard-side-panel">
+        <div class="title panel-title-row">
+            <h5>{{ lang('dashboard_widget_quick_settings') }}</h5>
+        </div>
+        <div class="dashboard-quick-settings">
+            <a href="{{ base_url('admin/configuration') }}?section=general">{{ lang('config_general') }}</a>
+            <a href="{{ base_url('admin/configuration') }}?section=theme">{{ lang('config_appearance') }}</a>
+            <a href="{{ base_url('admin/configuration') }}?section=seo">{{ lang('config_seo') }}</a>
+            <a href="{{ base_url('admin/configuration/data') }}">{{ lang('config_data_backups') }}</a>
+        </div>
+    </div>
+</script>
+
 <script type="text/x-template" id="dashboard-widget-preview-template">
     <div class="dash-preview" :data-widget="widgetId">
         <div v-if="widgetId === 'kpis'" class="dash-preview-kpis">
@@ -791,6 +942,24 @@ if (!isset($dashboard_fab)) {
         <div v-else-if="widgetId === 'timeline'" class="dash-preview-list">
             <div>{{ lang('dashboard_timeline') }}</div>
         </div>
+        <div v-else-if="widgetId && widgetId.indexOf('kpi_') === 0" class="dash-preview-kpis">
+            <span>128<small>KPI</small></span>
+        </div>
+        <div v-else-if="widgetId && widgetId.indexOf('chart_') === 0" class="dash-preview-charts">
+            <div class="dash-preview-bars"><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+        <div v-else-if="widgetId === 'events'" class="dash-preview-list">
+            <div>Launch night</div>
+            <div>Office hours</div>
+        </div>
+        <div v-else-if="widgetId === 'site_status'" class="dash-preview-list">
+            <div>Start CMS</div>
+            <div>{{ lang('dashboard_tracking_on') }}</div>
+        </div>
+        <div v-else-if="widgetId === 'quick_settings'" class="dash-preview-pills">
+            <span>{{ lang('config_general') }}</span>
+            <span>{{ lang('config_appearance') }}</span>
+        </div>
     </div>
 </script>
 
@@ -830,6 +999,19 @@ if (!isset($dashboard_fab)) {
         'dashboard_widget_creator' => lang('dashboard_widget_creator'),
         'dashboard_widget_drafts' => lang('dashboard_widget_drafts'),
         'dashboard_widget_timeline' => lang('dashboard_widget_timeline'),
+        'dashboard_widget_kpi_visitors' => lang('dashboard_widget_kpi_visitors'),
+        'dashboard_widget_kpi_visits' => lang('dashboard_widget_kpi_visits'),
+        'dashboard_widget_kpi_pages' => lang('dashboard_widget_kpi_pages'),
+        'dashboard_widget_kpi_bounce' => lang('dashboard_widget_kpi_bounce'),
+        'dashboard_widget_chart_visits' => lang('dashboard_widget_chart_visits'),
+        'dashboard_widget_chart_requests' => lang('dashboard_widget_chart_requests'),
+        'dashboard_widget_chart_devices' => lang('dashboard_widget_chart_devices'),
+        'dashboard_widget_chart_urls' => lang('dashboard_widget_chart_urls'),
+        'dashboard_widget_chart_top_pages' => lang('dashboard_widget_chart_top_pages'),
+        'dashboard_widget_chart_referrers' => lang('dashboard_widget_chart_referrers'),
+        'dashboard_widget_events' => lang('dashboard_widget_events'),
+        'dashboard_widget_site_status' => lang('dashboard_widget_site_status'),
+        'dashboard_widget_quick_settings' => lang('dashboard_widget_quick_settings'),
     ), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS) ?>;
     window.ADMIN_LANG = Object.assign(window.ADMIN_LANG || {}, extra);
 })();

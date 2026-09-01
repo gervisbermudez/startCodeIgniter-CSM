@@ -55,7 +55,7 @@ class DashboardController extends REST_Controller
     {
         $caps = dashboard_capabilities();
         $perm_key = dashboard_perm_cache_key();
-        $cache_key = 'dashboard_data_v5_' . userdata('user_id') . '_' . $perm_key;
+        $cache_key = 'dashboard_data_v6_' . userdata('user_id') . '_' . $perm_key;
         $cached_data = $this->cache->get($cache_key);
 
         if ($cached_data !== false) {
@@ -163,6 +163,20 @@ class DashboardController extends REST_Controller
             $this->load->model('Admin/EventModel');
             $event = new EventModel();
             $result['counts']['events'] = $event->get_count_all(array('status' => 1));
+            $upcoming = $event->upcoming(6);
+            $result['events'] = $this->dashboard_project_events($upcoming);
+        }
+
+        if (!empty($caps['select_config'])) {
+            $theme = config('THEME_PATH');
+            if (!$theme && defined('SITE_THEME')) {
+                $theme = SITE_THEME;
+            }
+            $result['site'] = array(
+                'title' => (string) config('SITE_TITLE'),
+                'tracking' => config('SITEM_TRACK_VISITORS') == 'Si',
+                'theme' => (string) $theme,
+            );
         }
 
         if (!empty($caps['select_content_data'])) {
@@ -349,6 +363,29 @@ class DashboardController extends REST_Controller
                 'avatar' => isset($data['avatar']) ? $data['avatar'] : '',
             ),
         );
+    }
+
+    /**
+     * @param mixed $events
+     * @return array
+     */
+    private function dashboard_project_events($events)
+    {
+        $out = array();
+        foreach ($this->dashboard_list($events) as $event) {
+            $event = $this->dashboard_assoc($event);
+            $id = isset($event['event_id']) ? (int) $event['event_id'] : 0;
+            if (!$id) {
+                continue;
+            }
+            $out[] = array(
+                'event_id' => $id,
+                'name' => isset($event['name']) ? $event['name'] : '',
+                'date_start' => isset($event['date_start']) ? $event['date_start'] : '',
+                'link' => base_url('admin/events/edit/' . $id),
+            );
+        }
+        return $out;
     }
 
     /**

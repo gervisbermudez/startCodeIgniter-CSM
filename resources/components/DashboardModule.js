@@ -77,7 +77,13 @@ var DashboardModule = new Vue({
     pickerOpen: false,
     pickerRi: 0,
     pickerCi: 0,
-    columnWidths: [3, 4, 5, 6, 7, 12],
+    columnWidths: [3, 4, 5, 6, 7, 8, 9, 12],
+    maxCols: 4,
+    site: {
+      title: "",
+      tracking: false,
+      theme: "",
+    },
     chartPayload: null,
     defaultAvatar:
       (typeof BASEURL !== "undefined" ? BASEURL : "/") +
@@ -210,9 +216,27 @@ var DashboardModule = new Vue({
       w = this.clampWidth(w || 12);
       return { w: w, col: this.colClass(w, true), items: [] };
     },
+    leftoverWidth: function (row) {
+      var used = 0;
+      ((row && row.cols) || []).forEach(function (col) {
+        used += parseInt(col.w, 10) || 0;
+      });
+      var left = 12 - used;
+      return left > 0 ? left : 0;
+    },
+    addColClass: function (row) {
+      var left = this.leftoverWidth(row);
+      if (left < 1) {
+        left = 2;
+      }
+      if (left > 12) {
+        left = 12;
+      }
+      return "col s" + left;
+    },
     rebalanceRow: function (row) {
       var n = (row.cols || []).length;
-      var w = n <= 1 ? 12 : n === 2 ? 6 : 4;
+      var w = n <= 1 ? 12 : n === 2 ? 6 : n === 3 ? 4 : 3;
       var self = this;
       row.cols = (row.cols || []).map(function (col) {
         return Object.assign({}, col, { w: w, col: self.colClass(w, true) });
@@ -237,11 +261,14 @@ var DashboardModule = new Vue({
     },
     widgetBind: function (item) {
       return {
+        widgetId: item && item.id,
         users: this.users,
         files: this.files,
         albumes: this.albumes,
         forms_types: this.forms_types,
         content: this.content,
+        events: this.events,
+        site: this.site,
         total: this.widgetTotal(item),
         kpis: this.kpis,
         analyticsUrl: this.analyticsUrl,
@@ -327,7 +354,7 @@ var DashboardModule = new Vue({
     addColumn: function (ri) {
       this.mutateDraft(function (layout) {
         var row = layout.rows[ri];
-        if (!row || (row.cols || []).length >= 3) return;
+        if (!row || (row.cols || []).length >= this.maxCols) return;
         row.cols.push(this.emptyCol(4));
         this.rebalanceRow(row);
       });
@@ -522,10 +549,22 @@ var DashboardModule = new Vue({
           displayX: false,
           displayY: false,
         });
+        this.createChart("dashChartDevices", {
+          type: "bar",
+          data: data.chart3,
+          displayX: false,
+          displayY: false,
+        });
       }
       if (data.chart4 && data.chart4.labels && data.chart4.labels.length) {
         this.graphs.urlFrecuentes = this.calcularPorcentajeMayor(data.chart4);
         this.createChart("myChart4", {
+          type: "doughnut",
+          data: data.chart4,
+          displayX: false,
+          displayY: false,
+        });
+        this.createChart("dashChartUrls", {
           type: "doughnut",
           data: data.chart4,
           displayX: false,
@@ -538,6 +577,11 @@ var DashboardModule = new Vue({
           data: data.chart1,
           displayGrid: false,
         });
+        this.createChart("dashChartVisits", {
+          type: "line",
+          data: data.chart1,
+          displayGrid: false,
+        });
       }
       if (data.chart2 && data.chart2.labels && data.chart2.labels.length) {
         this.createChart("myChart2", {
@@ -545,9 +589,20 @@ var DashboardModule = new Vue({
           data: data.chart2,
           displayGrid: false,
         });
+        this.createChart("dashChartRequests", {
+          type: "bar",
+          data: data.chart2,
+          displayGrid: false,
+        });
       }
       if (data.referrers && data.referrers.labels && data.referrers.labels.length) {
         this.createChart("myChartReferrers", {
+          type: "doughnut",
+          data: data.referrers,
+          displayX: false,
+          displayY: false,
+        });
+        this.createChart("dashChartReferrers", {
           type: "doughnut",
           data: data.referrers,
           displayX: false,
@@ -967,6 +1022,9 @@ var DashboardModule = new Vue({
             })
             : [];
           this.events = data.events ? data.events : [];
+          if (data.site) {
+            this.site = Object.assign({}, this.site, data.site);
+          }
 
           if (typeof data.can_view_analytics !== "undefined") {
             this.canViewAnalytics = !!data.can_view_analytics;

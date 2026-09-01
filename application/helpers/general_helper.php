@@ -687,6 +687,7 @@ if (!function_exists('dashboard_capabilities')) {
             'select_content_data' => 'SELECT_CONTENT_DATA',
             'select_categories' => 'SELECT_CATEGORIES',
             'select_fragments' => 'SELECT_FRAGMENTS',
+            'select_config' => 'SELECT_CONFIG',
             'create_page' => 'CREATE_PAGE',
             'create_user' => 'CREATE_USER',
             'create_form_custom' => 'CREATE_FORM_CUSTOM',
@@ -820,9 +821,19 @@ if (!function_exists('dashboard_widget_allowed')) {
     }
 }
 
+if (!function_exists('dashboard_layout_max_cols')) {
+    /**
+     * @return int
+     */
+    function dashboard_layout_max_cols()
+    {
+        return 4;
+    }
+}
+
 if (!function_exists('dashboard_clamp_width')) {
     /**
-     * Materialize 12-grid presets: 3, 4, 5, 6, 7, 12.
+     * Materialize 12-grid presets: 3, 4, 5, 6, 7, 8, 9, 12.
      *
      * @param mixed $w
      * @return int
@@ -830,7 +841,7 @@ if (!function_exists('dashboard_clamp_width')) {
     function dashboard_clamp_width($w)
     {
         $w = (int) $w;
-        $allowed = array(3, 4, 5, 6, 7, 12);
+        $allowed = array(3, 4, 5, 6, 7, 8, 9, 12);
         if (in_array($w, $allowed, true)) {
             return $w;
         }
@@ -909,7 +920,7 @@ if (!function_exists('dashboard_pack_flat_to_rows')) {
                 continue;
             }
             $w = isset($item['w']) ? dashboard_clamp_width($item['w']) : 12;
-            if ($cols && ($used + $w > 12 || count($cols) >= 3)) {
+            if ($cols && ($used + $w > 12 || count($cols) >= dashboard_layout_max_cols())) {
                 $rows[] = array('cols' => $cols);
                 $cols = array();
                 $used = 0;
@@ -977,7 +988,7 @@ if (!function_exists('dashboard_col_item_ids')) {
 
 if (!function_exists('dashboard_layout_slim')) {
     /**
-     * Persist rows / cols / widget ids. Widths are 3, 4, 5, 6, 7 or 12.
+     * Persist rows / cols / widget ids. Widths are 3–9 or 12.
      *
      * @param array $layout
      * @return array
@@ -1015,7 +1026,7 @@ if (!function_exists('dashboard_layout_slim')) {
 if (!function_exists('dashboard_normalize_layout')) {
     /**
      * Grid of rows and columns. Drops unknown ids and widgets the group
-     * cannot use. Overwrites width to 3 / 4 / 5 / 6 / 7 / 12. The API never trusts the client.
+     * cannot use. Overwrites width to 3–9 or 12. The API never trusts the client.
      *
      * @param mixed $items
      * @return array
@@ -1065,7 +1076,7 @@ if (!function_exists('dashboard_normalize_layout')) {
             if (!$cols_out) {
                 continue;
             }
-            $chunks = array_chunk($cols_out, 3);
+            $chunks = array_chunk($cols_out, dashboard_layout_max_cols());
             foreach ($chunks as $chunk) {
                 $rows_out[] = array('cols' => $chunk);
             }
@@ -1087,6 +1098,9 @@ if (!function_exists('dashboard_default_layout')) {
     {
         $items = array();
         foreach (dashboard_widget_catalog() as $widget) {
+            if (isset($widget['in_default']) && !$widget['in_default']) {
+                continue;
+            }
             $items[] = array(
                 'id' => $widget['id'],
                 'w' => isset($widget['w']) ? (int) $widget['w'] : 12,
