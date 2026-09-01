@@ -537,7 +537,10 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin: 12px 0 16px;
+  width: 96%;
+  max-width: 96%;
+  margin: 12px auto 16px;
+  box-sizing: border-box;
 
   .chip {
     cursor: pointer;

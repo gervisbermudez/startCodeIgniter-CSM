@@ -286,6 +286,7 @@ $lang['pages_form_loading'] = 'Loading form';
 
 // Notifications inbox
 $lang['notifications_title'] = 'Notifications';
+$lang['notifications_lede'] = 'Alerts from forms, users and backups.';
 $lang['notifications_all'] = 'All notifications';
 $lang['notifications_unread'] = 'Unread';
 $lang['notifications_read'] = 'Read';
@@ -313,6 +314,7 @@ $lang['siteforms_edit'] = 'Edit form';
 $lang['siteforms_inbox'] = 'Form submissions';
 $lang['siteforms_not_found'] = 'Form not found';
 $lang['siteforms_lede'] = 'Collect messages from visitors.';
+$lang['siteforms_inbox_lede'] = 'Messages sent through public forms.';
 $lang['siteforms_name'] = 'Name';
 $lang['siteforms_name_help'] = 'Internal name. Use it when you insert this form on a page.';
 $lang['siteforms_template'] = 'Template';

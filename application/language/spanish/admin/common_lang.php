@@ -346,6 +346,7 @@ $lang['pages_form_loading'] = 'Cargando formulario';
 
 // Notifications inbox
 $lang['notifications_title'] = 'Notificaciones';
+$lang['notifications_lede'] = 'Alertas de formularios, usuarios y backups.';
 $lang['notifications_all'] = 'Todas las notificaciones';
 $lang['notifications_unread'] = 'No leídas';
 $lang['notifications_read'] = 'Leídas';
@@ -372,6 +373,7 @@ $lang['siteforms_edit'] = 'Editar formulario';
 $lang['siteforms_inbox'] = 'Envíos de formularios';
 $lang['siteforms_not_found'] = 'Formulario no encontrado';
 $lang['siteforms_lede'] = 'Recibí mensajes de los visitantes.';
+$lang['siteforms_inbox_lede'] = 'Mensajes enviados desde los formularios públicos.';
 $lang['siteforms_name'] = 'Nombre';
 $lang['siteforms_name_help'] = 'Nombre interno. Usalo cuando insertás este formulario en una página.';
 $lang['siteforms_template'] = 'Plantilla';
