@@ -6,6 +6,7 @@ var MenuLists = new Vue({
     loader: true,
     filter: "",
     toDeleteItem: {},
+    currentStatus: null,
     listEndpoint: "api/v1/menus",
     listKey: "menus",
     listPk: "menu_id",
@@ -23,7 +24,14 @@ var MenuLists = new Vue({
     },
   },
   methods: {
-    getMenus: function (page) {
+    getMenus: function (status, page) {
+      if (typeof status === "undefined") {
+        status = this.currentStatus;
+      }
+      if (status !== this.currentStatus) {
+        page = 1;
+      }
+      this.currentStatus = status;
       this.fetchList(page);
     },
     deleteItem: function (menu, index) {

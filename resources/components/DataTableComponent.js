@@ -99,6 +99,12 @@ var dataTable = Vue.component("dataTable", {
         return {};
       },
     },
+    statusFilters: {
+      type: Array,
+      default: function () {
+        return [];
+      },
+    },
     client_search: {
       type: Boolean,
       default: false,
@@ -145,10 +151,21 @@ var dataTable = Vue.component("dataTable", {
         item: null,
         index: null,
       },
+      chipFilter: null,
     };
   },
   mixins: [mixins],
   computed: {
+    hasStatusFilters: function () {
+      return this.statusFilters && this.statusFilters.length > 0;
+    },
+    isStatusChipActive: function () {
+      if (this.chipFilter !== null && this.chipFilter !== undefined && this.chipFilter !== "") {
+        return true;
+      }
+      var q = this.query_params || {};
+      return q.status !== undefined && q.status !== null && q.status !== "";
+    },
     filterData: function () {
       if (!this.filter) {
         return this.data;
@@ -178,6 +195,16 @@ var dataTable = Vue.component("dataTable", {
     resetFilter: function () {
       this.filter = "";
     },
+    setStatusFilter: function (value) {
+      this.chipFilter = value;
+      this.getData(1);
+    },
+    clearChipFilter: function () {
+      this.filter = "";
+      this.chipFilter = null;
+      this.$emit("clear-status");
+      this.getData(1);
+    },
     pagerTo(page) {
       this.getData(page);
     },
@@ -201,7 +228,11 @@ var dataTable = Vue.component("dataTable", {
       self.loader = true;
       var url = BASEURL + this.endpoint;
       if (this.pagination) {
-        var query = this.listQuery(this.query_params || {}, page);
+        var extra = Object.assign({}, this.query_params || {});
+        if (this.chipFilter !== null && this.chipFilter !== undefined && this.chipFilter !== "") {
+          extra.status = this.chipFilter;
+        }
+        var query = this.listQuery(extra, page);
         var params = [];
         Object.keys(query).forEach(function (key) {
           params.push(encodeURIComponent(key) + "=" + encodeURIComponent(query[key]));

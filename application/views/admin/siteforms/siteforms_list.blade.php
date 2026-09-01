@@ -9,11 +9,13 @@
         'ledeKey' => 'siteforms_lede',
     ])
     <data-table
+        ref="formsTable"
         :endpoint="endpoint"
         :colums="colums"
         :index_data="index_data"
         :pagination="true"
         :client_search="true"
+        :query_params="queryParams"
         :options="options"
         :show_fab="canCreate"
         :can_update="canUpdate"
@@ -27,7 +29,14 @@
         :confirm_body="confirmBody"
         v-on:edit="editItem"
         v-on:delete="deleteItem"
-        v-on:new="newItem"></data-table>
+        v-on:new="newItem"
+        v-on:clear-status="currentStatus = null">
+        <div slot="filters" class="filter-group" role="group" aria-label="<?= htmlspecialchars(lang('status'), ENT_QUOTES, 'UTF-8') ?>">
+            <button type="button" class="status-chip" :class="{ active: currentStatus === null }" @click="setStatus(null)"><?= lang('menu_all') ?></button>
+            <button type="button" class="status-chip" :class="{ active: currentStatus === 1 }" @click="setStatus(1)"><?= lang('siteforms_active') ?></button>
+            <button type="button" class="status-chip" :class="{ active: currentStatus === 2 }" @click="setStatus(2)"><?= lang('siteforms_inactive') ?></button>
+        </div>
+    </data-table>
 </div>
 @endsection
 

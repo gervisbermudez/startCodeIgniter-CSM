@@ -61,6 +61,12 @@ var FragmentsLists = new Vue({
       this.currentType = type;
       this.fetchList(1);
     },
+    clearListFilters: function () {
+      this.filter = "";
+      this.currentStatus = null;
+      this.currentType = null;
+      this.fetchList(1);
+    },
     fragmentToken: function (fragment) {
       if (!fragment || !fragment.name) {
         return "";

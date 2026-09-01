@@ -16,9 +16,21 @@
         'searchInputId' => 'usergroups-search',
         'refreshMethod' => 'getUserGroups()',
         'showViewToggle' => false,
-        'navbarShow' => '!loader && usergroups.length > 0',
-        'itemsExpr' => '',
-        'section' => 'nav',
+        'navbarShow' => '!loader',
+        'section' => 'nav-open',
+    ])
+    @include('admin.components.list_status_chips', [
+        'click' => 'setStatus',
+        'mode' => 'binary',
+        'onLabel' => lang('usergroups_active'),
+        'offLabel' => lang('usergroups_inactive'),
+    ])
+    @include('admin.components.page_navbar', [
+        'refreshMethod' => 'getUserGroups()',
+        'showViewToggle' => false,
+        'navbarShow' => '!loader',
+        'itemsExpr' => 'filterUsergroups',
+        'section' => 'nav-close',
     ])
     <div class="configurations" v-cloak v-if="!loader && usergroups.length > 0 && filterUsergroups.length > 0">
         <div class="row">
@@ -61,16 +73,16 @@
             </div>
         </div>
     </div>
-    <div class="container" v-cloak v-if="!loader && usergroups.length === 0">
+    <div class="container" v-cloak v-if="!loader && usergroups.length === 0 && currentStatus === null && !filter">
         <p class="page-header">{{ lang('usergroups_empty') }}</p>
         <p>{{ lang('usergroups_empty_hint') }}</p>
         @if(has_permisions('CREATE_USERGROUP'))
         <a class="btn waves-effect" href="{{ base_url('admin/users/newGroup') }}">{{ lang('usergroups_new') }}</a>
         @endif
     </div>
-    <div class="container" v-cloak v-if="!loader && usergroups.length > 0 && filter && filterUsergroups.length === 0">
+    <div class="container" v-cloak v-if="!loader && !filter && currentStatus !== null && filterUsergroups.length === 0">
         <p class="page-header">{{ lang('usergroups_no_results') }}</p>
-        <a href="#!" class="btn-flat" v-on:click.prevent="resetFilter()">{{ lang('search_empty_cta') }}</a>
+        <a href="#!" class="btn-flat" v-on:click.prevent="resetFilter(); setStatus(null)">{{ lang('filter_empty_cta') }}</a>
     </div>
     <confirm-modal
         id="deleteModal"

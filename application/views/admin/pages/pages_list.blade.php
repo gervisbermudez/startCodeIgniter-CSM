@@ -15,25 +15,32 @@
     @include('admin.components.page_navbar', [
         'searchInputId' => 'pages-search',
         'refreshMethod' => 'getPages(currentStatus)',
-        'itemsExpr' => 'filterAll',
+        'section' => 'nav-open',
     ])
-    <div class="status-filters" v-cloak v-show="!loader">
-        <button type="button" class="status-chip" :class="{active: currentStatus === null}" @click="getPages(null)">
-            <?= lang('menu_all') ?>
-        </button>
-        <button type="button" class="status-chip" :class="{active: currentStatus === 1}" @click="getPages(1)">
-            <?= lang('published') ?>
-        </button>
-        <button type="button" class="status-chip" :class="{active: currentStatus === 2}" @click="getPages(2)">
-            <?= lang('draft') ?>
-        </button>
-        <button type="button" class="status-chip" :class="{active: currentStatus === 3}" @click="getPages(3)">
-            <?= lang('archived') ?>
-        </button>
-        <button type="button" class="status-chip" :class="{active: currentStatus === 0}" @click="getPages(0)">
-            <?= lang('deleted') ?>
-        </button>
+    <div class="page-navbar__filters">
+        <div class="filter-group" role="group" aria-label="<?= htmlspecialchars(lang('status'), ENT_QUOTES, 'UTF-8') ?>">
+            <button type="button" class="status-chip" :class="{active: currentStatus === null}" @click="getPages(null)">
+                <?= lang('menu_all') ?>
+            </button>
+            <button type="button" class="status-chip" :class="{active: currentStatus === 1}" @click="getPages(1)">
+                <?= lang('published') ?>
+            </button>
+            <button type="button" class="status-chip" :class="{active: currentStatus === 2}" @click="getPages(2)">
+                <?= lang('draft') ?>
+            </button>
+            <button type="button" class="status-chip" :class="{active: currentStatus === 3}" @click="getPages(3)">
+                <?= lang('archived') ?>
+            </button>
+            <button type="button" class="status-chip" :class="{active: currentStatus === 0}" @click="getPages(0)">
+                <?= lang('deleted') ?>
+            </button>
+        </div>
     </div>
+    @include('admin.components.page_navbar', [
+        'refreshMethod' => 'getPages(currentStatus)',
+        'itemsExpr' => 'filterAll',
+        'section' => 'nav-close',
+    ])
     <div class="pages" v-cloak v-if="!loader && pages.length > 0">
         <div class="row">
             <div class="col s12">
@@ -500,13 +507,17 @@
             </div>
         </div>
     </div>
-    <div class="container center" v-if="!loader && pages.length == 0 && !filter" v-cloak>
+    <div class="container center" v-if="!loader && pages.length == 0 && !filter && currentStatus === null" v-cloak>
         <i class="material-icons large grey-text" aria-hidden="true">web</i>
         <p class="page-header"><?= lang('pages_empty') ?></p>
         @if(has_permisions('CREATE_PAGE'))
         <a class="btn waves-effect st-accent" href="{{ base_url('admin/pages/nueva/') }}"><?= lang('pages_empty_cta') ?></a>
         @endif
     </div>
+    @include('admin.components.list_filter_empty', [
+        'showExpr' => '!loader && pages.length == 0 && (filter || currentStatus !== null)',
+        'clearMethod' => 'resetFilter(); getPages(null)',
+    ])
     @include('admin.components.pagination')
     <confirm-modal id="deleteModal" title="<?= htmlspecialchars(lang('confirm_delete'), ENT_QUOTES, 'UTF-8') ?>" v-on:notify="confirmDelete">
         <p>

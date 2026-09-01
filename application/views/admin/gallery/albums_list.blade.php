@@ -18,26 +18,34 @@
     @include('admin.components.page_navbar', [
         'searchInputId' => 'albums-search',
         'refreshMethod' => 'getAlbums(currentStatus)',
-        'navbarShow' => '!loader && albums.length > 0',
-        'itemsExpr' => 'filterData',
+        'navbarShow' => '!loader',
+        'section' => 'nav-open',
     ])
-    <div class="status-filters" v-cloak v-show="!loader">
-        <button type="button" class="status-chip" :class="{active: currentStatus === null}" @click="getAlbums(null)">
-            <?php echo lang('menu_all'); ?>
-        </button>
-        <button type="button" class="status-chip" :class="{active: currentStatus === 1}" @click="getAlbums(1)">
-            <?php echo lang('published'); ?>
-        </button>
-        <button type="button" class="status-chip" :class="{active: currentStatus === 2}" @click="getAlbums(2)">
-            <?php echo lang('draft'); ?>
-        </button>
-        <button type="button" class="status-chip" :class="{active: currentStatus === 3}" @click="getAlbums(3)">
-            <?php echo lang('archived'); ?>
-        </button>
-        <button type="button" class="status-chip" :class="{active: currentStatus === 0}" @click="getAlbums(0)">
-            <?php echo lang('deleted'); ?>
-        </button>
+    <div class="page-navbar__filters">
+        <div class="filter-group" role="group" aria-label="<?php echo htmlspecialchars(lang('status'), ENT_QUOTES, 'UTF-8'); ?>">
+            <button type="button" class="status-chip" :class="{active: currentStatus === null}" @click="getAlbums(null)">
+                <?php echo lang('menu_all'); ?>
+            </button>
+            <button type="button" class="status-chip" :class="{active: currentStatus === 1}" @click="getAlbums(1)">
+                <?php echo lang('published'); ?>
+            </button>
+            <button type="button" class="status-chip" :class="{active: currentStatus === 2}" @click="getAlbums(2)">
+                <?php echo lang('draft'); ?>
+            </button>
+            <button type="button" class="status-chip" :class="{active: currentStatus === 3}" @click="getAlbums(3)">
+                <?php echo lang('archived'); ?>
+            </button>
+            <button type="button" class="status-chip" :class="{active: currentStatus === 0}" @click="getAlbums(0)">
+                <?php echo lang('deleted'); ?>
+            </button>
+        </div>
     </div>
+    @include('admin.components.page_navbar', [
+        'refreshMethod' => 'getAlbums(currentStatus)',
+        'navbarShow' => '!loader',
+        'itemsExpr' => 'filterData',
+        'section' => 'nav-close',
+    ])
     <div class="pages" v-cloak v-if="!loader && albums.length > 0">
         <div class="row" v-if="tableView">
             <div class="col s12">
@@ -149,10 +157,15 @@
             </div>
         </div>
     </div>
-    <div class="container center" v-if="!loader && albums.length == 0" v-cloak>
+    <div class="container center" v-if="!loader && albums.length == 0 && currentStatus === null && !filter" v-cloak>
         <i class="material-icons large grey-text">perm_media</i>
         <p class="page-header"><?php echo lang('albums_empty'); ?></p>
         <a href="{{ base_url('admin/gallery/new') }}" class="btn"><?php echo lang('albums_empty_cta'); ?></a>
+    </div>
+    <div class="container center" v-if="!loader && albums.length == 0 && (currentStatus !== null || filter)" v-cloak>
+        <i class="material-icons large grey-text">search</i>
+        <p class="page-header"><?php echo lang('list_filter_empty'); ?></p>
+        <a href="#!" class="btn-flat" v-on:click.prevent="getAlbums(null); resetFilter();"><?php echo lang('filter_empty_cta'); ?></a>
     </div>
     <confirm-modal 
         id="deleteModal" 

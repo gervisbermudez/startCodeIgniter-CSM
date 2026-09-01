@@ -30,13 +30,12 @@ var CustomModelItemsList = new Vue({
       return list;
     },
     isCollectionEmpty: function () {
-      return this.collectionItemCount === 0 && !this.filter;
+      return this.collectionItemCount === 0 && !this.filter && this.statusFilter === null;
     },
     isStatusFilterEmpty: function () {
       return (
         !this.filter &&
         this.statusFilter !== null &&
-        this.collectionItemCount > 0 &&
         this.filterItems.length === 0
       );
     },
@@ -53,6 +52,11 @@ var CustomModelItemsList = new Vue({
   methods: {
     setStatusFilter: function (status) {
       this.statusFilter = status;
+    },
+    clearListFilters: function () {
+      this.filter = "";
+      this.statusFilter = null;
+      this.getItems(1);
     },
     itemTitle: function (item) {
       if (item.title && String(item.title).indexOf("Collection #") !== 0) {

@@ -61,6 +61,7 @@ var usersModule = new Vue({
     tableView: false,
     filter: "",
     toDeleteItem: {},
+    currentStatus: null,
     listEndpoint: "api/v1/users",
     listKey: "users",
     listPk: "user_id",
@@ -68,18 +69,34 @@ var usersModule = new Vue({
   mixins: [mixins, listMixin],
   computed: {
     filterUsers: function () {
+      var list = this.users;
+      if (this.currentStatus === 1) {
+        list = list.filter(function (value) {
+          return parseInt(value.status, 10) === 1;
+        });
+      } else if (this.currentStatus === 0) {
+        list = list.filter(function (value) {
+          return parseInt(value.status, 10) !== 1;
+        });
+      }
       if (this.filter) {
         var filterTerm = this.filter.toLowerCase();
-        return this.users.filter(function (value) {
+        return list.filter(function (value) {
           return this.searchInObject(value, filterTerm);
         }, this);
       }
-      return this.users;
+      return list;
     },
   },
   methods: {
     wrapListItem: function (item) {
       return new User(item);
+    },
+    listExtraQuery: function () {
+      return {};
+    },
+    setStatus: function (status) {
+      this.currentStatus = status;
     },
     getUsers: function (page) {
       this.fetchList(page);

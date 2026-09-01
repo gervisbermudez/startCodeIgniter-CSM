@@ -869,6 +869,9 @@ var listMixin = {
       return item;
     },
     listExtraQuery: function () {
+      if (this.currentStatus !== null && typeof this.currentStatus !== "undefined") {
+        return { status: this.currentStatus };
+      }
       return {};
     },
     fetchList: function (page) {

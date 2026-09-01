@@ -1,7 +1,9 @@
 {{--
-    Toolbar de lista admin: filtrar la vista actual + toggle + refresh.
+    Toolbar de lista admin: filtrar la vista actual + chips + toggle + refresh.
     No es el buscador global (navbar / Ctrl+K / paleta).
-    Params: $searchInputId, $refreshMethod, $showViewToggle, $navbarShow, $navbarIf, $resetMethod, $placeholder, $itemsExpr, $section (nav|empty|all)
+    Params: $searchInputId, $refreshMethod, $showViewToggle, $navbarShow, $navbarIf,
+    $resetMethod, $placeholder, $itemsExpr, $vueFiltersSlot,
+    $section (nav|empty|all|nav-open|nav-close)
 --}}
 <?php
 if (!isset($searchInputId) || $searchInputId === '') {
@@ -25,13 +27,16 @@ if (!isset($placeholder) || $placeholder === '') {
 if (!isset($section) || $section === '') {
     $section = 'all';
 }
+$vueFiltersSlot = !empty($vueFiltersSlot);
 $noResultsPrefix = trim(preg_replace('/%s|"/', '', lang('search_no_results')));
-$renderNav = ($section === 'nav' || $section === 'all');
-$renderEmpty = ($section === 'empty' || $section === 'all');
+$renderNavOpen = ($section === 'nav' || $section === 'all' || $section === 'nav-open');
+$renderNavClose = ($section === 'nav' || $section === 'all' || $section === 'nav-close');
+$renderEmpty = ($section === 'empty' || $section === 'all' || $section === 'nav-close');
+$renderVueFilters = $vueFiltersSlot && $renderNavOpen && $section !== 'nav-open';
 $filterLabel = lang('filter');
 $clearLabel = lang('filter_empty_cta');
 ?>
-<?php if ($renderNav): ?>
+<?php if ($renderNavOpen): ?>
 <nav class="page-navbar" v-cloak<?php if (!empty($navbarIf)): ?> v-if="<?php echo $navbarIf; ?>"<?php endif; ?> v-show="<?php echo $navbarShow; ?>">
     <div class="page-navbar__inner">
         <form class="page-navbar__filter" v-on:submit.prevent="onNavbarSearch">
@@ -55,6 +60,13 @@ $clearLabel = lang('filter_empty_cta');
                 <i class="material-icons" aria-hidden="true">close</i>
             </button>
         </form>
+        <?php if ($renderVueFilters): ?>
+        <div class="page-navbar__filters" v-if="$slots.filters">
+            <slot name="filters"></slot>
+        </div>
+        <?php endif; ?>
+<?php endif; ?>
+<?php if ($renderNavClose): ?>
         <ul class="page-navbar-actions">
             <?php if ($showViewToggle): ?>
             <li>

@@ -8,6 +8,7 @@ var CustomModelsLists = new Vue({
     toDeleteItem: {},
     modalid: "deleteModal",
     i18n: window.COLLECTIONS_I18N || {},
+    currentStatus: null,
     serverPagination: true,
     listEndpoint: "api/v1/models",
     listKey: "models",
@@ -43,7 +44,14 @@ var CustomModelsLists = new Vue({
       }
       M.toast({ html: this.i18n.copied || "" });
     },
-    getModels: function (page) {
+    getModels: function (status, page) {
+      if (typeof status === "undefined") {
+        status = this.currentStatus;
+      }
+      if (status !== this.currentStatus) {
+        page = 1;
+      }
+      this.currentStatus = status;
       this.fetchList(page);
     },
     deleteForm: function (model, index) {

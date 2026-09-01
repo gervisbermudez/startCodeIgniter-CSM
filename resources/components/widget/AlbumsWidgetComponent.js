@@ -1,6 +1,6 @@
 Vue.component("albumesWidget", {
   template: "#albumes-widget-template",
-  props: ["albumes"],
+  props: ["albumes", "total"],
   data: function () {
     return {
       debug: DEBUGMODE,
