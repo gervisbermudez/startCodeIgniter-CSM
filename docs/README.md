@@ -40,6 +40,13 @@ Estos archivos nacieron como spec de implementación. El corte ya está en `mast
 | [DESIGN.md](DESIGN.md) | Tokens, patrones y deuda UX del **admin** (el tema público no comparte paleta) |
 | [ADMIN_VIEWS_AUDIT.md](ADMIN_VIEWS_AUDIT.md) | Inventario Blade/Vue: duplicación, bugs P0/P1, qué no reabrir |
 | [ADMIN_VIEWS_BUGFIX_PROMPT.md](ADMIN_VIEWS_BUGFIX_PROMPT.md) | Prompt listo para un agente: solo el corte de bugs |
+| [CMS_PRODUCT_COPY_PLAN.md](CMS_PRODUCT_COPY_PLAN.md) | Spec: voz de producto, page-intro, copy híbrido editor/dev |
+
+## Planes en curso
+
+| Doc | Rol |
+|---|---|
+| [AUTH_LOGIN_JWT_HARDEN_PLAN.md](AUTH_LOGIN_JWT_HARDEN_PLAN.md) | Endurecer login admin + JWT (sesión cookie + claims RFC). Prompt: [AUTH_LOGIN_JWT_HARDEN_PROMPT.md](AUTH_LOGIN_JWT_HARDEN_PROMPT.md) |
 
 ## API y datos
 

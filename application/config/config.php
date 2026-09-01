@@ -269,7 +269,11 @@ $config['sess_regenerate_destroy'] = false;
 $config['cookie_prefix'] = "";
 $config['cookie_domain'] = "";
 $config['cookie_path'] = "/";
-$config['cookie_secure'] = false;
+$app_env = getenv('APP_ENV');
+$app_base_url = getenv('APP_BASE_URL');
+$config['cookie_secure'] = ($app_env === 'production' || (is_string($app_base_url) && stripos($app_base_url, 'https://') === 0));
+$config['cookie_httponly'] = true;
+$config['cookie_samesite'] = 'Lax';
 
 /*
 |--------------------------------------------------------------------------

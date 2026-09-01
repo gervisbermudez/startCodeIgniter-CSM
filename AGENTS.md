@@ -70,7 +70,7 @@ Hay controladores viejos sin sufijo (`Categories.php`, `Gallery.php`, `Fragments
 ## Auth y permisos
 
 - Admin HTML: sesión `logged_in` (redirige a `/admin/login`).
-- API: JWT en `Authorization` **o** token de sesión. `verify_request()` en el constructor; si falla → 401.
+- API: JWT flaco `sub`+`exp` en `Authorization` (Bearer opcional) **o** sesión cookie. `verify_request()` en el constructor; si falla → 401.
 - Permisos: `has_permisions('UPDATE_PAGE')`. Nombres en `permisions.permision_name`.
 - Usuario actual: `userdata('user_id')`. Auditoría: `system_logger($type, $type_id, $token, $comment)`.
 - Config del sitio (tabla `site_config`): `config('SITE_TITLE')`.
