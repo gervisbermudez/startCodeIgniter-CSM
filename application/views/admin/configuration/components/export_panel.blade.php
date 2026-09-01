@@ -8,50 +8,40 @@
     </div>
     <div class="card z-depth-1" v-show="!loader">
         <div class="card-content">
-            <ul class="collapsible config-pick">
-                <li>
+            <label class="config-pick-unpublished">
+                <input type="checkbox" class="filled-in" v-model="includeUnpublishedPages" @change="getData()" />
+                <span>{{ lang('config_export_include_unpublished') }}</span>
+            </label>
+            <ul class="collapsible config-pick" data-collapsible="expandable">
+                <li class="active" v-for="group in pickerGroups" :key="'ex-' + group.key">
                     <div class="collapsible-header config-pick-header">
                         <label class="config-pick-check" @click.stop aria-label="{{ lang('config_select_all') }}">
-                            <input type="checkbox" class="filled-in" v-on:change="toggleData(catalogData.pages, 'pages')" />
+                            <input type="checkbox" class="filled-in"
+                                :checked="groupAllChecked('catalogData', group)"
+                                :indeterminate.prop="groupSomeChecked('catalogData', group)"
+                                :disabled="!groupItems('catalogData', group.key).length"
+                                v-on:change="onGroupSelectAll('catalogData', group, $event)" />
                             <span></span>
                         </label>
-                        <i class="material-icons" aria-hidden="true">web</i>
-                        <span class="config-pick-header__label">{{ lang('config_pages') }}</span>
+                        <i class="material-icons" aria-hidden="true">@{{ group.icon }}</i>
+                        <span class="config-pick-header__label">@{{ groupLabel(group) }}</span>
+                        <span class="config-pick-header__count">@{{ groupSelectedCount('catalogData', group.key) }}/@{{ groupItems('catalogData', group.key).length }}</span>
                     </div>
                     <div class="collapsible-body config-pick-body">
-                        <ul class="config-pick-list">
-                            <li class="config-pick-row" v-for="(page, index) in catalogData.pages" :key="'ep-' + index">
-                                <label class="config-pick-check">
-                                    <input type="checkbox" class="filled-in" v-model="page.checked" />
-                                    <span></span>
-                                </label>
-                                <div class="config-pick-row__text">
-                                    <span class="config-pick-row__title">@{{page.title}}</span>
-                                    <span class="config-pick-row__meta">@{{page.path}}</span>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <li>
-                    <div class="collapsible-header config-pick-header">
-                        <label class="config-pick-check" @click.stop aria-label="{{ lang('config_select_all') }}">
-                            <input type="checkbox" class="filled-in" v-on:change="toggleData(catalogData.config, 'config')" />
-                            <span></span>
-                        </label>
-                        <i class="material-icons" aria-hidden="true">settings</i>
-                        <span class="config-pick-header__label">{{ lang('menu_configuration') }}</span>
-                    </div>
-                    <div class="collapsible-body config-pick-body">
-                        <ul class="config-pick-list">
-                            <li class="config-pick-row" v-for="(item, index) in catalogData.config" :key="'ec-' + index">
+                        <div class="config-pick-search" v-if="groupItems('catalogData', group.key).length">
+                            <input type="search" placeholder="{{ lang('config_export_search') }}" v-model="pickerSearch[group.key]" />
+                        </div>
+                        <p class="config-pick-empty" v-if="!groupItems('catalogData', group.key).length">{{ lang('config_export_group_empty') }}</p>
+                        <p class="config-pick-empty" v-else-if="!visibleGroupItems('catalogData', group).length">{{ lang('list_filter_empty') }}</p>
+                        <ul class="config-pick-list" v-else>
+                            <li class="config-pick-row" v-for="(item, index) in visibleGroupItems('catalogData', group)" :key="'ex-' + group.key + '-' + index">
                                 <label class="config-pick-check">
                                     <input type="checkbox" class="filled-in" v-model="item.checked" />
                                     <span></span>
                                 </label>
                                 <div class="config-pick-row__text">
-                                    <span class="config-pick-row__title">@{{item.config_label}}</span>
-                                    <span class="config-pick-row__meta">@{{item.config_name}}</span>
+                                    <span class="config-pick-row__title">@{{ item[group.titleField] || item.name || '—' }}</span>
+                                    <span class="config-pick-row__meta" v-if="group.metaField && item[group.metaField] && item[group.metaField] !== item[group.titleField]">@{{ item[group.metaField] }}</span>
                                 </div>
                             </li>
                         </ul>

@@ -506,36 +506,9 @@ class ConfigController extends REST_Controller
             return;
         }
 
-        $pages = array();
-        $pageQuery = $this->db
-            ->select('page_id, title, path, status')
-            ->from('page')
-            ->where('status', 1)
-            ->order_by('page_id', 'ASC')
-            ->get();
-        if ($pageQuery && $pageQuery->num_rows() > 0) {
-            foreach ($pageQuery->result() as $row) {
-                $pages[] = $row;
-            }
-        }
-
-        $config = array();
-        $configQuery = $this->db
-            ->select('site_config_id, config_name, config_label, config_type')
-            ->from('site_config')
-            ->where('status', 1)
-            ->order_by('site_config_id', 'ASC')
-            ->get();
-        if ($configQuery && $configQuery->num_rows() > 0) {
-            foreach ($configQuery->result() as $row) {
-                $config[] = $row;
-            }
-        }
-
-        $this->response_ok(array(
-            'pages' => $pages,
-            'config' => $config,
-        ));
+        $this->load->library('content_export');
+        $unpublished = $this->input->get('unpublished_pages');
+        $this->response_ok($this->content_export->catalog(!empty($unpublished) && $unpublished !== '0'));
     }
 
     public function system_info_get()
@@ -627,28 +600,25 @@ class ConfigController extends REST_Controller
             return;
         }
 
-        $exportData = $this->input->post('exportData');
-        $pageIds = $this->selected_id_list($exportData, 'pages');
-        $configIds = $this->selected_id_list($exportData, 'config');
+        $this->load->library('content_export');
+        $exportData = $this->input->post('exportData', false);
+        if (is_string($exportData)) {
+            $decoded = json_decode($exportData);
+            if (is_object($decoded) || is_array($decoded)) {
+                $exportData = $decoded;
+            }
+        }
 
-        if (empty($pageIds) && empty($configIds)) {
+        if ($this->content_export->selection_is_empty($exportData)) {
             $this->response_error(lang('config_export_empty'), array(), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
 
-        $pages = $this->build_pages_export($pageIds);
-        $config = $this->build_config_export($configIds);
-        if (empty($pages) && empty($config)) {
+        $payload = $this->content_export->dump($exportData);
+        if ($this->content_export->payload_is_empty($payload)) {
             $this->response_error(lang('config_export_empty'), array(), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
-
-        $payload = array(
-            'version' => 1,
-            'exported_at' => date('c'),
-            'pages' => $pages,
-            'config' => $config,
-        );
 
         $json = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         if ($json === false) {
@@ -657,12 +627,7 @@ class ConfigController extends REST_Controller
         }
 
         $filename = 'export_data_' . date('Y-m-d_H-i-s') . '.json';
-        system_logger(
-            'config',
-            0,
-            'export',
-            'Export generated: ' . count($payload['pages']) . ' pages, ' . count($payload['config']) . ' config'
-        );
+        system_logger('config', 0, 'export', 'Export generated: ' . $this->content_export->summarize_payload($payload));
 
         $this->response_ok(array(
             'filename' => $filename,
@@ -676,11 +641,9 @@ class ConfigController extends REST_Controller
             return;
         }
 
-        $selection = json_decode($this->input->post('exportData'));
-        $selectedPageIds = $this->selected_id_list($selection, 'pages');
-        $selectedConfigIds = $this->selected_id_list($selection, 'config');
-
-        if (empty($selectedPageIds) && empty($selectedConfigIds)) {
+        $this->load->library('content_export');
+        $selection = json_decode($this->input->post('exportData', false));
+        if ($this->content_export->selection_is_empty($selection)) {
             $this->response_error(lang('config_import_empty'), array(), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
@@ -710,39 +673,8 @@ class ConfigController extends REST_Controller
 
         $this->db->trans_begin();
         try {
-            $importedPages = 0;
-            $importedConfig = 0;
-
-            if (isset($file_content->pages) && is_array($file_content->pages)) {
-                $this->load->model('Admin/PageModel');
-                foreach ($file_content->pages as $value) {
-                    if (!is_object($value) || !$this->is_selected_id(isset($value->page_id) ? $value->page_id : 0, $selectedPageIds)) {
-                        continue;
-                    }
-                    if (!$this->import_page_row($value)) {
-                        $this->db->trans_rollback();
-                        $this->response_error(lang('config_error'), array(), REST_Controller::HTTP_INTERNAL_SERVER_ERROR, REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
-                        return;
-                    }
-                    $importedPages++;
-                }
-            }
-
-            if (isset($file_content->config) && is_array($file_content->config)) {
-                foreach ($file_content->config as $value) {
-                    if (!is_object($value) || !$this->is_selected_id(isset($value->site_config_id) ? $value->site_config_id : 0, $selectedConfigIds)) {
-                        continue;
-                    }
-                    if (!$this->import_config_row($value)) {
-                        $this->db->trans_rollback();
-                        $this->response_error(lang('config_error'), array(), REST_Controller::HTTP_INTERNAL_SERVER_ERROR, REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
-                        return;
-                    }
-                    $importedConfig++;
-                }
-            }
-
-            if ($this->db->trans_status() === false) {
+            $counts = $this->content_export->import_payload($file_content, $selection);
+            if ($counts === false || $this->db->trans_status() === false) {
                 $this->db->trans_rollback();
                 $this->response_error(lang('config_error'), array(), REST_Controller::HTTP_INTERNAL_SERVER_ERROR, REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
                 return;
@@ -750,339 +682,28 @@ class ConfigController extends REST_Controller
 
             $this->db->trans_commit();
 
-            if ($importedConfig > 0) {
+            if (!empty($counts['config'])) {
                 invalidate_site_config_cache();
             }
-            if ($importedPages > 0 || $importedConfig > 0) {
+            $contentImported = 0;
+            foreach ($counts as $n) {
+                $contentImported += (int) $n;
+            }
+            if ($contentImported > 0) {
                 invalidate_public_html_cache();
             }
 
-            system_logger(
-                'config',
-                0,
-                'import',
-                'Import applied: ' . $importedPages . ' pages, ' . $importedConfig . ' config'
-            );
+            system_logger('config', 0, 'import', 'Import applied: ' . $this->content_export->summarize_counts($counts));
 
-            $this->response_ok(array(
-                'message' => lang('config_import_ok'),
-                'pages' => $importedPages,
-                'config' => $importedConfig,
-            ));
+            $ok = array('message' => lang('config_import_ok'));
+            foreach ($counts as $key => $n) {
+                $ok[$key] = $n;
+            }
+            $this->response_ok($ok);
         } catch (\Throwable $th) {
             $this->db->trans_rollback();
             $this->response_error(lang('config_error'), array(), REST_Controller::HTTP_INTERNAL_SERVER_ERROR, REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
             return;
-        }
-    }
-
-    /**
-     * @param mixed $values
-     * @return int[]
-     */
-    private function normalize_id_list($values)
-    {
-        if (!is_array($values)) {
-            if ($values === null || $values === '' || $values === false) {
-                return array();
-            }
-            $values = array($values);
-        }
-        $ids = array();
-        foreach ($values as $value) {
-            $id = (int) $value;
-            if ($id > 0) {
-                $ids[$id] = $id;
-            }
-        }
-        return array_values($ids);
-    }
-
-    /**
-     * @param mixed $selection
-     * @param string $key
-     * @return int[]
-     */
-    private function selected_id_list($selection, $key)
-    {
-        if (is_object($selection) && isset($selection->{$key})) {
-            return $this->normalize_id_list($selection->{$key});
-        }
-        if (is_array($selection) && isset($selection[$key])) {
-            return $this->normalize_id_list($selection[$key]);
-        }
-        return array();
-    }
-
-    /**
-     * @param mixed $id
-     * @param int[] $selectedIds
-     * @return bool
-     */
-    private function is_selected_id($id, $selectedIds)
-    {
-        if (empty($selectedIds)) {
-            return false;
-        }
-        return in_array((int) $id, $selectedIds, true);
-    }
-
-    /**
-     * @param object|array $row
-     * @param string[] $fields
-     * @return array
-     */
-    private function pick_fields($row, $fields)
-    {
-        $out = array();
-        foreach ($fields as $field) {
-            if (is_object($row) && property_exists($row, $field)) {
-                $out[$field] = $row->{$field};
-            } elseif (is_array($row) && array_key_exists($field, $row)) {
-                $out[$field] = $row[$field];
-            }
-        }
-        return $out;
-    }
-
-    /**
-     * @param mixed $value
-     * @return string|null
-     */
-    private function encode_json_field($value)
-    {
-        if (is_array($value) || is_object($value)) {
-            return json_encode($value);
-        }
-        return $value;
-    }
-
-    /**
-     * @param int[] $pageIds
-     * @return array
-     */
-    private function build_pages_export($pageIds)
-    {
-        $fields = array(
-            'page_id',
-            'path',
-            'template',
-            'title',
-            'subtitle',
-            'content',
-            'json_content',
-            'page_type_id',
-            'visibility',
-            'categorie_id',
-            'subcategorie_id',
-            'status',
-            'layout',
-            'mainImage',
-            'thumbnailImage',
-            'date_publish',
-        );
-        if (empty($pageIds)) {
-            return array();
-        }
-        $this->db->reset_query();
-        $this->db->select(implode(', ', $fields));
-        $this->db->from('page');
-        $this->db->where('status', 1);
-        $this->db->where_in('page_id', $pageIds);
-        $this->db->order_by('page_id', 'ASC');
-        $query = $this->db->get();
-        if (!$query || $query->num_rows() < 1) {
-            return array();
-        }
-        $rows = $query->result();
-        $exportedIds = array();
-        foreach ($rows as $row) {
-            $exportedIds[] = (int) $row->page_id;
-        }
-        $dataByPage = $this->load_page_data_map($exportedIds);
-        $pages = array();
-        foreach ($rows as $row) {
-            $item = $this->pick_fields($row, $fields);
-            $pid = (int) $row->page_id;
-            $item['page_data'] = isset($dataByPage[$pid]) ? $dataByPage[$pid] : array();
-            $pages[] = $item;
-        }
-        return $pages;
-    }
-
-    /**
-     * @param int[] $configIds
-     * @return array
-     */
-    private function build_config_export($configIds)
-    {
-        $fields = array(
-            'site_config_id',
-            'config_name',
-            'config_value',
-            'config_description',
-            'config_label',
-            'config_type',
-            'config_data',
-            'readonly',
-            'status',
-        );
-        if (empty($configIds)) {
-            return array();
-        }
-        $this->db->reset_query();
-        $this->db->select(implode(', ', $fields));
-        $this->db->from('site_config');
-        $this->db->where('status', 1);
-        $this->db->where_in('site_config_id', $configIds);
-        $this->db->order_by('site_config_id', 'ASC');
-        $query = $this->db->get();
-        if (!$query || $query->num_rows() < 1) {
-            return array();
-        }
-        $config = array();
-        foreach ($query->result() as $row) {
-            $config[] = $this->pick_fields($row, $fields);
-        }
-        return $config;
-    }
-
-    /**
-     * @param int[] $pageIds
-     * @return array
-     */
-    private function load_page_data_map($pageIds)
-    {
-        $map = array();
-        if (empty($pageIds)) {
-            return $map;
-        }
-        $this->db->reset_query();
-        $this->db->where_in('page_id', $pageIds);
-        $query = $this->db->get('page_data');
-        if (!$query || $query->num_rows() < 1) {
-            return $map;
-        }
-        foreach ($query->result() as $row) {
-            $pid = (int) $row->page_id;
-            if (!isset($map[$pid])) {
-                $map[$pid] = array();
-            }
-            $decoded = json_decode($row->_value);
-            if (is_object($decoded) || is_array($decoded)) {
-                $map[$pid][$row->_key] = $decoded;
-            } else {
-                $map[$pid][$row->_key] = $row->_value;
-            }
-        }
-        return $map;
-    }
-
-    /**
-     * Skip hasOne/computed hydration (user, files) during import upsert.
-     *
-     * @param object $model
-     * @return object
-     */
-    private function without_import_relations($model)
-    {
-        $model->hasOne = array();
-        $model->hasMany = array();
-        $model->computed = array();
-        return $model;
-    }
-
-    /**
-     * @param object $value
-     * @return bool
-     */
-    private function import_page_row($value)
-    {
-        $page = $this->without_import_relations(new PageModel());
-        $found = false;
-        $path = isset($value->path) ? trim((string) $value->path) : '';
-        if ($path !== '') {
-            $found = $page->find_with(array('path' => $path));
-        }
-        if (!$found) {
-            $page = $this->without_import_relations(new PageModel());
-            $page->user_id = userdata('user_id');
-            $page->status = 1;
-        }
-
-        $fields = array(
-            'path',
-            'template',
-            'title',
-            'subtitle',
-            'content',
-            'page_type_id',
-            'visibility',
-            'categorie_id',
-            'subcategorie_id',
-            'status',
-            'layout',
-            'mainImage',
-            'thumbnailImage',
-            'date_publish',
-        );
-        $this->apply_allowlist($page, $value, $fields);
-        if (isset($value->json_content)) {
-            $page->json_content = $this->encode_json_field($value->json_content);
-        }
-        if (isset($value->page_data)) {
-            $pageData = json_decode(json_encode($value->page_data), true);
-            $page->page_data = is_array($pageData) ? $pageData : array();
-        }
-        return (bool) $page->save();
-    }
-
-    /**
-     * @param object $value
-     * @return bool
-     */
-    private function import_config_row($value)
-    {
-        $config = $this->without_import_relations(new SiteConfigModel());
-        $found = false;
-        $name = isset($value->config_name) ? trim((string) $value->config_name) : '';
-        if ($name !== '') {
-            $found = $config->find_with(array('config_name' => $name));
-        }
-        if (!$found) {
-            $config = $this->without_import_relations(new SiteConfigModel());
-            $config->user_id = userdata('user_id');
-            $config->status = 1;
-        }
-
-        $fields = array(
-            'config_name',
-            'config_value',
-            'config_description',
-            'config_label',
-            'config_type',
-            'readonly',
-            'status',
-        );
-        $this->apply_allowlist($config, $value, $fields);
-        if (isset($value->config_data)) {
-            $config->config_data = $this->encode_json_field($value->config_data);
-        }
-        return (bool) $config->save();
-    }
-
-    /**
-     * @param object $model
-     * @param object $source
-     * @param string[] $fields
-     * @return void
-     */
-    private function apply_allowlist($model, $source, $fields)
-    {
-        foreach ($fields as $field) {
-            if (is_object($source) && property_exists($source, $field)) {
-                $model->{$field} = $source->{$field};
-            }
         }
     }
 
