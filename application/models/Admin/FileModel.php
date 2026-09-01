@@ -152,9 +152,7 @@ class FileModel extends MY_Model
                 $existing[] = $row;
                 continue;
             }
-            $relative = $row['file_path'] . $row['file_name'] . '.' . $row['file_type'];
-            $absolute = FCPATH . preg_replace('#^\./#', '', $relative);
-            if (is_file($absolute)) {
+            if (is_file($this->resolveDiskPath($row['file_path'], $row['file_name'], $row['file_type']))) {
                 $existing[] = $row;
             }
         }
@@ -287,6 +285,43 @@ class FileModel extends MY_Model
             return $this->file_path . $this->getFileFullName();
         }
         return '';
+    }
+
+    /**
+     * Absolute path on disk. Stored file_path is ./relative/ from FCPATH.
+     *
+     * @param string $file_path
+     * @param string $file_name
+     * @param string $file_type
+     * @return string
+     */
+    public function resolveDiskPath($file_path, $file_name, $file_type)
+    {
+        $relative = $file_path . $file_name . '.' . $file_type;
+        return FCPATH . preg_replace('#^\./#', '', $relative);
+    }
+
+    /**
+     * True when the indexed file exists, is readable, and stays under FCPATH.
+     *
+     * @return bool
+     */
+    public function isReadableFile()
+    {
+        $root = realpath(FCPATH);
+        if ($root === false) {
+            return false;
+        }
+        $absolute = $this->resolveDiskPath($this->file_path, $this->file_name, $this->file_type);
+        if (!is_file($absolute) || !is_readable($absolute)) {
+            return false;
+        }
+        $resolved = realpath($absolute);
+        if ($resolved === false) {
+            return false;
+        }
+        $prefix = $root . DIRECTORY_SEPARATOR;
+        return ($resolved === $root || strpos($resolved, $prefix) === 0);
     }
 
     public function getFileFrontPath()

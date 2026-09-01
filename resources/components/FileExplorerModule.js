@@ -523,7 +523,12 @@ var FileExplorerModule = new Vue({
             setTimeout(() => {
               Prism.highlightAll();
             }, 1000);
+            return;
           }
+          this.toastError(null, response);
+        },
+        error: (xhr) => {
+          this.toastError(xhr);
         },
       });
     },

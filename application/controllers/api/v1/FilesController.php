@@ -309,33 +309,39 @@ class FilesController extends REST_Controller
         }
 
         $file = $this->input->get('file');
-        $file_model = new FileModel();
-        $result = $file_model->find($file["file_id"]);
-
-        if (!$result) {
-            $this->response_error([
-                "message" => "File seems doesn't exist!",
-            ]);
+        if (!is_array($file) || empty($file['file_id'])) {
+            $this->response_error(lang('not_found_error'));
             return;
         }
 
-        try {
-            $string = file_get_contents($file_model->getFileFullPath());
-            $this->response_ok(
-                [
-                    "message" => "File content",
-                ],
-                ["file_content" => $string]
-            );
-        } catch (\Throwable $th) {
-            if ($string === false) {
-                $this->response_error([
-                    "message" => "Oops! Error reading file",
-                ]);
-                return;
-            }
+        $file_model = new FileModel();
+        $result = $file_model->find($file['file_id']);
+
+        if (!$result) {
+            $this->response_error(lang('not_found_error'));
+            return;
         }
 
+        if (!$file_model->isReadableFile()) {
+            $this->response_error(lang('file_read_error'));
+            return;
+        }
+
+        $string = file_get_contents($file_model->resolveDiskPath(
+            $file_model->file_path,
+            $file_model->file_name,
+            $file_model->file_type
+        ));
+
+        if ($string === false) {
+            $this->response_error(lang('file_read_error'));
+            return;
+        }
+
+        $this->response_ok(
+            array('message' => 'File content'),
+            array('file_content' => $string)
+        );
     }
 
     /**
