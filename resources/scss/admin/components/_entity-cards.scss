@@ -84,34 +84,6 @@ $entity-card-image-radius: 8px;
   color: var(--st-on-accent);
 }
 
-.status-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  width: 96%;
-  max-width: 96%;
-  margin: 0.5rem auto 0.75rem;
-  overflow-x: auto;
-  padding: 5px 0;
-  box-sizing: border-box;
-}
-
-// Events / data-table slot: same inset as page-intro / page-navbar.
-.data-table-filters {
-  width: 96%;
-  max-width: 96%;
-  margin: 0 auto;
-  box-sizing: border-box;
-}
-
-.data-table-filters .status-filters,
-.data-table-filters .config-log-tabs {
-  width: 100%;
-  max-width: none;
-  margin-left: 0;
-  margin-right: 0;
-}
-
 .list-backlink {
   width: 96%;
   max-width: 96%;

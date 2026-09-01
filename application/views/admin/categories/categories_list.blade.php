@@ -14,8 +14,16 @@
     </div>
     @include('admin.components.page_navbar', [
         'searchInputId' => 'categories-search',
-        'refreshMethod' => 'getCategories()',
+        'refreshMethod' => 'getCategories(currentStatus)',
+        'section' => 'nav-open',
+    ])
+    @include('admin.components.list_status_chips', [
+        'click' => 'getCategories',
+    ])
+    @include('admin.components.page_navbar', [
+        'refreshMethod' => 'getCategories(currentStatus)',
         'itemsExpr' => 'filterCategories',
+        'section' => 'nav-close',
     ])
     <div class="pages categories" v-cloak v-if="!loader && categories.length > 0">
         <div class="row" v-if="tableView">
@@ -123,9 +131,13 @@
             </div>
         </div>
     </div>
-    <div class="container" v-if="!loader && categories.length == 0 && !filter" v-cloak>
+    <div class="container" v-if="!loader && categories.length == 0 && !filter && currentStatus === null" v-cloak>
         <h4>No categories found</h4>
     </div>
+    @include('admin.components.list_filter_empty', [
+        'showExpr' => '!loader && categories.length == 0 && (filter || currentStatus !== null)',
+        'clearMethod' => 'resetFilter(); getCategories(null)',
+    ])
     @include('admin.components.pagination')
     <confirm-modal
         id="deleteModal"

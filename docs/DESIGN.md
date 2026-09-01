@@ -173,8 +173,8 @@ Estructura canónica:
 
 1. Loader: `<preloader />` (o skeleton si la vista ya lo tiene).
 2. `page-intro` (`admin.components.page_intro`, params `$titleKey` / `$ledeKey`): `h1.page-header` (20px, no display Materialize) + `p.page-intro__lede` (`--st-text-secondary`). Título = nombre del módulo; lede = una línea de beneficio. Un H1 por pantalla. Va **arriba** de `page-navbar` / `data_table` / el `$h1` suelto del formulario.
-3. `nav.page-navbar` es **toolbar de la vista**, no un segundo buscador. Fondo `var(--st-page)`, ancho 96% centrado, `margin` 1rem arriba / 0.75rem abajo (no pegar a la navbar ni a los costados). Filtro compacto (máx. 360px) a la izquierda: superficie blanca, **un** borde 1px `--st-chrome` (teal en hover/focus, sin outline extra). Icono `filter_list` y acciones (toggle / refresh) en `--st-interactive`. El buscador global vive en la navbar (`Ctrl+K` / paleta). El icono de toggle refleja el modo actual (`view_module` ↔ `view_list`).
-4. Filtros de status como `.status-chip` (botones o `<button>`, no `<div>`).
+3. `nav.page-navbar` es **toolbar de la vista**, no un segundo buscador. Fondo `var(--st-page)`, ancho 96% centrado, `margin` 1rem arriba / 0.75rem abajo (no pegar a la navbar ni a los costados). Grid: buscador compacto (máx. 360px) a la izquierda · chips en `.page-navbar__filters` al centro (wrap en esa columna, no debajo del search) · toggle/refresh a la derecha. Superficie blanca, **un** borde 1px `--st-chrome` (teal en hover/focus, sin outline extra). Icono `filter_list` y acciones en `--st-interactive`. El buscador global vive en la navbar (`Ctrl+K` / paleta). El icono de toggle refleja el modo actual (`view_module` ↔ `view_list`). En teléfono: search + acciones arriba; chips a renglón completo. Altura `auto` (los chips pueden ocupar más de una línea).
+4. Filtros de status como `.status-chip` **dentro** de la toolbar (`<button>`, no `<div>` ni Materialize `.chip`). Compactos: 26px, 12px, radio `$radius-sm`. Una dimensión = `.filter-group`; si hay dos (p. ej. fragmentos status + tipo), grupos lado a lado con divisor. Data-table: slot `filters` o prop `statusFilters` adentro del navbar, no un bloque hermano. Listas CMS (páginas, álbumes, videos, fragmentos, menús, categorías, contenidos): All / Published / Draft / Archived / Deleted. Colecciones y forms: All / Enabled|Active / Disabled|Inactive. Inbox de forms: All / New / Seen. Usuarios y grupos: All + activo/inactivo (o público/privado). Paleta Ctrl+K y resultados de búsqueda **no** usan este patrón.
 5. Grid de cards **o** tabla, un solo `v-for` sobre la lista filtrada.
 6. Vacío: icono + título + una línea + botón a crear.
 7. Filtro sin resultados: “Ningún resultado para X” + `lang('filter_empty_cta')`. Distinto del vacío total.
@@ -301,7 +301,7 @@ Prioridad para trabajo de UX, no un backlog de features. Detalle y archivos en e
 14. Dos `more_vert` por card de página (FAB + activator); es el patrón visual de listado.
 15. ~~Estilos inline de cards en `pages_list`~~ (pasados a `_entity-cards.scss`). Quedan inline en dashboard.
 16. Login `type="button"`; `html lang="en"` fijo; `alt` vacíos.
-17. Filtros de status como `<div>`, no botones.
+17. ~~Filtros de status como `<div>`, no botones~~ (toolbar: `<button class="status-chip">`).
 18. Widget creator y FAB del dashboard con destino poco obvio.
 
 Al implementar, seguir esta guía. Si un patrón nuevo se vuelve recurrente, documentarlo aquí — no en un `<style>` de una vista.

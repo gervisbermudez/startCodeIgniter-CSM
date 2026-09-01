@@ -6,6 +6,7 @@ var CategoriesLists = new Vue({
     loader: true,
     filter: "",
     toDeleteItem: {},
+    currentStatus: null,
     serverPagination: true,
     listEndpoint: "api/v1/categories",
     listKey: "categories",
@@ -27,7 +28,14 @@ var CategoriesLists = new Vue({
     },
   },
   methods: {
-    getCategories: function (page) {
+    getCategories: function (status, page) {
+      if (typeof status === "undefined") {
+        status = this.currentStatus;
+      }
+      if (status !== this.currentStatus) {
+        page = 1;
+      }
+      this.currentStatus = status;
       this.fetchList(page);
     },
     delete: function (categorie, index) {

@@ -98,7 +98,14 @@ class CategoriesController extends REST_Controller
             return;
         }
 
-        $this->respond_index_list($categorie, array('parent_id' => '0'), array(), array('unfiltered' => true));
+        $status = $this->get('status');
+        $where = array('parent_id' => '0');
+        $options = array('unfiltered' => true);
+        if ($status !== null && $status !== '') {
+            $where['status'] = $status;
+            $options = array();
+        }
+        $this->respond_index_list($categorie, $where, array(), $options);
     }
 
     /**

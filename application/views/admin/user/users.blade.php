@@ -19,7 +19,21 @@
         'searchInputId' => 'users-search',
         'refreshMethod' => 'getUsers()',
         'navbarShow' => '!loader',
+        'section' => 'nav-open',
+    ])
+    @include('admin.components.list_status_chips', [
+        'click' => 'setStatus',
+        'mode' => 'binary',
+        'onLabel' => lang('public'),
+        'offLabel' => lang('private'),
+        'onValue' => 1,
+        'offValue' => 0,
+    ])
+    @include('admin.components.page_navbar', [
+        'refreshMethod' => 'getUsers()',
+        'navbarShow' => '!loader',
         'itemsExpr' => 'filterUsers',
+        'section' => 'nav-close',
     ])
     <div class="container" v-if="tableView && filterUsers.length > 0" v-cloak v-show="!loader">
         <div class="row">
@@ -73,13 +87,17 @@
             v-on:temp-delete="onRequestDelete"
         />
     </div>
-    <div class="container center" v-if="!loader && users.length == 0 && !filter" v-cloak>
+    <div class="container center" v-if="!loader && users.length == 0 && !filter && currentStatus === null" v-cloak>
         <i class="material-icons large grey-text" aria-hidden="true">people</i>
         <p class="page-header"><?= lang('users_empty') ?></p>
         @if(has_permisions('CREATE_USER'))
         <a class="btn waves-effect st-accent" href="{{ base_url('admin/users/add/') }}"><?= lang('users_empty_cta') ?></a>
         @endif
     </div>
+    @include('admin.components.list_filter_empty', [
+        'showExpr' => '!loader && !filter && currentStatus !== null && filterUsers.length === 0',
+        'clearMethod' => 'resetFilter(); setStatus(null)',
+    ])
     <confirm-modal
         id="deleteModal"
         title="<?= htmlspecialchars(lang('confirm_delete'), ENT_QUOTES, 'UTF-8') ?>"

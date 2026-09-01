@@ -13,10 +13,10 @@
                 :index_data="index_data"
                 :pagination="true"
             >
-                <div slot="filters" class="config-log-tabs">
-                    <a href="#!" class="chip" :class="{active: activeTab == 'system'}" @click.prevent="changeTab('system')">{{ lang('config_logs_system') }}</a>
-                    <a href="#!" class="chip" :class="{active: activeTab == 'api'}" @click.prevent="changeTab('api')">{{ lang('config_logs_api') }}</a>
-                    <a href="#!" class="chip" :class="{active: activeTab == 'tracking'}" @click.prevent="changeTab('tracking')">{{ lang('config_logs_tracking') }}</a>
+                <div slot="filters" class="filter-group" role="group" aria-label="<?= htmlspecialchars(lang('filter'), ENT_QUOTES, 'UTF-8') ?>">
+                    <button type="button" class="status-chip" :class="{active: activeTab == 'system'}" @click="changeTab('system')">{{ lang('config_logs_system') }}</button>
+                    <button type="button" class="status-chip" :class="{active: activeTab == 'api'}" @click="changeTab('api')">{{ lang('config_logs_api') }}</button>
+                    <button type="button" class="status-chip" :class="{active: activeTab == 'tracking'}" @click="changeTab('tracking')">{{ lang('config_logs_tracking') }}</button>
                 </div>
             </data-table>
         </div>

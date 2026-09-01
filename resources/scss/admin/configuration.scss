@@ -533,27 +533,6 @@
   margin-bottom: 20px;
 }
 
-.config-log-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  width: 96%;
-  max-width: 96%;
-  margin: 12px auto 16px;
-  box-sizing: border-box;
-
-  .chip {
-    cursor: pointer;
-    background: var(--st-canvas);
-    color: var(--st-text-secondary);
-
-    &.active {
-      background: var(--st-interactive);
-      color: var(--st-on-accent);
-    }
-  }
-}
-
 .collapsible.configuration-component + .configuration-component {
   border-bottom: 0;
 }

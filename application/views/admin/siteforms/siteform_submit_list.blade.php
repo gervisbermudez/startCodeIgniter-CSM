@@ -18,6 +18,7 @@
         :options="options"
         :show_fab="false"
         :query_params="queryParams"
+        :status_filters="statusFilters"
         :empty_title="emptyTitle"
         :confirm_title="confirmTitle"
         :confirm_body="confirmBody"

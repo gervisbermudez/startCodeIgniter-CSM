@@ -2033,22 +2033,6 @@ iframe.components-sandbox {
 }
 
 .notifications-page {
-  .notifications-filters {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-    width: 96%;
-    max-width: 96%;
-    margin: 0.5rem auto 0.75rem;
-    box-sizing: border-box;
-
-    .chip.active {
-      background: var(--st-interactive);
-      color: #fff;
-    }
-  }
-
   .notifications-empty .material-icons {
     font-size: 48px;
     color: var(--st-text-secondary);
