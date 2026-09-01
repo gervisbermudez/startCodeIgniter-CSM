@@ -62,7 +62,7 @@
                 <div class="input-field">
                     <label for="page_path">{{ lang('pages_path') }}</label>
                     <input type="text" id="page_path" name="path" required="required" value="" v-model="path" />
-                    <br />
+                    <span class="helper-text">{{ lang('pages_path_help') }}</span>
                 </div>
                 <p>
                     <span><b>{{ lang('pages_full_path') }}</b> @{{ getPagePath }}</span>

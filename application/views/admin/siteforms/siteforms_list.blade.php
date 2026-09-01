@@ -4,6 +4,10 @@
 @endsection
 @section('content')
 <div id="root">
+    @include('admin.components.page_intro', [
+        'titleKey' => 'menu_siteforms',
+        'ledeKey' => 'siteforms_lede',
+    ])
     <data-table
         :endpoint="endpoint"
         :colums="colums"
