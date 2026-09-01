@@ -6,32 +6,32 @@ class SiteFormsController extends MY_Controller
 {
     public $routes_permisions = [
         "index" => [
-            "patern" => '/admin\/siteforms\/?$/',
+            "patern" => '/^admin\/siteforms\/?$/',
             "required_permissions" => ["SELECT_SITEFORMS"],
             "conditions" => [],
         ],
         "nuevo" => [
-            "patern" => '/admin\/siteforms\/(nuevo|new)/',
+            "patern" => '/^admin\/siteforms\/(nuevo|new)/',
             "required_permissions" => ["CREATE_SITEFORM"],
             "conditions" => [],
         ],
         "editar" => [
-            "patern" => '/admin\/siteforms\/(editar|edit)\/(\d+)/',
+            "patern" => '/^admin\/siteforms\/(editar|edit)\/(\d+)/',
             "required_permissions" => ["UPDATE_SITEFORM"],
             "conditions" => [],
         ],
         "submit" => [
-            "patern" => '/admin\/siteforms\/submit/',
+            "patern" => '/^admin\/siteforms\/submit/',
             "required_permissions" => ["SELECT_SITEFORMS"],
             "conditions" => [],
         ],
         "export" => [
-            "patern" => '/admin\/siteforms\/export/',
+            "patern" => '/^admin\/siteforms\/export/',
             "required_permissions" => ["SELECT_SITEFORMS"],
             "conditions" => [],
         ],
         "stats" => [
-            "patern" => '/admin\/siteforms\/stats/',
+            "patern" => '/^admin\/siteforms\/stats/',
             "required_permissions" => ["SELECT_SITEFORMS"],
             "conditions" => [],
         ],

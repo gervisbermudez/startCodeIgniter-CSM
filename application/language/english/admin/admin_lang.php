@@ -303,12 +303,27 @@ $lang['fragments_save'] = 'Save';
 $lang['fragments_cancel'] = 'Cancel';
 $lang['fragments_not_found'] = 'Fragment not found';
 $lang['fragments_publish'] = 'Publish Fragment';
+$lang['fragments_not_published'] = 'Not published';
+$lang['fragments_published'] = 'Published';
 $lang['fragments_type'] = 'Fragment Type';
 $lang['fragments_select'] = 'Select';
 $lang['fragments_additional'] = 'Additional';
+$lang['fragments_created_by'] = 'Created by';
+$lang['fragments_created'] = 'Created';
+$lang['fragments_modified'] = 'Modified';
+$lang['fragments_empty'] = 'No fragments yet';
+$lang['fragments_empty_cta'] = 'New fragment';
 $lang['no_fragments'] = 'No Fragments';
 $lang['delete_fragment_question'] = 'Do you want to delete the fragment?';
 $lang['create_fragment'] = 'Create Fragment';
+$lang['fragments_copy_token'] = 'Copy token';
+$lang['fragments_token_copied'] = 'Token copied';
+$lang['fragments_token_hint'] = 'Paste this into a page to embed the fragment.';
+$lang['fragments_preview'] = 'Preview';
+$lang['fragments_preview_empty'] = 'Nothing to preview yet';
+$lang['fragments_rename_warning'] = 'Saved. Old {{fragment(name)}} tokens will stop rendering.';
+$lang['fragments_type_hint'] = 'Editorial label only. The public embed ignores type.';
+$lang['fragments_filter_empty'] = 'No fragments match this filter';
 
 // Albums
 $lang['albums_new'] = 'New Album';

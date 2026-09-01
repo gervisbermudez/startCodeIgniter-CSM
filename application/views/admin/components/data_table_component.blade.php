@@ -35,14 +35,15 @@
                                     <span v-else>
                                         <a class='dropdown-trigger' :data-target='"dropdown" + index'><i class="material-icons">more_vert</i></a>
                                         <ul v-if="!options" :id='"dropdown" + index' class='dropdown-content'>
-                                            <li><a v-on:click="editItem(item, index);">Edit</a></li>
-                                            <li><a href="#!" v-on:click.prevent="openDeleteModal(item, index);">Delete</a></li>
-                                            <li><a v-on:click="archiveItem(item, index);">Archive</a></li>
+                                            <li v-if="can_update"><a v-on:click="editItem(item, index);">Edit</a></li>
+                                            <li v-if="can_delete"><a href="#!" v-on:click.prevent="openDeleteModal(item, index);">Delete</a></li>
+                                            <li v-if="can_update"><a v-on:click="archiveItem(item, index);">Archive</a></li>
                                         </ul>
                                         <ul v-else :id='"dropdown" + index' class='dropdown-content'>
                                             <li
                                                 v-for="(option, option_index) in options"
-                                                :key="option_index">
+                                                :key="option_index"
+                                                v-if="option.action !== 'delete' || can_delete">
                                                 <a v-if="option.action === 'delete'" href="#!" @click.prevent="openDeleteModal(item, index)">
                                                     <i v-if="option.icon" class="material-icons left">@{{option.icon}}</i>
                                                     @{{option.label}}

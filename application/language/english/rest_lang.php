@@ -6,3 +6,4 @@ $lang['not_found_error'] = 'Resource not found';
 $lang['user_not_authenticated'] = 'Not authenticated';
 $lang['none_user_groups_created'] = 'None user groups found';
 $lang['no_permissions_found'] = 'No permissions found';
+$lang['not_have_permissions'] = 'You do not have permissions to see this';

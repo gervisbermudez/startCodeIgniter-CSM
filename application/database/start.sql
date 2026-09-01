@@ -886,7 +886,7 @@ CREATE TABLE `permisions` (
   `date_update` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `status` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`permisions_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -895,7 +895,7 @@ CREATE TABLE `permisions` (
 
 LOCK TABLES `permisions` WRITE;
 /*!40000 ALTER TABLE `permisions` DISABLE KEYS */;
-INSERT INTO `permisions` VALUES (1,'CREATE_USER','Add user','users','2020-09-20 12:51:14','2022-11-28 18:54:26',1),(2,'UPDATE_USER','Update user','users','2020-09-20 12:51:27','2022-11-28 18:54:32',1),(3,'DELETE_USER','Delete user','users','2020-09-20 12:51:34','2022-11-28 18:54:43',1),(4,'SELECT_USERS','View users','users','2020-09-20 12:52:01','2022-11-28 18:54:52',1),(5,'UPDATE_USERS','Update users','users','2020-09-20 15:13:54','2022-11-28 19:06:54',1),(6,'CREATE_PAGE','Add page','pages','2020-09-20 12:51:14','2022-11-28 18:54:22',1),(7,'UPDATE_PAGE','Update page','pages','2020-09-20 12:51:27','2022-11-28 19:07:03',1),(8,'DELETE_PAGE','Delete page','pages','2020-09-20 12:51:34','2022-11-28 19:07:11',1),(9,'SELECT_PAGES','View pages','pages','2020-09-20 12:52:01','2022-11-28 19:07:18',1),(10,'UPDATE_PAGES','Update pages','pages','2020-09-20 15:13:54','2022-11-28 19:07:31',1),(11,'CREATE_FORM_CUSTOM','Add collection','form_custom','2020-09-20 12:51:14','2022-11-28 19:27:38',1),(12,'UPDATE_FORM_CUSTOM','Update collection','form_custom','2020-09-20 12:51:27','2022-11-28 19:27:40',1),(13,'DELETE_FORM_CUSTOM','Delete collection','form_custom','2020-09-20 12:51:34','2022-11-28 19:27:43',1),(14,'SELECT_FORM_CUSTOMS','View collections','form_custom','2020-09-20 12:52:01','2022-11-28 19:27:46',1),(16,'CREATE_MENU','Add menu','menu','2020-09-20 12:51:14','2022-11-28 19:08:49',1),(17,'UPDATE_MENU','Update menu','menu','2020-09-20 12:51:27','2022-11-28 19:08:58',1),(18,'DELETE_MENU','Delete menu','menu','2020-09-20 12:51:34','2022-11-28 19:09:02',1),(19,'SELECT_MENUS','View menu','menu','2020-09-20 12:52:01','2022-11-28 19:09:12',1),(20,'UPDATE_MENUS','Update menus','menu','2020-09-20 15:13:54','2022-11-28 19:09:43',1),(21,'CREATE_FILE','Add file','file','2020-09-20 12:51:14','2022-11-28 19:10:08',1),(22,'UPDATE_FILE','Update file','file','2020-09-20 12:51:27','2022-11-28 19:10:11',1),(23,'DELETE_FILE','Delete file','file','2020-09-20 12:51:34','2022-11-28 19:10:17',1),(24,'SELECT_FILES','View files','file','2020-09-20 12:52:01','2022-11-28 19:11:12',1),(25,'UPDATE_FILES','Update files','file','2020-09-20 15:13:54','2022-11-28 19:16:36',1),(26,'CREATE_CATEGORIE','Create categorie','categories','2020-09-20 12:51:14','2022-11-28 19:16:57',1),(27,'UPDATE_CATEGORIE','Update categorie','categories','2020-09-20 12:51:27','2022-11-28 19:16:55',1),(28,'DELETE_CATEGORIE','Delete categorie','categories','2020-09-20 12:51:34','2022-11-28 19:17:03',1),(29,'SELECT_CATEGORIES','View categories','categories','2020-09-20 12:52:01','2022-11-28 19:17:23',1),(30,'UPDATE_CATEGORIES','Update categories','categories','2020-09-20 15:13:54','2022-11-28 19:17:28',1),(31,'PUBLISH_PAGES','Publish pages','pages','2020-09-20 15:13:54','2022-11-28 19:17:35',1),(32,'PUBLISH_FORM_CUSTOM','Publish collection','form_custom','2020-09-20 15:13:54','2022-11-28 19:18:08',1),(33,'CREATE_CONTENT_DATA','Add collection item','content_data','2020-09-20 12:51:14','2022-11-28 19:24:23',1),(34,'UPDATE_CONTENT_DATA','Update collection item','content_data','2020-09-20 12:51:27','2022-11-28 19:24:28',1),(35,'DELETE_CONTENT_DATA','Delete collection item','content_data','2020-09-20 12:51:34','2022-11-28 19:24:32',1),(36,'SELECT_CONTENT_DATA','View collection items','content_data','2020-09-20 12:52:01','2022-11-28 19:24:37',1),(37,'SELECT_CONFIG','View config','config','2020-09-20 12:52:01','2022-11-28 19:13:49',1),(39,'CREATE_CONFIG','Add config','config','2020-09-20 12:51:14','2022-11-28 19:13:55',1),(40,'UPDATE_CONFIG','Update config','config','2020-09-20 12:51:27','2022-11-28 19:14:00',1),(41,'CREATE_EVENT','Add event','events','2026-08-30 00:00:00','2026-08-30 00:00:00',1),(42,'UPDATE_EVENT','Update event','events','2026-08-30 00:00:00','2026-08-30 00:00:00',1),(43,'DELETE_EVENT','Delete event','events','2026-08-30 00:00:00','2026-08-30 00:00:00',1),(44,'SELECT_EVENTS','View events','events','2026-08-30 00:00:00','2026-08-30 00:00:00',1);
+INSERT INTO `permisions` VALUES (1,'CREATE_USER','Add user','users','2020-09-20 12:51:14','2022-11-28 18:54:26',1),(2,'UPDATE_USER','Update user','users','2020-09-20 12:51:27','2022-11-28 18:54:32',1),(3,'DELETE_USER','Delete user','users','2020-09-20 12:51:34','2022-11-28 18:54:43',1),(4,'SELECT_USERS','View users','users','2020-09-20 12:52:01','2022-11-28 18:54:52',1),(5,'UPDATE_USERS','Update users','users','2020-09-20 15:13:54','2022-11-28 19:06:54',1),(6,'CREATE_PAGE','Add page','pages','2020-09-20 12:51:14','2022-11-28 18:54:22',1),(7,'UPDATE_PAGE','Update page','pages','2020-09-20 12:51:27','2022-11-28 19:07:03',1),(8,'DELETE_PAGE','Delete page','pages','2020-09-20 12:51:34','2022-11-28 19:07:11',1),(9,'SELECT_PAGES','View pages','pages','2020-09-20 12:52:01','2022-11-28 19:07:18',1),(10,'UPDATE_PAGES','Update pages','pages','2020-09-20 15:13:54','2022-11-28 19:07:31',1),(11,'CREATE_FORM_CUSTOM','Add collection','form_custom','2020-09-20 12:51:14','2022-11-28 19:27:38',1),(12,'UPDATE_FORM_CUSTOM','Update collection','form_custom','2020-09-20 12:51:27','2022-11-28 19:27:40',1),(13,'DELETE_FORM_CUSTOM','Delete collection','form_custom','2020-09-20 12:51:34','2022-11-28 19:27:43',1),(14,'SELECT_FORM_CUSTOMS','View collections','form_custom','2020-09-20 12:52:01','2022-11-28 19:27:46',1),(16,'CREATE_MENU','Add menu','menu','2020-09-20 12:51:14','2022-11-28 19:08:49',1),(17,'UPDATE_MENU','Update menu','menu','2020-09-20 12:51:27','2022-11-28 19:08:58',1),(18,'DELETE_MENU','Delete menu','menu','2020-09-20 12:51:34','2022-11-28 19:09:02',1),(19,'SELECT_MENUS','View menu','menu','2020-09-20 12:52:01','2022-11-28 19:09:12',1),(20,'UPDATE_MENUS','Update menus','menu','2020-09-20 15:13:54','2022-11-28 19:09:43',1),(21,'CREATE_FILE','Add file','file','2020-09-20 12:51:14','2022-11-28 19:10:08',1),(22,'UPDATE_FILE','Update file','file','2020-09-20 12:51:27','2022-11-28 19:10:11',1),(23,'DELETE_FILE','Delete file','file','2020-09-20 12:51:34','2022-11-28 19:10:17',1),(24,'SELECT_FILES','View files','file','2020-09-20 12:52:01','2022-11-28 19:11:12',1),(25,'UPDATE_FILES','Update files','file','2020-09-20 15:13:54','2022-11-28 19:16:36',1),(26,'CREATE_CATEGORIE','Create categorie','categories','2020-09-20 12:51:14','2022-11-28 19:16:57',1),(27,'UPDATE_CATEGORIE','Update categorie','categories','2020-09-20 12:51:27','2022-11-28 19:16:55',1),(28,'DELETE_CATEGORIE','Delete categorie','categories','2020-09-20 12:51:34','2022-11-28 19:17:03',1),(29,'SELECT_CATEGORIES','View categories','categories','2020-09-20 12:52:01','2022-11-28 19:17:23',1),(30,'UPDATE_CATEGORIES','Update categories','categories','2020-09-20 15:13:54','2022-11-28 19:17:28',1),(31,'PUBLISH_PAGES','Publish pages','pages','2020-09-20 15:13:54','2022-11-28 19:17:35',1),(32,'PUBLISH_FORM_CUSTOM','Publish collection','form_custom','2020-09-20 15:13:54','2022-11-28 19:18:08',1),(33,'CREATE_CONTENT_DATA','Add collection item','content_data','2020-09-20 12:51:14','2022-11-28 19:24:23',1),(34,'UPDATE_CONTENT_DATA','Update collection item','content_data','2020-09-20 12:51:27','2022-11-28 19:24:28',1),(35,'DELETE_CONTENT_DATA','Delete collection item','content_data','2020-09-20 12:51:34','2022-11-28 19:24:32',1),(36,'SELECT_CONTENT_DATA','View collection items','content_data','2020-09-20 12:52:01','2022-11-28 19:24:37',1),(37,'SELECT_CONFIG','View config','config','2020-09-20 12:52:01','2022-11-28 19:13:49',1),(39,'CREATE_CONFIG','Add config','config','2020-09-20 12:51:14','2022-11-28 19:13:55',1),(40,'UPDATE_CONFIG','Update config','config','2020-09-20 12:51:27','2022-11-28 19:14:00',1),(41,'CREATE_EVENT','Add event','events','2026-08-30 00:00:00','2026-08-30 00:00:00',1),(42,'UPDATE_EVENT','Update event','events','2026-08-30 00:00:00','2026-08-30 00:00:00',1),(43,'DELETE_EVENT','Delete event','events','2026-08-30 00:00:00','2026-08-30 00:00:00',1),(44,'SELECT_EVENTS','View events','events','2026-08-30 00:00:00','2026-08-30 00:00:00',1),(45,'SELECT_USERGROUPS','View groups','users','2026-08-31 00:00:00','2026-08-31 00:00:00',1),(46,'CREATE_USERGROUP','Add group','users','2026-08-31 00:00:00','2026-08-31 00:00:00',1),(47,'UPDATE_USERGROUP','Update group','users','2026-08-31 00:00:00','2026-08-31 00:00:00',1),(48,'DELETE_USERGROUP','Delete group','users','2026-08-31 00:00:00','2026-08-31 00:00:00',1),(49,'SELECT_FRAGMENTS','View fragments','fragments','2026-08-31 00:00:00','2026-08-31 00:00:00',1),(50,'SELECT_GALLERY','View gallery','gallery','2026-08-31 00:00:00','2026-08-31 00:00:00',1),(51,'SELECT_VIDEOS','View videos','videos','2026-08-31 00:00:00','2026-08-31 00:00:00',1),(52,'SELECT_CALENDAR','View calendar','calendar','2026-08-31 00:00:00','2026-08-31 00:00:00',1),(53,'CREATE_GALLERY','Add gallery album','gallery','2026-08-31 00:00:00','2026-08-31 00:00:00',1),(54,'UPDATE_GALLERY','Update gallery','gallery','2026-08-31 00:00:00','2026-08-31 00:00:00',1),(55,'DELETE_GALLERY','Delete gallery','gallery','2026-08-31 00:00:00','2026-08-31 00:00:00',1),(56,'CREATE_VIDEO','Add video','videos','2026-08-31 00:00:00','2026-08-31 00:00:00',1),(57,'UPDATE_VIDEO','Update video','videos','2026-08-31 00:00:00','2026-08-31 00:00:00',1),(58,'DELETE_VIDEO','Delete video','videos','2026-08-31 00:00:00','2026-08-31 00:00:00',1),(59,'CREATE_FRAGMENT','Add fragment','fragments','2026-08-31 00:00:00','2026-08-31 00:00:00',1),(60,'UPDATE_FRAGMENT','Update fragment','fragments','2026-08-31 00:00:00','2026-08-31 00:00:00',1),(61,'DELETE_FRAGMENT','Delete fragment','fragments','2026-08-31 00:00:00','2026-08-31 00:00:00',1);
 /*!40000 ALTER TABLE `permisions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1374,8 +1374,8 @@ CREATE TABLE `usergroup` (
   `name` varchar(25) NOT NULL,
   `level` int(11) NOT NULL,
   `description` tinytext NOT NULL,
-  `user_id` tinyint(4) NOT NULL DEFAULT '0',
-  `parent_id` tinyint(4) NOT NULL DEFAULT '0',
+  `user_id` int(11) NOT NULL DEFAULT '0',
+  `parent_id` int(11) NOT NULL DEFAULT '0',
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `date_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `date_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -1410,11 +1410,12 @@ CREATE TABLE `usergroup_permisions` (
   `date_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `date_update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`usergroup_permisions_id`) USING BTREE,
+  UNIQUE KEY `uq_usergroup_permision` (`usergroup_id`, `permision_id`),
   KEY `usergroup_id` (`usergroup_id`),
   KEY `permision_id` (`permision_id`),
   CONSTRAINT `FK_usergroup_permisions_permisions` FOREIGN KEY (`permision_id`) REFERENCES `permisions` (`permisions_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_usergroup_permisions_usergroup` FOREIGN KEY (`usergroup_id`) REFERENCES `usergroup` (`usergroup_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=561 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=597 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1436,6 +1437,46 @@ INSERT INTO `usergroup_permisions` (`usergroup_permisions_id`, `usergroup_id`, `
 (558,2,42,1,'2026-08-30 00:00:00','2026-08-30 00:00:00'),
 (559,2,43,1,'2026-08-30 00:00:00','2026-08-30 00:00:00'),
 (560,2,44,1,'2026-08-30 00:00:00','2026-08-30 00:00:00');
+
+INSERT INTO `usergroup_permisions` (`usergroup_permisions_id`, `usergroup_id`, `permision_id`, `status`, `date_create`, `date_update`) VALUES
+(561,1,45,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(562,1,46,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(563,1,47,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(564,1,48,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(565,1,49,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(566,1,50,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(567,1,51,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(568,1,52,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(569,1,32,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(570,2,45,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(571,2,46,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(572,2,47,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(573,2,48,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(574,2,49,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(575,2,50,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(576,2,51,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(577,2,52,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(578,2,32,1,'2026-08-31 00:00:00','2026-08-31 00:00:00');
+
+INSERT INTO `usergroup_permisions` (`usergroup_permisions_id`, `usergroup_id`, `permision_id`, `status`, `date_create`, `date_update`) VALUES
+(579,1,53,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(580,1,54,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(581,1,55,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(582,1,56,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(583,1,57,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(584,1,58,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(585,1,59,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(586,1,60,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(587,1,61,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(588,2,53,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(589,2,54,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(590,2,55,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(591,2,56,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(592,2,57,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(593,2,58,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(594,2,59,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(595,2,60,1,'2026-08-31 00:00:00','2026-08-31 00:00:00'),
+(596,2,61,1,'2026-08-31 00:00:00','2026-08-31 00:00:00');
 
 --
 -- Temporary table structure for view `v_popular_pages`

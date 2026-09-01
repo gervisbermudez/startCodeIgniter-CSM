@@ -6,18 +6,18 @@ class Categories extends MY_Controller
 {
 
     public $routes_permisions = [
-        "index" => [ 
-            "patern" => '/admin\/categorias/',
+        "index" => [
+            "patern" => '/^admin\/categories\/?$/',
             "required_permissions" => ["SELECT_CATEGORIES"],
             "conditions" => [],
         ],
-        "nueva" => [ 
-            "patern" => '/admin\/categorias\/nueva/',
+        "nueva" => [
+            "patern" => '/^admin\/categories\/(nueva|new)\/?$/',
             "required_permissions" => ["CREATE_CATEGORIE"],
             "conditions" => [],
         ],
-        "editar" => [ 
-            "patern" => '/admin\/categorias\/editar\/(\d+)/',
+        "editar" => [
+            "patern" => '/^admin\/categories\/(editar|edit)\/(\d+)/',
             "required_permissions" => ["UPDATE_CATEGORIE"],
             "conditions" => ["check_self_permissions"],
         ],

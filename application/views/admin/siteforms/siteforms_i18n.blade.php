@@ -35,6 +35,11 @@ window.SITEFORMS_I18N = {
     confirmDeleteBody: {!! json_encode(lang('siteforms_confirm_delete')) !!},
     newTooltip: {!! json_encode(lang('siteforms_new_tooltip')) !!}
 };
+window.SITEFORMS_PERMS = {
+    create: <?= has_permisions('CREATE_SITEFORM') ? 'true' : 'false' ?>,
+    update: <?= has_permisions('UPDATE_SITEFORM') ? 'true' : 'false' ?>,
+    delete: <?= has_permisions('DELETE_SITEFORM') ? 'true' : 'false' ?>
+};
 window.ADMIN_LANG = Object.assign({}, window.ADMIN_LANG || {}, {
     toast_saved: window.SITEFORMS_I18N.toast_saved,
     toast_error: window.SITEFORMS_I18N.toast_error,

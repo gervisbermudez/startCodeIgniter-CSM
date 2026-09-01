@@ -6,34 +6,44 @@ class UsersController extends MY_Controller
 {
 
     public $routes_permisions = [
-        "index" => [ 
-            "patern" => '/admin\/users/',
+        "index" => [
+            "patern" => '/^admin\/users\/?$/',
             "required_permissions" => ["SELECT_USERS"],
             "conditions" => [],
         ],
-        "ver" => [ 
-            "patern" => '/admin\/users\/ver\/(\d+)/',
+        "ver" => [
+            "patern" => '/^admin\/users\/ver\/(\d+)/',
             "required_permissions" => ["SELECT_USERS"],
             "conditions" => ["check_self_permissions"],
         ],
-        "edit" => [ 
-            "patern" => '/admin\/users\/edit\/(\d+)/',
+        "edit" => [
+            "patern" => '/^admin\/users\/edit\/(\d+)/',
             "required_permissions" => ["UPDATE_USER"],
             "conditions" => ["check_self_permissions"],
         ],
-        "changePassword" => [ 
-            "patern" => '/admin\/users\/changePassword\/(\d+)/',
+        "changePassword" => [
+            "patern" => '/^admin\/users\/changePassword\/(\d+)/',
             "required_permissions" => ["UPDATE_USER"],
             "conditions" => ["check_self_permissions"],
         ],
-        "agregar" => [ 
-            "patern" => '/admin\/users\/agregar/',
+        "agregar" => [
+            "patern" => '/^admin\/users\/add\/?$/',
             "required_permissions" => ["CREATE_USER"],
             "conditions" => [],
         ],
-        "usergroups" => [ 
-            "patern" => '/admin\/users\/usergroups/',
-            "required_permissions" => ["SELECT_USERS"],
+        "usergroups" => [
+            "patern" => '/^admin\/users\/usergroups\/?$/',
+            "required_permissions" => ["SELECT_USERGROUPS"],
+            "conditions" => [],
+        ],
+        "editGroup" => [
+            "patern" => '/^admin\/users\/editGroup\/(\d+)/',
+            "required_permissions" => ["UPDATE_USERGROUP"],
+            "conditions" => [],
+        ],
+        "newGroup" => [
+            "patern" => '/^admin\/users\/newGroup\/?$/',
+            "required_permissions" => ["CREATE_USERGROUP"],
             "conditions" => [],
         ],
     ];
@@ -41,6 +51,7 @@ class UsersController extends MY_Controller
     public function __construct()
     {
         parent::__construct();
+        $this->lang->load('admin/users');
         $this->check_permisions();
         $this->load->model('Admin/UserModel', 'User');
     }
@@ -155,46 +166,20 @@ class UsersController extends MY_Controller
 
     public function editGroup($usergroup_id)
     {
-        
-        $this->output->enable_profiler(false);
-
         $this->load->model('Admin/UsergroupModel');
-        $usergroup = new UsergroupModel();
-        $result = $usergroup->find($usergroup_id);
-        if ($result) {
-            $data['action'] = 'Admin/User/save/';
-            $data['title'] = ADMIN_TITLE . " | Editar Permisos";
-            $data['h1'] = "Editar Permisos";
-            $data['header'] = $this->load->view('admin/header', $data, true);
-            $data['editMode'] = 'edit';
-            $data['usergroup_id'] = $usergroup_id;
-           
-            echo $this->blade->view("admin.user.user_groups_permissions", $data);
-        } else {
-            $this->showError('Usergroup no encontrado');
-        }
+        $this->findOrFail(new UsergroupModel(), $usergroup_id, lang('not_found_error'));
+        $this->renderAdminView('admin.user.user_groups_permissions', lang('usergroups_edit'), lang('usergroups_edit'), [
+            'editMode' => 'edit',
+            'usergroup_id' => $usergroup_id,
+        ]);
     }
 
-    public function newGroup($usergroup_id)
+    public function newGroup()
     {
-        
-        $this->output->enable_profiler(false);
-
-        $this->load->model('Admin/UsergroupModel');
-        $usergroup = new UsergroupModel();
-        $result = $usergroup->find($usergroup_id);
-        if ($result) {
-            $data['action'] = 'Admin/User/save/';
-            $data['title'] = ADMIN_TITLE . " | Nuevo Grupo";
-            $data['h1'] = "Nuevo Grupo";
-            $data['header'] = $this->load->view('admin/header', $data, true);
-            $data['editMode'] = 'new';
-            $data['usergroup_id'] = null;
-           
-            echo $this->blade->view("admin.user.user_groups_permissions", $data);
-        } else {
-            $this->showError('Usergroup no encontrado');
-        }
+        $this->renderAdminView('admin.user.user_groups_permissions', lang('usergroups_new'), lang('usergroups_new'), [
+            'editMode' => 'new',
+            'usergroup_id' => false,
+        ]);
     }
 
     public function permissions()

@@ -301,9 +301,11 @@
                 <li class="tab">
                     <a class="active" href="#page-embed-form" @click="onEmbedTabClick('form')"><?php echo lang('pages_embed_form'); ?></a>
                 </li>
+                @if(has_permisions('SELECT_FRAGMENT'))
                 <li class="tab">
                     <a href="#page-embed-fragment" @click="onEmbedTabClick('fragment')"><?php echo lang('pages_embed_fragment'); ?></a>
                 </li>
+                @endif
                 <li class="tab">
                     <a href="#page-embed-menu" @click="onEmbedTabClick('menu')"><?php echo lang('pages_embed_menu'); ?></a>
                 </li>
@@ -391,7 +393,8 @@ window.ADMIN_LANG = Object.assign({}, window.ADMIN_LANG || {}, {
 });
 window.PAGE_EMBED_PERMS = {
   gallery: <?php echo has_permisions('SELECT_GALLERY') ? 'true' : 'false'; ?>,
-  videos: <?php echo has_permisions('SELECT_VIDEOS') ? 'true' : 'false'; ?>
+  videos: <?php echo has_permisions('SELECT_VIDEOS') ? 'true' : 'false'; ?>,
+  fragment: <?php echo has_permisions('SELECT_FRAGMENT') ? 'true' : 'false'; ?>
 };
 </script>
 <script src="{{base_url('resources/js/validateForm.js')}}"></script>

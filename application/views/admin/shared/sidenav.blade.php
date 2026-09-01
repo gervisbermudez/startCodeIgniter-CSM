@@ -16,6 +16,7 @@
                 <span>{{ lang('menu_dashboard') }}</span>
             </a>
         </li>
+        @if(has_permisions('SELECT_USERS') || has_permisions('SELECT_USERGROUPS') || has_permisions('CREATE_USER'))
         <li class="{{ isSectionActive('users') }}">
             <div class="collapsible-header waves-effect">
                 <i class="material-icons" aria-hidden="true">people</i>
@@ -28,9 +29,11 @@
                         <a class="waves-effect" href="{{ base_url('admin/users/') }}" {!! navCurrentAttr(array('admin/users', 'admin/users/edit*')) !!}>{{ lang('menu_all') }}</a>
                     </li>
                     @endif
+                    @if(has_permisions('SELECT_USERGROUPS'))
                     <li class="{{ isNavItemActive('admin/users/usergroups*') }}">
                         <a class="waves-effect" href="{{ base_url('admin/users/usergroups') }}" {!! navCurrentAttr('admin/users/usergroups*') !!}>{{ lang('menu_usergroups') }}</a>
                     </li>
+                    @endif
                     @if(has_permisions('CREATE_USER'))
                     <li class="{{ isNavItemActive('admin/users/add') }}">
                         <a class="waves-effect" href="{{ base_url('admin/users/add/') }}" {!! navCurrentAttr('admin/users/add') !!}>{{ lang('menu_new') }}</a>
@@ -39,6 +42,8 @@
                 </ul>
             </div>
         </li>
+        @endif
+        @if(has_permisions('SELECT_PAGES') || has_permisions('CREATE_PAGE'))
         <li class="{{ isSectionActive('pages') }}">
             <div class="collapsible-header waves-effect">
                 <i class="material-icons" aria-hidden="true">web</i>
@@ -59,6 +64,7 @@
                 </ul>
             </div>
         </li>
+        @endif
         @if(has_permisions('SELECT_SITEFORMS'))
         <li class="{{ isSectionActive('siteforms') }}">
             <div class="collapsible-header waves-effect">
@@ -82,12 +88,14 @@
             </div>
         </li>
         @endif
+        @if(has_permisions('SELECT_CALENDAR'))
         <li class="{{ isSectionActive('calendar') }}">
             <a class="waves-effect" href="{{ base_url('admin/calendar') }}" {!! navCurrentAttr('admin/calendar*') !!}>
                 <i class="material-icons" aria-hidden="true">event_note</i>
                 <span>{{ lang('menu_calendar') }}</span>
             </a>
         </li>
+        @endif
         @if(has_permisions('SELECT_ANALYTICS'))
         <li class="{{ isSectionActive('analytics') }}">
             <a class="waves-effect" href="{{ base_url('admin/analytics') }}" {!! navCurrentAttr('admin/analytics*') !!}>
@@ -96,6 +104,7 @@
             </a>
         </li>
         @endif
+        @if(has_permisions('SELECT_FRAGMENTS'))
         <li class="{{ isSectionActive('fragments') }}">
             <div class="collapsible-header waves-effect">
                 <i class="material-icons" aria-hidden="true">bookmark_border</i>
@@ -106,12 +115,15 @@
                     <li class="{{ isNavItemActive(array('admin/fragments', 'admin/fragments/edit*')) }}">
                         <a class="waves-effect" href="{{ base_url('admin/fragments/') }}" {!! navCurrentAttr(array('admin/fragments', 'admin/fragments/edit*')) !!}>{{ lang('menu_all') }}</a>
                     </li>
+                    @if(has_permisions('CREATE_FRAGMENT'))
                     <li class="{{ isNavItemActive('admin/fragments/new') }}">
                         <a class="waves-effect" href="{{ base_url('admin/fragments/new/') }}" {!! navCurrentAttr('admin/fragments/new') !!}>{{ lang('menu_new') }}</a>
                     </li>
+                    @endif
                 </ul>
             </div>
         </li>
+        @endif
         @if(has_permisions('SELECT_FILES'))
         <li class="{{ isSectionActive('files') }}">
             <a class="waves-effect" href="{{ base_url('admin/files') }}" {!! navCurrentAttr('admin/files*') !!}>
@@ -140,6 +152,7 @@
             </div>
         </li>
         @endif
+        @if(has_permisions('SELECT_CATEGORIES') || has_permisions('CREATE_CATEGORIE'))
         <li class="{{ isSectionActive('categories') }}">
             <div class="collapsible-header waves-effect">
                 <i class="material-icons" aria-hidden="true">receipt</i>
@@ -160,6 +173,8 @@
                 </ul>
             </div>
         </li>
+        @endif
+        @if(has_permisions('SELECT_EVENTS'))
         <li class="{{ isSectionActive('events') }}">
             <div class="collapsible-header waves-effect">
                 <i class="material-icons" aria-hidden="true">event</i>
@@ -176,6 +191,7 @@
                 </ul>
             </div>
         </li>
+        @endif
         @if(has_permisions('SELECT_GALLERY'))
         <li class="{{ isSectionActive('gallery') }}">
             <div class="collapsible-header waves-effect">
@@ -216,6 +232,7 @@
             </div>
         </li>
         @endif
+        @if(has_permisions('SELECT_FORM_CUSTOMS') || has_permisions('CREATE_FORM_CUSTOM'))
         <li class="{{ isSectionActive('custommodels') }}">
             <div class="collapsible-header waves-effect">
                 <i class="material-icons" aria-hidden="true">view_module</i>
@@ -236,6 +253,7 @@
                 </ul>
             </div>
         </li>
+        @endif
         @if(has_permisions('SELECT_CONFIG'))
         <li class="{{ isSectionActive('configuration') }}">
             <div class="collapsible-header waves-effect">

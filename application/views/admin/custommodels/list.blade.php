@@ -50,11 +50,17 @@
                                         class="material-icons">more_vert</i></a>
                                 <ul :id='"dropdown_t_" + model.custom_model_id' class='dropdown-content'>
                                     <li><a :href="base_url('admin/custommodels/items/' + model.custom_model_id)"><?= lang('collections_view_items') ?></a></li>
+                                    @if(has_permisions('CREATE_CONTENT_DATA'))
                                     <li><a :href="base_url('admin/custommodels/addData/' + model.custom_model_id)"><?= lang('collections_add_item') ?></a></li>
+                                    @endif
+                                    @if(has_permisions('UPDATE_FORM_CUSTOM'))
                                     <li><a :href="base_url('admin/custommodels/editForm/' + model.custom_model_id)"><?= lang('collections_edit_schema') ?></a></li>
+                                    @endif
                                     <li><a href="#!" v-on:click.prevent="copySnippet(model)"><?= lang('collections_copy_snippet') ?></a></li>
+                                    @if(has_permisions('DELETE_FORM_CUSTOM'))
                                     <li><a class="modal-trigger" href="#deleteModal"
                                         v-on:click="tempDelete(model, index);"><?= lang('custommodels_delete') ?></a></li>
+                                    @endif
                                 </ul>
                             </td>
                         </tr>
@@ -75,11 +81,17 @@
                             <i class="material-icons">more_vert</i></a>
                         <ul :id='"dropdown_c_" + model.custom_model_id' class='dropdown-content'>
                             <li><a :href="base_url('admin/custommodels/items/' + model.custom_model_id)"><?= lang('collections_view_items') ?></a></li>
+                            @if(has_permisions('CREATE_CONTENT_DATA'))
                             <li><a :href="base_url('admin/custommodels/addData/' + model.custom_model_id)"><?= lang('collections_add_item') ?></a></li>
+                            @endif
+                            @if(has_permisions('UPDATE_FORM_CUSTOM'))
                             <li><a :href="base_url('admin/custommodels/editForm/' + model.custom_model_id)"><?= lang('collections_edit_schema') ?></a></li>
+                            @endif
                             <li><a href="#!" v-on:click.prevent="copySnippet(model)"><?= lang('collections_copy_snippet') ?></a></li>
+                            @if(has_permisions('DELETE_FORM_CUSTOM'))
                             <li><a class="modal-trigger" href="#deleteModal"
                                 v-on:click="tempDelete(model, index);"><?= lang('custommodels_delete') ?></a></li>
+                            @endif
                         </ul>
                     </div>
                     <div class="card-content">
@@ -114,12 +126,14 @@
         </p>
     </confirm-modal>
 </div>
+@if(has_permisions('CREATE_FORM_CUSTOM'))
 <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
     <a class="btn-floating btn-large waves-effect st-accent tooltipped" data-position="left"
         data-delay="50" data-tooltip="<?= lang('tooltip_new_collection') ?>" href="{{base_url('admin/custommodels/new')}}">
         <i class="material-icons">add</i>
     </a>
 </div>
+@endif
 @endsection
 
 @section('footer_includes')

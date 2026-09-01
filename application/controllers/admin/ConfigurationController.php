@@ -10,47 +10,47 @@ class ConfigurationController extends MY_Controller
 
     public $routes_permisions = [
         "index" => [
-            "patern" => '/admin\/configuration\/?$/',
+            "patern" => '/^admin\/configuration\/?$/',
             "required_permissions" => ["SELECT_CONFIG"],
             "conditions" => [],
         ],
         "new" => [
-            "patern" => '/admin\/configuration\/new/',
+            "patern" => '/^admin\/configuration\/new/',
             "required_permissions" => ["CREATE_CONFIG"],
             "conditions" => [],
         ],
         "data" => [
-            "patern" => '/admin\/configuration\/data/',
+            "patern" => '/^admin\/configuration\/data/',
             "required_permissions" => ["SELECT_CONFIG"],
             "conditions" => [],
         ],
         "logs" => [
-            "patern" => '/admin\/configuration\/logs/',
+            "patern" => '/^admin\/configuration\/logs/',
             "required_permissions" => ["SELECT_CONFIG"],
             "conditions" => [],
         ],
         "import" => [
-            "patern" => '/admin\/configuration\/import/',
+            "patern" => '/^admin\/configuration\/import/',
             "required_permissions" => ["SELECT_CONFIG"],
             "conditions" => [],
         ],
         "export" => [
-            "patern" => '/admin\/configuration\/export/',
+            "patern" => '/^admin\/configuration\/export/',
             "required_permissions" => ["SELECT_CONFIG"],
             "conditions" => [],
         ],
         "logger" => [
-            "patern" => '/admin\/configuration\/logger/',
+            "patern" => '/^admin\/configuration\/logger/',
             "required_permissions" => ["SELECT_CONFIG"],
             "conditions" => [],
         ],
         "apilogger" => [
-            "patern" => '/admin\/configuration\/apilogger/',
+            "patern" => '/^admin\/configuration\/apilogger/',
             "required_permissions" => ["SELECT_CONFIG"],
             "conditions" => [],
         ],
         "usertrackinglogger" => [
-            "patern" => '/admin\/configuration\/usertrackinglogger/',
+            "patern" => '/^admin\/configuration\/usertrackinglogger/',
             "required_permissions" => ["SELECT_CONFIG"],
             "conditions" => [],
         ],
