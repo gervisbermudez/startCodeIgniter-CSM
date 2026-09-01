@@ -7,6 +7,10 @@
 
 @section('content')
 <div id="root">
+    @include('admin.components.page_intro', [
+        'titleKey' => 'menu_data',
+        'ledeKey' => 'data_lede',
+    ])
     <div class="col s12 center" v-bind:class="{ hide: !loader }">
         <br><br>
         <preloader />
@@ -15,7 +19,6 @@
         'searchInputId' => 'custommodels-data-search',
         'refreshMethod' => 'getModels()',
         'navbarShow' => '!loader && models.length > 0',
-        'placeholder' => lang('custommodels_search_placeholder_data'),
         'itemsExpr' => 'filterModels',
     ])
     <div class="pages" v-cloak v-if="!loader && models.length > 0">
@@ -135,6 +138,6 @@
 @endsection
 
 @section('footer_includes')
-<script src="{{base_url('resources/components/formComponents/formFieldTitle.js?v=' . ADMIN_VERSION)}}"></script>
+<script src="{{base_url('public/js/form-fields.js?v=' . ADMIN_VERSION)}}"></script>
 <script src="{{base_url('resources/components/DataFormModule.js')}}"></script>
 @endsection

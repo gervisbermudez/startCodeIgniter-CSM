@@ -148,7 +148,7 @@ Reglas:
 
 `admin.layouts.app` = navbar fija + sidenav + `.main`.
 
-- Navbar: búsqueda global (GET `/admin/search`), dark mode, notificaciones, menú de usuario.
+- Navbar: búsqueda global (paleta `Ctrl+K` → GET `/api/v1/search` / `/admin/search`). No filtrar la lista actual desde ahí. Dark mode, notificaciones, menú de usuario.
 - Sidenav: contrato único de estados (no mezclar con Materialize `.active` ni `$primary-color`):
 
 | Estado | Clase | Visual |
@@ -173,11 +173,11 @@ Estructura canónica:
 
 1. Loader: `<preloader />` (o skeleton si la vista ya lo tiene).
 2. `page-intro` (`admin.components.page_intro`, params `$titleKey` / `$ledeKey`): `h1.page-header` (20px, no display Materialize) + `p.page-intro__lede` (`--st-text-secondary`). Título = nombre del módulo; lede = una línea de beneficio. Un H1 por pantalla. Va **arriba** de `page-navbar` / `data_table` / el `$h1` suelto del formulario.
-3. `nav.page-navbar` con búsqueda (`lang('search_placeholder')`), toggle vista, refresh. El icono de toggle refleja el modo actual (`view_module` ↔ `view_list`).
+3. `nav.page-navbar` es **toolbar de la vista**, no un segundo buscador. Fondo `var(--st-page)`, ancho 96% centrado, `margin` 1rem arriba / 0.75rem abajo (no pegar a la navbar ni a los costados). Filtro compacto (máx. 360px) a la izquierda: superficie blanca, **un** borde 1px `--st-chrome` (teal en hover/focus, sin outline extra). Icono `filter_list` y acciones (toggle / refresh) en `--st-interactive`. El buscador global vive en la navbar (`Ctrl+K` / paleta). El icono de toggle refleja el modo actual (`view_module` ↔ `view_list`).
 4. Filtros de status como `.status-chip` (botones o `<button>`, no `<div>`).
 5. Grid de cards **o** tabla, un solo `v-for` sobre la lista filtrada.
 6. Vacío: icono + título + una línea + botón a crear.
-7. Búsqueda sin resultados: “Ningún resultado para X” + limpiar filtro. Distinto del vacío total.
+7. Filtro sin resultados: “Ningún resultado para X” + `lang('filter_empty_cta')`. Distinto del vacío total.
 8. FAB `btn-floating btn-large` accent + tooltip `lang(...)`.
 9. `confirm-modal` para delete/archive.
 

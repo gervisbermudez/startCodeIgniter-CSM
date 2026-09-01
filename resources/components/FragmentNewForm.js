@@ -48,7 +48,7 @@ var FragmentNewForm = new Vue({
       if (!name) {
         return "";
       }
-      return "{{fragment(" + name + ")}}";
+      return "{{" + "fragment(" + name + ")}}";
     },
   },
   filters: {

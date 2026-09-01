@@ -17,18 +17,14 @@
         'refreshMethod' => 'getFragments()',
         'itemsExpr' => 'filterFragments',
     ])
-    <div class="row">
-        <div class="col s12">
-            <div class="status-filters" v-cloak v-show="!loader">
-                <button type="button" class="status-chip" :class="{active: currentStatus === null}" @click="setStatus(null)"><?php echo lang('menu_all'); ?></button>
-                <button type="button" class="status-chip" :class="{active: currentStatus === 1}" @click="setStatus(1)"><?php echo lang('published'); ?></button>
-                <button type="button" class="status-chip" :class="{active: currentStatus === 2}" @click="setStatus(2)"><?php echo lang('draft'); ?></button>
-            </div>
-            <div class="status-filters" v-cloak v-show="!loader">
-                <button type="button" class="status-chip" :class="{active: currentType === null}" @click="setType(null)"><?php echo lang('menu_all'); ?></button>
-                <button type="button" class="status-chip" :class="{active: currentType === fragment_type}" v-for="fragment_type in fragment_types" :key="fragment_type" @click="setType(fragment_type)">@{{ fragment_type }}</button>
-            </div>
-        </div>
+    <div class="status-filters" v-cloak v-show="!loader">
+        <button type="button" class="status-chip" :class="{active: currentStatus === null}" @click="setStatus(null)"><?php echo lang('menu_all'); ?></button>
+        <button type="button" class="status-chip" :class="{active: currentStatus === 1}" @click="setStatus(1)"><?php echo lang('published'); ?></button>
+        <button type="button" class="status-chip" :class="{active: currentStatus === 2}" @click="setStatus(2)"><?php echo lang('draft'); ?></button>
+    </div>
+    <div class="status-filters" v-cloak v-show="!loader">
+        <button type="button" class="status-chip" :class="{active: currentType === null}" @click="setType(null)"><?php echo lang('menu_all'); ?></button>
+        <button type="button" class="status-chip" :class="{active: currentType === fragment_type}" v-for="fragment_type in fragment_types" :key="fragment_type" @click="setType(fragment_type)">@{{ fragment_type }}</button>
     </div>
     <div class="pages fragments" v-cloak v-if="!loader && fragments.length > 0">
         <div class="row" v-if="tableView">

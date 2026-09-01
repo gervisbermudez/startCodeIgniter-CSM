@@ -17,9 +17,7 @@
         'refreshMethod' => 'getPages(currentStatus)',
         'itemsExpr' => 'filterAll',
     ])
-    <div class="row">
-        <div class="col s12">
-            <div class="status-filters" v-cloak v-show="!loader">
+    <div class="status-filters" v-cloak v-show="!loader">
         <button type="button" class="status-chip" :class="{active: currentStatus === null}" @click="getPages(null)">
             <?= lang('menu_all') ?>
         </button>
@@ -35,8 +33,6 @@
         <button type="button" class="status-chip" :class="{active: currentStatus === 0}" @click="getPages(0)">
             <?= lang('deleted') ?>
         </button>
-    </div>
-        </div>
     </div>
     <div class="pages" v-cloak v-if="!loader && pages.length > 0">
         <div class="row">

@@ -395,6 +395,7 @@ function bust_fragment_cache($fragment_name)
     }
     delete_cached('fragment_raw_' . $fragment_name);
     delete_cached('fragment_' . $fragment_name);
+    invalidate_public_html_cache();
 }
 
 function set_notification($title, $description, $type = 'info', $url = null, $user_ids = null)
@@ -468,28 +469,19 @@ if (!function_exists('siteform_should_notify')) {
 if (!function_exists("config")) {
     function config(string $config_name)
     {
-        // Intentar obtener del cache primero
-        $cached = get_cached('config_' . $config_name);
-        if ($cached !== null) {
-            return $cached;
-        }
-        
         $ci = &get_instance();
-        $config = $ci->config->item($config_name);
-        if ($config) {
-            set_cached('config_' . $config_name, $config, 86400);
-            return $config;
+        $from_ci = $ci->config->item($config_name);
+        if ($from_ci !== false && $from_ci !== null) {
+            return $from_ci;
         }
-        
-        $ci->load->model('Admin/SiteConfigModel');
-        $config = $ci->SiteConfigModel->where(['config_name' => $config_name]);
-        $value = $config ? $config->first()->config_value : null;
-        
-        if ($value !== null) {
-            set_cached('config_' . $config_name, $value, 86400);
+
+        $map = load_site_config_map();
+        if (is_array($map) && array_key_exists($config_name, $map)) {
+            return $map[$config_name];
         }
-        
-        return $value;
+
+        $from_ci = $ci->config->item($config_name);
+        return ($from_ci === false) ? null : $from_ci;
     }
 }
 

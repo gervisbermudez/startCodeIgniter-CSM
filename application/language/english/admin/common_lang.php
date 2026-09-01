@@ -16,6 +16,8 @@ $lang['search_view_all'] = 'View all results';
 $lang['search_no_query'] = 'Search across the admin';
 $lang['search_no_results'] = 'No results for "%s"';
 $lang['search_empty_cta'] = 'Clear search';
+$lang['filter_placeholder'] = 'Filter this list…';
+$lang['filter_empty_cta'] = 'Clear filter';
 $lang['search_min_chars'] = 'Type at least 2 characters';
 $lang['search_type_all'] = 'All';
 $lang['search_type_pages'] = 'Pages';
@@ -284,6 +286,7 @@ $lang['pages_form_loading'] = 'Loading form';
 
 // Notifications inbox
 $lang['notifications_title'] = 'Notifications';
+$lang['notifications_lede'] = 'Alerts from forms, users and backups.';
 $lang['notifications_all'] = 'All notifications';
 $lang['notifications_unread'] = 'Unread';
 $lang['notifications_read'] = 'Read';
@@ -311,6 +314,7 @@ $lang['siteforms_edit'] = 'Edit form';
 $lang['siteforms_inbox'] = 'Form submissions';
 $lang['siteforms_not_found'] = 'Form not found';
 $lang['siteforms_lede'] = 'Collect messages from visitors.';
+$lang['siteforms_inbox_lede'] = 'Messages sent through public forms.';
 $lang['siteforms_name'] = 'Name';
 $lang['siteforms_name_help'] = 'Internal name. Use it when you insert this form on a page.';
 $lang['siteforms_template'] = 'Template';

@@ -16,7 +16,7 @@ RewriteRule ^(bin|backups)/ - [F,L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 # No reescribir carpetas específicas
-RewriteCond %{REQUEST_URI} !^/(themes|public|uploads|vendor)/ [NC]
+RewriteCond %{REQUEST_URI} !^/(themes|public|uploads|vendor|resources)/ [NC]
 RewriteRule ^(.*)$ index.php/$1 [L]
 
 <IfModule mod_expires.c>

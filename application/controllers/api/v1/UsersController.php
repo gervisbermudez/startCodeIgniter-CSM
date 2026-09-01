@@ -238,7 +238,10 @@ class UsersController extends REST_Controller
         }
 
         $user = new UserModel();
-        $user->find($user_id);
+        if (!$user->find($user_id)) {
+            $this->response_error(lang('user_not_found_error'));
+            return;
+        }
         if ($user->delete()) {
             system_logger('users', $user->user_id, ("deleted"), ("A user has been deleted"));
             $this->response_ok($user);
@@ -571,7 +574,12 @@ class UsersController extends REST_Controller
         $this->load->model('Admin/UsergroupModel');
         $usergroup = new UsergroupModel();
         $usergroup->usergroup_id = $usergroup_id;
-        $this->session->set_userdata('usergroup_permisions', $usergroup->usergroup_permisions());
+        $perms = $usergroup->usergroup_permisions();
+        if (!is_array($perms)) {
+            $perms = array();
+        }
+        set_cached('usergroup_permisions_' . (int) $usergroup_id, $perms, 3600);
+        $this->session->set_userdata('usergroup_permisions', $perms);
     }
 
     protected function require_user_permision($permision)
@@ -691,5 +699,6 @@ class UsersController extends REST_Controller
             $row->date_update = $now;
             $row->save();
         }
+        invalidate_usergroup_permisions_cache($usergroup_id);
     }
 }

@@ -82,6 +82,13 @@ $lang['menu_export'] = 'Export';
 $lang['menu_api_log'] = 'API Log';
 $lang['menu_system_log'] = 'System Log';
 $lang['menu_user_tracking'] = 'User Tracking';
+$lang['menus_lede'] = 'Navigation lists used by the site.';
+$lang['users_lede'] = 'People who can sign in to this admin.';
+$lang['usergroups_lede'] = 'Roles and permissions for admin users.';
+$lang['files_lede'] = 'Images and files used across the site.';
+$lang['calendar_lede'] = 'A month view of published events.';
+$lang['contents_lede'] = 'Items from every collection in one list.';
+$lang['data_lede'] = 'Records from your custom data forms.';
 
 // Generic Buttons
 $lang['btn_save'] = 'Save';
@@ -187,6 +194,7 @@ $lang['categories_created_by'] = 'Created by';
 $lang['categories_created'] = 'Created';
 $lang['categories_modified'] = 'Modified';
 $lang['categories_subcategories'] = 'Subcategories:';
+$lang['categories_lede'] = 'Group pages, albums and other content.';
 
 // Events
 $lang['events_new'] = 'New Event';
@@ -233,6 +241,7 @@ $lang['events_options'] = 'Options';
 $lang['events_status'] = 'Status';
 $lang['events_empty'] = 'No events yet';
 $lang['events_empty_cta'] = 'New event';
+$lang['events_lede'] = 'Dates, places and times shown on the site.';
 $lang['events_online'] = 'Online';
 $lang['events_happening'] = 'Event';
 $lang['events_cms_publish'] = 'CMS publish date';
@@ -347,6 +356,7 @@ $lang['albums_not_found'] = 'Album not found';
 $lang['albums_publish'] = 'Publish Album';
 $lang['albums_empty'] = 'No albums yet';
 $lang['albums_empty_cta'] = 'New album';
+$lang['albums_lede'] = 'Photo sets you can embed on any page.';
 $lang['albums_created_by'] = 'Created by';
 $lang['albums_additional'] = 'Additional';
 $lang['albums_created'] = 'Created';
@@ -432,6 +442,7 @@ $lang['custommodels_content_confirm_delete_message'] = 'Are you sure you want to
 
 // Collections (visible copy; keys/URLs stay custom_model*)
 $lang['collections_lede'] = 'Structured lists (team, FAQ, portfolio) shown on the site.';
+$lang['collections_items_lede'] = 'Entries in this collection, shown on the site.';
 $lang['collections_empty'] = 'No collections yet';
 $lang['collections_empty_cta'] = 'Create a collection — team, FAQ, portfolio — then add it to a page.';
 $lang['collections_snippet'] = 'Page code';
@@ -507,3 +518,4 @@ $lang['videos_new'] = 'New Video';
 $lang['videos_edit'] = 'Edit Video';
 $lang['videos_empty'] = 'No videos yet';
 $lang['videos_empty_cta'] = 'New video';
+$lang['videos_lede'] = 'Video clips you can embed on any page.';

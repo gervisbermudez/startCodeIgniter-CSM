@@ -15,34 +15,48 @@ class PageController extends Base_Controller
 
     public function index()
     {
-        $data = $this->get_page_info(array('path' => $this->uri->uri_string(), 'status' => 1));
-        if ($data == null) {
+        $uri = $this->uri->uri_string();
+        $cache_key = public_html_cache_key('page', $uri);
+        $ok = $this->echo_public_html($cache_key, function () use ($uri, $cache_key) {
+            $data = $this->get_page_info(array('path' => $uri, 'status' => 1));
+            if ($data == null) {
+                return null;
+            }
+            $page_id = !empty($data['page']->page_id) ? (int) $data['page']->page_id : 0;
+            if ($page_id > 0) {
+                remember_page_html_alias($page_id, $cache_key);
+            }
+            return $this->themeController->render($data);
+        });
+        if (!$ok) {
             $this->error404();
-            return;
         }
-        //Load local theme Controller
-        echo $this->themeController->render($data);
     }
 
     public function home()
     {
-        //Check if there are a page configured as home page
-        $page_id = config("SITE_HOME_PAGE_ID");
-        if ($page_id) {
-            $data = $this->get_page_info(array('page_id' => $page_id, 'status' => 1));
-            if ($data == null) {
-                $this->error404();
-                return;
+        $cache_key = public_html_cache_key('home', 'index');
+        $home_page_id = (int) config("SITE_HOME_PAGE_ID");
+        $ok = $this->echo_public_html($cache_key, function () use ($cache_key, $home_page_id) {
+            $page_id = $home_page_id;
+            if ($page_id) {
+                $data = $this->get_page_info(array('page_id' => $page_id, 'status' => 1));
+                if ($data == null) {
+                    return null;
+                }
+                if (!empty($data['page']->page_id)) {
+                    remember_page_html_alias($data['page']->page_id, $cache_key);
+                }
+                return $this->themeController->render($data);
             }
-            echo $this->themeController->render($data);
-        } else {
-            // Show default
             $data['title'] = config("SITE_TITLE") . " - Home";
             $data['layout'] = 'site';
             $data['template'] = 'home';
             $data['meta'] = $this->getPageMetas([]);
-
-            echo $this->themeController->home($data, '');
+            return $this->themeController->home($data, '');
+        }, $home_page_id);
+        if (!$ok) {
+            $this->error404();
         }
     }
 
@@ -51,27 +65,23 @@ class PageController extends Base_Controller
 
         $this->check_blog_config();
 
-        $data['title'] = config("SITE_TITLE") . " - Blog";
-        $data['layout'] = 'site';
-        $data['template'] = 'blogList';
-        $data['meta'] = $this->getPageMetas([]);
-        $data['blogs'] = filter_pages_for_public_site($this->Page->where(['page_type_id' => 2, "status" => 1]));
-        $data['list_variant'] = '';
-
-        echo $this->themeController->blog_list($data);
+        $cache_key = public_html_cache_key('blog', 'list');
+        $this->echo_public_html($cache_key, function () {
+            $data['title'] = config("SITE_TITLE") . " - Blog";
+            $data['layout'] = 'site';
+            $data['template'] = 'blogList';
+            $data['meta'] = $this->getPageMetas([]);
+            $data['blogs'] = filter_pages_for_public_site($this->Page->where(['page_type_id' => 2, "status" => 1]));
+            $data['list_variant'] = '';
+            return $this->themeController->blog_list($data);
+        });
     }
 
     public function blog_list_tag($tag)
     {
         $this->check_blog_config();
 
-        $data['blogs'] = $this->Page->where(['page_type_id' => 2, "status" => 1]);
-
-        if ($data['blogs']) {
-            $data['blogs'] = $data['blogs']->filter(function ($value, $key) use ($tag) {
-                return (isset($value->page_data['tags']) && in_array($tag, $value->page_data['tags']));
-            });
-        }
+        $data['blogs'] = $this->Page->public_blogs_by_tag($tag);
         $data['blogs'] = filter_pages_for_public_site($data['blogs']);
 
         $data['layout'] = 'site';

@@ -406,7 +406,13 @@ var FileExplorerModule = new Vue({
           path: self.root,
         },
         dataType: "json",
+        timeout: 120000,
         success: function (response) {
+          self.navigateFiles(self.curDir);
+        },
+        error: function (xhr) {
+          self.fileloader = false;
+          self.toastError(xhr);
           self.navigateFiles(self.curDir);
         },
       });
@@ -523,7 +529,12 @@ var FileExplorerModule = new Vue({
             setTimeout(() => {
               Prism.highlightAll();
             }, 1000);
+            return;
           }
+          this.toastError(null, response);
+        },
+        error: (xhr) => {
+          this.toastError(xhr);
         },
       });
     },

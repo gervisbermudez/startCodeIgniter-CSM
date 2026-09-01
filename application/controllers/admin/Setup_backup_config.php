@@ -106,6 +106,9 @@ class Setup_backup_config extends CI_Controller
                 echo "- Configuración '{$config['config_name']}' ya existe<br>";
             }
         }
+
+        invalidate_site_config_cache();
+        invalidate_public_html_cache();
         
         echo "<br><strong>Setup completado!</strong><br>";
         echo "<a href='" . base_url('admin/configuration?section=system') . "'>Ver configuraciones</a>";

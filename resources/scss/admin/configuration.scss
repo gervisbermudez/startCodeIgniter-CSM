@@ -73,7 +73,7 @@
   box-sizing: border-box;
 }
 
-// Keep list search bars flush to the admin navbar and full-bleed via `.page-navbar` gutters.
+// List toolbar inset matches `.page-intro`; not flush to the admin navbar.
 .row .config-content.config-content--toolbar {
   padding: 0 0.75rem 40px;
 }
@@ -537,7 +537,10 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin: 12px 0 16px;
+  width: 96%;
+  max-width: 96%;
+  margin: 12px auto 16px;
+  box-sizing: border-box;
 
   .chip {
     cursor: pointer;
