@@ -25,8 +25,8 @@
     v-on:delete="deleteItem"
     v-on:archive="archiveItem"
   >
-    <div slot="filters">
-      <div class="status-filters">
+    <div slot="filters" class="filter-groups">
+      <div class="filter-group" role="group" aria-label="<?= htmlspecialchars(lang('events_view_list'), ENT_QUOTES, 'UTF-8') ?>">
         <a class="status-chip active" href="{{ base_url('admin/events') }}" aria-current="page">{{ lang('events_view_list') }}</a>
         @if(has_permisions('SELECT_CALENDAR'))
         <a class="status-chip" href="{{ base_url('admin/events/calendar') }}">{{ lang('menu_calendar') }}</a>
