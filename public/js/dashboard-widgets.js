@@ -37,6 +37,12 @@ Vue.component("dashboardTimeline", {
   props: ["timeline", "defaultAvatar"],
 });
 
+Vue.component("dashboardWidgetPreview", {
+  template: "#dashboard-widget-preview-template",
+  props: ["widgetId"],
+});
+
+
 Vue.component("albumesWidget", {
   template: "#albumes-widget-template",
   props: ["albumes", "total"],

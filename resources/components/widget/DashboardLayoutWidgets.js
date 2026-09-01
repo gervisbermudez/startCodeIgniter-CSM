@@ -36,3 +36,9 @@ Vue.component("dashboardTimeline", {
   template: "#dashboard-timeline-template",
   props: ["timeline", "defaultAvatar"],
 });
+
+Vue.component("dashboardWidgetPreview", {
+  template: "#dashboard-widget-preview-template",
+  props: ["widgetId"],
+});
+

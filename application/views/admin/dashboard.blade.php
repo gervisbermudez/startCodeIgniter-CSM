@@ -222,7 +222,7 @@ if (!isset($dashboard_fab)) {
     $dashboard_fab = dashboard_primary_create($dashboard_caps);
 }
 @endphp
-<div class="container large dashboard dashboard-layout dashboard-single" :class="{showLoader: loader}" id="root" v-cloak>
+<div class="container large dashboard dashboard-layout dashboard-single" :class="{showLoader: loader, 'is-picking': pickerOpen, 'is-editing-layout': layoutEditing}" id="root" v-cloak>
     <div v-show="loader">
         <div class="row">
             <div class="col s12">
@@ -277,77 +277,73 @@ if (!isset($dashboard_fab)) {
                 <button class="btn-flat waves-effect" :class="{disabled: layoutSaving}" @click="resetLayout">
                     {{ lang('dashboard_layout_reset') }}
                 </button>
-                <button type="button" class="btn-flat waves-effect teal-text" @click="addRow">
-                    <i class="material-icons left">view_agenda</i>{{ lang('dashboard_layout_add_row') }}
+                <button type="button" class="btn-flat waves-effect dashboard-layout-toolbar__ghost" @click="addRow">
+                    <i class="material-icons">view_agenda</i>
+                    <span>{{ lang('dashboard_layout_add_row') }}</span>
                 </button>
             </div>
         </div>
 
-        <div class="dashboard-widgets">
-            <div v-for="(row, ri) in visibleRows" :key="'row-'+ri" class="dashboard-grid-row">
-                <div v-if="layoutEditing && canEditLayout" class="dashboard-grid-row__bar">
-                    <span>{{ lang('dashboard_layout_row') }} @{{ ri + 1 }}</span>
-                    <div class="dashboard-widget-bar__btns">
-                        <button type="button" class="btn-flat tooltipped" :disabled="ri === 0" data-position="top" data-tooltip="{{ lang('dashboard_layout_up') }}" aria-label="{{ lang('dashboard_layout_up') }}" @click="moveRow(ri, -1)">
-                            <i class="material-icons">arrow_upward</i>
-                        </button>
-                        <button type="button" class="btn-flat tooltipped" :disabled="ri === visibleRows.length - 1" data-position="top" data-tooltip="{{ lang('dashboard_layout_down') }}" aria-label="{{ lang('dashboard_layout_down') }}" @click="moveRow(ri, 1)">
-                            <i class="material-icons">arrow_downward</i>
-                        </button>
-                        <button type="button" class="btn-flat tooltipped" :disabled="row.cols.length >= 3" data-position="top" data-tooltip="{{ lang('dashboard_layout_add_column') }}" aria-label="{{ lang('dashboard_layout_add_column') }}" @click="addColumn(ri)">
-                            <i class="material-icons">view_column</i>
-                        </button>
-                        <button type="button" class="btn-flat tooltipped" data-position="top" data-tooltip="{{ lang('dashboard_layout_remove_row') }}" aria-label="{{ lang('dashboard_layout_remove_row') }}" @click="removeRow(ri)">
-                            <i class="material-icons">delete</i>
-                        </button>
+        <div class="dashboard-widgets" :class="{'is-editing': layoutEditing}">
+            <div v-for="(row, ri) in visibleRows" :key="'row-'+ri" class="dashboard-grid-row" :class="{'is-editing': layoutEditing}">
+                <div class="dashboard-grid-row__frame">
+                    <div v-if="layoutEditing && canEditLayout" class="dashboard-grid-row__bar">
+                        <span class="dashboard-grid-row__label">{{ lang('dashboard_layout_row') }} @{{ ri + 1 }}</span>
+                        <div class="dashboard-grid-row__btns">
+                            <button type="button" class="dashboard-icon-btn tooltipped" :disabled="ri === 0" data-position="top" data-tooltip="{{ lang('dashboard_layout_up') }}" aria-label="{{ lang('dashboard_layout_up') }}" @click="moveRow(ri, -1)">
+                                <i class="material-icons">arrow_upward</i>
+                            </button>
+                            <button type="button" class="dashboard-icon-btn tooltipped" :disabled="ri === visibleRows.length - 1" data-position="top" data-tooltip="{{ lang('dashboard_layout_down') }}" aria-label="{{ lang('dashboard_layout_down') }}" @click="moveRow(ri, 1)">
+                                <i class="material-icons">arrow_downward</i>
+                            </button>
+                            <button type="button" class="dashboard-icon-btn tooltipped" :disabled="row.cols.length >= 3" data-position="top" data-tooltip="{{ lang('dashboard_layout_add_column') }}" aria-label="{{ lang('dashboard_layout_add_column') }}" @click="addColumn(ri)">
+                                <i class="material-icons">view_column</i>
+                            </button>
+                            <button type="button" class="dashboard-icon-btn tooltipped" data-position="top" data-tooltip="{{ lang('dashboard_layout_remove_row') }}" aria-label="{{ lang('dashboard_layout_remove_row') }}" @click="removeRow(ri)">
+                                <i class="material-icons">delete_outline</i>
+                            </button>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div v-for="(col, ci) in row.cols" :key="'col-'+ri+'-'+ci" :class="colClass(col.w)">
-                        <div class="dashboard-grid-col" :class="{'is-editing': layoutEditing}">
-                            <div v-if="layoutEditing && canEditLayout" class="dashboard-grid-col__bar">
-                                <span>{{ lang('dashboard_layout_width') }}</span>
-                                <div class="dashboard-grid-col__widths">
-                                    <button type="button" class="btn-flat" :class="{active: col.w === 12}" @click="setColumnWidth(ri, ci, 12)">12</button>
-                                    <button type="button" class="btn-flat" :class="{active: col.w === 6}" @click="setColumnWidth(ri, ci, 6)">6</button>
-                                    <button type="button" class="btn-flat" :class="{active: col.w === 4}" @click="setColumnWidth(ri, ci, 4)">4</button>
+                    <div class="row dashboard-grid-row__cols">
+                        <div v-for="(col, ci) in row.cols" :key="'col-'+ri+'-'+ci" :class="colClass(col.w, layoutEditing)">
+                            <div class="dashboard-grid-col" :class="{'is-editing': layoutEditing, 'is-target': pickerOpen && pickerRi === ri && pickerCi === ci}">
+                                <div v-if="layoutEditing && canEditLayout" class="dashboard-grid-col__bar">
+                                    <div class="dashboard-grid-col__widths" role="group" aria-label="{{ lang('dashboard_layout_width') }}">
+                                        <button type="button" v-for="size in columnWidths" :key="'w-'+ri+'-'+ci+'-'+size" class="dashboard-width-chip" :class="{active: col.w === size}" @click="setColumnWidth(ri, ci, size)">@{{ size }}</button>
+                                    </div>
+                                    <button type="button" class="dashboard-icon-btn tooltipped" data-position="top" data-tooltip="{{ lang('dashboard_layout_remove_column') }}" aria-label="{{ lang('dashboard_layout_remove_column') }}" @click="removeColumn(ri, ci)">
+                                        <i class="material-icons">close</i>
+                                    </button>
                                 </div>
-                                <button type="button" class="btn-flat tooltipped" data-position="top" data-tooltip="{{ lang('dashboard_layout_remove_column') }}" aria-label="{{ lang('dashboard_layout_remove_column') }}" @click="removeColumn(ri, ci)">
-                                    <i class="material-icons">close</i>
+                                <div v-for="(item, wi) in col.items" :key="item.id" class="dashboard-widget" :class="{'is-editing': layoutEditing}">
+                                    <div v-if="layoutEditing && canEditLayout" class="dashboard-widget-bar">
+                                        <div class="dashboard-widget-bar__title">
+                                            <i class="material-icons tiny">@{{item.icon}}</i>
+                                            <span>@{{widgetTitle(item)}}</span>
+                                        </div>
+                                        <div class="dashboard-widget-bar__btns">
+                                            <button type="button" class="dashboard-icon-btn tooltipped" :disabled="ci === 0" data-position="top" data-tooltip="{{ lang('dashboard_layout_left') }}" aria-label="{{ lang('dashboard_layout_left') }}" @click="moveWidgetAcross(ri, ci, wi, -1)">
+                                                <i class="material-icons">arrow_back</i>
+                                            </button>
+                                            <button type="button" class="dashboard-icon-btn tooltipped" :disabled="wi === 0" data-position="top" data-tooltip="{{ lang('dashboard_layout_up') }}" aria-label="{{ lang('dashboard_layout_up') }}" @click="moveWidgetInColumn(ri, ci, wi, -1)">
+                                                <i class="material-icons">arrow_upward</i>
+                                            </button>
+                                            <button type="button" class="dashboard-icon-btn tooltipped" :disabled="wi === col.items.length - 1" data-position="top" data-tooltip="{{ lang('dashboard_layout_down') }}" aria-label="{{ lang('dashboard_layout_down') }}" @click="moveWidgetInColumn(ri, ci, wi, 1)">
+                                                <i class="material-icons">arrow_downward</i>
+                                            </button>
+                                            <button type="button" class="dashboard-icon-btn tooltipped" :disabled="ci === row.cols.length - 1" data-position="top" data-tooltip="{{ lang('dashboard_layout_right') }}" aria-label="{{ lang('dashboard_layout_right') }}" @click="moveWidgetAcross(ri, ci, wi, 1)">
+                                                <i class="material-icons">arrow_forward</i>
+                                            </button>
+                                            <button type="button" class="dashboard-icon-btn tooltipped" data-position="top" data-tooltip="{{ lang('dashboard_layout_remove') }}" aria-label="{{ lang('dashboard_layout_remove') }}" @click="removeWidget(ri, ci, item.id)">
+                                                <i class="material-icons">close</i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <component :is="item.component" v-bind="widgetBind(item)"></component>
+                                </div>
+                                <button v-if="layoutEditing && canEditLayout && addableWidgets.length" type="button" class="dashboard-col-add tooltipped" data-position="top" data-tooltip="{{ lang('dashboard_layout_add_here') }}" aria-label="{{ lang('dashboard_layout_add_here') }}" :aria-expanded="pickerOpen && pickerRi === ri && pickerCi === ci ? 'true' : 'false'" @click="openPicker(ri, ci)">
+                                    <i class="material-icons">add</i>
                                 </button>
-                            </div>
-                            <div v-for="(item, wi) in col.items" :key="item.id" class="dashboard-widget">
-                                <div v-if="layoutEditing && canEditLayout" class="dashboard-widget-bar">
-                                    <div class="dashboard-widget-bar__title">
-                                        <i class="material-icons tiny">@{{item.icon}}</i>
-                                        <span>@{{widgetTitle(item)}}</span>
-                                    </div>
-                                    <div class="dashboard-widget-bar__btns">
-                                        <button type="button" class="btn-flat tooltipped" :disabled="ci === 0" data-position="top" data-tooltip="{{ lang('dashboard_layout_left') }}" aria-label="{{ lang('dashboard_layout_left') }}" @click="moveWidgetAcross(ri, ci, wi, -1)">
-                                            <i class="material-icons">arrow_back</i>
-                                        </button>
-                                        <button type="button" class="btn-flat tooltipped" :disabled="wi === 0" data-position="top" data-tooltip="{{ lang('dashboard_layout_up') }}" aria-label="{{ lang('dashboard_layout_up') }}" @click="moveWidgetInColumn(ri, ci, wi, -1)">
-                                            <i class="material-icons">arrow_upward</i>
-                                        </button>
-                                        <button type="button" class="btn-flat tooltipped" :disabled="wi === col.items.length - 1" data-position="top" data-tooltip="{{ lang('dashboard_layout_down') }}" aria-label="{{ lang('dashboard_layout_down') }}" @click="moveWidgetInColumn(ri, ci, wi, 1)">
-                                            <i class="material-icons">arrow_downward</i>
-                                        </button>
-                                        <button type="button" class="btn-flat tooltipped" :disabled="ci === row.cols.length - 1" data-position="top" data-tooltip="{{ lang('dashboard_layout_right') }}" aria-label="{{ lang('dashboard_layout_right') }}" @click="moveWidgetAcross(ri, ci, wi, 1)">
-                                            <i class="material-icons">arrow_forward</i>
-                                        </button>
-                                        <button type="button" class="btn-flat tooltipped" data-position="top" data-tooltip="{{ lang('dashboard_layout_remove') }}" aria-label="{{ lang('dashboard_layout_remove') }}" @click="removeWidget(ri, ci, item.id)">
-                                            <i class="material-icons">close</i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <component :is="item.component" v-bind="widgetBind(item)"></component>
-                            </div>
-                            <div v-if="layoutEditing && canEditLayout && addableWidgets.length" class="dashboard-grid-col__add">
-                                <label>{{ lang('dashboard_layout_add_here') }}</label>
-                                <select class="browser-default" @change="addWidgetToColumn(ri, ci, $event)">
-                                    <option value="">{{ lang('dashboard_layout_choose') }}</option>
-                                    <option v-for="w in addableWidgets" :key="'opt-'+w.id+'-'+ri+'-'+ci" :value="w.id">@{{ widgetTitle(w) }}</option>
-                                </select>
                             </div>
                         </div>
                     </div>
@@ -361,6 +357,31 @@ if (!isset($dashboard_fab)) {
             </div>
         </div>
     </div>
+    <div v-if="layoutEditing && canEditLayout && pickerOpen" class="dashboard-picker-overlay" @click="closePicker"></div>
+    <aside v-if="layoutEditing && canEditLayout && pickerOpen" class="dashboard-picker" role="dialog" aria-modal="true" aria-labelledby="dashboard-picker-title">
+    <div class="dashboard-picker__head">
+        <h2 id="dashboard-picker-title">{{ lang('dashboard_layout_picker') }}</h2>
+        <button type="button" class="dashboard-icon-btn" aria-label="{{ lang('dashboard_layout_close_picker') }}" @click="closePicker">
+            <i class="material-icons">close</i>
+        </button>
+    </div>
+    <p v-if="addableWidgets.length" class="dashboard-picker__hint">{{ lang('dashboard_layout_picker_hint') }}</p>
+    <div v-if="!addableWidgets.length" class="dashboard-empty">
+        <i class="material-icons">check</i>
+        <p>{{ lang('dashboard_layout_picker_empty') }}</p>
+    </div>
+    <div class="dashboard-picker__list">
+        <button type="button" class="dashboard-picker-card" v-for="w in addableWidgets" :key="'pick-'+w.id" @click="pickWidget(w.id)">
+            <span class="dashboard-picker-card__title">
+                <i class="material-icons tiny">@{{ w.icon }}</i>
+                @{{ widgetTitle(w) }}
+            </span>
+            <div class="dashboard-picker-card__preview">
+                <dashboard-widget-preview :widget-id="w.id"></dashboard-widget-preview>
+            </div>
+        </button>
+    </div>
+    </aside>
 </div>
 @if(!empty($dashboard_fab))
 <div class="fixed-action-btn">
@@ -710,6 +731,69 @@ if (!isset($dashboard_fab)) {
         </div>
 </script>
 
+<script type="text/x-template" id="dashboard-widget-preview-template">
+    <div class="dash-preview" :data-widget="widgetId">
+        <div v-if="widgetId === 'kpis'" class="dash-preview-kpis">
+            <span>128<small>{{ lang('dashboard_unique_visitors') }}</small></span>
+            <span>41<small>{{ lang('dashboard_today_visits') }}</small></span>
+            <span>1.8<small>{{ lang('dashboard_pages_per_session') }}</small></span>
+            <span>32%<small>{{ lang('dashboard_bounce_rate') }}</small></span>
+        </div>
+        <div v-else-if="widgetId === 'welcome'" class="dash-preview-welcome">
+            <strong>{{ lang('dashboard_welcome_back') }}</strong>
+            <div class="dash-preview-pills">
+                <span>12 {{ lang('menu_users') }}</span>
+                <span>8 {{ lang('menu_pages') }}</span>
+                <span>24 {{ lang('menu_files') }}</span>
+            </div>
+        </div>
+        <div v-else-if="widgetId === 'charts'" class="dash-preview-charts">
+            <div class="dash-preview-bars">
+                <i></i><i></i><i></i><i></i><i></i>
+            </div>
+            <ul>
+                <li><span>/home</span><em>42</em></li>
+                <li><span>/blog</span><em>18</em></li>
+            </ul>
+        </div>
+        <div v-else-if="widgetId === 'users'" class="dash-preview-list">
+            <div class="dash-preview-person">
+                <i class="material-icons">account_circle</i>
+                <span>Alex Rivera</span>
+                <small>Editor</small>
+            </div>
+            <div class="dash-preview-person">
+                <i class="material-icons">account_circle</i>
+                <span>Sam Lee</span>
+                <small>Author</small>
+            </div>
+        </div>
+        <div v-else-if="widgetId === 'files'" class="dash-preview-list">
+            <div class="dash-preview-file"><i class="material-icons">insert_drive_file</i><span>hero.jpg</span></div>
+            <div class="dash-preview-file"><i class="material-icons">insert_drive_file</i><span>brief.pdf</span></div>
+            <div class="dash-preview-file"><i class="material-icons">insert_drive_file</i><span>logo.svg</span></div>
+        </div>
+        <div v-else-if="widgetId === 'albums'" class="dash-preview-albums">
+            <span>Spring</span>
+            <span>Team</span>
+        </div>
+        <div v-else-if="widgetId === 'collections'" class="dash-preview-list">
+            <div>Team</div>
+            <div>FAQ</div>
+        </div>
+        <div v-else-if="widgetId === 'creator'" class="dash-preview-creator">
+            <span class="dash-preview-input">{{ lang('dashboard_creator_placeholder') }}</span>
+        </div>
+        <div v-else-if="widgetId === 'drafts'" class="dash-preview-list">
+            <div>{{ lang('dashboard_draft_badge') }} Landing</div>
+            <div>{{ lang('dashboard_draft_badge') }} About</div>
+        </div>
+        <div v-else-if="widgetId === 'timeline'" class="dash-preview-list">
+            <div>{{ lang('dashboard_timeline') }}</div>
+        </div>
+    </div>
+</script>
+
 @endsection
 
 @section('footer_includes')
@@ -732,6 +816,10 @@ if (!isset($dashboard_fab)) {
         'dashboard_layout_left' => lang('dashboard_layout_left'),
         'dashboard_layout_right' => lang('dashboard_layout_right'),
         'dashboard_layout_choose' => lang('dashboard_layout_choose'),
+        'dashboard_layout_picker' => lang('dashboard_layout_picker'),
+        'dashboard_layout_picker_empty' => lang('dashboard_layout_picker_empty'),
+        'dashboard_layout_picker_hint' => lang('dashboard_layout_picker_hint'),
+        'dashboard_layout_close_picker' => lang('dashboard_layout_close_picker'),
         'dashboard_widget_kpis' => lang('dashboard_widget_kpis'),
         'dashboard_widget_welcome' => lang('dashboard_widget_welcome'),
         'dashboard_widget_charts' => lang('dashboard_widget_charts'),

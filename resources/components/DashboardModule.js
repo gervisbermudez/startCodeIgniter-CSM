@@ -74,6 +74,10 @@ var DashboardModule = new Vue({
     ),
     layoutSource: "default",
     layoutSaving: false,
+    pickerOpen: false,
+    pickerRi: 0,
+    pickerCi: 0,
+    columnWidths: [3, 4, 5, 6, 7, 12],
     chartPayload: null,
     defaultAvatar:
       (typeof BASEURL !== "undefined" ? BASEURL : "/") +
@@ -188,26 +192,30 @@ var DashboardModule = new Vue({
         return { v: 2, rows: [] };
       }
     },
-    colClass: function (w) {
-      w = parseInt(w, 10) || 12;
-      if (w <= 4) {
-        return "col s12 m6 l4";
+    clampWidth: function (w) {
+      w = parseInt(w, 10);
+      if (this.columnWidths.indexOf(w) !== -1) {
+        return w;
       }
-      if (w <= 6) {
-        return "col s12 m6";
+      return 12;
+    },
+    colClass: function (w, editing) {
+      w = this.clampWidth(w);
+      if (editing) {
+        return "col s" + w;
       }
-      return "col s12";
+      return "col s12 l" + w;
     },
     emptyCol: function (w) {
-      w = w || 12;
-      return { w: w, col: this.colClass(w), items: [] };
+      w = this.clampWidth(w || 12);
+      return { w: w, col: this.colClass(w, true), items: [] };
     },
     rebalanceRow: function (row) {
       var n = (row.cols || []).length;
       var w = n <= 1 ? 12 : n === 2 ? 6 : 4;
       var self = this;
       row.cols = (row.cols || []).map(function (col) {
-        return Object.assign({}, col, { w: w, col: self.colClass(w) });
+        return Object.assign({}, col, { w: w, col: self.colClass(w, true) });
       });
     },
     mutateDraft: function (fn) {
@@ -266,11 +274,36 @@ var DashboardModule = new Vue({
       if (!this.canEditLayout) return;
       this.draftLayout = this.cloneLayout(this.layout);
       this.layoutEditing = true;
+      this.closePicker();
       this.refreshVisibleWidgets();
     },
     cancelEditLayout: function () {
       this.draftLayout = this.cloneLayout(this.layout);
       this.layoutEditing = false;
+      this.closePicker();
+    },
+    onPickerKey: function (evt) {
+      if (evt && evt.key === "Escape") {
+        this.closePicker();
+      }
+    },
+    openPicker: function (ri, ci) {
+      this.pickerRi = ri;
+      this.pickerCi = ci;
+      if (!this.pickerOpen) {
+        document.addEventListener("keydown", this.onPickerKey);
+      }
+      this.pickerOpen = true;
+    },
+    closePicker: function () {
+      this.pickerOpen = false;
+      document.removeEventListener("keydown", this.onPickerKey);
+    },
+    pickWidget: function (id) {
+      this.addWidgetToColumn(this.pickerRi, this.pickerCi, id);
+      if (!this.addableWidgets.length) {
+        this.closePicker();
+      }
     },
     addRow: function () {
       this.mutateDraft(function (layout) {
@@ -316,8 +349,8 @@ var DashboardModule = new Vue({
       this.mutateDraft(function (layout) {
         var col = layout.rows[ri] && layout.rows[ri].cols[ci];
         if (!col) return;
-        col.w = w;
-        col.col = self.colClass(w);
+        col.w = self.clampWidth(w);
+        col.col = self.colClass(col.w, true);
       });
     },
     addWidgetToColumn: function (ri, ci, evt) {
@@ -450,6 +483,7 @@ var DashboardModule = new Vue({
       this.postLayout(this.api_data.dashboard + "layout", { layout: this.slimDraft() }, function (data) {
         self.applyLayoutPayload(data);
         self.layoutEditing = false;
+        self.closePicker();
         M.toast({
           html:
             (typeof lang === "function" && lang("dashboard_layout_saved")) ||
@@ -466,6 +500,7 @@ var DashboardModule = new Vue({
       this.postLayout(this.api_data.dashboard + "layout_reset", {}, function (data) {
         self.applyLayoutPayload(data);
         self.layoutEditing = false;
+        self.closePicker();
         M.toast({
           html:
             (typeof lang === "function" && lang("dashboard_layout_saved")) ||
@@ -988,6 +1023,9 @@ var DashboardModule = new Vue({
           }
         });
     },
+  },
+  beforeDestroy: function () {
+    document.removeEventListener("keydown", this.onPickerKey);
   },
   mounted: function () {
     this.$nextTick(() => {

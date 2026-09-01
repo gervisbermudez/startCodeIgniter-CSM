@@ -820,27 +820,9 @@ if (!function_exists('dashboard_widget_allowed')) {
     }
 }
 
-if (!function_exists('dashboard_widget_col_class')) {
-    /**
-     * @param int $w
-     * @return string
-     */
-    function dashboard_widget_col_class($w)
-    {
-        $w = (int) $w;
-        if ($w <= 4) {
-            return 'col s12 m6 l4';
-        }
-        if ($w <= 6) {
-            return 'col s12 m6';
-        }
-        return 'col s12';
-    }
-}
-
 if (!function_exists('dashboard_clamp_width')) {
     /**
-     * Materialize presets only: 4 / 6 / 12.
+     * Materialize 12-grid presets: 3, 4, 5, 6, 7, 12.
      *
      * @param mixed $w
      * @return int
@@ -848,13 +830,23 @@ if (!function_exists('dashboard_clamp_width')) {
     function dashboard_clamp_width($w)
     {
         $w = (int) $w;
-        if ($w <= 4) {
-            return 4;
-        }
-        if ($w <= 6) {
-            return 6;
+        $allowed = array(3, 4, 5, 6, 7, 12);
+        if (in_array($w, $allowed, true)) {
+            return $w;
         }
         return 12;
+    }
+}
+
+if (!function_exists('dashboard_widget_col_class')) {
+    /**
+     * @param int $w
+     * @return string
+     */
+    function dashboard_widget_col_class($w)
+    {
+        $w = dashboard_clamp_width($w);
+        return 'col s12 l' . $w;
     }
 }
 
@@ -985,7 +977,7 @@ if (!function_exists('dashboard_col_item_ids')) {
 
 if (!function_exists('dashboard_layout_slim')) {
     /**
-     * Persist rows / cols / widget ids. Widths are 4, 6 or 12.
+     * Persist rows / cols / widget ids. Widths are 3, 4, 5, 6, 7 or 12.
      *
      * @param array $layout
      * @return array
@@ -1023,7 +1015,7 @@ if (!function_exists('dashboard_layout_slim')) {
 if (!function_exists('dashboard_normalize_layout')) {
     /**
      * Grid of rows and columns. Drops unknown ids and widgets the group
-     * cannot use. Overwrites width to 4 / 6 / 12. The API never trusts the client.
+     * cannot use. Overwrites width to 3 / 4 / 5 / 6 / 7 / 12. The API never trusts the client.
      *
      * @param mixed $items
      * @return array
