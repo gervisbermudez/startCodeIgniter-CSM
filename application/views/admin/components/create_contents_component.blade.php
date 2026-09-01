@@ -5,7 +5,7 @@
 	<div class="title">
 		<h5><?= lang('dashboard_latest_collection_items') ?></h5>
 		<div class="subtitle">
-			@{{content.length}} <?= lang('dashboard_collection_items_total') ?>
+			@{{typeof total === 'number' ? total : content.length}} <?= lang('dashboard_collection_items_total') ?>
 		</div>
 		<img src="{{base_url()}}public/img/admin/dashboard/undraw_browsing_online_sr8c.png" />
 	</div>

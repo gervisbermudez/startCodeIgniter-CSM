@@ -21,6 +21,55 @@ class CustomModelContentModel extends MY_Model
         parent::__construct();
     }
 
+    /**
+     * Ítems recientes del home sin EAV ni schema de campos.
+     *
+     * @param int $limit
+     * @return \Tightenco\Collect\Support\Collection|false
+     */
+    public function dashboard_recent($limit = 5)
+    {
+        $limit = (int) $limit;
+        if ($limit < 1) {
+            $limit = 5;
+        }
+        $this->db->select('custom_model_content_id, custom_model_id, title, status, user_id, date_create');
+        $this->db->where('status !=', 0);
+        $this->db->order_by('custom_model_content_id', 'DESC');
+        $this->db->limit($limit);
+        $query = $this->db->get($this->table);
+        if ($query->num_rows() < 1) {
+            return false;
+        }
+        $collection = new \Tightenco\Collect\Support\Collection($query->result());
+        $collection = $this->loadUsersRelation($collection);
+        $model_ids = array();
+        foreach ($collection as $row) {
+            if (isset($row->custom_model_id)) {
+                $model_ids[] = (int) $row->custom_model_id;
+            }
+        }
+        $model_ids = array_values(array_unique(array_filter($model_ids)));
+        $names = array();
+        if (!empty($model_ids)) {
+            $this->db->select('custom_model_id, form_name');
+            $this->db->where_in('custom_model_id', $model_ids);
+            $models = $this->db->get('custom_model');
+            if ($models && $models->num_rows() > 0) {
+                foreach ($models->result() as $model) {
+                    $names[(int) $model->custom_model_id] = $model->form_name;
+                }
+            }
+        }
+        foreach ($collection as $row) {
+            $mid = isset($row->custom_model_id) ? (int) $row->custom_model_id : 0;
+            $row->custom_model = array(
+                'form_name' => isset($names[$mid]) ? $names[$mid] : '',
+            );
+        }
+        return $collection;
+    }
+
     public function filter_results($collection = [])
     {
         if (empty($collection)) {
