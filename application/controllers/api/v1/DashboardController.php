@@ -59,7 +59,7 @@ class DashboardController extends REST_Controller
         $cached_data = $this->cache->get($cache_key);
 
         if ($cached_data !== false) {
-            $this->response($cached_data, REST_Controller::HTTP_OK);
+            $this->response($this->dashboard_with_layout($cached_data), REST_Controller::HTTP_OK);
             return;
         }
 
@@ -203,7 +203,98 @@ class DashboardController extends REST_Controller
         );
 
         $this->cache->save($cache_key, $response, 300);
-        $this->response($response, REST_Controller::HTTP_OK);
+        $this->response($this->dashboard_with_layout($response), REST_Controller::HTTP_OK);
+    }
+
+    /**
+     * POST /api/v1/dashboard/layout
+     * Body: { "layout": { "v": 2, "rows": [ { "cols": [ { "w": 12, "items": ["kpis"] } ] } ] } }
+     * Also accepts the old flat list. Widths are 4/6/12; unknown ids are dropped.
+     */
+    public function layout_post()
+    {
+        if (!function_exists('has_permisions') || !has_permisions('UPDATE_DASHBOARD_LAYOUT')) {
+            $this->response(array(
+                'code' => REST_Controller::HTTP_FORBIDDEN,
+                'error_message' => lang('dashboard_layout_forbidden'),
+            ), REST_Controller::HTTP_FORBIDDEN);
+            return;
+        }
+        $items = $this->dashboard_posted_layout();
+        $normalized = dashboard_normalize_layout($items);
+        $this->load->model('Admin/DashboardLayoutModel');
+        $model = new DashboardLayoutModel();
+        $ok = $model->save_for_user(userdata('user_id'), dashboard_layout_slim($normalized));
+        if (!$ok) {
+            $this->response_error(lang('dashboard_save_error'), array(), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
+            return;
+        }
+        system_logger('dashboard', userdata('user_id'), 'layout', 'Dashboard layout updated');
+        $this->response_ok(dashboard_layout_payload());
+    }
+
+    /**
+     * POST /api/v1/dashboard/layout_reset
+     */
+    public function layout_reset_post()
+    {
+        if (!function_exists('has_permisions') || !has_permisions('UPDATE_DASHBOARD_LAYOUT')) {
+            $this->response(array(
+                'code' => REST_Controller::HTTP_FORBIDDEN,
+                'error_message' => lang('dashboard_layout_forbidden'),
+            ), REST_Controller::HTTP_FORBIDDEN);
+            return;
+        }
+        $this->load->model('Admin/DashboardLayoutModel');
+        $model = new DashboardLayoutModel();
+        $model->delete_for_user(userdata('user_id'));
+        system_logger('dashboard', userdata('user_id'), 'layout', 'Dashboard layout reset');
+        $this->response_ok(dashboard_layout_payload());
+    }
+
+    /**
+     * @param array $response
+     * @return array
+     */
+    private function dashboard_with_layout($response)
+    {
+        if (!is_array($response)) {
+            $response = array('code' => 200, 'data' => array());
+        }
+        if (!isset($response['data']) || !is_array($response['data'])) {
+            $response['data'] = array();
+        }
+        $payload = dashboard_layout_payload();
+        $response['data']['layout'] = $payload['layout'];
+        $response['data']['catalog'] = $payload['catalog'];
+        $response['data']['layout_source'] = $payload['source'];
+        $response['data']['can_edit_layout'] = !empty($payload['can_edit_layout']);
+        if (!isset($response['data']['capabilities']) || !is_array($response['data']['capabilities'])) {
+            $response['data']['capabilities'] = array();
+        }
+        $response['data']['capabilities']['can_edit_layout'] = !empty($payload['can_edit_layout']);
+        return $response;
+    }
+
+    /**
+     * @return array
+     */
+    private function dashboard_posted_layout()
+    {
+        $items = $this->post('layout');
+        if ($items === null || $items === false || is_string($items) || is_object($items)) {
+            $raw = $this->input->raw_input_stream;
+            $decoded = json_decode($raw, true);
+            if (is_array($decoded) && isset($decoded['layout'])) {
+                $items = $decoded['layout'];
+            } elseif (is_array($decoded) && (isset($decoded['rows']) || isset($decoded[0]))) {
+                $items = $decoded;
+            }
+        }
+        if (is_object($items)) {
+            $items = json_decode(json_encode($items), true);
+        }
+        return is_array($items) ? $items : array();
     }
 
     /**

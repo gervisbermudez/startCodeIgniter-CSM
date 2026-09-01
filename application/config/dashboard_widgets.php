@@ -1,0 +1,101 @@
+<?php
+defined('BASEPATH') or exit('No direct script access allowed');
+
+/*
+| Closed catalog for the admin home. Widths are Materialize presets (12 / 6 / 4).
+| permission: SELECT_* / CREATE_* (string or list). Empty = always allowed.
+*/
+$config['dashboard_widget_catalog'] = array(
+    array(
+        'id' => 'kpis',
+        'component' => 'dashboardKpis',
+        'permission' => 'SELECT_ANALYTICS',
+        'w' => 12,
+        'o' => 1,
+        'lang' => 'dashboard_widget_kpis',
+        'icon' => 'assessment',
+    ),
+    array(
+        'id' => 'welcome',
+        'component' => 'dashboardWelcome',
+        'permission' => null,
+        'w' => 12,
+        'o' => 2,
+        'lang' => 'dashboard_widget_welcome',
+        'icon' => 'home',
+    ),
+    array(
+        'id' => 'charts',
+        'component' => 'dashboardCharts',
+        'permission' => 'SELECT_ANALYTICS',
+        'w' => 12,
+        'o' => 3,
+        'lang' => 'dashboard_widget_charts',
+        'icon' => 'insert_chart',
+    ),
+    array(
+        'id' => 'users',
+        'component' => 'usersCollection',
+        'permission' => 'SELECT_USERS',
+        'w' => 4,
+        'o' => 4,
+        'lang' => 'dashboard_widget_users',
+        'icon' => 'people',
+    ),
+    array(
+        'id' => 'files',
+        'component' => 'fileExplorerCollection',
+        'permission' => 'SELECT_FILES',
+        'w' => 4,
+        'o' => 5,
+        'lang' => 'dashboard_widget_files',
+        'icon' => 'folder',
+    ),
+    array(
+        'id' => 'albums',
+        'component' => 'albumesWidget',
+        'permission' => 'SELECT_GALLERY',
+        'w' => 4,
+        'o' => 6,
+        'lang' => 'dashboard_widget_albums',
+        'icon' => 'photo_library',
+    ),
+    array(
+        'id' => 'collections',
+        'component' => 'createContents',
+        'permission' => array('SELECT_FORM_CUSTOMS', 'SELECT_CONTENT_DATA'),
+        'permission_mode' => 'any',
+        'w' => 12,
+        'o' => 7,
+        'lang' => 'dashboard_widget_collections',
+        'icon' => 'view_module',
+    ),
+    array(
+        'id' => 'creator',
+        'component' => 'dashboardCreator',
+        'permission' => array('CREATE_PAGE', 'CREATE_GALLERY', 'CREATE_CATEGORIE', 'CREATE_FRAGMENT'),
+        'permission_mode' => 'any',
+        'w' => 12,
+        'o' => 8,
+        'lang' => 'dashboard_widget_creator',
+        'icon' => 'edit',
+    ),
+    array(
+        'id' => 'drafts',
+        'component' => 'dashboardDrafts',
+        'permission' => 'SELECT_PAGES',
+        'w' => 12,
+        'o' => 9,
+        'lang' => 'dashboard_widget_drafts',
+        'icon' => 'description',
+    ),
+    array(
+        'id' => 'timeline',
+        'component' => 'dashboardTimeline',
+        'permission' => 'SELECT_PAGES',
+        'w' => 12,
+        'o' => 10,
+        'lang' => 'dashboard_widget_timeline',
+        'icon' => 'history',
+    ),
+);

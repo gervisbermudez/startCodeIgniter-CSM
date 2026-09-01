@@ -54,7 +54,7 @@ Estos archivos nacieron como spec de implementación. El corte ya está en `mast
 
 - Colección Postman: [api/postman-collection.json](api/postman-collection.json)
 - Schema seed: `application/database/start.sql`
-- Migraciones 3.0: `003_analytics_module.sql`, `005_collections.sql`, `006_notifications_inbox.sql`, `007_events_core.sql`, `008_siteforms_permissions.sql`, `009_albums_videos_cut_a.sql`, `010_fragments_cut_b.sql`, `011_usergroups_access.sql`, `012_usergroups_access_crud.sql`, `013_perf_indexes.sql`
+- Migraciones 3.0: `003_analytics_module.sql`, `005_collections.sql`, `006_notifications_inbox.sql`, `007_events_core.sql`, `008_siteforms_permissions.sql`, `009_albums_videos_cut_a.sql`, `010_fragments_cut_b.sql`, `011_usergroups_access.sql`, `012_usergroups_access_crud.sql`, `013_perf_indexes.sql`, `014_dashboard_layout.sql`
 
 ## Notas viejas
 

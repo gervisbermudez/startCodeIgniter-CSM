@@ -46,6 +46,7 @@ concat_js public/js/form-fields.js \
   resources/components/formComponents/formImageSelector.js
 
 concat_js public/js/dashboard-widgets.js \
+  resources/components/widget/DashboardLayoutWidgets.js \
   resources/components/widget/AlbumsWidgetComponent.js \
   resources/components/widget/CreateContents.js \
   resources/components/widget/FileExplorerCollection.js \

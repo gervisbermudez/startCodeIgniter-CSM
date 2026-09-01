@@ -5,6 +5,7 @@
 @section('head_includes')
 <link rel="stylesheet" href="<?=base_url('public/css/admin/dashboard.min.css')?>">
 <style>
+    [v-cloak] { display: none; }
     .rotating {
         animation: rotate 1s linear infinite;
     }
@@ -221,25 +222,17 @@ if (!isset($dashboard_fab)) {
     $dashboard_fab = dashboard_primary_create($dashboard_caps);
 }
 @endphp
-<div class="container large dashboard<?= empty($dashboard_caps['can_use_rail']) ? ' dashboard-single' : '' ?>" :class="{showLoader: loader}" id="root" v-cloak>
+<div class="container large dashboard dashboard-layout dashboard-single" :class="{showLoader: loader}" id="root" v-cloak>
     <div v-show="loader">
         <div class="row">
-            <div class="col {{ empty($dashboard_caps['can_use_rail']) ? 's12' : 's8' }}">
+            <div class="col s12">
                 <div class="row">
                     <div class="col s12">
                         <div class="skeleton-list heightForSkeleton-list">&nbsp;</div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col s6 ">
-                        <div class="skeleton-card heightForSkeleton-card"></div>
-                    </div>
-                    <div class="col s6 ">
-                        <div class="skeleton-card heightForSkeleton-card"></div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col s6 ">
+                    <div class="col s6">
                         <div class="skeleton-card heightForSkeleton-card"></div>
                     </div>
                     <div class="col s6">
@@ -247,42 +240,26 @@ if (!isset($dashboard_fab)) {
                     </div>
                 </div>
             </div>
-            @if(!empty($dashboard_caps['can_use_rail']))
-            <div class="col s4">
-                <div class="row">
-                    <div class="col s12">
-                        <div class="skeleton-blog heightForSkeleton-blog"></div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col s12">
-                        <div class="skeleton-blog heightForSkeleton-blog"></div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col s12">
-                        <div class="skeleton-blog heightForSkeleton-blog"></div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col s12">
-                        <div class="skeleton-blog heightForSkeleton-blog"></div>
-                    </div>
-                </div>
-            </div>
-            @endif
         </div>
     </div>
-    <div class="col-left" v-show="!loader">
+    <div v-show="!loader">
         <div class="overview-row">
             <div class="overview">
                 <span>{{ lang('dashboard_overview') }}</span>
             </div>
-            @if(has_permisions('SELECT_ANALYTICS'))
-            <a href="{{ base_url('admin/analytics') }}" class="btn-flat waves-effect teal-text">
-                <i class="material-icons left">assessment</i>{{ lang('dashboard_view_analytics') }}
-            </a>
-            @endif
+            <div class="dashboard-layout-toolbar__actions">
+                @if(has_permisions('SELECT_ANALYTICS'))
+                <a href="{{ base_url('admin/analytics') }}" class="btn-flat waves-effect teal-text">
+                    <i class="material-icons left">assessment</i>{{ lang('dashboard_view_analytics') }}
+                </a>
+                @endif
+                <a v-if="canEditLayout && !layoutEditing" href="#!" class="btn-flat waves-effect teal-text" @click.prevent="startEditLayout">
+                    <i class="material-icons left">dashboard</i>{{ lang('dashboard_layout_edit') }}
+                </a>
+                <a v-if="layoutEditing" href="#!" class="btn-flat waves-effect" @click.prevent="cancelEditLayout">
+                    {{ lang('dashboard_layout_done') }}
+                </a>
+            </div>
         </div>
 
         @if(has_permisions('SELECT_ANALYTICS') && config('SITEM_TRACK_VISITORS') != 'Si')
@@ -292,10 +269,147 @@ if (!isset($dashboard_fab)) {
         </div>
         @endif
 
-        <!-- KPI Cards (same source as /admin/analytics) -->
-        @if(has_permisions('SELECT_ANALYTICS'))
+        <div v-if="layoutEditing && canEditLayout" class="dashboard-layout-toolbar">
+            <div class="dashboard-layout-toolbar__actions">
+                <button class="btn waves-effect waves-light" :class="{disabled: layoutSaving}" @click="saveLayout">
+                    {{ lang('dashboard_layout_save') }}
+                </button>
+                <button class="btn-flat waves-effect" :class="{disabled: layoutSaving}" @click="resetLayout">
+                    {{ lang('dashboard_layout_reset') }}
+                </button>
+                <button type="button" class="btn-flat waves-effect teal-text" @click="addRow">
+                    <i class="material-icons left">view_agenda</i>{{ lang('dashboard_layout_add_row') }}
+                </button>
+            </div>
+        </div>
+
+        <div class="dashboard-widgets">
+            <div v-for="(row, ri) in visibleRows" :key="'row-'+ri" class="dashboard-grid-row">
+                <div v-if="layoutEditing && canEditLayout" class="dashboard-grid-row__bar">
+                    <span>{{ lang('dashboard_layout_row') }} @{{ ri + 1 }}</span>
+                    <div class="dashboard-widget-bar__btns">
+                        <button type="button" class="btn-flat tooltipped" :disabled="ri === 0" data-position="top" data-tooltip="{{ lang('dashboard_layout_up') }}" aria-label="{{ lang('dashboard_layout_up') }}" @click="moveRow(ri, -1)">
+                            <i class="material-icons">arrow_upward</i>
+                        </button>
+                        <button type="button" class="btn-flat tooltipped" :disabled="ri === visibleRows.length - 1" data-position="top" data-tooltip="{{ lang('dashboard_layout_down') }}" aria-label="{{ lang('dashboard_layout_down') }}" @click="moveRow(ri, 1)">
+                            <i class="material-icons">arrow_downward</i>
+                        </button>
+                        <button type="button" class="btn-flat tooltipped" :disabled="row.cols.length >= 3" data-position="top" data-tooltip="{{ lang('dashboard_layout_add_column') }}" aria-label="{{ lang('dashboard_layout_add_column') }}" @click="addColumn(ri)">
+                            <i class="material-icons">view_column</i>
+                        </button>
+                        <button type="button" class="btn-flat tooltipped" data-position="top" data-tooltip="{{ lang('dashboard_layout_remove_row') }}" aria-label="{{ lang('dashboard_layout_remove_row') }}" @click="removeRow(ri)">
+                            <i class="material-icons">delete</i>
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div v-for="(col, ci) in row.cols" :key="'col-'+ri+'-'+ci" :class="colClass(col.w)">
+                        <div class="dashboard-grid-col" :class="{'is-editing': layoutEditing}">
+                            <div v-if="layoutEditing && canEditLayout" class="dashboard-grid-col__bar">
+                                <span>{{ lang('dashboard_layout_width') }}</span>
+                                <div class="dashboard-grid-col__widths">
+                                    <button type="button" class="btn-flat" :class="{active: col.w === 12}" @click="setColumnWidth(ri, ci, 12)">12</button>
+                                    <button type="button" class="btn-flat" :class="{active: col.w === 6}" @click="setColumnWidth(ri, ci, 6)">6</button>
+                                    <button type="button" class="btn-flat" :class="{active: col.w === 4}" @click="setColumnWidth(ri, ci, 4)">4</button>
+                                </div>
+                                <button type="button" class="btn-flat tooltipped" data-position="top" data-tooltip="{{ lang('dashboard_layout_remove_column') }}" aria-label="{{ lang('dashboard_layout_remove_column') }}" @click="removeColumn(ri, ci)">
+                                    <i class="material-icons">close</i>
+                                </button>
+                            </div>
+                            <div v-for="(item, wi) in col.items" :key="item.id" class="dashboard-widget">
+                                <div v-if="layoutEditing && canEditLayout" class="dashboard-widget-bar">
+                                    <div class="dashboard-widget-bar__title">
+                                        <i class="material-icons tiny">@{{item.icon}}</i>
+                                        <span>@{{widgetTitle(item)}}</span>
+                                    </div>
+                                    <div class="dashboard-widget-bar__btns">
+                                        <button type="button" class="btn-flat tooltipped" :disabled="ci === 0" data-position="top" data-tooltip="{{ lang('dashboard_layout_left') }}" aria-label="{{ lang('dashboard_layout_left') }}" @click="moveWidgetAcross(ri, ci, wi, -1)">
+                                            <i class="material-icons">arrow_back</i>
+                                        </button>
+                                        <button type="button" class="btn-flat tooltipped" :disabled="wi === 0" data-position="top" data-tooltip="{{ lang('dashboard_layout_up') }}" aria-label="{{ lang('dashboard_layout_up') }}" @click="moveWidgetInColumn(ri, ci, wi, -1)">
+                                            <i class="material-icons">arrow_upward</i>
+                                        </button>
+                                        <button type="button" class="btn-flat tooltipped" :disabled="wi === col.items.length - 1" data-position="top" data-tooltip="{{ lang('dashboard_layout_down') }}" aria-label="{{ lang('dashboard_layout_down') }}" @click="moveWidgetInColumn(ri, ci, wi, 1)">
+                                            <i class="material-icons">arrow_downward</i>
+                                        </button>
+                                        <button type="button" class="btn-flat tooltipped" :disabled="ci === row.cols.length - 1" data-position="top" data-tooltip="{{ lang('dashboard_layout_right') }}" aria-label="{{ lang('dashboard_layout_right') }}" @click="moveWidgetAcross(ri, ci, wi, 1)">
+                                            <i class="material-icons">arrow_forward</i>
+                                        </button>
+                                        <button type="button" class="btn-flat tooltipped" data-position="top" data-tooltip="{{ lang('dashboard_layout_remove') }}" aria-label="{{ lang('dashboard_layout_remove') }}" @click="removeWidget(ri, ci, item.id)">
+                                            <i class="material-icons">close</i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <component :is="item.component" v-bind="widgetBind(item)"></component>
+                            </div>
+                            <div v-if="layoutEditing && canEditLayout && addableWidgets.length" class="dashboard-grid-col__add">
+                                <label>{{ lang('dashboard_layout_add_here') }}</label>
+                                <select class="browser-default" @change="addWidgetToColumn(ri, ci, $event)">
+                                    <option value="">{{ lang('dashboard_layout_choose') }}</option>
+                                    <option v-for="w in addableWidgets" :key="'opt-'+w.id+'-'+ri+'-'+ci" :value="w.id">@{{ widgetTitle(w) }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-if="layoutIsEmpty && !layoutEditing" class="col s12">
+                <div class="dashboard-empty">
+                    <i class="material-icons">dashboard</i>
+                    <p>{{ lang('dashboard_layout_empty') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@if(!empty($dashboard_fab))
+<div class="fixed-action-btn">
+    <a data-position="left" data-delay="50" data-tooltip="{{ $dashboard_fab['tip'] }}"
+        class="btn-floating btn-large tooltipped st-accent" href="{{ $dashboard_fab['url'] }}">
+        <i class="large material-icons">{{ $dashboard_fab['icon'] }}</i>
+    </a>
+    <ul>
+        @if(has_permisions('CREATE_PAGE'))
+        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_page') }}"
+                class="btn-floating tooltipped st-accent" href="{{base_url('admin/pages/new/')}}"><i
+                    class="material-icons">web</i></a></li>
+        @endif
+        @if(has_permisions('CREATE_USER'))
+        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_user') }}" class="btn-floating tooltipped"
+                href="{{base_url('admin/users/add')}}"><i class="material-icons">perm_identity</i></a></li>
+        @endif
+        @if(has_permisions('CREATE_FORM_CUSTOM'))
+        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_collection') }}" class="btn-floating tooltipped"
+                href="{{base_url('admin/custommodels/new')}}"><i class="material-icons">view_module</i></a></li>
+        @endif
+        @if(has_permisions('CREATE_GALLERY'))
+        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_album') }}" class="btn-floating tooltipped"
+                href="{{base_url('admin/gallery/new/')}}"><i class="material-icons">publish</i></a></li>
+        @endif
+        @if(has_permisions('CREATE_CATEGORIE'))
+        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_category') }}" class="btn-floating tooltipped"
+                href="{{base_url('admin/categories/new/')}}"><i class="material-icons">receipt</i></a></li>
+        @endif
+        @if(has_permisions('CREATE_FRAGMENT'))
+        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_fragment') }}" class="btn-floating tooltipped"
+                href="{{base_url('admin/fragments/new/')}}"><i class="material-icons">bookmark_border</i></a></li>
+        @endif
+        @if(has_permisions('CREATE_EVENT'))
+        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_event') }}" class="btn-floating tooltipped"
+                href="{{ base_url('admin/events/add/') }}"><i class="material-icons">event</i></a></li>
+        @endif
+    </ul>
+</div>
+@endif
+@include('admin.components.page_card_component')
+@include('admin.components.users_collection_component')
+@include('admin.components.create_contents_component')
+@include('admin.components.file_explorer_collection_component')
+@include('admin.components.albums_widget_component')
+
+<script type="text/x-template" id="dashboard-kpis-template">
         <div class="kpi-cards">
-            <a class="kpi-card kpi-card-link" href="{{ base_url('admin/analytics') }}">
+            <a class="kpi-card kpi-card-link" :href="analyticsUrl">
                 <i class="material-icons kpi-icon">people</i>
                 <div class="kpi-value">@{{kpis.uniqueVisitors}}</div>
                 <div class="kpi-label">{{ lang('dashboard_unique_visitors') }}</div>
@@ -304,7 +418,7 @@ if (!isset($dashboard_fab)) {
                     @{{Math.abs(kpis.dailyGrowth)}}% {{ lang('dashboard_vs_yesterday') }}
                 </div>
             </a>
-            <a class="kpi-card kpi-card-link" href="{{ base_url('admin/analytics') }}">
+            <a class="kpi-card kpi-card-link" :href="analyticsUrl">
                 <i class="material-icons kpi-icon">visibility</i>
                 <div class="kpi-value">@{{kpis.todayVisits}}</div>
                 <div class="kpi-label">{{ lang('dashboard_today_visits') }}</div>
@@ -312,7 +426,7 @@ if (!isset($dashboard_fab)) {
                     {{ lang('dashboard_yesterday') }}: @{{kpis.yesterdayVisits}}
                 </div>
             </a>
-            <a class="kpi-card kpi-card-link" href="{{ base_url('admin/analytics') }}">
+            <a class="kpi-card kpi-card-link" :href="analyticsUrl">
                 <i class="material-icons kpi-icon">pages</i>
                 <div class="kpi-value">@{{kpis.pagesPerSession}}</div>
                 <div class="kpi-label">{{ lang('dashboard_pages_per_session') }}</div>
@@ -320,7 +434,7 @@ if (!isset($dashboard_fab)) {
                     {{ lang('dashboard_engagement') }}
                 </div>
             </a>
-            <a class="kpi-card kpi-card-link" href="{{ base_url('admin/analytics') }}">
+            <a class="kpi-card kpi-card-link" :href="analyticsUrl">
                 <i class="material-icons kpi-icon">exit_to_app</i>
                 <div class="kpi-value">@{{kpis.bounceRate}}%</div>
                 <div class="kpi-label">{{ lang('dashboard_bounce_rate') }}</div>
@@ -330,8 +444,9 @@ if (!isset($dashboard_fab)) {
                 </div>
             </a>
         </div>
-        @endif
-        
+</script>
+
+<script type="text/x-template" id="dashboard-welcome-template">
         <div class="welcome">
             <div class="welcome_container">
                 <div class="welcome_message">
@@ -389,15 +504,16 @@ if (!isset($dashboard_fab)) {
                 </div>
             </div>
         </div>
-        <div class="row">
-            @if(has_permisions('SELECT_ANALYTICS'))
-            <div class="col s12">
+</script>
+
+<script type="text/x-template" id="dashboard-charts-template">
+        <div>
                 <div class="row">
                     <div class="col s12">
                         <div class="panel">
                             <div class="title panel-title-row">
                                 <h5>{{ lang('dashboard_statistics') }}</h5>
-                                <a href="{{ base_url('admin/analytics') }}" class="btn-flat waves-effect teal-text">
+                                <a :href="analyticsUrl" class="btn-flat waves-effect teal-text">
                                     {{ lang('dashboard_view_analytics') }}
                                 </a>
                             </div>
@@ -405,7 +521,7 @@ if (!isset($dashboard_fab)) {
                                 <div class="dashboard-empty" v-if="canViewAnalytics && !hasAnalyticsData && !loader">
                                     <i class="material-icons">insights</i>
                                     <p>{{ lang('dashboard_no_analytics_data') }}</p>
-                                    <a href="{{ base_url('admin/analytics') }}">{{ lang('dashboard_view_analytics') }}</a>
+                                    <a :href="analyticsUrl">{{ lang('dashboard_view_analytics') }}</a>
                                 </div>
                                 <div class="charts-grid" v-show="hasAnalyticsData">
                                 <div class="chart chart-1">
@@ -441,8 +557,8 @@ if (!isset($dashboard_fab)) {
                                 <div class="chart chart-3">
                                     <div class="chart-header">
                                         {{ lang('dashboard_devices') }}
-                                        <div class="chart-description tooltipped" 
-                                            data-position="top" 
+                                        <div class="chart-description tooltipped"
+                                            data-position="top"
                                             :data-tooltip="graphs.devices.labelMayor + ' ' + graphs.devices.porcentajeMayor + '%'">@{{graphs.devices.labelMayor}}
                                             @{{graphs.devices.porcentajeMayor}}%</div>
                                     </div>
@@ -461,8 +577,8 @@ if (!isset($dashboard_fab)) {
                                             <canvas id="myChart4"></canvas>
                                         </div>
                                         <div class="col2">
-                                            <span class="chart-title truncate tooltipped" 
-                                                data-position="top" 
+                                            <span class="truncate chart-title tooltipped"
+                                                data-position="top"
                                                 :data-tooltip="graphs.urlFrecuentes.labelMayor">@{{graphs.urlFrecuentes.labelMayor}}</span>
                                             <div class="chart-big-number">
                                                 @{{graphs.urlFrecuentes.valorMasAlto}}</div>
@@ -477,13 +593,13 @@ if (!isset($dashboard_fab)) {
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="row">
                     <div class="col s12 m6">
                         <div class="panel">
                             <div class="title panel-title-row">
                                 <h5><i class="material-icons tiny">trending_up</i> {{ lang('dashboard_top_pages') }}</h5>
-                                <a href="{{ base_url('admin/analytics') }}" class="btn-flat waves-effect teal-text">{{ lang('dashboard_view_analytics') }}</a>
+                                <a :href="analyticsUrl" class="btn-flat waves-effect teal-text">{{ lang('dashboard_view_analytics') }}</a>
                             </div>
                             <ul class="collection" style="border: 0; margin: 0;">
                                 <li class="collection-item" v-for="(count, url) in topPages" :key="url">
@@ -500,7 +616,7 @@ if (!isset($dashboard_fab)) {
                         <div class="panel">
                             <div class="title panel-title-row">
                                 <h5><i class="material-icons tiny">share</i> {{ lang('dashboard_traffic_sources') }}</h5>
-                                <a href="{{ base_url('admin/analytics') }}" class="btn-flat waves-effect teal-text">{{ lang('dashboard_view_analytics') }}</a>
+                                <a :href="analyticsUrl" class="btn-flat waves-effect teal-text">{{ lang('dashboard_view_analytics') }}</a>
                             </div>
                             <div class="dashboard-empty" v-if="!hasReferrers">
                                 {{ lang('dashboard_no_analytics_data') }}
@@ -511,33 +627,10 @@ if (!isset($dashboard_fab)) {
                         </div>
                     </div>
                 </div>
-            </div>
-            @endif
-            @if(has_permisions('SELECT_USERS'))
-            <div class="col m6 l6 xl4 s12">
-                <users-collection :users="users" :total="counts.users"></users-collection>
-            </div>
-            @endif
-            @if(has_permisions('SELECT_FILES'))
-            <div class="col m6 l6 xl4 s12">
-                <file-explorer-collection :files="files" :total="counts.files"></file-explorer-collection>
-            </div>
-            @endif
-            @if(has_permisions('SELECT_GALLERY'))
-            <div class="col m6 l6 xl4 s12">
-                <albumes-widget :albumes="albumes" :total="counts.albumes"></albumes-widget>
-            </div>
-            @endif
-            @if(has_permisions('SELECT_FORM_CUSTOMS') || has_permisions('SELECT_CONTENT_DATA'))
-            <div class="col s12">
-                <create-contents :forms_types="forms_types" :content="content" :total="counts.content"></create-contents>
-            </div>
-            @endif
         </div>
-    </div>
-    @if(!empty($dashboard_caps['can_use_rail']))
-    <div class="col-right st-white" v-show="!loader">
-        @if(!empty($dashboard_caps['can_use_creator']))
+</script>
+
+<script type="text/x-template" id="dashboard-creator-template">
         <div class="row creator">
             <div class="col s12 ">
                 <div class="creator-container">
@@ -553,9 +646,9 @@ if (!isset($dashboard_fab)) {
                         <div class="options-icons">
                             <i class="material-icons tooltipped" v-for="mode in creatorModes" :key="mode"
                                 :class="{'active': creator.mode == mode}" data-position="top" data-delay="500"
-                                :data-tooltip="creatorModeTip(mode)" @click="setCreatorMode(mode)">@{{creator.icons[mode]}}</i>
+                                :data-tooltip="$parent.creatorModeTip(mode)" @click="$parent.setCreatorMode(mode)">@{{creator.icons[mode]}}</i>
                         </div>
-                        <button class="waves-effect waves-light btn" @click="saveDraft"
+                        <button class="waves-effect waves-light btn" @click="$parent.saveDraft"
                             :class="{disabled: creator.content.length < 6 || creator.saving}">
                             <span v-if="!creator.saving">{{ lang('dashboard_create') }}</span>
                             <span v-else>{{ lang('dashboard_creating') }}</span>
@@ -566,20 +659,24 @@ if (!isset($dashboard_fab)) {
                 </div>
             </div>
         </div>
-        @endif
-        @if(has_permisions('SELECT_PAGES'))
+</script>
+
+<script type="text/x-template" id="dashboard-drafts-template">
         <div class="row drafts">
             <div class="col s12">
                 <div class="title">
                     <span>{{ lang('dashboard_latest_drafts') }}</span>
                 </div>
                 <div class="collection">
-                    <a v-for="(draf, index) in pages_draf" :key="index" :href="draf.link" class="collection-item"><span
+                    <a v-for="(draf, index) in drafts" :key="index" :href="draf.link" class="collection-item"><span
                             class="badge">{{ lang('dashboard_draft_badge') }}</span><span class="truncate">@{{draf.title}}</span></a>
-                    <div v-if="!pages_draf.length" class="dashboard-empty">{{ lang('dashboard_no_drafts') }}</div>
+                    <div v-if="!drafts.length" class="dashboard-empty">{{ lang('dashboard_no_drafts') }}</div>
                 </div>
             </div>
         </div>
+</script>
+
+<script type="text/x-template" id="dashboard-timeline-template">
         <div class="row timeline">
             <div class="col s12">
                 <div class="title">
@@ -593,7 +690,7 @@ if (!isset($dashboard_fab)) {
                             <i class="material-icons card-options">more_vert</i>
                             <div class="card-header">
                                 <img class="circle responsive-img"
-                                    :src="card.user && card.user.avatar ? card.user.avatar : '{{base_url()}}public/img/profile/default_profile_2.jpg'" />
+                                    :src="card.user && card.user.avatar ? card.user.avatar : defaultAvatar" />
                                 <div class="card-info">
                                     <span class="truncate title">@{{card.title}}</span>
                                     <span class="truncate datetime">@{{card.date}}</span>
@@ -611,59 +708,43 @@ if (!isset($dashboard_fab)) {
                 </div>
             </div>
         </div>
-        @endif
-    </div>
-    @endif
-</div>
-@if(!empty($dashboard_fab))
-<div class="fixed-action-btn">
-    <a data-position="left" data-delay="50" data-tooltip="{{ $dashboard_fab['tip'] }}"
-        class="btn-floating btn-large tooltipped st-accent" href="{{ $dashboard_fab['url'] }}">
-        <i class="large material-icons">{{ $dashboard_fab['icon'] }}</i>
-    </a>
-    <ul>
-        @if(has_permisions('CREATE_PAGE'))
-        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_page') }}"
-                class="btn-floating tooltipped st-accent" href="{{base_url('admin/pages/new/')}}"><i
-                    class="material-icons">web</i></a></li>
-        @endif
-        @if(has_permisions('CREATE_USER'))
-        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_user') }}" class="btn-floating tooltipped"
-                href="{{base_url('admin/users/add')}}"><i class="material-icons">perm_identity</i></a></li>
-        @endif
-        @if(has_permisions('CREATE_FORM_CUSTOM'))
-        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_collection') }}" class="btn-floating tooltipped"
-                href="{{base_url('admin/custommodels/new')}}"><i class="material-icons">view_module</i></a></li>
-        @endif
-        @if(has_permisions('CREATE_GALLERY'))
-        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_album') }}" class="btn-floating tooltipped"
-                href="{{base_url('admin/gallery/new/')}}"><i class="material-icons">publish</i></a></li>
-        @endif
-        @if(has_permisions('CREATE_CATEGORIE'))
-        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_category') }}" class="btn-floating tooltipped"
-                href="{{base_url('admin/categories/new/')}}"><i class="material-icons">receipt</i></a></li>
-        @endif
-        @if(has_permisions('CREATE_FRAGMENT'))
-        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_fragment') }}" class="btn-floating tooltipped"
-                href="{{base_url('admin/fragments/new/')}}"><i class="material-icons">bookmark_border</i></a></li>
-        @endif
-        @if(has_permisions('CREATE_EVENT'))
-        <li><a data-position="left" data-delay="50" data-tooltip="{{ lang('tooltip_new_event') }}" class="btn-floating tooltipped"
-                href="{{ base_url('admin/events/add/') }}"><i class="material-icons">event</i></a></li>
-        @endif
-    </ul>
-</div>
-@endif
-@include('admin.components.page_card_component')
-@include('admin.components.users_collection_component')
-@include('admin.components.create_contents_component')
-@include('admin.components.file_explorer_collection_component')
-@include('admin.components.albums_widget_component')
+</script>
 
 @endsection
 
 @section('footer_includes')
 <script>
+(function () {
+    var extra = <?= json_encode(array(
+        'dashboard_layout_saved' => lang('dashboard_layout_saved'),
+        'dashboard_layout_forbidden' => lang('dashboard_layout_forbidden'),
+        'dashboard_save_error' => lang('dashboard_save_error'),
+        'dashboard_layout_up' => lang('dashboard_layout_up'),
+        'dashboard_layout_down' => lang('dashboard_layout_down'),
+        'dashboard_layout_remove' => lang('dashboard_layout_remove'),
+        'dashboard_layout_add_row' => lang('dashboard_layout_add_row'),
+        'dashboard_layout_add_column' => lang('dashboard_layout_add_column'),
+        'dashboard_layout_remove_row' => lang('dashboard_layout_remove_row'),
+        'dashboard_layout_remove_column' => lang('dashboard_layout_remove_column'),
+        'dashboard_layout_add_here' => lang('dashboard_layout_add_here'),
+        'dashboard_layout_row' => lang('dashboard_layout_row'),
+        'dashboard_layout_width' => lang('dashboard_layout_width'),
+        'dashboard_layout_left' => lang('dashboard_layout_left'),
+        'dashboard_layout_right' => lang('dashboard_layout_right'),
+        'dashboard_layout_choose' => lang('dashboard_layout_choose'),
+        'dashboard_widget_kpis' => lang('dashboard_widget_kpis'),
+        'dashboard_widget_welcome' => lang('dashboard_widget_welcome'),
+        'dashboard_widget_charts' => lang('dashboard_widget_charts'),
+        'dashboard_widget_users' => lang('dashboard_widget_users'),
+        'dashboard_widget_files' => lang('dashboard_widget_files'),
+        'dashboard_widget_albums' => lang('dashboard_widget_albums'),
+        'dashboard_widget_collections' => lang('dashboard_widget_collections'),
+        'dashboard_widget_creator' => lang('dashboard_widget_creator'),
+        'dashboard_widget_drafts' => lang('dashboard_widget_drafts'),
+        'dashboard_widget_timeline' => lang('dashboard_widget_timeline'),
+    ), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS) ?>;
+    window.ADMIN_LANG = Object.assign(window.ADMIN_LANG || {}, extra);
+})();
 window.CURRENT_USER = <?= json_encode(array(
     'user_id' => userdata('user_id'),
     'username' => userdata('username'),
