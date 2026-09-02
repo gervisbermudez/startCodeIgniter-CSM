@@ -28,10 +28,7 @@
                                 <option value="" disabled>{{ lang('config_choose_option') }}</option>
                                 <option value="general">{{ lang('config_general') }}</option>
                                 <option value="seo">{{ lang('config_seo') }}</option>
-                                <option value="theme">{{ lang('config_appearance') }}</option>
-                                <option value="analytics">{{ lang('config_analytics') }}</option>
-                                <option value="updater">{{ lang('config_updates') }}</option>
-                                <option value="logger">{{ lang('config_logger') }}</option>
+                                <option value="integrations">{{ lang('config_integrations') }}</option>
                                 <option value="system">{{ lang('config_system') }}</option>
                             </select>
                             <label for="new-config-type">{{ lang('config_type') }}</label>

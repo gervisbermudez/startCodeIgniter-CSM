@@ -215,10 +215,7 @@ class ConfigController extends REST_Controller
             
             if (write_file($filename, $backup)) {
                 // Log the successful backup
-                system_logger('config', 'Backup de base de datos creado exitosamente', [
-                    'filename' => basename($filename),
-                    'size' => filesize($filename)
-                ]);
+                system_logger('config', 0, 'backup', 'Database backup created: ' . basename($filename));
                 
                 $this->response([
                     'result' => 'Backup creado exitosamente',
@@ -239,9 +236,7 @@ class ConfigController extends REST_Controller
                 ], REST_Controller::HTTP_BAD_REQUEST);
             }
         } catch (Exception $e) {
-            system_logger('error', 'Error al crear backup de base de datos', [
-                'error' => $e->getMessage()
-            ]);
+            system_logger('config', 0, 'backup_error', 'Database backup failed: ' . $e->getMessage());
             set_notification(
                 lang('notification_backup_fail_title'),
                 $e->getMessage(),
@@ -254,6 +249,85 @@ class ConfigController extends REST_Controller
                 'code' => REST_Controller::HTTP_INTERNAL_SERVER_ERROR
             ], REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public function backups_get()
+    {
+        if (!$this->require_config_permision('SELECT_CONFIG')) {
+            return;
+        }
+
+        $this->response_ok($this->list_database_backups());
+    }
+
+    public function backup_download_get()
+    {
+        if (!$this->require_config_permision('SELECT_CONFIG')) {
+            return;
+        }
+
+        $filename = $this->get('file');
+        if ($filename === null || $filename === '') {
+            $filename = $this->input->get('file');
+        }
+        $path = $this->database_backup_realpath($filename);
+        if ($path === false) {
+            $this->response_error(lang('not_found_error'));
+            return;
+        }
+
+        $safe_name = basename($path);
+        while (ob_get_level()) {
+            ob_end_clean();
+        }
+        header('Content-Type: application/octet-stream');
+        header('Content-Disposition: attachment; filename="' . $safe_name . '"');
+        header('Content-Length: ' . filesize($path));
+        header('Cache-Control: no-store');
+        readfile($path);
+        exit;
+    }
+
+    public function backup_delete_post()
+    {
+        if (!$this->require_config_permision('UPDATE_CONFIG')) {
+            return;
+        }
+
+        $filename = $this->input->post('file');
+        if ($filename === null || $filename === '') {
+            $filename = $this->input->post('filename');
+        }
+        $path = $this->database_backup_realpath($filename);
+        if ($path === false) {
+            $this->response_error(lang('not_found_error'));
+            return;
+        }
+
+        if (!@unlink($path)) {
+            $this->response_error(lang('config_error'), array(), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
+            return;
+        }
+
+        system_logger('config', 0, 'backup_deleted', 'Deleted database backup ' . basename($path));
+        $this->response_ok(array('filename' => basename($path)));
+    }
+
+    public function logs_summary_get()
+    {
+        if (!$this->require_config_permision('SELECT_CONFIG')) {
+            return;
+        }
+
+        $source = $this->get('source');
+        if ($source === null || $source === '') {
+            $source = $this->input->get('source');
+        }
+        if ($source !== 'api' && $source !== 'tracking') {
+            $source = 'system';
+        }
+
+        $this->response_ok($this->build_logs_summary($source));
     }
 
     public function themes_get()
@@ -714,5 +788,209 @@ class ConfigController extends REST_Controller
             return false;
         }
         return true;
+    }
+
+    protected function database_backup_dir()
+    {
+        return rtrim(FCPATH, '/\\') . DIRECTORY_SEPARATOR . 'backups' . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR;
+    }
+
+    protected function is_backup_filename($name)
+    {
+        if (!is_string($name) || $name === '') {
+            return false;
+        }
+        $base = basename($name);
+        if ($base !== $name) {
+            return false;
+        }
+        return (bool) preg_match('/^[A-Za-z0-9._-]+\.(gz|sql|zip)$/i', $base);
+    }
+
+    protected function database_backup_realpath($filename)
+    {
+        if (!$this->is_backup_filename($filename)) {
+            return false;
+        }
+        $dir = realpath($this->database_backup_dir());
+        if ($dir === false || !is_dir($dir)) {
+            return false;
+        }
+        $candidate = $dir . DIRECTORY_SEPARATOR . $filename;
+        if (!is_file($candidate)) {
+            return false;
+        }
+        $real = realpath($candidate);
+        if ($real === false || dirname($real) !== $dir) {
+            return false;
+        }
+        return $real;
+    }
+
+    protected function list_database_backups()
+    {
+        $dir = $this->database_backup_dir();
+        if (!is_dir($dir)) {
+            return array();
+        }
+        $files = array();
+        $handle = @opendir($dir);
+        if ($handle === false) {
+            return array();
+        }
+        while (($entry = readdir($handle)) !== false) {
+            if (!$this->is_backup_filename($entry)) {
+                continue;
+            }
+            $full = $dir . $entry;
+            if (!is_file($full)) {
+                continue;
+            }
+            $mtime = @filemtime($full);
+            $size = @filesize($full);
+            $files[] = array(
+                'filename' => $entry,
+                'file_path' => 'backups/database/',
+                'file_size' => ($size === false) ? 0 : (int) $size,
+                'date_create' => date('Y-m-d H:i:s', $mtime ? $mtime : time()),
+                'download_url' => base_url('api/v1/config/backup_download?file=' . rawurlencode($entry)),
+            );
+        }
+        closedir($handle);
+        usort($files, function ($a, $b) {
+            return strcmp($b['date_create'], $a['date_create']);
+        });
+        return $files;
+    }
+
+    protected function logs_table_for_source($source)
+    {
+        $map = array(
+            'system' => 'logger',
+            'api' => 'api_logs',
+            'tracking' => 'user_tracking',
+        );
+        return isset($map[$source]) ? $map[$source] : 'logger';
+    }
+
+    protected function is_logs_table($table)
+    {
+        return $table === 'logger' || $table === 'api_logs' || $table === 'user_tracking';
+    }
+
+    protected function logs_breakdown_column($source)
+    {
+        if ($source === 'api') {
+            return 'method';
+        }
+        if ($source === 'tracking') {
+            return 'device_type';
+        }
+        return 'type';
+    }
+
+    protected function count_log_rows($table, $since = null)
+    {
+        if (!$this->is_logs_table($table)) {
+            return 0;
+        }
+        $this->db->from($table);
+        $this->db->where('status', 1);
+        if ($since !== null) {
+            $this->db->where('date_create >=', $since);
+        }
+        return (int) $this->db->count_all_results();
+    }
+
+    protected function log_day_series($table, $days)
+    {
+        $days = (int) $days;
+        if ($days < 1) {
+            $days = 14;
+        }
+        if (!$this->is_logs_table($table)) {
+            return array('labels' => array(), 'values' => array());
+        }
+        $since = date('Y-m-d 00:00:00', strtotime('-' . ($days - 1) . ' days'));
+        $sql = 'SELECT DATE(date_create) AS day_key, COUNT(*) AS total
+            FROM `' . $table . '`
+            WHERE status = 1 AND date_create >= ?
+            GROUP BY DATE(date_create)
+            ORDER BY day_key ASC';
+        $query = $this->db->query($sql, array($since));
+        $map = array();
+        if ($query) {
+            foreach ($query->result() as $row) {
+                if (!empty($row->day_key)) {
+                    $map[$row->day_key] = (int) $row->total;
+                }
+            }
+        }
+        $labels = array();
+        $values = array();
+        for ($i = $days - 1; $i >= 0; $i--) {
+            $d = date('Y-m-d', strtotime('-' . $i . ' days'));
+            $labels[] = $d;
+            $values[] = isset($map[$d]) ? $map[$d] : 0;
+        }
+        return array('labels' => $labels, 'values' => $values);
+    }
+
+    protected function log_breakdown($table, $column, $limit)
+    {
+        $allowed = array(
+            'type' => true,
+            'token' => true,
+            'method' => true,
+            'device_type' => true,
+            'page_name' => true,
+        );
+        if (!isset($allowed[$column]) || !$this->is_logs_table($table)) {
+            return array();
+        }
+        $limit = (int) $limit;
+        if ($limit < 1) {
+            $limit = 8;
+        }
+        $sql = 'SELECT `' . $column . '` AS label, COUNT(*) AS total
+            FROM `' . $table . '`
+            WHERE status = 1
+            GROUP BY `' . $column . '`
+            ORDER BY total DESC
+            LIMIT ' . $limit;
+        $query = $this->db->query($sql);
+        $out = array();
+        if ($query) {
+            foreach ($query->result() as $row) {
+                $label = isset($row->label) ? trim((string) $row->label) : '';
+                if ($label === '') {
+                    $label = '—';
+                }
+                $out[] = array(
+                    'label' => $label,
+                    'total' => (int) $row->total,
+                );
+            }
+        }
+        return $out;
+    }
+
+    protected function build_logs_summary($source)
+    {
+        $table = $this->logs_table_for_source($source);
+        $column = $this->logs_breakdown_column($source);
+        $summary = array(
+            'source' => $source,
+            'total' => $this->count_log_rows($table),
+            'last_7' => $this->count_log_rows($table, date('Y-m-d 00:00:00', strtotime('-6 days'))),
+            'today' => $this->count_log_rows($table, date('Y-m-d 00:00:00')),
+            'series' => $this->log_day_series($table, 14),
+            'breakdown' => $this->log_breakdown($table, $column, 8),
+            'top_pages' => array(),
+        );
+        if ($source === 'tracking') {
+            $summary['top_pages'] = $this->log_breakdown($table, 'page_name', 5);
+        }
+        return $summary;
     }
 }

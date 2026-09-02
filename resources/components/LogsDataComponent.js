@@ -5,11 +5,46 @@ function logsT(key, fallback) {
   return fallback || key;
 }
 
+function emptyLogsSummary() {
+  return {
+    total: 0,
+    last_7: 0,
+    today: 0,
+    series: { labels: [], values: [] },
+    breakdown: [],
+    top_pages: [],
+  };
+}
+
 var LogsData = new Vue({
   el: "#root",
   mixins: [mixins],
   data: {
-    activeTab: "system",
+    activeTab: (function () {
+      try {
+        var tab = new URLSearchParams(window.location.search).get("tab") || "system";
+        if (tab !== "api" && tab !== "tracking") {
+          return "system";
+        }
+        return tab;
+      } catch (e) {
+        return "system";
+      }
+    })(),
+    summary: emptyLogsSummary(),
+    summaryLoading: false,
+    chartPanel: "activity",
+    insightsOpen: (function () {
+      try {
+        return window.matchMedia("(min-width: 993px)").matches;
+      } catch (e) {
+        return true;
+      }
+    })(),
+    charts: {
+      trend: null,
+      breakdown: null,
+    },
   },
   computed: {
     endpoint: function () {
@@ -29,6 +64,51 @@ var LogsData = new Vue({
         return "user_tracking_id";
       }
       return "logger_id";
+    },
+    emptyTitle: function () {
+      return logsT("logsEmpty", "No log entries");
+    },
+    hasTrend: function () {
+      var values = this.summary.series && this.summary.series.values;
+      if (!values || !values.length) {
+        return false;
+      }
+      return values.some(function (n) {
+        return Number(n) > 0;
+      });
+    },
+    hasBreakdown: function () {
+      return this.summary.breakdown && this.summary.breakdown.length > 0;
+    },
+    sourceLede: function () {
+      if (this.activeTab === "api") {
+        return logsT("logsSourceApi", "");
+      }
+      if (this.activeTab === "tracking") {
+        return logsT("logsSourceTracking", "");
+      }
+      return logsT("logsSourceSystem", "");
+    },
+    chartHelp: function () {
+      var mix = this.chartPanel === "mix";
+      if (this.activeTab === "api") {
+        return mix ? logsT("logsHelpMixApi", "") : logsT("logsHelpActivityApi", "");
+      }
+      if (this.activeTab === "tracking") {
+        return mix ? logsT("logsHelpMixTracking", "") : logsT("logsHelpActivityTracking", "");
+      }
+      return mix ? logsT("logsHelpMixSystem", "") : logsT("logsHelpActivitySystem", "");
+    },
+    breakdownLegend: function () {
+      var slices = this.chartPalette().slices;
+      var rows = this.summary.breakdown || [];
+      return rows.map(function (row, index) {
+        return {
+          label: row.label,
+          total: row.total,
+          color: slices[index % slices.length],
+        };
+      });
     },
     colums: function () {
       if (this.activeTab === "api") {
@@ -73,7 +153,279 @@ var LogsData = new Vue({
       ];
     },
   },
+  watch: {
+    activeTab: function () {
+      this.chartPanel = "activity";
+      this.loadSummary();
+    },
+    chartPanel: function () {
+      if (this.insightsOpen) {
+        this.renderCharts();
+      }
+    },
+    insightsOpen: function (open) {
+      if (open) {
+        this.renderCharts();
+      } else {
+        this.destroyCharts();
+      }
+    },
+  },
   methods: {
+    formatCount: function (n) {
+      var num = Number(n) || 0;
+      try {
+        return num.toLocaleString();
+      } catch (e) {
+        return String(num);
+      }
+    },
+    toggleInsights: function () {
+      this.insightsOpen = !this.insightsOpen;
+    },
+    setChartPanel: function (panel) {
+      this.chartPanel = panel === "mix" ? "mix" : "activity";
+    },
+    cssVar: function (name, fallback) {
+      var value = getComputedStyle(document.documentElement).getPropertyValue(name);
+      return (value && value.trim()) || fallback;
+    },
+    hexToRgba: function (color, alpha) {
+      var c = (color || "").trim();
+      if (c.indexOf("rgb(") === 0) {
+        return c.replace("rgb(", "rgba(").replace(")", ", " + alpha + ")");
+      }
+      if (c.indexOf("rgba(") === 0) {
+        return c;
+      }
+      var hex = c.replace("#", "");
+      if (hex.length === 3) {
+        hex = hex.charAt(0) + hex.charAt(0) + hex.charAt(1) + hex.charAt(1) + hex.charAt(2) + hex.charAt(2);
+      }
+      var n = parseInt(hex, 16);
+      if (isNaN(n)) {
+        return "rgba(38, 166, 154, " + alpha + ")";
+      }
+      return "rgba(" + ((n >> 16) & 255) + ", " + ((n >> 8) & 255) + ", " + (n & 255) + ", " + alpha + ")";
+    },
+    chartPalette: function () {
+      return {
+        text: this.cssVar("--st-text", "#444"),
+        muted: this.cssVar("--st-text-secondary", "#5D5D5D"),
+        grid: this.cssVar("--st-border", "#E5E5E5"),
+        line: this.cssVar("--st-interactive", "#26A69A"),
+        surface: this.cssVar("--st-surface", "#fff"),
+        tooltip: this.cssVar("--st-chrome", "#646b7f"),
+        slices: [
+          this.cssVar("--st-interactive", "#26A69A"),
+          this.cssVar("--st-accent", "#fb9678"),
+          this.cssVar("--st-chrome", "#646b7f"),
+          this.cssVar("--st-warning", "#ff9800"),
+          this.cssVar("--st-success", "#4CAF50"),
+          this.cssVar("--st-neutral", "#757575"),
+          this.cssVar("--st-danger", "#F44336"),
+          this.cssVar("--st-trash", "#424242"),
+        ],
+      };
+    },
+    formatChartDay: function (iso) {
+      var parts = String(iso).split("-");
+      if (parts.length < 3) {
+        return iso;
+      }
+      var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      var month = months[parseInt(parts[1], 10) - 1] || parts[1];
+      return parseInt(parts[2], 10) + " " + month;
+    },
+    chartTooltip: function (palette) {
+      return {
+        backgroundColor: palette.tooltip,
+        titleColor: "#fff",
+        bodyColor: "#fff",
+        titleFont: { size: 12, weight: "500", family: "Roboto, sans-serif" },
+        bodyFont: { size: 12, family: "Roboto, sans-serif" },
+        padding: { top: 8, right: 12, bottom: 8, left: 12 },
+        cornerRadius: 8,
+        displayColors: false,
+        caretSize: 5,
+      };
+    },
+    destroyChart: function (canvasId, key) {
+      if (typeof Chart !== "undefined" && Chart.getChart) {
+        var existing = Chart.getChart(canvasId);
+        if (existing) {
+          existing.destroy();
+        }
+      }
+      if (this.charts[key]) {
+        this.charts[key] = null;
+      }
+    },
+    destroyCharts: function () {
+      this.destroyChart("logsTrendChart", "trend");
+      this.destroyChart("logsBreakdownChart", "breakdown");
+    },
+    renderCharts: function () {
+      var self = this;
+      this.destroyCharts();
+      if (!this.insightsOpen) {
+        return;
+      }
+      this.$nextTick(function () {
+        if (self.chartPanel === "mix") {
+          self.renderBreakdownChart();
+        } else {
+          self.renderTrendChart();
+        }
+      });
+    },
+    renderTrendChart: function () {
+      var canvas = document.getElementById("logsTrendChart");
+      this.destroyChart("logsTrendChart", "trend");
+      if (!canvas || !this.hasTrend || typeof Chart === "undefined") {
+        return;
+      }
+      var palette = this.chartPalette();
+      var ctx = canvas.getContext("2d");
+      var height = canvas.parentNode ? canvas.parentNode.clientHeight : 180;
+      var gradient = ctx.createLinearGradient(0, 0, 0, height);
+      gradient.addColorStop(0, this.hexToRgba(palette.line, 0.28));
+      gradient.addColorStop(0.85, this.hexToRgba(palette.line, 0.03));
+      gradient.addColorStop(1, this.hexToRgba(palette.line, 0));
+      var self = this;
+      var labels = (this.summary.series.labels || []).map(function (d) {
+        return self.formatChartDay(d);
+      });
+      this.charts.trend = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: logsT("logsCount", "Events"),
+              data: this.summary.series.values,
+              borderColor: palette.line,
+              backgroundColor: gradient,
+              tension: 0.4,
+              fill: true,
+              pointRadius: 0,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: palette.line,
+              pointHoverBorderColor: palette.surface,
+              pointHoverBorderWidth: 2,
+              borderWidth: 2.25,
+              borderCapStyle: "round",
+              borderJoinStyle: "round",
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: "index", intersect: false },
+          plugins: {
+            legend: { display: false },
+            tooltip: this.chartTooltip(palette),
+          },
+          layout: { padding: { top: 8, right: 8, left: 4, bottom: 0 } },
+          scales: {
+            x: {
+              ticks: {
+                color: palette.muted,
+                maxRotation: 0,
+                autoSkip: true,
+                maxTicksLimit: 6,
+                font: { size: 11, family: "Roboto, sans-serif" },
+              },
+              grid: { display: false, drawBorder: false },
+              border: { display: false },
+            },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                color: palette.muted,
+                precision: 0,
+                maxTicksLimit: 5,
+                font: { size: 11, family: "Roboto, sans-serif" },
+                padding: 8,
+              },
+              grid: {
+                color: this.hexToRgba(palette.grid, 0.9),
+                drawTicks: false,
+                drawBorder: false,
+              },
+              border: { display: false },
+            },
+          },
+        },
+      });
+    },
+    renderBreakdownChart: function () {
+      var canvas = document.getElementById("logsBreakdownChart");
+      this.destroyChart("logsBreakdownChart", "breakdown");
+      if (!canvas || !this.hasBreakdown || typeof Chart === "undefined") {
+        return;
+      }
+      var palette = this.chartPalette();
+      var rows = this.summary.breakdown;
+      var tooltip = this.chartTooltip(palette);
+      this.charts.breakdown = new Chart(canvas.getContext("2d"), {
+        type: "doughnut",
+        data: {
+          labels: rows.map(function (row) {
+            return row.label;
+          }),
+          datasets: [
+            {
+              data: rows.map(function (row) {
+                return row.total;
+              }),
+              backgroundColor: palette.slices,
+              borderColor: palette.surface,
+              borderWidth: 3,
+              spacing: 2,
+              hoverOffset: 4,
+              borderRadius: 3,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: "72%",
+          plugins: {
+            legend: { display: false },
+            tooltip: tooltip,
+          },
+        },
+      });
+    },
+    loadSummary: function () {
+      var self = this;
+      this.summaryLoading = true;
+      this.destroyCharts();
+      fetch(BASEURL + "api/v1/config/logs_summary?source=" + encodeURIComponent(this.activeTab), {
+        credentials: "same-origin",
+        headers: { Accept: "application/json" },
+      })
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (payload) {
+          if (payload && (payload.code == 200 || payload.code === "200") && payload.data) {
+            self.summary = Object.assign(emptyLogsSummary(), payload.data);
+          } else {
+            self.summary = emptyLogsSummary();
+          }
+        })
+        .catch(function () {
+          self.summary = emptyLogsSummary();
+        })
+        .then(function () {
+          self.summaryLoading = false;
+          self.renderCharts();
+        });
+    },
     readTabFromUrl: function () {
       var tab = "system";
       try {
@@ -104,11 +456,14 @@ var LogsData = new Vue({
   },
   mounted: function () {
     var self = this;
-    this.activeTab = this.readTabFromUrl();
+    this.loadSummary();
     this.$nextTick(function () {
       window.addEventListener("popstate", function () {
         self.activeTab = self.readTabFromUrl();
       });
     });
+  },
+  beforeDestroy: function () {
+    this.destroyCharts();
   },
 });

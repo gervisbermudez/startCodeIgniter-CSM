@@ -84,6 +84,12 @@ var ConfiguracionList = new Vue({
         return self.searchInObject(item, term);
       });
     },
+    isSiteSection: function () {
+      return this.sectionActive === "general" || this.sectionActive === "theme" || this.sectionActive === "seo";
+    },
+    isSystemSection: function () {
+      return this.sectionActive === "system" || this.sectionActive === "updater";
+    },
     loggerConfig: function () {
       return this.filterConfigurations("logger");
     },
@@ -492,19 +498,17 @@ var ConfiguracionList = new Vue({
       var self = this;
       $.ajax({
         type: "GET",
-        url: BASEURL + "api/v1/files/",
-        data: { path: "./backups/database/" },
+        url: BASEURL + "api/v1/config/backups",
         dataType: "json",
         success: function (t) {
-          if (200 == t.code && t.data.length) {
-            self.recentBackupPreview = t.data
-              .map(function (item) {
-                return new ExplorerFile(item);
-              })
-              .slice(0, 3);
+          if (t && (t.code == 200 || t.code === "200") && t.data && t.data.length) {
+            self.recentBackupPreview = t.data.slice(0, 3);
           } else {
             self.recentBackupPreview = [];
           }
+        },
+        error: function () {
+          self.recentBackupPreview = [];
         },
       });
     },

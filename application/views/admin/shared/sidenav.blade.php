@@ -264,34 +264,19 @@
             <div class="collapsible-body">
                 <ul>
                     <li class="{{ configNavCurrent('index', 'home') }}">
-                        <a class="waves-effect" href="{{ base_url('admin/configuration') }}" {!! configNavCurrentAttr('index', 'home') !!}>{{ lang('dashboard_overview') }}</a>
+                        <a class="waves-effect" href="{{ base_url('admin/configuration') }}" data-config-leafs="home" {!! configNavCurrentAttr('index', 'home') !!}>{{ lang('dashboard_overview') }}</a>
                     </li>
-                    <li class="{{ configNavCurrent('index', 'general') }}">
-                        <a class="waves-effect" href="{{ base_url('admin/configuration') }}?section=general" {!! configNavCurrentAttr('index', 'general') !!}>{{ lang('config_general') }}</a>
-                    </li>
-                    <li class="{{ configNavCurrent('index', 'theme') }}">
-                        <a class="waves-effect" href="{{ base_url('admin/configuration') }}?section=theme" {!! configNavCurrentAttr('index', 'theme') !!}>{{ lang('config_appearance') }}</a>
-                    </li>
-                    <li class="{{ configNavCurrent('index', 'seo') }}">
-                        <a class="waves-effect" href="{{ base_url('admin/configuration') }}?section=seo" {!! configNavCurrentAttr('index', 'seo') !!}>{{ lang('config_seo') }}</a>
+                    <li class="{{ configNavCurrent('index', 'site') }}">
+                        <a class="waves-effect" href="{{ base_url('admin/configuration') }}?section=general" data-config-leafs="general,theme,seo,addConfig" {!! configNavCurrentAttr('index', 'site') !!}>{{ lang('config_site') }}</a>
                     </li>
                     <li class="{{ configNavCurrent('index', 'integrations') }}">
-                        <a class="waves-effect" href="{{ base_url('admin/configuration') }}?section=integrations" {!! configNavCurrentAttr('index', 'integrations') !!}>{{ lang('config_integrations') }}</a>
+                        <a class="waves-effect" href="{{ base_url('admin/configuration') }}?section=integrations" data-config-leafs="integrations,analytics,pixel" {!! configNavCurrentAttr('index', 'integrations') !!}>{{ lang('config_integrations') }}</a>
                     </li>
                     <li class="{{ configNavCurrent('index', 'system') }}">
-                        <a class="waves-effect" href="{{ base_url('admin/configuration') }}?section=system" {!! configNavCurrentAttr('index', 'system') !!}>{{ lang('config_system') }}</a>
+                        <a class="waves-effect" href="{{ base_url('admin/configuration') }}?section=system" data-config-leafs="system,updater,logger" {!! configNavCurrentAttr('index', 'system') !!}>{{ lang('config_system') }}</a>
                     </li>
-                    <li class="{{ configNavCurrent('index', 'updater') }}">
-                        <a class="waves-effect" href="{{ base_url('admin/configuration') }}?section=updater" {!! configNavCurrentAttr('index', 'updater') !!}>{{ lang('config_updates') }}</a>
-                    </li>
-                    <li class="{{ configNavCurrent('data', 'backups') }}">
-                        <a class="waves-effect" href="{{ base_url('admin/configuration/data') }}" {!! configNavCurrentAttr('data', 'backups') !!}>{{ lang('config_data_backups') }}</a>
-                    </li>
-                    <li class="{{ configNavCurrent('data', 'import') }}">
-                        <a class="waves-effect" href="{{ base_url('admin/configuration/data') }}?section=import" {!! configNavCurrentAttr('data', 'import') !!}>{{ lang('config_import') }}</a>
-                    </li>
-                    <li class="{{ configNavCurrent('data', 'export') }}">
-                        <a class="waves-effect" href="{{ base_url('admin/configuration/data') }}?section=export" {!! configNavCurrentAttr('data', 'export') !!}>{{ lang('config_export') }}</a>
+                    <li class="{{ configNavCurrent('data') }}">
+                        <a class="waves-effect" href="{{ base_url('admin/configuration/data') }}" data-config-leafs="backups,import,export,data" {!! configNavCurrentAttr('data') !!}>{{ lang('config_data') }}</a>
                     </li>
                     <li class="{{ configNavCurrent('logs') }}">
                         <a class="waves-effect" href="{{ base_url('admin/configuration/logs') }}" {!! configNavCurrentAttr('logs') !!}>{{ lang('menu_logs') }}</a>

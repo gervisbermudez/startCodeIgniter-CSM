@@ -13,7 +13,30 @@ Vue.component("configuration", {
   mixins: [mixins],
   computed: {
     isChecked() {
-      return (this.configuration.config_value == this.configuration.config_data.true);
+      if (!this.configuration) {
+        return false;
+      }
+      var data = this.configuration.config_data || {};
+      var value = this.configuration.config_value;
+      if (data.true !== undefined && data.true !== null && data.true !== "") {
+        return value == data.true;
+      }
+      var v = String(value || "").toLowerCase();
+      return v === "1" || v === "true" || v === "si" || v === "on" || v === "yes";
+    },
+    switchOffLabel() {
+      var data = (this.configuration && this.configuration.config_data) || {};
+      if (Array.isArray(data.perm_values) && data.perm_values.length > 0) {
+        return data.perm_values[0];
+      }
+      return "Off";
+    },
+    switchOnLabel() {
+      var data = (this.configuration && this.configuration.config_data) || {};
+      if (Array.isArray(data.perm_values) && data.perm_values.length > 1) {
+        return data.perm_values[1];
+      }
+      return "On";
     },
   },
   watch: {
@@ -86,13 +109,28 @@ Vue.component("configuration", {
     },
     switchCahnged($event) {
       let isChecked = $event.target.checked;
-      let data = this.configuration.config_data;
+      let data = this.configuration.config_data || {};
       if (isChecked) {
-        this.configuration.config_value = data.true || (data.perm_values ? data.perm_values[1] : '1');
+        this.configuration.config_value = data.true || (Array.isArray(data.perm_values) ? data.perm_values[1] : '1');
       } else {
-        this.configuration.config_value = data.false || (data.perm_values ? data.perm_values[0] : '0');
+        this.configuration.config_value = data.false || (Array.isArray(data.perm_values) ? data.perm_values[0] : '0');
       }
       this.runSave();
+    },
+    selectOptionValue: function (key, value) {
+      if (value && typeof value === "object") {
+        return key;
+      }
+      if (Array.isArray((this.configuration.config_data || {}).perm_values)) {
+        return value;
+      }
+      return key;
+    },
+    selectOptionLabel: function (value) {
+      if (value && typeof value === "object") {
+        return value.label || value.name || JSON.stringify(value);
+      }
+      return value;
     },
 
     focusInput() {

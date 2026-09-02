@@ -485,6 +485,22 @@ if (!function_exists("config")) {
     }
 }
 
+if (!function_exists('config_is_on')) {
+    /**
+     * True for 1 / true / Si / On / yes. Site_config switches historically mix these.
+     *
+     * @param string $config_name
+     * @return bool
+     */
+    function config_is_on($config_name)
+    {
+        if (!class_exists('Site_config_catalog', false)) {
+            require_once APPPATH . 'libraries/Site_config_catalog.php';
+        }
+        return Site_config_catalog::value_is_on(config($config_name));
+    }
+}
+
 if (!function_exists('getThemePublicPath')) {
     function getThemePublicPath(): string
     {
@@ -625,16 +641,35 @@ if (!function_exists('configNavCurrent')) {
         if ($querySection === 'analytics' || $querySection === 'pixel') {
             $querySection = 'integrations';
         }
-        if ($wantPage === 'index' && $querySection === 'logger') {
+        if ($querySection === 'logger' || $querySection === 'updater') {
             $querySection = 'system';
+        }
+        if (in_array($querySection, array('theme', 'seo', 'addConfig'), true)) {
+            $querySection = 'site';
+        }
+        if ($querySection === 'general') {
+            $querySection = 'site';
+        }
+        if (in_array($querySection, array('import', 'export', 'backups'), true)) {
+            $querySection = 'data';
         }
 
         $defaults = array(
             'index' => 'home',
-            'data' => 'backups',
+            'data' => 'data',
         );
         if ($querySection === '' && isset($defaults[$wantPage])) {
             $querySection = $defaults[$wantPage];
+        }
+
+        if ($section === 'site') {
+            return ($wantPage === 'index' && $querySection === 'site') ? $class : '';
+        }
+        if ($section === 'system') {
+            return ($wantPage === 'index' && $querySection === 'system') ? $class : '';
+        }
+        if ($section === 'data') {
+            return ($wantPage === 'data') ? $class : '';
         }
 
         return ($querySection === $section) ? $class : '';
@@ -1291,9 +1326,9 @@ function system_logger($type, $type_id, $token, $comment = '')
     static $logger_active = null;
 
     if ($logger_active === null) {
-        $ci->load->model('Admin/SiteConfigModel');
-        $result = $ci->SiteConfigModel->find_with(["config_name" => 'SYSTEM_LOGGER']);
-        $logger_active = ($result && $result->config_value == '1');
+        $logger_active = function_exists('config_is_on')
+            ? config_is_on('SYSTEM_LOGGER')
+            : false;
     }
 
     if ($logger_active) {

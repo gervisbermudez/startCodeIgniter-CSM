@@ -51,6 +51,17 @@ window.CONFIG_I18N = {
     colAuthorized: {!! json_encode(lang('config_col_authorized')) !!},
     colReferer: {!! json_encode(lang('config_col_referer')) !!},
     colPage: {!! json_encode(lang('config_col_page')) !!},
-    colQuery: {!! json_encode(lang('config_col_query')) !!}
+    colQuery: {!! json_encode(lang('config_col_query')) !!},
+    logsEmpty: {!! json_encode(lang('config_logs_empty')) !!},
+    logsCount: {!! json_encode(lang('config_logs_count')) !!},
+    logsSourceSystem: {!! json_encode(lang('config_logs_source_system')) !!},
+    logsSourceApi: {!! json_encode(lang('config_logs_source_api')) !!},
+    logsSourceTracking: {!! json_encode(lang('config_logs_source_tracking')) !!},
+    logsHelpActivitySystem: {!! json_encode(lang('config_logs_help_activity_system')) !!},
+    logsHelpActivityApi: {!! json_encode(lang('config_logs_help_activity_api')) !!},
+    logsHelpActivityTracking: {!! json_encode(lang('config_logs_help_activity_tracking')) !!},
+    logsHelpMixSystem: {!! json_encode(lang('config_logs_help_mix_system')) !!},
+    logsHelpMixApi: {!! json_encode(lang('config_logs_help_mix_api')) !!},
+    logsHelpMixTracking: {!! json_encode(lang('config_logs_help_mix_tracking')) !!}
 };
 </script>

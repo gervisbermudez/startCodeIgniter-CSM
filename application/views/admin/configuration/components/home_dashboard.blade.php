@@ -121,10 +121,10 @@
 								<span class="widget-title">{{ lang('config_recent_backups') }}</span>
 								<div v-if="recentBackupPreview.length > 0">
 									<ul class="backup-mini-list">
-										<li v-for="file in recentBackupPreview" :key="file.file_id">
+						<li v-for="file in recentBackupPreview" :key="file.filename">
 											<i class="material-icons tiny" aria-hidden="true">description</i>
-											<span class="backup-name">@{{file.get_filename()}}</span>
-											<span class="backup-date">@{{file.date_create.split(' ')[0]}}</span>
+											<span class="backup-name">@{{ file.filename }}</span>
+											<span class="backup-date">@{{ (file.date_create || '').split(' ')[0] }}</span>
 										</li>
 									</ul>
 									<a :href="base_url('admin/configuration/data')" class="btn-flat waves-effect waves-teal full-width center-align">{{ lang('config_view_all_backups') }}</a>
