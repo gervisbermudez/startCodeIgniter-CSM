@@ -1,5 +1,5 @@
 <script type="text/x-template" id="user-collection-template">
-    <div class="dash-list-widget has-deco">
+    <div class="dash-list-widget has-deco" style="--dash-deco: url('{{ base_url('public/img/admin/undraw/undraw_website-visitors_qy9c.svg') }}')">
         <div class="dash-widget-head">
             <div class="dash-widget-head__lead">
                 <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">people</i></span>
@@ -26,6 +26,5 @@
             </li>
             <li v-if="users.length === 0" class="dash-list__empty">{{ lang('dashboard_users_empty') }}</li>
         </ul>
-        <img class="dash-widget-deco" src="{{ base_url('public/img/admin/dashboard/undraw_browsing_online.png') }}" alt="" aria-hidden="true">
     </div>
 </script>

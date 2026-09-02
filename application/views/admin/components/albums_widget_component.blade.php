@@ -1,5 +1,5 @@
 <script type="text/x-template" id="albumes-widget-template">
-    <div class="dash-list-widget albumes has-deco">
+    <div class="dash-list-widget albumes has-deco" style="--dash-deco: url('{{ base_url('public/img/admin/undraw/undraw_photograph_gwbm.svg') }}')">
         <div class="dash-widget-head">
             <div class="dash-widget-head__lead">
                 <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">photo_library</i></span>
@@ -29,6 +29,5 @@
             <i class="material-icons">photo_library</i>
             <p>{{ lang('dashboard_albums_empty') }}</p>
         </div>
-        <img class="dash-widget-deco" src="{{ base_url('public/img/admin/dashboard/undraw_Photo_re_5blb.png') }}" alt="" aria-hidden="true">
     </div>
 </script>

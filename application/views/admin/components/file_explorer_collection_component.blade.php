@@ -1,5 +1,5 @@
 <script type="text/x-template" id="fileExplorerCollection-template">
-<div class="dash-list-widget fileExplorerCollection-root has-deco">
+<div class="dash-list-widget fileExplorerCollection-root has-deco" style="--dash-deco: url('{{ base_url('public/img/admin/undraw/undraw_my-files_1xwx.svg') }}')">
     <div class="dash-widget-head">
         <div class="dash-widget-head__lead">
             <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">folder</i></span>
@@ -33,6 +33,5 @@
         <i class="material-icons">folder_open</i>
         <p>{{ lang('dashboard_files_empty') }}</p>
     </div>
-    <img class="dash-widget-deco" src="{{ base_url('public/img/admin/dashboard/undraw_folder_files.png') }}" alt="" aria-hidden="true">
 </div>
 </script>

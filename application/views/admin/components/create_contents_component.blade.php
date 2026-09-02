@@ -1,6 +1,6 @@
 @include('admin.custommodels.i18n')
 <script type="text/x-template" id="create-contents-template">
-    <div class="dash-list-widget dash-collections has-deco">
+    <div class="dash-list-widget dash-collections has-deco has-deco--wide" style="--dash-deco: url('{{ base_url('public/img/admin/undraw/undraw_selected-box_qnrz.svg') }}')">
         <div class="dash-widget-head">
             <div class="dash-widget-head__lead">
                 <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">view_module</i></span>
@@ -31,6 +31,5 @@
             <i class="material-icons">view_module</i>
             <p><?= lang('dashboard_latest_collection_items') ?></p>
         </div>
-        <img class="dash-widget-deco dash-widget-deco--wide" src="{{ base_url('public/img/admin/dashboard/undraw_folder_files_nweq.png') }}" alt="" aria-hidden="true">
     </div>
 </script>
