@@ -1,3 +1,12 @@
+<script>
+(function () {
+  try {
+    if (localStorage.getItem("dark-mode")) {
+      document.documentElement.classList.add("dark-mode");
+    }
+  } catch (e) {}
+})();
+</script>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
