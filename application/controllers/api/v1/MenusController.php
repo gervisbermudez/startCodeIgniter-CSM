@@ -137,6 +137,12 @@ class MenusController extends REST_Controller
             $menu_items = $this->input->post('menu_items');
             $this->save_menu_items($menu_items, $menu);
             $menu->find($menu->menu_id);
+            system_logger(
+                'menus',
+                $menu->menu_id,
+                $is_update ? 'updated' : 'created',
+                $is_update ? 'A menu has been updated' : 'A menu has been created'
+            );
             $this->response_ok($menu);
             return;
         }
@@ -198,6 +204,7 @@ class MenusController extends REST_Controller
             $menu = new MenuModel();
             $result = $menu->find($menu_id);
             if ($result) {
+                system_logger('menus', $menu_id, 'deleted', 'A menu has been deleted');
                 $this->response_ok(["result" => $menu->delete()]);
                 return;
             } else {

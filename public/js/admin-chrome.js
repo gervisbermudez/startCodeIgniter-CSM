@@ -31,13 +31,16 @@ var Notifications = new Vue({
         if (!el || typeof M === "undefined" || !M.Dropdown) {
           return;
         }
-        if (M.Dropdown.getInstance(el)) {
-          return;
+        if (!M.Dropdown.getInstance(el)) {
+          M.Dropdown.init(el, {
+            constrainWidth: false,
+            coverTrigger: false,
+          });
         }
-        M.Dropdown.init(el, {
-          constrainWidth: false,
-          coverTrigger: false,
-        });
+        var tips = document.querySelectorAll("#notifications .tooltipped");
+        if (tips.length && M.Tooltip) {
+          M.Tooltip.init(tips, {});
+        }
       });
     },
     markRead: function (notification, index, navigate) {
@@ -92,16 +95,10 @@ var Notifications = new Vue({
     },
   },
   mounted: function () {
-    var self = this;
     this.getData();
     this.initDropdown();
     this.startPolling();
     document.addEventListener("visibilitychange", this.onVisibility);
-    this.$nextTick(function () {
-      if (typeof self.initPlugins === "function") {
-        self.initPlugins();
-      }
-    });
   },
   beforeDestroy: function () {
     this.stopPolling();

@@ -18,7 +18,7 @@ class VueForm {
     //Adress
     address: /^[#.0-9a-zA-ZáÁéÉíÍóÓúÚñÑ\s,-]+$/,
     // Password need to be a minimum of 8 characters include a special character and at least one capital letter
-    password: /^(?=.*?[0-9])(?=.*?[A-Z])(?=.*?[.#?!@$%^&*\-_]).{8,}$/,
+    password: /^(?=.*?[0-9])(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[.#?!@$%^&*\-_]).{8,}$/,
   };
   constructor(fields) {
     this.generateForm(fields);

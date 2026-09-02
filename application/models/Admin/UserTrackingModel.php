@@ -6,7 +6,7 @@ class UserTrackingModel extends MY_Model
 {
     public $table = 'user_tracking';
     public $primaryKey = 'user_tracking_id';
-    public $searchable = array('page_name', 'requested_url', 'client_ip');
+    public $searchable = array('page_name', 'requested_url', 'client_ip', 'referer_page', 'query_string');
 
     public function __construct()
     {

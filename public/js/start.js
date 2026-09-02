@@ -268,8 +268,16 @@ function markSidenavConfigLeaf(section, defaultSection) {
     if (normalizePathname(a.pathname || "") !== here) {
       continue;
     }
+    var leafsAttr = a.getAttribute("data-config-leafs") || "";
+    var leafs = leafsAttr ? leafsAttr.split(",") : [];
     var linkSection = queryParam(a.search, "section") || defaultSection || "";
-    if (linkSection === wanted) {
+    var match = false;
+    if (leafs.length) {
+      match = leafs.indexOf(wanted) !== -1;
+    } else {
+      match = linkSection === wanted;
+    }
+    if (match) {
       li.classList.add("current");
       a.setAttribute("aria-current", "page");
     } else {
@@ -902,6 +910,9 @@ var mixins = {
           { constrainWidth: false }
         );
         self.reinitPlugin(".modal", M.Modal);
+        if (M.FormSelect) {
+          self.reinitPlugin("select:not(.browser-default):not(.config-logs-chart-select)", M.FormSelect);
+        }
         if (M.Materialbox) {
           self.reinitPlugin(".materialboxed", M.Materialbox);
         }

@@ -171,6 +171,12 @@ class CategoriesController extends REST_Controller
 
         // Guardamos los datos en la base de datos. Si tiene éxito, la respuesta HTTP 200 (éxito) se devuelve junto con los datos guardados en forma de objeto 'Categories'.
         if ($categorie->save()) {
+            system_logger(
+                'categories',
+                $categorie->categorie_id,
+                $is_update ? 'updated' : 'created',
+                $is_update ? 'A category has been updated' : 'A category has been created'
+            );
             $this->response_ok($categorie);
             return;
         }
@@ -209,6 +215,7 @@ class CategoriesController extends REST_Controller
         }
 
         if ($result) {
+            system_logger('categories', $categorie_id, 'deleted', 'A category has been deleted');
             $this->response_ok($result);
             return;
         }

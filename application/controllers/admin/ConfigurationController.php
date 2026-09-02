@@ -120,29 +120,28 @@ class ConfigurationController extends MY_Controller
                 throw new Exception(lang('not_have_permissions'));
             }
 
-            $this->load->model('site_config_model');
-
-            $debug_config = $this->site_config_model->where('config_key', 'DEBUG_MODE')->first();
-
-            if ($debug_config) {
-                $new_value = ($debug_config->config_value === 'true' || $debug_config->config_value === '1') ? '0' : '1';
-
-                $this->site_config_model->update($debug_config->site_config_id, [
-                    'config_value' => $new_value
-                ]);
-
-                $debug_enabled = ($new_value === '1');
-            } else {
-                $this->site_config_model->insert([
-                    'config_key' => 'DEBUG_MODE',
-                    'config_value' => '1',
-                    'config_description' => 'Debug mode enabled/disabled'
-                ]);
-
-                $debug_enabled = true;
+            $this->load->model('Admin/SiteConfigModel');
+            if (!class_exists('Site_config_catalog', false)) {
+                require_once APPPATH . 'libraries/Site_config_catalog.php';
+            }
+            $configuration = new SiteConfigModel();
+            $found = $configuration->find_with(array('config_name' => 'DEBUG_MODE'));
+            if (!$found) {
+                $configuration->sync_catalog();
+                $found = $configuration->find_with(array('config_name' => 'DEBUG_MODE'));
             }
 
-            system_logger('site_config', 0, 'toggle_debug', 'Debug mode ' . ($debug_enabled ? 'activado' : 'desactivado'));
+            $current = $found ? $found->config_value : '0';
+            $debug_enabled = !Site_config_catalog::value_is_on($current);
+            $new_value = $debug_enabled ? '1' : '0';
+
+            if ($found) {
+                $this->db->where('site_config_id', $found->site_config_id);
+                $this->db->update('site_config', array('config_value' => $new_value));
+            }
+
+            invalidate_site_config_cache();
+            system_logger('config', $found ? $found->site_config_id : 0, 'toggle_debug', 'Debug mode ' . ($debug_enabled ? 'on' : 'off'));
 
             $this->output
                 ->set_status_header(200)
@@ -150,7 +149,7 @@ class ConfigurationController extends MY_Controller
                 ->set_output(json_encode([
                     'success' => true,
                     'debug_enabled' => $debug_enabled,
-                    'message' => $debug_enabled ? 'Debug activado' : 'Debug desactivado'
+                    'message' => $debug_enabled ? lang('config_debug_on') : lang('config_debug_off')
                 ]));
 
         } catch (Exception $e) {
