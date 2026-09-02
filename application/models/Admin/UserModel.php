@@ -23,12 +23,27 @@ class UserModel extends MY_Model
         parent::__construct();
     }
 
-    public function get_full_info($user_id = null)
+    /**
+     * @param mixed $user_id
+     * @param array $options include_inactive
+     * @return Collection|false
+     */
+    public function get_full_info($user_id = null, $options = array())
     {
-        $where = "";
-
-        if ($user_id) {
-            $where = " AND u.user_id = $user_id";
+        if (!is_array($options)) {
+            $options = array();
+        }
+        $has_id = ($user_id !== null && $user_id !== false && $user_id !== '');
+        $include_inactive = !empty($options['include_inactive']) || $has_id;
+        $gid = (int) userdata('usergroup_id');
+        $params = array($gid);
+        $where_sql = ' WHERE u.usergroup_id >= ?';
+        if (!$include_inactive) {
+            $where_sql .= ' AND u.status = 1';
+        }
+        if ($has_id) {
+            $where_sql .= ' AND u.user_id = ?';
+            $params[] = (int) $user_id;
         }
 
         $sql = "SELECT u.`user_id`,
@@ -46,25 +61,46 @@ class UserModel extends MY_Model
 		INNER JOIN `user` u ON u.user_id = s.user_id
 		INNER JOIN `usergroup` g ON g.usergroup_id = u.usergroup_id
         INNER JOIN (" . $this->get_select_json('usergroup') . ") subu ON subu.usergroup_id = u.usergroup_id
-        WHERE u.status = 1
-        AND u.usergroup_id >= '" . userdata('usergroup_id') . "'
-        $where
+        " . $where_sql . "
         GROUP BY s.user_id;";
-        $data = $this->db->query($sql);
-        if ($data->num_rows() > 0) {
+        $data = $this->db->query($sql, $params);
+        if ($data && $data->num_rows() > 0) {
             $data = $data->result_array();
             foreach ($data as $key => &$value) {
                 $data_values = json_decode($value['user_data']);
-                $value['user_data'] = $data_values;
+                $value['user_data'] = $this->normalize_profile_user_data($data_values);
             }
+            unset($value);
             foreach ($data as $key => &$value) {
                 $data_values = json_decode($value['usergroup']);
                 $value['usergroup'] = $data_values;
             }
+            unset($value);
             return new Collection($data);
         }
 
         return false;
+    }
+
+    /**
+     * @param mixed $ud
+     * @return object
+     */
+    public function normalize_profile_user_data($ud)
+    {
+        if (is_array($ud)) {
+            $ud = (object) $ud;
+        }
+        if (!is_object($ud)) {
+            $ud = new stdClass();
+        }
+        $keys = array('nombre', 'apellido', 'telefono', 'direccion', 'avatar', 'cargo', 'bio');
+        foreach ($keys as $key) {
+            if (!isset($ud->{$key}) || $ud->{$key} === null) {
+                $ud->{$key} = '';
+            }
+        }
+        return $ud;
     }
 
     /**
@@ -129,51 +165,72 @@ class UserModel extends MY_Model
     }
 
     /**
-     * Gets the user timeline, activities, models created by the user_id
-     * @return Collection
+     * UNION of pages, collections and items created by the user (no HTML content).
+     *
+     * @return string
      */
-    public function get_timeline($user_id = null)
+    protected function timeline_union_sql()
     {
-        if ($user_id == null) {
-            $user_id = $this->{$this->primaryKey};
+        return "SELECT page_id AS entity_id, 'page' AS model_type, title, date_create, status,
+                page_id, path, NULL AS custom_model_id, NULL AS custom_model_content_id, NULL AS collection_name
+            FROM page
+            WHERE user_id = ? AND status != 0
+            UNION ALL
+            SELECT custom_model_id AS entity_id, 'custom_model' AS model_type, form_name AS title, date_create, status,
+                NULL AS page_id, NULL AS path, custom_model_id, NULL AS custom_model_content_id, NULL AS collection_name
+            FROM custom_model
+            WHERE user_id = ? AND status != 0
+            UNION ALL
+            SELECT c.custom_model_content_id AS entity_id, 'custom_model_content' AS model_type, c.title, c.date_create, c.status,
+                NULL AS page_id, NULL AS path, c.custom_model_id, c.custom_model_content_id, m.form_name AS collection_name
+            FROM custom_model_content c
+            LEFT JOIN custom_model m ON m.custom_model_id = c.custom_model_id
+            WHERE c.user_id = ? AND c.status != 0";
+    }
+
+    /**
+     * @param int $user_id
+     * @param int $limit
+     * @param int $offset
+     * @return array
+     */
+    public function get_timeline($user_id, $limit = 20, $offset = 0)
+    {
+        $user_id = (int) $user_id;
+        $limit = (int) $limit;
+        $offset = (int) $offset;
+        if ($limit < 1) {
+            $limit = 20;
         }
-
-        if ($user_id == null) {
-            return false;
+        if ($offset < 0) {
+            $offset = 0;
         }
-
-        $this->load->model('Admin/PageModel');
-        $this->load->model('Admin/CustomModelContentModel');
-        $this->load->model('Admin/CustomModelModel');
-
-        $pages = new PageModel();
-        $pages = $pages->where(["user_id" => $user_id]);
-        $pages = $pages ? $pages->all() : [];
-
-        $Custom_model_content = new CustomModelContentModel();
-        $Custom_model_content = $Custom_model_content->where(["user_id" => $user_id]);
-        $Custom_model_content = $Custom_model_content ? $Custom_model_content->all() : [];
-
-        $Custom_model = new CustomModelModel();
-        $Custom_model = $Custom_model->where(["user_id" => $user_id]);
-        $Custom_model = $Custom_model ? $Custom_model->all() : [];
-
-        $time_line_collection = array_merge($pages, $Custom_model, $Custom_model_content);
-
-        function sortFunction($a, $b)
-        {
-            $time_a = DateTime::createFromFormat('Y-m-d H:i:s', $a->date_create);
-            $time_b = DateTime::createFromFormat('Y-m-d H:i:s', $b->date_create);
-            if ($time_a == $time_b) {
-                return 0;
-            }
-
-            return $time_a > $time_b ? -1 : 1;
+        $sql = "SELECT entity_id, model_type, title, date_create, status, page_id, path,
+                custom_model_id, custom_model_content_id, collection_name
+            FROM (" . $this->timeline_union_sql() . ") t
+            ORDER BY date_create DESC
+            LIMIT " . $limit . " OFFSET " . $offset;
+        $query = $this->db->query($sql, array($user_id, $user_id, $user_id));
+        if (!$query || $query->num_rows() === 0) {
+            return array();
         }
+        return $query->result_array();
+    }
 
-        usort($time_line_collection, "sortFunction");
-
-        return new Collection($time_line_collection);
+    /**
+     * @param int $user_id
+     * @return int
+     */
+    public function count_timeline($user_id)
+    {
+        $user_id = (int) $user_id;
+        $sql = "SELECT COUNT(*) AS c FROM (" . $this->timeline_union_sql() . ") t";
+        $query = $this->db->query($sql, array($user_id, $user_id, $user_id));
+        if (!$query || $query->num_rows() === 0) {
+            return 0;
+        }
+        $row = $query->row_array();
+        return isset($row['c']) ? (int) $row['c'] : 0;
     }
 
     public function search($str_term)

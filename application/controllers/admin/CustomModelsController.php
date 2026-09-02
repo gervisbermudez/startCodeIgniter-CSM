@@ -85,7 +85,7 @@ class CustomModelsController extends MY_Controller
 
     public function content()
     {
-        redirect('admin/custommodels');
+        $this->renderAdminView('admin.custommodels.content_list', lang('menu_contents'), lang('menu_contents'));
     }
 
     public function addData($custom_model_id)
