@@ -101,6 +101,7 @@ class FilesController extends REST_Controller
         }
 
         $file->delete();
+        system_logger('files', (int) $file_id, 'deleted', 'A file has been deleted');
         $this->response_ok(true);
     }
 

@@ -1,6 +1,7 @@
         <div v-show="sectionActive == 'integrations'">
             <div class="config-section-header">
                 <h2 class="page-header"><?= lang('config_integrations') ?></h2>
+                <p class="section-description"><?= lang('config_integrations_desc') ?></p>
             </div>
 
             <div class="card z-depth-1 integrations-card">
@@ -62,6 +63,27 @@
                             <label for="pixel-code" class="active"><?= lang('config_pixel_head') ?></label>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <div class="card z-depth-1 integrations-card">
+                <div class="card-content">
+                    <span class="widget-title">
+                        <i class="material-icons" aria-hidden="true">visibility</i> <?= lang('config_visitor_tracking') ?>
+                    </span>
+                    <p class="section-description"><?= lang('config_visitor_tracking_desc') ?></p>
+                    <p>
+                        <label><?= lang('activate_tracking') ?></label>
+                        <div class="switch">
+                            <label>
+                                <?= lang('off') ?>
+                                <input type="checkbox" :checked="getConfigValueBoolean('SITEM_TRACK_VISITORS')"
+                                    v-on:change="updateConfigCheckbox($event, 'SITEM_TRACK_VISITORS')">
+                                <span class="lever"></span>
+                                <?= lang('on') ?>
+                            </label>
+                        </div>
+                    </p>
                 </div>
             </div>
         </div>

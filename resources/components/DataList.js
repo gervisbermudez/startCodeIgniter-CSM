@@ -183,10 +183,9 @@ var DataList = new Vue({
       }
       var query = this.searchQuery.toLowerCase();
       return this.files.filter(function (file) {
-        return (
-          file.get_filename().toLowerCase().indexOf(query) !== -1 ||
-          file.file_path.toLowerCase().indexOf(query) !== -1
-        );
+        var name = (file.filename || "").toLowerCase();
+        var path = (file.file_path || "").toLowerCase();
+        return name.indexOf(query) !== -1 || path.indexOf(query) !== -1;
       });
     },
     lastBackupDate: function () {
@@ -382,46 +381,37 @@ var DataList = new Vue({
     showImportGroup: function (group) {
       return this.groupItems("importData", group.key).length > 0;
     },
-    reloadFileExplorer: function () {
-      var self = this;
-      $.ajax({
-        type: "POST",
-        url: BASEURL + "api/v1/files/reload_file_explorer",
-        data: { path: "./backups/database/" },
-        dataType: "json",
-        success: function () {
-          self.getDatabaseBackups();
-        },
-      });
-    },
     getDatabaseBackups: function () {
       var self = this;
       $.ajax({
         type: "GET",
-        url: BASEURL + "api/v1/files/",
-        data: { path: "./backups/database/" },
+        url: BASEURL + "api/v1/config/backups",
         dataType: "json",
         success: function (t) {
-          if (200 == t.code && t.data.length) {
-            self.files = t.data.map(function (item) {
-              return new ExplorerFile(item);
-            });
+          if (t && (t.code == 200 || t.code === "200") && t.data && t.data.length) {
+            self.files = t.data;
             self.initPlugins();
           } else {
             self.files = [];
           }
         },
+        error: function () {
+          self.files = [];
+        },
       });
     },
     deleteFile: function (file) {
       var self = this;
+      if (!file || !file.filename) {
+        return;
+      }
       $.ajax({
         type: "POST",
-        url: BASEURL + "api/v1/files/delete/" + file.file_id,
-        data: { file: file },
+        url: BASEURL + "api/v1/config/backup_delete",
+        data: { file: file.filename },
         dataType: "json",
         success: function (e) {
-          if (200 == e.code) {
+          if (e && (e.code == 200 || e.code === "200")) {
             M.toast({ html: configT("backupDeleted") });
             self.getDatabaseBackups();
             var modal = M.Modal.getInstance(
@@ -430,7 +420,12 @@ var DataList = new Vue({
             if (modal) {
               modal.close();
             }
+          } else {
+            M.toast({ html: (e && e.error_message) || configT("error") });
           }
+        },
+        error: function () {
+          M.toast({ html: configT("error") });
         },
       });
     },
@@ -476,7 +471,7 @@ var DataList = new Vue({
           self.creatingBackup = false;
           if ("200" == e.code || 200 == e.code) {
             M.toast({ html: e.result || configT("saved") });
-            self.reloadFileExplorer();
+            self.getDatabaseBackups();
           } else {
             M.toast({ html: e.result || configT("backupCreateError") });
           }

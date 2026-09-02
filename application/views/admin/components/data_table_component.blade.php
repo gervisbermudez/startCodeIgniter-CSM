@@ -45,7 +45,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(item, index) in tableRows" :key="index">
+                            <tr
+                                v-for="(item, index) in tableRows"
+                                :key="index"
+                                :class="{ 'is-selected': isRowSelected(item), 'is-clickable': selectable }"
+                                @click="onRowClick(item, $event)"
+                            >
                                 <td v-for="(colum, i) in colums" :key="i" >
                                     <span v-if="colum.colum !== 'options'" v-html="getContent(item, colum)"></span>
                                     <span v-else>

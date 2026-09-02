@@ -35,4 +35,11 @@
             <?php echo str_replace('@count', '@{{lastCleanupResult.user_tracking}}', lang('user_tracking_cleaned')); ?>.
         </span>
     </div>
+
+    <p class="config-actions">
+        <button type="button" class="btn waves-effect waves-light btn-accent" v-on:click="runCleanup()">
+            <i class="material-icons left" aria-hidden="true">delete_sweep</i>
+            <?php echo lang('config_run_cleanup'); ?>
+        </button>
+    </p>
 </div>

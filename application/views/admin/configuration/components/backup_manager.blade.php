@@ -90,11 +90,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(file, index) in filteredFiles" :key="file.file_id || index">
+                        <tr v-for="(file, index) in filteredFiles" :key="file.filename || index">
                             <td>
                                 <div class="file-info">
                                     <i class="material-icons file-icon" aria-hidden="true">description</i>
-                                    <span class="file-name">@{{ file.get_filename() }}</span>
+                                    <span class="file-name">@{{ file.filename }}</span>
                                 </div>
                             </td>
                             <td>
@@ -108,7 +108,7 @@
                             </td>
                             <td class="center-align">
                                 <div class="action-buttons">
-                                    <a :href="file.get_full_file_path()"
+                                    <a :href="file.download_url"
                                        class="btn-flat btn-small waves-effect tooltipped"
                                        data-position="top"
                                        data-tooltip="{{ lang('config_download') }}"
@@ -135,7 +135,7 @@
         <div class="modal-content">
             <h2 class="page-header">{{ lang('confirm_delete') }}</h2>
             <p>{{ lang('config_confirm_delete_backup') }}</p>
-            <p v-if="fileToDelete"><strong>@{{ fileToDelete.get_filename() }}</strong></p>
+            <p v-if="fileToDelete"><strong>@{{ fileToDelete.filename }}</strong></p>
             <p class="red-text">{{ lang('config_delete_undone') }}</p>
         </div>
         <div class="modal-footer">
