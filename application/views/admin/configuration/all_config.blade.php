@@ -23,6 +23,7 @@
 @section('footer_includes')
 @include('admin.configuration.components.i18n')
 @include('admin.components.configuration_component')
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="{{base_url('resources/js/validateForm.js?v=' . ADMIN_VERSION)}}"></script>
 <script src="{{base_url('resources/components/ConfigurationComponent.js?v=' . ADMIN_VERSION)}}"></script>
 <script src="{{base_url('resources/components/ConfigurationList.js?v=' . ADMIN_VERSION)}}"></script>

@@ -330,6 +330,15 @@ class ConfigController extends REST_Controller
         $this->response_ok($this->build_logs_summary($source));
     }
 
+    public function overview_get()
+    {
+        if (!$this->require_config_permision('SELECT_CONFIG')) {
+            return;
+        }
+
+        $this->response_ok($this->build_config_overview());
+    }
+
     public function themes_get()
     {
         if (!$this->require_config_permision('SELECT_CONFIG')) {
@@ -525,7 +534,10 @@ class ConfigController extends REST_Controller
             return;
         }
 
-        $this->respond_collection($Logger->pager(), $Logger);
+        $this->respond_collection($Logger->pager($this->logs_list_where(array(
+            'type' => true,
+            'token' => true,
+        ))), $Logger);
     }
 
     public function apilogger_get($api_log_id = null)
@@ -548,7 +560,10 @@ class ConfigController extends REST_Controller
             return;
         }
 
-        $this->respond_collection($Api_logs->pager(), $Api_logs);
+        $this->respond_collection($Api_logs->pager($this->logs_list_where(array(
+            'method' => true,
+            'authorized' => true,
+        ))), $Api_logs);
     }
 
     public function usertrackinglogger_get($user_tracking_id = null)
@@ -571,7 +586,9 @@ class ConfigController extends REST_Controller
             return;
         }
 
-        $this->respond_collection($User_tracking->pager(), $User_tracking);
+        $this->respond_collection($User_tracking->pager($this->logs_list_where(array(
+            'device_type' => true,
+        ))), $User_tracking);
     }
 
     public function export_data_get()
@@ -863,6 +880,35 @@ class ConfigController extends REST_Controller
         return $files;
     }
 
+    protected function logs_list_where($allowed)
+    {
+        $where = array('status' => 1);
+        if (!is_array($allowed)) {
+            return $where;
+        }
+        foreach ($allowed as $key => $ok) {
+            if (!$ok) {
+                continue;
+            }
+            $val = $this->get($key);
+            if ($val === null || $val === '') {
+                $val = $this->input->get($key);
+            }
+            if ($val === null || $val === false) {
+                continue;
+            }
+            $val = trim((string) $val);
+            if ($val === '' || strlen($val) > 80) {
+                continue;
+            }
+            if (!preg_match('/^[A-Za-z0-9_.:\\/-]+$/', $val)) {
+                continue;
+            }
+            $where[$key] = $val;
+        }
+        return $where;
+    }
+
     protected function logs_table_for_source($source)
     {
         $map = array(
@@ -944,6 +990,7 @@ class ConfigController extends REST_Controller
             'method' => true,
             'device_type' => true,
             'page_name' => true,
+            'uri' => true,
         );
         if (!isset($allowed[$column]) || !$this->is_logs_table($table)) {
             return array();
@@ -975,22 +1022,357 @@ class ConfigController extends REST_Controller
         return $out;
     }
 
+    protected function log_last_at($table)
+    {
+        if (!$this->is_logs_table($table)) {
+            return null;
+        }
+        $query = $this->db->query(
+            'SELECT MAX(date_create) AS last_at FROM `' . $table . '` WHERE status = 1'
+        );
+        if (!$query || !$query->row()) {
+            return null;
+        }
+        $value = $query->row()->last_at;
+        if ($value === null || $value === '') {
+            return null;
+        }
+        return (string) $value;
+    }
+
+    protected function log_series_stats($series)
+    {
+        $labels = isset($series['labels']) && is_array($series['labels']) ? $series['labels'] : array();
+        $values = isset($series['values']) && is_array($series['values']) ? $series['values'] : array();
+        $peak_label = null;
+        $peak_total = 0;
+        $sum = 0;
+        $count = count($values);
+        for ($i = 0; $i < $count; $i++) {
+            $n = (int) $values[$i];
+            $sum += $n;
+            if ($n >= $peak_total) {
+                $peak_total = $n;
+                $peak_label = isset($labels[$i]) ? $labels[$i] : null;
+            }
+        }
+        $avg = $count > 0 ? round($sum / $count, 1) : 0;
+        return array(
+            'peak' => array(
+                'label' => $peak_total > 0 ? $peak_label : null,
+                'total' => $peak_total,
+            ),
+            'avg_day' => $avg,
+        );
+    }
+
+    protected function log_top_people($limit)
+    {
+        $limit = (int) $limit;
+        if ($limit < 1) {
+            $limit = 5;
+        }
+        $sql = 'SELECT COALESCE(NULLIF(MAX(u.username), \'\'), CONCAT(\'#\', l.user_id)) AS label, COUNT(*) AS total
+            FROM logger l
+            LEFT JOIN `user` u ON u.user_id = l.user_id
+            WHERE l.status = 1
+            GROUP BY l.user_id
+            ORDER BY total DESC
+            LIMIT ' . $limit;
+        $query = $this->db->query($sql);
+        $out = array();
+        if ($query) {
+            foreach ($query->result() as $row) {
+                $label = isset($row->label) ? trim((string) $row->label) : '';
+                if ($label === '') {
+                    $label = '—';
+                }
+                $out[] = array(
+                    'label' => $label,
+                    'total' => (int) $row->total,
+                );
+            }
+        }
+        return $out;
+    }
+
+    protected function count_api_rejected()
+    {
+        $this->db->from('api_logs');
+        $this->db->where('status', 1);
+        $this->db->where_in('authorized', array('0', 0));
+        return (int) $this->db->count_all_results();
+    }
+
+    protected function log_distinct_count($table, $column, $since = null)
+    {
+        $allowed = array(
+            'client_ip' => true,
+            'ip_address' => true,
+            'session_id' => true,
+        );
+        if (!isset($allowed[$column]) || !$this->is_logs_table($table)) {
+            return 0;
+        }
+        $sql = 'SELECT COUNT(DISTINCT `' . $column . '`) AS total
+            FROM `' . $table . '`
+            WHERE status = 1';
+        $binds = array();
+        if ($since !== null) {
+            $sql .= ' AND date_create >= ?';
+            $binds[] = $since;
+        }
+        $query = $this->db->query($sql, $binds);
+        if (!$query || !$query->row()) {
+            return 0;
+        }
+        return (int) $query->row()->total;
+    }
+
     protected function build_logs_summary($source)
     {
         $table = $this->logs_table_for_source($source);
         $column = $this->logs_breakdown_column($source);
+        $series = $this->log_day_series($table, 14);
+        $stats = $this->log_series_stats($series);
+        $week_start = date('Y-m-d 00:00:00', strtotime('-6 days'));
         $summary = array(
             'source' => $source,
             'total' => $this->count_log_rows($table),
-            'last_7' => $this->count_log_rows($table, date('Y-m-d 00:00:00', strtotime('-6 days'))),
+            'last_7' => $this->count_log_rows($table, $week_start),
             'today' => $this->count_log_rows($table, date('Y-m-d 00:00:00')),
-            'series' => $this->log_day_series($table, 14),
+            'last_at' => $this->log_last_at($table),
+            'peak' => $stats['peak'],
+            'avg_day' => $stats['avg_day'],
+            'series' => $series,
             'breakdown' => $this->log_breakdown($table, $column, 8),
             'top_pages' => array(),
+            'top_actions' => array(),
+            'top_people' => array(),
+            'top_uris' => array(),
+            'rejected' => 0,
+            'unique_visitors' => 0,
         );
+        if ($source === 'system') {
+            $summary['top_actions'] = $this->log_breakdown($table, 'token', 5);
+            $summary['top_people'] = $this->log_top_people(5);
+        }
+        if ($source === 'api') {
+            $summary['top_uris'] = $this->log_breakdown($table, 'uri', 5);
+            $summary['rejected'] = $this->count_api_rejected();
+        }
         if ($source === 'tracking') {
             $summary['top_pages'] = $this->log_breakdown($table, 'page_name', 5);
+            $summary['unique_visitors'] = $this->log_distinct_count($table, 'client_ip', $week_start);
         }
         return $summary;
+    }
+
+    protected function build_config_overview()
+    {
+        $this->load->helper('number');
+        $week_start = date('Y-m-d 00:00:00', strtotime('-6 days'));
+        $visits = $this->log_day_series('user_tracking', 14);
+        $cms = $this->log_day_series('logger', 14);
+        $backups = $this->list_database_backups();
+        $last_backup = !empty($backups) ? $backups[0] : null;
+        $disk_total = @disk_total_space('.');
+        $disk_free = @disk_free_space('.');
+        $disk_pct = 0;
+        if ($disk_total && $disk_total > 0 && $disk_free !== false) {
+            $disk_pct = round((1 - ($disk_free / $disk_total)) * 100, 1);
+        }
+
+        $content = array(
+            'pages' => $this->count_status_rows('page', 1),
+            'drafts' => $this->count_status_rows('page', 2),
+            'files' => $this->count_status_rows('file', 1),
+            'forms' => $this->count_status_rows('siteform', 1),
+            'messages' => $this->count_form_messages_since($week_start),
+            'users' => $this->count_status_rows('user', 1),
+            'collections' => $this->count_status_rows('custom_model', 1),
+        );
+
+        $activity = array(
+            'visits_7' => $this->count_log_rows('user_tracking', $week_start),
+            'unique_visitors_7' => $this->log_distinct_count('user_tracking', 'client_ip', $week_start),
+            'cms_7' => $this->count_log_rows('logger', $week_start),
+            'api_7' => $this->count_log_rows('api_logs', $week_start),
+            'messages_7' => $content['messages'],
+            'series' => array(
+                'labels' => $visits['labels'],
+                'visits' => $visits['values'],
+                'cms' => $cms['values'],
+            ),
+        );
+
+        $site = array(
+            'title' => (string) (config('SITE_TITLE') ?: ADMIN_TITLE),
+            'description' => (string) (config('SITE_DESCRIPTION') ?: ''),
+            'theme' => (string) (config('THEME_PATH') ?: ''),
+            'public_url' => base_url(''),
+            'version' => defined('ADMIN_VERSION') ? ADMIN_VERSION : '',
+        );
+
+        $health = $this->build_overview_health($disk_pct, $last_backup, $backups);
+
+        return array(
+            'site' => $site,
+            'health' => $health,
+            'content' => $content,
+            'activity' => $activity,
+            'backups' => array(
+                'count' => count($backups),
+                'last_at' => $last_backup ? $last_backup['date_create'] : null,
+                'last_filename' => $last_backup ? $last_backup['filename'] : null,
+            ),
+            'system' => array(
+                'php_version' => PHP_VERSION,
+                'db_driver' => $this->db->platform(),
+                'max_upload' => ini_get('upload_max_filesize'),
+                'disk_usage_pct' => $disk_pct,
+                'disk_free' => ($disk_free === false) ? '' : byte_format($disk_free),
+                'environment' => defined('ENVIRONMENT') ? (string) ENVIRONMENT : '',
+            ),
+        );
+    }
+
+    protected function build_overview_health($disk_pct, $last_backup, $backups)
+    {
+        $checks = array();
+        $disk_pct = (float) $disk_pct;
+
+        if ($disk_pct >= 90) {
+            $checks[] = array(
+                'id' => 'disk',
+                'type' => 'critical',
+                'href' => 'admin/configuration/data',
+            );
+        } elseif ($disk_pct >= 80) {
+            $checks[] = array(
+                'id' => 'disk',
+                'type' => 'warning',
+                'href' => 'admin/configuration/data',
+            );
+        }
+
+        if (empty($backups)) {
+            $checks[] = array(
+                'id' => 'backup_none',
+                'type' => 'warning',
+                'href' => 'admin/configuration/data',
+            );
+        } elseif ($last_backup && !empty($last_backup['date_create'])) {
+            $age = time() - strtotime($last_backup['date_create']);
+            if ($age > (14 * 86400)) {
+                $checks[] = array(
+                    'id' => 'backup_stale',
+                    'type' => 'warning',
+                    'href' => 'admin/configuration/data',
+                );
+            }
+        }
+
+        $uploads = rtrim(FCPATH, '/\\') . DIRECTORY_SEPARATOR . 'uploads';
+        if (is_dir($uploads) && !is_writable($uploads)) {
+            $checks[] = array(
+                'id' => 'writable',
+                'type' => 'critical',
+                'href' => 'admin/files',
+            );
+        }
+
+        $env = defined('ENVIRONMENT') ? (string) ENVIRONMENT : '';
+        if ($env !== '' && $env !== 'production') {
+            $checks[] = array(
+                'id' => 'env',
+                'type' => 'info',
+                'href' => '',
+            );
+        }
+
+        if (function_exists('config_is_on') && config_is_on('ANALYTICS_ACTIVE') && !trim((string) config('ANALYTICS_ID'))) {
+            $checks[] = array(
+                'id' => 'analytics',
+                'type' => 'warning',
+                'href' => 'admin/configuration?section=integrations',
+            );
+        }
+        if (function_exists('config_is_on') && config_is_on('PIXEL_ACTIVE') && !trim((string) config('PIXEL_CODE'))) {
+            $checks[] = array(
+                'id' => 'pixel',
+                'type' => 'warning',
+                'href' => 'admin/configuration?section=integrations',
+            );
+        }
+        if (!trim((string) config('SITE_DESCRIPTION'))) {
+            $checks[] = array(
+                'id' => 'seo',
+                'type' => 'info',
+                'href' => 'admin/configuration?section=seo',
+            );
+        }
+        if (!function_exists('config_is_on') || !config_is_on('AUTO_CLEANUP_ENABLED')) {
+            $checks[] = array(
+                'id' => 'cleanup',
+                'type' => 'info',
+                'href' => 'admin/configuration?section=system',
+            );
+        }
+        if (function_exists('config_is_on') && !config_is_on('SYSTEM_LOGGER')) {
+            $checks[] = array(
+                'id' => 'logger',
+                'type' => 'warning',
+                'href' => 'admin/configuration?section=system',
+            );
+        }
+
+        $score = 100;
+        $status = 'ok';
+        foreach ($checks as $check) {
+            if ($check['type'] === 'critical') {
+                $score -= 25;
+                $status = 'critical';
+            } elseif ($check['type'] === 'warning') {
+                $score -= 12;
+                if ($status !== 'critical') {
+                    $status = 'attention';
+                }
+            } else {
+                $score -= 5;
+            }
+        }
+        if ($score < 0) {
+            $score = 0;
+        }
+
+        return array(
+            'status' => $status,
+            'score' => $score,
+            'checks' => $checks,
+        );
+    }
+
+    protected function count_status_rows($table, $status = 1)
+    {
+        if (!$table || !$this->db->table_exists($table)) {
+            return 0;
+        }
+        $this->db->from($table);
+        $this->db->where('status', $status);
+        return (int) $this->db->count_all_results();
+    }
+
+    protected function count_form_messages_since($since)
+    {
+        if (!$this->db->table_exists('siteform_submit')) {
+            return 0;
+        }
+        $this->db->from('siteform_submit');
+        $this->db->where_in('status', array(1, 2));
+        if ($since !== null) {
+            $this->db->where('date_create >=', $since);
+        }
+        return (int) $this->db->count_all_results();
     }
 }

@@ -5,9 +5,49 @@ function configT(key, fallback) {
   return fallback || key;
 }
 
+function emptyOverview() {
+  return {
+    site: {
+      title: "",
+      description: "",
+      theme: "",
+      public_url: "",
+      version: "",
+    },
+    health: {
+      status: "ok",
+      score: 100,
+      checks: [],
+    },
+    content: {
+      pages: 0,
+      drafts: 0,
+      files: 0,
+      forms: 0,
+      messages: 0,
+      users: 0,
+      collections: 0,
+    },
+    activity: {
+      visits_7: 0,
+      unique_visitors_7: 0,
+      cms_7: 0,
+      api_7: 0,
+      messages_7: 0,
+      series: { labels: [], visits: [], cms: [] },
+    },
+    backups: {
+      count: 0,
+      last_at: null,
+      last_filename: null,
+    },
+  };
+}
+
 var ConfiguracionList = new Vue({
   el: "#root",
-  data: {
+  data: function () {
+    return {
     configurations: [],
     loader: true,
     filter: "",
@@ -61,6 +101,10 @@ var ConfiguracionList = new Vue({
     last_state: "",
     systemInfo: {},
     lastCleanupResult: null,
+    overview: emptyOverview(),
+    overviewLoading: false,
+    overviewChart: null,
+    };
   },
   mixins: [mixins],
   computed: {
@@ -98,59 +142,117 @@ var ConfiguracionList = new Vue({
         return c.config_type == "system";
       });
     },
+    overviewView: function () {
+      var empty = emptyOverview();
+      var current = this.overview;
+      if (!current || typeof current !== "object") {
+        return empty;
+      }
+      var activity = Object.assign({}, empty.activity, current.activity || {});
+      activity.series = Object.assign(
+        {},
+        empty.activity.series,
+        (current.activity && current.activity.series) || {}
+      );
+      return {
+        site: Object.assign({}, empty.site, current.site || {}),
+        health: Object.assign({}, empty.health, current.health || {}),
+        content: Object.assign({}, empty.content, current.content || {}),
+        activity: activity,
+        backups: Object.assign({}, empty.backups, current.backups || {}),
+      };
+    },
     healthIssues: function () {
+      var map = {
+        disk: ["healthDiskTitle", "healthDiskMsg"],
+        backup_none: ["healthBackupNoneTitle", "healthBackupNoneMsg"],
+        backup_stale: ["healthBackupStaleTitle", "healthBackupStaleMsg"],
+        writable: ["healthWritableTitle", "healthWritableMsg"],
+        env: ["healthEnvTitle", "healthEnvMsg"],
+        analytics: ["healthAnalyticsTitle", "healthAnalyticsMsg"],
+        pixel: ["healthPixelTitle", "healthPixelMsg"],
+        seo: ["healthSeoTitle", "healthSeoMsg"],
+        cleanup: ["healthCleanupTitle", "healthCleanupMsg"],
+        logger: ["healthLoggerTitle", "healthLoggerMsg"],
+      };
       var issues = [];
-      if (
-        this.getConfigValueBoolean("ANALYTICS_ACTIVE") &&
-        !this.getConfigValue("ANALYTICS_ID")
-      ) {
+      var checks =
+        this.overview && this.overview.health && this.overview.health.checks
+          ? this.overview.health.checks
+          : [];
+      checks.forEach(function (check) {
+        var keys = map[check.id] || [];
         issues.push({
-          type: "warning",
-          title: configT("healthAnalyticsTitle"),
-          message: configT("healthAnalyticsMsg"),
+          id: check.id,
+          type: check.type || "info",
+          href: check.href || "",
+          title: configT(keys[0] || check.id, check.title || check.id),
+          message: configT(keys[1] || "", check.message || ""),
         });
-      }
-      if (
-        this.getConfigValueBoolean("PIXEL_ACTIVE") &&
-        !this.getConfigValue("PIXEL_CODE")
-      ) {
-        issues.push({
-          type: "warning",
-          title: configT("healthPixelTitle"),
-          message: configT("healthPixelMsg"),
-        });
-      }
-      if (!this.getConfigValue("SITE_DESCRIPTION")) {
-        issues.push({
-          type: "info",
-          title: configT("healthSeoTitle"),
-          message: configT("healthSeoMsg"),
-        });
-      }
-      var autoCleanup = this.configurations.find(function (c) {
-        return c.config_name === "AUTO_CLEANUP_ENABLED";
       });
-      if (!autoCleanup || autoCleanup.config_value != "1") {
-        issues.push({
-          type: "info",
-          title: configT("healthCleanupTitle"),
-          message: configT("healthCleanupMsg"),
-        });
-      }
       if (this.lastCleanupResult) {
         var totalDeleted =
-          this.lastCleanupResult.system_logs +
-          this.lastCleanupResult.api_logs +
-          this.lastCleanupResult.user_tracking;
+          (this.lastCleanupResult.system_logs || 0) +
+          (this.lastCleanupResult.api_logs || 0) +
+          (this.lastCleanupResult.user_tracking || 0);
         if (totalDeleted > 0) {
           issues.push({
+            id: "cleanup_done",
             type: "success",
+            href: "",
             title: configT("healthCleanupDoneTitle"),
             message: configT("healthCleanupDoneMsg"),
           });
         }
       }
       return issues;
+    },
+    healthStatus: function () {
+      if (this.overview && this.overview.health && this.overview.health.status) {
+        return this.overview.health.status;
+      }
+      return "ok";
+    },
+    healthStatusLabel: function () {
+      if (this.healthStatus === "critical") {
+        return configT("healthCritical", "Needs action");
+      }
+      if (this.healthStatus === "attention") {
+        return configT("healthAttention", "Needs attention");
+      }
+      return configT("healthOk", "Healthy");
+    },
+    hasOverviewTrend: function () {
+      var series = this.overview && this.overview.activity && this.overview.activity.series;
+      if (!series) {
+        return false;
+      }
+      var visits = series.visits || [];
+      var cms = series.cms || [];
+      var hasVisits = visits.some(function (n) {
+        return Number(n) > 0;
+      });
+      var hasCms = cms.some(function (n) {
+        return Number(n) > 0;
+      });
+      return hasVisits || hasCms;
+    },
+    sitePitch: function () {
+      var pages =
+        this.overview && this.overview.content ? this.overview.content.pages : 0;
+      if (!pages) {
+        return configT("valueEmptyPages");
+      }
+      var visits =
+        this.overview && this.overview.activity
+          ? this.overview.activity.visits_7
+          : 0;
+      var cms =
+        this.overview && this.overview.activity ? this.overview.activity.cms_7 : 0;
+      return configT("valuePitch")
+        .replace("%1", this.formatCount(pages))
+        .replace("%2", this.formatCount(visits))
+        .replace("%3", this.formatCount(cms));
     },
     recentActivity: function () {
       return this.configurations
@@ -163,7 +265,248 @@ var ConfiguracionList = new Vue({
         .slice(0, 5);
     },
   },
+  watch: {
+    sectionActive: function (section) {
+      if (section !== "home") {
+        this.destroyOverviewChart();
+      }
+    },
+  },
   methods: {
+    formatCount: function (n) {
+      var num = Number(n);
+      if (isNaN(num)) {
+        num = 0;
+      }
+      try {
+        return num.toLocaleString(undefined, {
+          maximumFractionDigits: 0,
+        });
+      } catch (e) {
+        return String(num);
+      }
+    },
+    openHealthIssue: function (issue) {
+      if (!issue || !issue.href) {
+        return;
+      }
+      if (issue.href.indexOf("admin/configuration?section=") === 0) {
+        var section = issue.href.split("section=")[1];
+        this.changeSectionActive(section || "home");
+        return;
+      }
+      window.location.href = this.base_url(issue.href);
+    },
+    getOverview: function () {
+      var self = this;
+      this.overviewLoading = true;
+      fetch(BASEURL + "api/v1/config/overview")
+        .then(function (res) {
+          return res.json();
+        })
+        .then(function (response) {
+          self.overviewLoading = false;
+          if (response && response.code == 200 && response.data) {
+            var base = emptyOverview();
+            var payload = response.data;
+            var activity = Object.assign({}, base.activity, payload.activity || {});
+            activity.series = Object.assign(
+              {},
+              base.activity.series,
+              (payload.activity && payload.activity.series) || {}
+            );
+            self.overview = {
+              site: Object.assign({}, base.site, payload.site || {}),
+              health: Object.assign({}, base.health, payload.health || {}),
+              content: Object.assign({}, base.content, payload.content || {}),
+              activity: activity,
+              backups: Object.assign({}, base.backups, payload.backups || {}),
+            };
+            self.$nextTick(function () {
+              self.renderOverviewChart();
+            });
+          }
+        })
+        .catch(function () {
+          self.overviewLoading = false;
+        });
+    },
+    cssVar: function (name, fallback) {
+      var value = getComputedStyle(document.documentElement).getPropertyValue(name);
+      return (value && value.trim()) || fallback;
+    },
+    hexToRgba: function (color, alpha) {
+      var c = (color || "").trim();
+      if (c.indexOf("rgb(") === 0) {
+        return c.replace("rgb(", "rgba(").replace(")", ", " + alpha + ")");
+      }
+      if (c.indexOf("rgba(") === 0) {
+        return c;
+      }
+      var hex = c.replace("#", "");
+      if (hex.length === 3) {
+        hex =
+          hex.charAt(0) +
+          hex.charAt(0) +
+          hex.charAt(1) +
+          hex.charAt(1) +
+          hex.charAt(2) +
+          hex.charAt(2);
+      }
+      var n = parseInt(hex, 16);
+      if (isNaN(n)) {
+        return "rgba(38, 166, 154, " + alpha + ")";
+      }
+      return (
+        "rgba(" +
+        ((n >> 16) & 255) +
+        ", " +
+        ((n >> 8) & 255) +
+        ", " +
+        (n & 255) +
+        ", " +
+        alpha +
+        ")"
+      );
+    },
+    formatChartDay: function (iso) {
+      var parts = String(iso).split("-");
+      if (parts.length < 3) {
+        return iso;
+      }
+      var months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+      var month = months[parseInt(parts[1], 10) - 1] || parts[1];
+      return parseInt(parts[2], 10) + " " + month;
+    },
+    destroyOverviewChart: function () {
+      if (typeof Chart !== "undefined" && Chart.getChart) {
+        var existing = Chart.getChart("overviewTrendChart");
+        if (existing) {
+          existing.destroy();
+        }
+      }
+      this.overviewChart = null;
+    },
+    renderOverviewChart: function () {
+      var self = this;
+      this.destroyOverviewChart();
+      if (this.sectionActive !== "home" || !this.hasOverviewTrend || typeof Chart === "undefined") {
+        return;
+      }
+      var canvas = document.getElementById("overviewTrendChart");
+      if (!canvas) {
+        return;
+      }
+      var series = this.overview.activity.series || {};
+      var labels = (series.labels || []).map(function (d) {
+        return self.formatChartDay(d);
+      });
+      var line = this.cssVar("--st-interactive", "#26A69A");
+      var accent = this.cssVar("--st-accent", "#fb9678");
+      var muted = this.cssVar("--st-text-secondary", "#5D5D5D");
+      var grid = this.cssVar("--st-border", "#E5E5E5");
+      var tooltip = this.cssVar("--st-chrome", "#646b7f");
+      var surface = this.cssVar("--st-surface", "#fff");
+      var ctx = canvas.getContext("2d");
+      this.overviewChart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: configT("activityVisits", "Visits"),
+              data: series.visits || [],
+              borderColor: line,
+              backgroundColor: self.hexToRgba(line, 0.12),
+              tension: 0.4,
+              fill: true,
+              pointRadius: 0,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: line,
+              pointHoverBorderColor: surface,
+              pointHoverBorderWidth: 2,
+              borderWidth: 2.25,
+            },
+            {
+              label: configT("activityCms", "CMS activity"),
+              data: series.cms || [],
+              borderColor: accent,
+              backgroundColor: "transparent",
+              tension: 0.4,
+              fill: false,
+              pointRadius: 0,
+              pointHoverRadius: 5,
+              pointHoverBackgroundColor: accent,
+              pointHoverBorderColor: surface,
+              pointHoverBorderWidth: 2,
+              borderWidth: 2,
+              borderDash: [4, 3],
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: "index", intersect: false },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: tooltip,
+              titleColor: "#fff",
+              bodyColor: "#fff",
+              titleFont: { size: 12, weight: "500", family: "Roboto, sans-serif" },
+              bodyFont: { size: 12, family: "Roboto, sans-serif" },
+              padding: { top: 8, right: 12, bottom: 8, left: 12 },
+              cornerRadius: 8,
+              caretSize: 5,
+            },
+          },
+          layout: { padding: { top: 8, right: 8, left: 4, bottom: 0 } },
+          scales: {
+            x: {
+              ticks: {
+                color: muted,
+                maxRotation: 0,
+                autoSkip: true,
+                maxTicksLimit: 6,
+                font: { size: 11, family: "Roboto, sans-serif" },
+              },
+              grid: { display: false, drawBorder: false },
+              border: { display: false },
+            },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                color: muted,
+                precision: 0,
+                maxTicksLimit: 5,
+                font: { size: 11, family: "Roboto, sans-serif" },
+                padding: 8,
+              },
+              grid: {
+                color: self.hexToRgba(grid, 0.9),
+                drawTicks: false,
+                drawBorder: false,
+              },
+              border: { display: false },
+            },
+          },
+        },
+      });
+    },
     saveNewConfig: function () {
       var self = this;
       var payload = this.newConfig;
@@ -268,6 +611,7 @@ var ConfiguracionList = new Vue({
       this.sectionActive = section;
       if (section == "home") {
         this.getSystemInfo();
+        this.getOverview();
       }
       if (section == "theme") {
         this.getThemes();

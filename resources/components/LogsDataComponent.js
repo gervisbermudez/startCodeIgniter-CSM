@@ -10,9 +10,17 @@ function emptyLogsSummary() {
     total: 0,
     last_7: 0,
     today: 0,
+    last_at: null,
+    peak: { label: null, total: 0 },
+    avg_day: 0,
     series: { labels: [], values: [] },
     breakdown: [],
     top_pages: [],
+    top_actions: [],
+    top_people: [],
+    top_uris: [],
+    rejected: 0,
+    unique_visitors: 0,
   };
 }
 
@@ -45,6 +53,12 @@ var LogsData = new Vue({
       trend: null,
       breakdown: null,
     },
+    selectedEntry: null,
+    listType: "",
+    listToken: "",
+    listMethod: "",
+    listAuthorized: "",
+    listDevice: "",
   },
   computed: {
     endpoint: function () {
@@ -110,6 +124,126 @@ var LogsData = new Vue({
         };
       });
     },
+    detailsPrimary: function () {
+      if (this.activeTab === "api") {
+        return this.summary.top_uris || [];
+      }
+      if (this.activeTab === "tracking") {
+        return this.summary.top_pages || [];
+      }
+      return this.summary.top_actions || [];
+    },
+    detailsPrimaryTitle: function () {
+      if (this.activeTab === "api") {
+        return logsT("logsTopUris", "URLs called most often");
+      }
+      if (this.activeTab === "tracking") {
+        return logsT("logsTopPages", "Pages opened most often");
+      }
+      return logsT("logsTopActions", "Most common actions");
+    },
+    detailsSecondary: function () {
+      if (this.activeTab === "system") {
+        return this.summary.top_people || [];
+      }
+      return [];
+    },
+    detailsSecondaryTitle: function () {
+      return logsT("logsTopPeople", "Who did the most");
+    },
+    tableKey: function () {
+      return [
+        this.activeTab,
+        this.listType,
+        this.listToken,
+        this.listMethod,
+        this.listAuthorized,
+        this.listDevice,
+      ].join("|");
+    },
+    listQueryParams: function () {
+      var q = {};
+      if (this.activeTab === "system") {
+        if (this.listType) {
+          q.type = this.listType;
+        }
+        if (this.listToken) {
+          q.token = this.listToken;
+        }
+      }
+      if (this.activeTab === "api") {
+        if (this.listMethod) {
+          q.method = this.listMethod;
+        }
+        if (this.listAuthorized !== "") {
+          q.authorized = this.listAuthorized;
+        }
+      }
+      if (this.activeTab === "tracking" && this.listDevice) {
+        q.device_type = this.listDevice;
+      }
+      return q;
+    },
+    selectedId: function () {
+      if (!this.selectedEntry) {
+        return null;
+      }
+      var key = this.index_data;
+      return this.selectedEntry[key] || null;
+    },
+    primaryFilterChips: function () {
+      var rows = this.summary.breakdown || [];
+      return rows.map(function (row) {
+        return { value: String(row.label || ""), label: String(row.label || "") };
+      }).filter(function (chip) {
+        return chip.value && chip.value !== "—";
+      });
+    },
+    primaryFilterValue: function () {
+      if (this.activeTab === "api") {
+        return this.listMethod;
+      }
+      if (this.activeTab === "tracking") {
+        return this.listDevice;
+      }
+      return this.listType;
+    },
+    secondaryFilterChips: function () {
+      if (this.activeTab === "system") {
+        return (this.summary.top_actions || []).map(function (row) {
+          return { value: String(row.label || ""), label: String(row.label || "") };
+        });
+      }
+      if (this.activeTab === "api") {
+        return [
+          { value: "1", label: logsT("logsAuthorizedYes", "Allowed") },
+          { value: "0", label: logsT("logsAuthorizedNo", "Rejected") },
+        ];
+      }
+      return [];
+    },
+    secondaryFilterValue: function () {
+      if (this.activeTab === "system") {
+        return this.listToken;
+      }
+      if (this.activeTab === "api") {
+        return this.listAuthorized;
+      }
+      return "";
+    },
+    inspectorFields: function () {
+      var item = this.selectedEntry;
+      if (!item) {
+        return [];
+      }
+      if (this.activeTab === "api") {
+        return this.apiInspectorFields(item);
+      }
+      if (this.activeTab === "tracking") {
+        return this.trackingInspectorFields(item);
+      }
+      return this.systemInspectorFields(item);
+    },
     colums: function () {
       if (this.activeTab === "api") {
         return [
@@ -156,6 +290,8 @@ var LogsData = new Vue({
   watch: {
     activeTab: function () {
       this.chartPanel = "activity";
+      this.resetListFilters();
+      this.closeInspector();
       this.loadSummary();
     },
     chartPanel: function () {
@@ -173,12 +309,220 @@ var LogsData = new Vue({
   },
   methods: {
     formatCount: function (n) {
-      var num = Number(n) || 0;
+      var num = Number(n);
+      if (isNaN(num)) {
+        num = 0;
+      }
       try {
-        return num.toLocaleString();
+        return num.toLocaleString(undefined, {
+          maximumFractionDigits: 1,
+        });
       } catch (e) {
         return String(num);
       }
+    },
+    parseLogDate: function (value) {
+      if (!value) {
+        return null;
+      }
+      var raw = String(value).trim();
+      var iso = raw.indexOf("T") === -1 ? raw.replace(" ", "T") : raw;
+      var d = new Date(iso);
+      if (isNaN(d.getTime())) {
+        d = new Date(raw);
+      }
+      return isNaN(d.getTime()) ? null : d;
+    },
+    formatWhen: function (value) {
+      var d = this.parseLogDate(value);
+      if (!d) {
+        return value || "—";
+      }
+      try {
+        return d.toLocaleString(undefined, {
+          day: "numeric",
+          month: "short",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      } catch (e) {
+        return String(value);
+      }
+    },
+    formatDay: function (value) {
+      if (!value) {
+        return "—";
+      }
+      var d = this.parseLogDate(String(value).length === 10 ? value + "T00:00:00" : value);
+      if (!d) {
+        return String(value);
+      }
+      try {
+        return d.toLocaleDateString(undefined, {
+          day: "numeric",
+          month: "short",
+        });
+      } catch (e) {
+        return String(value);
+      }
+    },
+    resetListFilters: function () {
+      this.listType = "";
+      this.listToken = "";
+      this.listMethod = "";
+      this.listAuthorized = "";
+      this.listDevice = "";
+    },
+    setPrimaryFilter: function (value) {
+      var next = this.primaryFilterValue === value ? "" : value;
+      if (this.activeTab === "api") {
+        this.listMethod = next;
+      } else if (this.activeTab === "tracking") {
+        this.listDevice = next;
+      } else {
+        this.listType = next;
+      }
+      this.closeInspector();
+    },
+    setSecondaryFilter: function (value) {
+      var next = this.secondaryFilterValue === value ? "" : value;
+      if (this.activeTab === "api") {
+        this.listAuthorized = next;
+      } else {
+        this.listToken = next;
+      }
+      this.closeInspector();
+    },
+    openInspector: function (item) {
+      this.selectedEntry = item || null;
+    },
+    closeInspector: function () {
+      this.selectedEntry = null;
+    },
+    fieldRow: function (key, label, value, kind) {
+      if (value === null || value === undefined || value === "") {
+        return null;
+      }
+      return {
+        key: key,
+        label: label,
+        value: value,
+        kind: kind || "text",
+      };
+    },
+    displayUser: function (item) {
+      if (!item || !item.user) {
+        return "";
+      }
+      var user = item.user;
+      if (typeof user.get_fullname === "function") {
+        return user.get_fullname();
+      }
+      if (user.user_data && (user.user_data.nombre || user.user_data.apellido)) {
+        return [user.user_data.nombre, user.user_data.apellido].filter(Boolean).join(" ");
+      }
+      return user.username || "";
+    },
+    authorizedLabel: function (value) {
+      var raw = String(value);
+      if (raw === "1" || raw === "true") {
+        return logsT("logsAuthorizedYes", "Allowed");
+      }
+      return logsT("logsAuthorizedNo", "Rejected");
+    },
+    systemInspectorFields: function (item) {
+      var rows = [
+        this.fieldRow("author", logsT("colAuthor", "Author"), this.displayUser(item)),
+        this.fieldRow("comment", logsT("colComment", "Comment"), item.comment),
+        this.fieldRow("type", logsT("colType", "Type"), item.type),
+        this.fieldRow("token", logsT("logsAction", "Action"), item.token),
+        this.fieldRow("type_description", logsT("colDescription", "Description"), item.type_description),
+        this.fieldRow("date_create", logsT("colCreated", "Created"), this.formatWhen(item.date_create)),
+      ];
+      if (item.type_link) {
+        rows.push({
+          key: "type_link",
+          label: logsT("colView", "View"),
+          value: item.type_link,
+          kind: "link",
+        });
+      }
+      return rows.filter(Boolean);
+    },
+    apiInspectorFields: function (item) {
+      var rows = [
+        this.fieldRow("method", logsT("colMethod", "Method"), item.method),
+        this.fieldRow("uri", logsT("colUri", "URI"), item.uri),
+        this.fieldRow("ip_address", logsT("colIp", "IP"), item.ip_address),
+        this.fieldRow("authorized", logsT("colAuthorized", "Authorized"), this.authorizedLabel(item.authorized)),
+        this.fieldRow("response_code", logsT("colStatus", "Status"), item.response_code),
+        this.fieldRow("date_create", logsT("colCreated", "Date"), this.formatWhen(item.date_create)),
+      ];
+      var payload = this.formatPayload(item.params);
+      rows.push({
+        key: "params",
+        label: logsT("logsPayload", "Request payload"),
+        value: payload || logsT("logsEmptyPayload", "No payload was stored."),
+        kind: "payload",
+      });
+      return rows.filter(Boolean);
+    },
+    trackingInspectorFields: function (item) {
+      return [
+        this.fieldRow("page_name", logsT("colPage", "Page"), item.page_name),
+        this.fieldRow("requested_url", logsT("colUri", "URI"), item.requested_url),
+        this.fieldRow("referer_page", logsT("colReferer", "Referer"), item.referer_page),
+        this.fieldRow("query_string", logsT("colQuery", "Query"), item.query_string),
+        this.fieldRow("client_ip", logsT("colIp", "IP"), item.client_ip),
+        this.fieldRow("device_type", logsT("logsDevice", "Device"), item.device_type),
+        this.fieldRow("browser", logsT("logsBrowser", "Browser"), item.browser),
+        this.fieldRow("platform", logsT("logsPlatform", "Platform"), item.platform),
+        this.fieldRow("user_agent", logsT("logsUserAgent", "Browser details"), item.user_agent),
+        this.fieldRow("date_create", logsT("colCreated", "Date"), this.formatWhen(item.date_create)),
+      ].filter(Boolean);
+    },
+    formatPayload: function (raw) {
+      if (raw === null || raw === undefined || raw === "") {
+        return "";
+      }
+      var parsed = raw;
+      if (typeof raw === "string") {
+        try {
+          parsed = JSON.parse(raw);
+        } catch (e) {
+          return this.truncateText(raw, 8000);
+        }
+      }
+      parsed = this.redactPayload(parsed);
+      try {
+        return this.truncateText(JSON.stringify(parsed, null, 2), 8000);
+      } catch (e2) {
+        return this.truncateText(String(raw), 8000);
+      }
+    },
+    redactPayload: function (value) {
+      var self = this;
+      var secret = /password|passwd|secret|token|authorization|api[_-]?key/i;
+      if (Array.isArray(value)) {
+        return value.map(function (item) {
+          return self.redactPayload(item);
+        });
+      }
+      if (value && typeof value === "object") {
+        var out = {};
+        Object.keys(value).forEach(function (key) {
+          out[key] = secret.test(key) ? logsT("logsRedacted", "Hidden") : self.redactPayload(value[key]);
+        });
+        return out;
+      }
+      return value;
+    },
+    truncateText: function (text, max) {
+      var str = String(text);
+      if (str.length <= max) {
+        return str;
+      }
+      return str.slice(0, max) + "…";
     },
     toggleInsights: function () {
       this.insightsOpen = !this.insightsOpen;
@@ -458,6 +802,9 @@ var LogsData = new Vue({
     var self = this;
     this.loadSummary();
     this.$nextTick(function () {
+      if (typeof self.initPlugins === "function") {
+        self.initPlugins();
+      }
       window.addEventListener("popstate", function () {
         self.activeTab = self.readTabFromUrl();
       });

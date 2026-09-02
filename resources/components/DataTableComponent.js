@@ -113,9 +113,12 @@ var dataTable = Vue.component("dataTable", {
       type: Boolean,
       default: true,
     },
-    can_delete: {
+    selected_id: {
+      default: null,
+    },
+    selectable: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
   data: function () {
@@ -184,6 +187,24 @@ var dataTable = Vue.component("dataTable", {
     },
   },
   methods: {
+    isRowSelected: function (item) {
+      if (this.selected_id === null || this.selected_id === undefined || this.selected_id === "") {
+        return false;
+      }
+      if (!this.index_data || !item) {
+        return false;
+      }
+      return String(item[this.index_data]) === String(this.selected_id);
+    },
+    onRowClick: function (item, event) {
+      if (!this.selectable) {
+        return;
+      }
+      if (event && event.target && event.target.closest && event.target.closest("a, button, .dropdown-trigger")) {
+        return;
+      }
+      this.$emit("inspect", item);
+    },
     toggleView: function () {
       this.tableView = !this.tableView;
       this.initPlugins();
@@ -216,7 +237,7 @@ var dataTable = Vue.component("dataTable", {
         M.Dropdown.init(elems, { constrainWidth: false });
         var elems = document.querySelectorAll(".collapsible:not(#slide-out)");
         M.Collapsible.init(elems, {});
-        var elems = document.querySelectorAll("select");
+        var elems = document.querySelectorAll("select:not(.browser-default):not(.config-logs-chart-select)");
         M.FormSelect.init(elems, {});
       }, 3000);
     },
@@ -447,14 +468,6 @@ var dataTable = Vue.component("dataTable", {
     tempDelete: function (item, index) {
       this.toDeleteItem.item = item;
       this.toDeleteItem.index = index;
-    },
-    initPlugins: function () {
-      setTimeout(() => {
-        var elems = document.querySelectorAll(".tooltipped");
-        var instances = M.Tooltip.init(elems, {});
-        var elems = document.querySelectorAll(".dropdown-trigger");
-        var instances = M.Dropdown.init(elems, { constrainWidth: false });
-      }, 3000);
     },
   },
   mounted: function () {

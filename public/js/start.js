@@ -910,6 +910,9 @@ var mixins = {
           { constrainWidth: false }
         );
         self.reinitPlugin(".modal", M.Modal);
+        if (M.FormSelect) {
+          self.reinitPlugin("select:not(.browser-default):not(.config-logs-chart-select)", M.FormSelect);
+        }
         if (M.Materialbox) {
           self.reinitPlugin(".materialboxed", M.Materialbox);
         }

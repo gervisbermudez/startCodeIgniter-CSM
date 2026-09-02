@@ -1,11 +1,31 @@
 import { defineConfig } from 'vite';
-import { resolve } from 'path';
+import { copyFileSync, existsSync, readdirSync } from 'fs';
+import { join, resolve } from 'path';
+
+function syncAdminMinCss() {
+  return {
+    name: 'sync-admin-min-css',
+    closeBundle() {
+      const dir = resolve(__dirname, 'public/css/admin');
+      if (!existsSync(dir)) {
+        return;
+      }
+      readdirSync(dir).forEach(function (file) {
+        if (!file.endsWith('.css') || file.endsWith('.min.css')) {
+          return;
+        }
+        copyFileSync(join(dir, file), join(dir, file.replace(/\.css$/, '.min.css')));
+      });
+    },
+  };
+}
 
 // Configuración simplificada: SOLO compila SCSS
 // El JavaScript se maneja directamente sin procesar (legacy code compatible)
 export default defineConfig({
   publicDir: false,
   base: '/public/', // Base URL para assets
+  plugins: [syncAdminMinCss()],
   build: {
     outDir: 'public',
     emptyOutDir: false,

@@ -828,6 +828,9 @@ class FileModel extends MY_Model
         $file_activity->date_create = date('Y-m-d H:i:s');
         $file_activity->status = 1;
         $file_activity->save();
+        if (function_exists('system_logger')) {
+            system_logger('files', (int) $file_id, $action, $description);
+        }
     }
 
     public function getFileFullPath()
