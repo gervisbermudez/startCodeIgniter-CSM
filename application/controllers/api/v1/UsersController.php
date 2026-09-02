@@ -158,27 +158,54 @@ class UsersController extends REST_Controller
 
         $this->load->library('FormValidator');
         $form = new FormValidator();
+        $password = $this->input->post('password');
+        $password_rule = 'min_length[8]|max_length[25]|regex_match[/^(?=.*?[0-9])(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[#.?!@$%^&*\-_]).{8,}$/]';
         $config = array(
             array('field' => 'username', 'label' => 'username', 'rules' => 'required|min_length[5]|max_length[18]|alpha_numeric'),
-            array('field' => 'password', 'label' => 'password', 'rules' => 'required|min_length[5]|max_length[18]|regex_match[/^(?=.*?[0-9])(?=.*?[A-Z])(?=.*?[#.?!@$%^&*\-_]).{8,}$/]'),
             array('field' => 'email', 'label' => 'email', 'rules' => 'required|valid_email'),
             array('field' => 'usergroup_id', 'label' => 'usergroup_id', 'rules' => 'required|integer|is_natural_no_zero'),
         );
+        if (!$is_update) {
+            $config[] = array('field' => 'password', 'label' => 'password', 'rules' => 'required|' . $password_rule);
+        } elseif ($password) {
+            $config[] = array('field' => 'password', 'label' => 'password', 'rules' => $password_rule);
+        }
         $form->set_rules($config);
         if (!$form->run()) {
             $this->response_error(lang('new_user_validations_error'), ['errors' => $form->_error_array], REST_Controller::HTTP_BAD_REQUEST);
             return;
         }
+        $except_id = $is_update ? (int) $user_id : 0;
+        $taken = array();
+        if ($this->is_user_field_taken('username', $this->input->post('username'), $except_id)) {
+            $taken['username'] = lang('users_form_field_taken');
+        }
+        if ($this->is_user_field_taken('email', $this->input->post('email'), $except_id)) {
+            $taken['email'] = lang('users_form_field_taken');
+        }
+        if ($taken) {
+            $this->response_error(lang('new_user_validations_error'), ['errors' => $taken], REST_Controller::HTTP_BAD_REQUEST);
+            return;
+        }
         $user = new UserModel();
-        $this->input->post('user_id') ? $user->find($this->input->post('user_id')) : false;
+        if ($is_update) {
+            if (!$user->find($user_id)) {
+                $this->response_error(lang('user_not_found_error'));
+                return;
+            }
+        }
         $user->username = $this->input->post('username');
-        $user->password = password_hash($this->input->post('password'), PASSWORD_DEFAULT);
+        if ($password) {
+            $user->password = password_hash($password, PASSWORD_DEFAULT);
+        }
         $user->email = $this->input->post('email');
-        $user->lastseen = date("Y-m-d H:i:s");
         $user->usergroup_id = $this->input->post('usergroup_id');
-        $user->status = 1;
-        $user->user_data = $this->input->post('user_data');
-        if (!$this->input->post('user_id')) {
+        $posted_data = $this->sanitize_user_data($this->input->post('user_data'));
+        $current_data = is_array($user->user_data) ? $user->user_data : array();
+        $user->user_data = array_merge($current_data, $posted_data);
+        if (!$is_update) {
+            $user->status = 1;
+            $user->lastseen = date("Y-m-d H:i:s");
             $user->user_data['create_by_id'] = userdata('user_id');
             $user->date_create = date('Y-m-d H:i:s');
             $user->date_update = $user->date_create;
@@ -580,6 +607,60 @@ class UsersController extends REST_Controller
         }
         set_cached('usergroup_permisions_' . (int) $usergroup_id, $perms, 3600);
         $this->session->set_userdata('usergroup_permisions', $perms);
+    }
+
+    /**
+     * True when another active user already has this username or email (status != 0).
+     *
+     * @param string $field username|email
+     * @param string $value
+     * @param int    $except_user_id
+     * @return bool
+     */
+    protected function is_user_field_taken($field, $value, $except_user_id = 0)
+    {
+        $allowed = array('username', 'email');
+        if (!in_array($field, $allowed, true)) {
+            return true;
+        }
+        $probe = new UserModel();
+        $result = $probe->where(array($field => $value, 'status !=' => 0));
+        if (!$result) {
+            return false;
+        }
+        foreach ($result as $row) {
+            if ((int) $row->user_id !== (int) $except_user_id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Keep only known profile keys and cap EAV values (user_data._value is varchar 600).
+     *
+     * @param mixed $data
+     * @return array
+     */
+    protected function sanitize_user_data($data)
+    {
+        if (!is_array($data)) {
+            return array();
+        }
+        $allowed = array('nombre', 'apellido', 'direccion', 'telefono', 'avatar', 'cargo', 'bio');
+        $clean = array();
+        foreach ($allowed as $key) {
+            if (!array_key_exists($key, $data)) {
+                continue;
+            }
+            $val = is_string($data[$key]) ? trim($data[$key]) : '';
+            $val = str_replace(array('"', "\r\n", "\n", "\r"), array("'", ' ', ' ', ' '), $val);
+            if (strlen($val) > 600) {
+                $val = substr($val, 0, 600);
+            }
+            $clean[$key] = $val;
+        }
+        return $clean;
     }
 
     protected function require_user_permision($permision)

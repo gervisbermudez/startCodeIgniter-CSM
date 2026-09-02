@@ -10,7 +10,7 @@ Options -Indexes
 RewriteEngine On
 
 # No servir scripts ni dumps por HTTP
-RewriteRule ^(bin|backups)/ - [F,L]
+RewriteRule ^(bin|backups|temp)/ - [F,L]
 
 # No reescribir peticiones a archivos y directorios existentes
 RewriteCond %{REQUEST_FILENAME} !-f
