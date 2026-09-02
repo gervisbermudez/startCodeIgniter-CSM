@@ -9,21 +9,32 @@ Vue.component("fileExplorerCollection", {
   mixins: [mixins],
   computed: {
     shortFiles: function () {
-      if (!!this.filter) {
-        let filterTerm = this.filter.toLowerCase();
-        return this.files.filter((value, index) => {
-          return this.searchInObject(value, filterTerm);
-        });
-      } else {
-        return this.files
-          .filter((file) => {
-            return file.file_type != "folder";
-          })
-          .slice(0, 25);
-      }
+      var files = (this.files || []).filter(function (file) {
+        return file && file.file_type != "folder";
+      });
+      var self = this;
+      files = files.slice().sort(function (a, b) {
+        var ia = self.isImage(a) ? 0 : 1;
+        var ib = self.isImage(b) ? 0 : 1;
+        return ia - ib;
+      });
+      return files.slice(0, 12);
     },
   },
   methods: {
+    isImage: function (file) {
+      var t = file && file.file_type ? String(file.file_type).toLowerCase() : "";
+      return ["jpg", "jpeg", "png", "gif", "webp", "svg", "bmp"].indexOf(t) !== -1;
+    },
+    fileIcon: function (file) {
+      var t = file && file.file_type ? String(file.file_type).toLowerCase() : "";
+      if (["pdf"].indexOf(t) !== -1) return "picture_as_pdf";
+      if (["mp4", "mov", "avi", "webm"].indexOf(t) !== -1) return "movie";
+      if (["mp3", "wav", "ogg", "aac"].indexOf(t) !== -1) return "audiotrack";
+      if (["zip", "rar", "7z"].indexOf(t) !== -1) return "archive";
+      if (t === "folder") return "folder";
+      return "insert_drive_file";
+    },
     getFiles() {
       var self = this;
       $.ajax({

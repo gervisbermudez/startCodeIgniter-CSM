@@ -1,30 +1,37 @@
 <script type="text/x-template" id="fileExplorerCollection-template">
-<div class="panel fileExplorerCollection-root">
-    <div class="title">
-        <h5><a href="{{base_url('admin/files')}}">{{ lang('dashboard_files_title') }}</a></h5>
-        <div class="subtitle sub-header">
-            @{{typeof total === 'number' ? total : files.length}} {{ lang('dashboard_files_total') }}
+<div class="dash-list-widget fileExplorerCollection-root has-deco" style="--dash-deco: url('{{ base_url('public/img/admin/undraw/undraw_my-files_1xwx.svg') }}')">
+    <div class="dash-widget-head">
+        <div class="dash-widget-head__lead">
+            <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">folder</i></span>
+            <h5><a href="{{ base_url('admin/files') }}">{{ lang('dashboard_files_title') }}</a></h5>
         </div>
-        <img src="{{base_url()}}public/img/admin/dashboard/undraw_folder_files_nweq.png" />
+        <div class="dash-widget-head__tools">
+            <span class="dash-widget-head__count">@{{typeof total === 'number' ? total : files.length}} {{ lang('dashboard_files_total') }}</span>
+            @include('admin.components.dash_widget_add', [
+                'perm' => 'CREATE_FILE',
+                'href' => base_url('admin/files'),
+                'tip' => lang('tooltip_new_file'),
+            ])
+        </div>
     </div>
-    <ul class="collection">
-        <li  v-if="files.length" class="collection-item avatar" v-for="(file, index) in shortFiles" :key="index">
-            <i class="material-icons circle red">insert_drive_file</i>
-            <a :href="file.get_full_file_path()" class="item-title">@{{file.get_filename()}}</a>
-            <p>
-                @{{timeAgo(file.date_create)}}
-                <br>
-            <a :href="file.get_full_share_path()" class="item-title">{{ lang('dashboard_files_share') }}</a>
-            </p>
-            <a href="#!" class="secondary-content" :class="{'yellow-text': file.featured == '1'}" v-on:click="featuredFileServe(file);"><i class="material-icons">grade</i></a>
-        </li>
-        <li v-else class="collection-item center-align" style="padding: 40px 20px;">
-            <i class="material-icons" style="font-size: 48px; color: #9e9e9e;">folder_open</i>
-            <p style="color: #9e9e9e; margin-top: 10px;">{{ lang('dashboard_files_empty') }}</p>
-            @if(has_permisions('CREATE_FILE'))
-            <a href="{{base_url('admin/files')}}" class="btn-small waves-effect waves-light" style="margin-top: 10px;">{{ lang('dashboard_files_empty_cta') }}</a>
-            @endif
-        </li>
-    </ul>
+    <div v-if="shortFiles.length" class="dash-files-grid">
+        <a
+            v-for="(file, index) in shortFiles"
+            :key="file.file_id || index"
+            class="dash-files-tile"
+            :href="file.get_full_file_path()"
+            :title="file.get_filename()"
+        >
+            <span class="dash-files-tile__media" :class="{ 'is-image': isImage(file) }">
+                <img v-if="isImage(file)" :src="file.get_full_file_path()" alt="">
+                <i v-else class="material-icons">@{{ fileIcon(file) }}</i>
+            </span>
+            <span class="dash-files-tile__name truncate">@{{ file.get_filename() }}</span>
+        </a>
+    </div>
+    <div v-else class="dashboard-empty">
+        <i class="material-icons">folder_open</i>
+        <p>{{ lang('dashboard_files_empty') }}</p>
+    </div>
 </div>
 </script>

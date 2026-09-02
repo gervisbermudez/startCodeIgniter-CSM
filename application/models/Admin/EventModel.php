@@ -95,6 +95,29 @@ class EventModel extends MY_Model
     }
 
     /**
+     * Published + visible happenings whose date_start falls in [from, to].
+     *
+     * @param string $from Y-m-d H:i:s
+     * @param string $to Y-m-d H:i:s
+     * @param int $limit
+     * @return Collection|false
+     */
+    public function in_range($from, $to, $limit = 80)
+    {
+        $this->db->where('status', 1);
+        $this->db->where('visibility', 1);
+        $this->db->where('date_start >=', $from);
+        $this->db->where('date_start <=', $to);
+        $this->db->order_by('date_start', 'ASC');
+        $this->db->limit((int) $limit);
+        $query = $this->db->get($this->table);
+        if ($query->num_rows() > 0) {
+            return new Collection($this->filter_results($query->result()));
+        }
+        return false;
+    }
+
+    /**
      * Published + visible happenings already finished.
      * @param int|null $limit
      * @return Collection|false

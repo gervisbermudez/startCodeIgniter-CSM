@@ -55,11 +55,11 @@ class DashboardController extends REST_Controller
     {
         $caps = dashboard_capabilities();
         $perm_key = dashboard_perm_cache_key();
-        $cache_key = 'dashboard_data_v5_' . userdata('user_id') . '_' . $perm_key;
+        $cache_key = 'dashboard_data_v10_' . userdata('user_id') . '_' . $perm_key;
         $cached_data = $this->cache->get($cache_key);
 
         if ($cached_data !== false) {
-            $this->response($cached_data, REST_Controller::HTTP_OK);
+            $this->response($this->dashboard_with_layout($cached_data), REST_Controller::HTTP_OK);
             return;
         }
 
@@ -77,12 +77,27 @@ class DashboardController extends REST_Controller
                 'events' => 0,
                 'albumes' => 0,
                 'content' => 0,
+                'fragments' => 0,
+                'inbox' => 0,
+                'pages_published' => 0,
+                'pages_draft' => 0,
+                'pages_archived' => 0,
+                'menus' => 0,
+                'categories' => 0,
+                'videos' => 0,
             ),
             'users' => array(),
             'pages' => array(),
+            'published' => array(),
             'files' => array(),
             'albumes' => array(),
             'events' => array(),
+            'calendar_events' => array(),
+            'fragments' => array(),
+            'inbox' => array(),
+            'menus' => array(),
+            'categories' => array(),
+            'videos' => array(),
             'content' => array(),
             'forms_types' => array(),
             'collections' => array(),
@@ -125,6 +140,15 @@ class DashboardController extends REST_Controller
             $this->load->model('Admin/PageModel');
             $page = new PageModel();
             $result['counts']['pages'] = $page->get_count_all(array('status_in' => array(1, 2, 3)));
+            $result['counts']['pages_published'] = $page->get_count_all(array('status' => '1'));
+            $result['counts']['pages_draft'] = $page->get_count_all(array('status' => '2'));
+            $result['counts']['pages_archived'] = $page->get_count_all(array('status' => '3'));
+            $published = $page->dashboard_cards(
+                array('status' => '1'),
+                array(6),
+                array('date_update', 'DESC')
+            );
+            $result['published'] = $this->dashboard_project_pages($published, false);
             $drafts = $page->dashboard_cards(
                 array('status' => '2'),
                 array(5),
@@ -147,8 +171,7 @@ class DashboardController extends REST_Controller
             $this->load->model('Admin/FileModel');
             $file = new FileModel();
             $result['counts']['files'] = $file->get_count_all(array('status' => 1));
-            $files = $file->all(array(12), array('file_id', 'DESC'));
-            $result['files'] = $this->dashboard_project_files($files);
+            $result['files'] = $this->dashboard_load_files($file);
         }
 
         if (!empty($caps['select_gallery'])) {
@@ -159,10 +182,78 @@ class DashboardController extends REST_Controller
             $result['albumes'] = $this->dashboard_project_albums($albumes);
         }
 
-        if (!empty($caps['select_events'])) {
+        if (!empty($caps['select_videos'])) {
+            $this->load->model('Admin/VideoModel');
+            $video = new VideoModel();
+            $result['counts']['videos'] = $video->get_count_all(array('status_in' => array(1, 2, 3)));
+            $videos = $video->all(array(6), array('video_id', 'DESC'));
+            $result['videos'] = $this->dashboard_project_videos($videos);
+        }
+
+        if (!empty($caps['select_menus'])) {
+            $this->load->model('Admin/MenuModel');
+            $menu = new MenuModel();
+            $result['counts']['menus'] = $menu->get_count_all(array('status_in' => array(1, 2, 3)));
+            $menus = $menu->all(array(8), array('menu_id', 'DESC'));
+            $result['menus'] = $this->dashboard_project_menus($menus);
+        }
+
+        if (!empty($caps['select_categories'])) {
+            $this->load->model('Admin/CategorieModel');
+            $categorie = new CategorieModel();
+            $result['counts']['categories'] = $categorie->get_count_all(array('status_in' => array(1, 2, 3)));
+            $cats = $categorie->all(array(8), array('categorie_id', 'DESC'));
+            $result['categories'] = $this->dashboard_project_categories($cats);
+        }
+
+        if (!empty($caps['select_events']) || !empty($caps['select_calendar'])) {
             $this->load->model('Admin/EventModel');
             $event = new EventModel();
-            $result['counts']['events'] = $event->get_count_all(array('status' => 1));
+            $result['counts']['events'] = $event->get_count_all(array('status_in' => array(1, 2, 3)));
+            if (!empty($caps['select_events'])) {
+                $upcoming = $event->upcoming(6);
+                $result['events'] = $this->dashboard_project_events($upcoming);
+            }
+            $from = date('Y-m-01 00:00:00', strtotime('-1 month'));
+            $to = date('Y-m-t 23:59:59', strtotime('+1 month'));
+            $month = $event->in_range($from, $to, 80);
+            $result['calendar_events'] = $this->dashboard_project_events($month);
+        }
+
+        if (!empty($caps['select_fragments'])) {
+            $this->load->model('Admin/FragmentModel');
+            $fragment = new FragmentModel();
+            $result['counts']['fragments'] = $fragment->get_count_all(array('status_in' => array(1, 2, 3)));
+            $frags = $fragment->find_list(
+                array('status_in' => array(1, 2, 3)),
+                array(6),
+                array('fragment_id', 'DESC')
+            );
+            $result['fragments'] = $this->dashboard_project_fragments($frags);
+        }
+
+        if (!empty($caps['select_siteforms'])) {
+            $this->load->model('Admin/SiteFormSubmitModel');
+            $submit = new SiteFormSubmitModel();
+            $result['counts']['inbox'] = $submit->get_count_all(array('status_in' => array(1, 2, 3)));
+            $subs = $submit->find_list(
+                array('status_in' => array(1, 2, 3)),
+                array(6),
+                array('siteform_submit_id', 'DESC')
+            );
+            $result['inbox'] = $this->dashboard_project_inbox($subs);
+        }
+
+        if (!empty($caps['select_config'])) {
+            $theme = config('THEME_PATH');
+            if (!$theme && defined('SITE_THEME')) {
+                $theme = SITE_THEME;
+            }
+            $result['site'] = array(
+                'title' => (string) config('SITE_TITLE'),
+                'tracking' => config('SITEM_TRACK_VISITORS') == 'Si',
+                'theme' => (string) $theme,
+            );
         }
 
         if (!empty($caps['select_content_data'])) {
@@ -203,7 +294,137 @@ class DashboardController extends REST_Controller
         );
 
         $this->cache->save($cache_key, $response, 300);
-        $this->response($response, REST_Controller::HTTP_OK);
+        $this->response($this->dashboard_with_layout($response), REST_Controller::HTTP_OK);
+    }
+
+    /**
+     * POST /api/v1/dashboard/layout
+     * Body: { "layout": { "v": 2, "rows": [ { "cols": [ { "w": 12, "items": ["kpis"] } ] } ] } }
+     * Also accepts the old flat list. Widths are 3–9 or 12; unknown ids are dropped.
+     */
+    public function layout_post()
+    {
+        if (!function_exists('has_permisions') || !has_permisions('UPDATE_DASHBOARD_LAYOUT')) {
+            $this->response(array(
+                'code' => REST_Controller::HTTP_FORBIDDEN,
+                'error_message' => lang('dashboard_layout_forbidden'),
+            ), REST_Controller::HTTP_FORBIDDEN);
+            return;
+        }
+        $items = $this->dashboard_posted_layout();
+        $normalized = dashboard_normalize_layout($items);
+        $this->load->model('Admin/DashboardLayoutModel');
+        $model = new DashboardLayoutModel();
+        $ok = $model->save_for_user(userdata('user_id'), dashboard_layout_slim($normalized));
+        if (!$ok) {
+            $this->response_error(lang('dashboard_save_error'), array(), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
+            return;
+        }
+        system_logger('dashboard', userdata('user_id'), 'layout', 'Dashboard layout updated');
+        $this->response_ok(dashboard_layout_payload());
+    }
+
+    /**
+     * POST /api/v1/dashboard/layout_reset
+     */
+    public function layout_reset_post()
+    {
+        if (!function_exists('has_permisions') || !has_permisions('UPDATE_DASHBOARD_LAYOUT')) {
+            $this->response(array(
+                'code' => REST_Controller::HTTP_FORBIDDEN,
+                'error_message' => lang('dashboard_layout_forbidden'),
+            ), REST_Controller::HTTP_FORBIDDEN);
+            return;
+        }
+        $this->load->model('Admin/DashboardLayoutModel');
+        $model = new DashboardLayoutModel();
+        $model->delete_for_user(userdata('user_id'));
+        system_logger('dashboard', userdata('user_id'), 'layout', 'Dashboard layout reset');
+        $this->response_ok(dashboard_layout_payload());
+    }
+
+    /**
+     * POST /api/v1/dashboard/layout_default
+     * Saves the posted layout as the default for the current user's usergroup.
+     * Also writes the caller's personal row so their home matches what they just published.
+     */
+    public function layout_default_post()
+    {
+        if (!function_exists('has_permisions')
+            || !has_permisions('UPDATE_DASHBOARD_LAYOUT')
+            || !has_permisions('UPDATE_USERGROUP')
+        ) {
+            $this->response(array(
+                'code' => REST_Controller::HTTP_FORBIDDEN,
+                'error_message' => lang('dashboard_layout_forbidden'),
+            ), REST_Controller::HTTP_FORBIDDEN);
+            return;
+        }
+        $group_id = (int) userdata('usergroup_id');
+        if ($group_id < 1) {
+            $this->response_error(lang('dashboard_save_error'), array(), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
+            return;
+        }
+        $items = $this->dashboard_posted_layout();
+        $normalized = dashboard_normalize_layout($items);
+        $slim = dashboard_layout_slim($normalized);
+        $this->load->model('Admin/DashboardLayoutModel');
+        $model = new DashboardLayoutModel();
+        $ok_group = $model->save_for_group($group_id, $slim);
+        $ok_user = $model->save_for_user(userdata('user_id'), $slim);
+        if (!$ok_group || !$ok_user) {
+            $this->response_error(lang('dashboard_save_error'), array(), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
+            return;
+        }
+        system_logger('dashboard', userdata('user_id'), 'layout', 'Dashboard layout set as group default');
+        $this->response_ok(dashboard_layout_payload());
+    }
+
+    /**
+     * @param array $response
+     * @return array
+     */
+    private function dashboard_with_layout($response)
+    {
+        if (!is_array($response)) {
+            $response = array('code' => 200, 'data' => array());
+        }
+        if (!isset($response['data']) || !is_array($response['data'])) {
+            $response['data'] = array();
+        }
+        $payload = dashboard_layout_payload();
+        $response['data']['layout'] = $payload['layout'];
+        $response['data']['catalog'] = $payload['catalog'];
+        $response['data']['layout_source'] = $payload['source'];
+        $response['data']['can_edit_layout'] = !empty($payload['can_edit_layout']);
+        $response['data']['can_publish_layout_default'] = !empty($payload['can_publish_layout_default']);
+        if (!isset($response['data']['capabilities']) || !is_array($response['data']['capabilities'])) {
+            $response['data']['capabilities'] = array();
+        }
+        $response['data']['capabilities']['can_edit_layout'] = !empty($payload['can_edit_layout']);
+        $response['data']['capabilities']['can_publish_layout_default'] = !empty($payload['can_publish_layout_default']);
+        return $response;
+    }
+
+    /**
+     * @return array
+     */
+    private function dashboard_posted_layout()
+    {
+        $items = $this->post('layout');
+        if ($items === null || $items === false || is_string($items) || is_object($items)) {
+            $raw = $this->input->raw_input_stream;
+            $decoded = json_decode($raw, true);
+            if (is_array($decoded) && isset($decoded['layout'])) {
+                $items = $decoded['layout'];
+            } elseif (is_array($decoded) && (isset($decoded['rows']) || isset($decoded[0]))) {
+                $items = $decoded;
+            }
+        }
+        if (is_object($items)) {
+            $items = json_decode(json_encode($items), true);
+        }
+        return is_array($items) ? $items : array();
     }
 
     /**
@@ -261,6 +482,100 @@ class DashboardController extends REST_Controller
     }
 
     /**
+     * @param mixed $videos
+     * @return array
+     */
+    private function dashboard_project_videos($videos)
+    {
+        $out = array();
+        foreach ($this->dashboard_list($videos) as $video) {
+            $video = $this->dashboard_assoc($video);
+            $id = isset($video['video_id']) ? (int) $video['video_id'] : 0;
+            if (!$id) {
+                continue;
+            }
+            $name = '';
+            if (!empty($video['nam'])) {
+                $name = $video['nam'];
+            } elseif (!empty($video['name'])) {
+                $name = $video['name'];
+            }
+            $out[] = array(
+                'video_id' => $id,
+                'name' => $name,
+                'duration' => isset($video['duration']) ? $video['duration'] : '',
+                'link' => base_url('admin/videos/editar/' . $id),
+            );
+        }
+        return $out;
+    }
+
+    /**
+     * @param mixed $menus
+     * @return array
+     */
+    private function dashboard_project_menus($menus)
+    {
+        $out = array();
+        foreach ($this->dashboard_list($menus) as $menu) {
+            $menu = $this->dashboard_assoc($menu);
+            $id = isset($menu['menu_id']) ? (int) $menu['menu_id'] : 0;
+            if (!$id) {
+                continue;
+            }
+            $out[] = array(
+                'menu_id' => $id,
+                'name' => isset($menu['name']) ? $menu['name'] : '',
+                'position' => isset($menu['position']) ? $menu['position'] : '',
+                'link' => base_url('admin/menus/edit/' . $id),
+            );
+        }
+        return $out;
+    }
+
+    /**
+     * @param mixed $categories
+     * @return array
+     */
+    private function dashboard_project_categories($categories)
+    {
+        $out = array();
+        foreach ($this->dashboard_list($categories) as $categorie) {
+            $categorie = $this->dashboard_assoc($categorie);
+            $id = isset($categorie['categorie_id']) ? (int) $categorie['categorie_id'] : 0;
+            if (!$id) {
+                continue;
+            }
+            $out[] = array(
+                'categorie_id' => $id,
+                'name' => isset($categorie['name']) ? $categorie['name'] : '',
+                'type' => isset($categorie['type']) ? $categorie['type'] : '',
+                'link' => base_url('admin/categories/edit/' . $id),
+            );
+        }
+        return $out;
+    }
+
+    private function dashboard_project_events($events)
+    {
+        $out = array();
+        foreach ($this->dashboard_list($events) as $event) {
+            $event = $this->dashboard_assoc($event);
+            $id = isset($event['event_id']) ? (int) $event['event_id'] : 0;
+            if (!$id) {
+                continue;
+            }
+            $out[] = array(
+                'event_id' => $id,
+                'name' => isset($event['name']) ? $event['name'] : '',
+                'date_start' => isset($event['date_start']) ? $event['date_start'] : '',
+                'link' => base_url('admin/events/edit/' . $id),
+            );
+        }
+        return $out;
+    }
+
+    /**
      * @param mixed $users
      * @return array
      */
@@ -306,10 +621,13 @@ class DashboardController extends REST_Controller
         $out = array();
         foreach ($this->dashboard_list($pages) as $page) {
             $page = $this->dashboard_assoc($page);
+            $page_id = isset($page['page_id']) ? $page['page_id'] : '';
             $row = array(
-                'page_id' => isset($page['page_id']) ? $page['page_id'] : '',
+                'page_id' => $page_id,
                 'title' => isset($page['title']) ? $page['title'] : '',
                 'status' => isset($page['status']) ? $page['status'] : '',
+                'date_update' => isset($page['date_update']) ? $page['date_update'] : '',
+                'link' => $page_id !== '' ? base_url('admin/pages/editar/' . $page_id) : '',
             );
             if ($with_body) {
                 $image = isset($page['imagen_file']) ? $this->dashboard_assoc($page['imagen_file']) : array();
@@ -343,6 +661,125 @@ class DashboardController extends REST_Controller
                 $row[$key] = isset($file[$key]) ? $file[$key] : '';
             }
             $out[] = $row;
+        }
+        return $out;
+    }
+
+    /**
+     * Recent files with images first. Skips folders and internal asset paths.
+     * Protected: REST_Controller calls index_get via call_user_func_array from
+     * the parent, and a private helper can surface as undefined in that path.
+     *
+     * @param FileModel $file
+     * @return array
+     */
+    protected function dashboard_load_files($file)
+    {
+        $image_types = array('jpg', 'jpeg', 'png', 'gif', 'webp', 'svg');
+        $this->db->where('status', 1);
+        $this->db->where('file_type !=', 'folder');
+        $this->db->where_in('file_type', $image_types);
+        $this->db->order_by('file_id', 'DESC');
+        $this->db->limit(16);
+        $query = $this->db->get('file');
+        $rows = ($query && $query->num_rows() > 0) ? $query->result_array() : array();
+
+        if (count($rows) < 12) {
+            $ids = array();
+            foreach ($rows as $row) {
+                $ids[] = (int) $row['file_id'];
+            }
+            $this->db->where('status', 1);
+            $this->db->where('file_type !=', 'folder');
+            if ($ids) {
+                $this->db->where_not_in('file_id', $ids);
+            }
+            $this->db->order_by('file_id', 'DESC');
+            $this->db->limit(16 - count($rows));
+            $more = $this->db->get('file');
+            if ($more && $more->num_rows() > 0) {
+                $rows = array_merge($rows, $more->result_array());
+            }
+        }
+
+        $prefixes = array();
+        if (is_object($file) && !empty($file->exclude_file_path_prefixes)) {
+            $prefixes = $file->exclude_file_path_prefixes;
+        }
+        if ($prefixes) {
+            $filtered = array();
+            foreach ($rows as $row) {
+                $path = isset($row['file_path']) ? (string) $row['file_path'] : '';
+                $skip = false;
+                foreach ($prefixes as $prefix) {
+                    if ($prefix !== '' && strpos($path, $prefix) === 0) {
+                        $skip = true;
+                        break;
+                    }
+                }
+                if (!$skip) {
+                    $filtered[] = $row;
+                }
+            }
+            $rows = $filtered;
+        }
+
+        return $this->dashboard_project_files($rows);
+    }
+
+    /**
+     * @param mixed $fragments
+     * @return array
+     */
+    private function dashboard_project_fragments($fragments)
+    {
+        $out = array();
+        foreach ($this->dashboard_list($fragments) as $item) {
+            $item = $this->dashboard_assoc($item);
+            $id = isset($item['fragment_id']) ? (int) $item['fragment_id'] : 0;
+            if (!$id) {
+                continue;
+            }
+            $out[] = array(
+                'fragment_id' => $id,
+                'name' => isset($item['name']) ? $item['name'] : '',
+                'type' => isset($item['type']) ? $item['type'] : '',
+                'link' => base_url('admin/fragments/edit/' . $id),
+            );
+        }
+        return $out;
+    }
+
+    /**
+     * @param mixed $submits
+     * @return array
+     */
+    private function dashboard_project_inbox($submits)
+    {
+        $out = array();
+        foreach ($this->dashboard_list($submits) as $item) {
+            $item = $this->dashboard_assoc($item);
+            $id = isset($item['siteform_submit_id']) ? (int) $item['siteform_submit_id'] : 0;
+            if (!$id) {
+                continue;
+            }
+            $form = isset($item['siteform']) ? $this->dashboard_assoc($item['siteform']) : array();
+            if (!$form && isset($item['SiteForm'])) {
+                $form = $this->dashboard_assoc($item['SiteForm']);
+            }
+            $preview = isset($item['preview']) ? $item['preview'] : '';
+            if (is_string($preview) && function_exists('mb_substr') && mb_strlen($preview) > 80) {
+                $preview = mb_substr($preview, 0, 80);
+            } elseif (is_string($preview) && strlen($preview) > 80) {
+                $preview = substr($preview, 0, 80);
+            }
+            $out[] = array(
+                'siteform_submit_id' => $id,
+                'preview' => $preview,
+                'form_name' => isset($form['name']) ? $form['name'] : '',
+                'date_create' => isset($item['date_create']) ? $item['date_create'] : '',
+                'link' => base_url('admin/siteforms/submit/#/details/' . $id),
+            );
         }
         return $out;
     }
@@ -389,15 +826,24 @@ class DashboardController extends REST_Controller
         foreach ($this->dashboard_list($content) as $item) {
             $item = $this->dashboard_assoc($item);
             $model = isset($item['custom_model']) ? $this->dashboard_assoc($item['custom_model']) : array();
+            $mid = isset($item['custom_model_id']) ? $item['custom_model_id'] : '';
+            if ($mid === '' && isset($model['custom_model_id'])) {
+                $mid = $model['custom_model_id'];
+            }
             $out[] = array(
                 'custom_model_content_id' => isset($item['custom_model_content_id']) ? $item['custom_model_content_id'] : '',
+                'custom_model_id' => $mid,
                 'title' => isset($item['title']) ? $item['title'] : '',
                 'status' => isset($item['status']) ? $item['status'] : '',
                 'date_create' => isset($item['date_create']) ? $item['date_create'] : '',
                 'custom_model' => array(
+                    'custom_model_id' => $mid,
                     'form_name' => isset($model['form_name']) ? $model['form_name'] : '',
                 ),
                 'user' => $this->dashboard_user_card(isset($item['user']) ? $item['user'] : array()),
+                'link' => $mid
+                    ? base_url('admin/custommodels/items/' . $mid)
+                    : base_url('admin/custommodels/'),
             );
         }
         return $out;

@@ -58,11 +58,61 @@ var DashboardModule = new Vue({
       events: 0,
       albumes: 0,
       content: 0,
+      fragments: 0,
+      inbox: 0,
     },
+    calendarEvents: [],
+    fragments: [],
+    inbox: [],
+    published: [],
+    menus: [],
+    categories: [],
+    videos: [],
+    pickerQuery: "",
+    pickerCategory: "",
+    pickerCategoryOrder: [
+      "overview",
+      "analytics",
+      "content",
+      "media",
+      "people",
+      "calendar",
+      "site",
+    ],
     capabilities:
       typeof DASHBOARD_CAPS !== "undefined" && DASHBOARD_CAPS
         ? DASHBOARD_CAPS
         : {},
+    layout: [],
+    draftLayout: [],
+    catalog: [],
+    layoutEditing: false,
+    canEditLayout: !!(
+      typeof DASHBOARD_CAPS !== "undefined" &&
+      DASHBOARD_CAPS &&
+      DASHBOARD_CAPS.can_edit_layout
+    ),
+    canPublishLayoutDefault: !!(
+      typeof DASHBOARD_CAPS !== "undefined" &&
+      DASHBOARD_CAPS &&
+      DASHBOARD_CAPS.can_publish_layout_default
+    ),
+    layoutSource: "default",
+    layoutSaving: false,
+    pickerOpen: false,
+    pickerRi: 0,
+    pickerCi: 0,
+    columnWidths: [3, 4, 5, 6, 7, 8, 9, 12],
+    maxCols: 4,
+    site: {
+      title: "",
+      tracking: false,
+      theme: "",
+    },
+    chartPayload: null,
+    defaultAvatar:
+      (typeof BASEURL !== "undefined" ? BASEURL : "/") +
+      "public/img/profile/default_profile_2.jpg",
   },
   mixins: [mixins],
   computed: {
@@ -98,8 +148,663 @@ var DashboardModule = new Vue({
         this.referrers.labels.length
       );
     },
+    visibleLayout: function () {
+      return this.layoutEditing ? this.draftLayout : this.layout;
+    },
+    visibleRows: function () {
+      var layout = this.visibleLayout || {};
+      return layout.rows || [];
+    },
+    layoutIsEmpty: function () {
+      return !(this.visibleRows || []).some(function (row) {
+        return (row.cols || []).some(function (col) {
+          return col.items && col.items.length;
+        });
+      });
+    },
+    addableWidgets: function () {
+      var ids = this.collectIds(this.draftLayout);
+      return (this.catalog || []).filter(function (w) {
+        return !ids[w.id];
+      });
+    },
+    filteredAddableWidgets: function () {
+      var q = (this.pickerQuery || "").toLowerCase().trim();
+      var cat = this.pickerCategory || "";
+      var self = this;
+      return this.addableWidgets.filter(function (w) {
+        var widgetCat = w.category || "content";
+        if (cat && widgetCat !== cat) {
+          return false;
+        }
+        if (!q) {
+          return true;
+        }
+        var title = (self.widgetTitle(w) || "").toLowerCase();
+        var catLabel = (self.categoryTitle(widgetCat) || "").toLowerCase();
+        var id = (w.id || "").toLowerCase();
+        return (
+          title.indexOf(q) !== -1 ||
+          catLabel.indexOf(q) !== -1 ||
+          id.indexOf(q) !== -1
+        );
+      });
+    },
+    pickerChipCats: function () {
+      var seen = {};
+      var cats = [];
+      this.addableWidgets.forEach(function (w) {
+        var cat = w.category || "content";
+        if (!seen[cat]) {
+          seen[cat] = true;
+          cats.push(cat);
+        }
+      });
+      var order = this.pickerCategoryOrder || [];
+      cats.sort(function (a, b) {
+        var ia = order.indexOf(a);
+        var ib = order.indexOf(b);
+        if (ia === -1) ia = 99;
+        if (ib === -1) ib = 99;
+        return ia - ib;
+      });
+      return cats;
+    },
+    pickerGroups: function () {
+      var groups = {};
+      var self = this;
+      this.filteredAddableWidgets.forEach(function (w) {
+        var cat = w.category || "content";
+        if (!groups[cat]) {
+          groups[cat] = [];
+        }
+        groups[cat].push(w);
+      });
+      var out = [];
+      var order = this.pickerCategoryOrder || [];
+      order.forEach(function (cat) {
+        if (groups[cat] && groups[cat].length) {
+          out.push({
+            id: cat,
+            title: self.categoryTitle(cat),
+            widgets: groups[cat],
+          });
+        }
+      });
+      Object.keys(groups).forEach(function (cat) {
+        if (order.indexOf(cat) === -1) {
+          out.push({
+            id: cat,
+            title: self.categoryTitle(cat),
+            widgets: groups[cat],
+          });
+        }
+      });
+      return out;
+    },
   },
   methods: {
+    widgetTitle: function (item) {
+      if (!item) return "";
+      if (item.title) return item.title;
+      var key = item.lang || item.id;
+      return typeof lang === "function" ? lang(key) : key;
+    },
+    categoryTitle: function (cat) {
+      var key = "dashboard_widget_cat_" + (cat || "content");
+      return typeof lang === "function" ? lang(key) : cat;
+    },
+    setPickerCategory: function (cat) {
+      this.pickerCategory = this.pickerCategory === cat ? "" : cat;
+    },
+    widgetActionLabel: function (key) {
+      return typeof lang === "function" ? lang(key) : key;
+    },
+    widgetTotal: function (item) {
+      if (!item) return undefined;
+      var map = {
+        users: "users",
+        files: "files",
+        albums: "albumes",
+        collections: "content",
+        fragments: "fragments",
+        inbox: "inbox",
+        events: "events",
+        calendar: "events",
+        published: "pages_published",
+        menus: "menus",
+        categories: "categories",
+        videos: "videos",
+        page_pulse: "pages",
+      };
+      var key = map[item.id];
+      return key ? this.counts[key] : undefined;
+    },
+    refreshVisibleWidgets: function () {
+      var self = this;
+      this.$nextTick(function () {
+        self.renderCharts();
+        self.init();
+      });
+    },
+    collectIds: function (layout) {
+      var ids = {};
+      ((layout && layout.rows) || []).forEach(function (row) {
+        (row.cols || []).forEach(function (col) {
+          (col.items || []).forEach(function (item) {
+            if (item && item.id) {
+              ids[item.id] = true;
+            }
+          });
+        });
+      });
+      return ids;
+    },
+    asGrid: function (layout) {
+      if (layout && layout.rows) {
+        return layout;
+      }
+      return { v: 2, rows: [] };
+    },
+    cloneLayout: function (layout) {
+      try {
+        return JSON.parse(JSON.stringify(this.asGrid(layout)));
+      } catch (e) {
+        return { v: 2, rows: [] };
+      }
+    },
+    clampWidth: function (w) {
+      w = parseInt(w, 10);
+      if (this.columnWidths.indexOf(w) !== -1) {
+        return w;
+      }
+      return 12;
+    },
+    colClass: function (w, editing) {
+      w = this.clampWidth(w);
+      if (editing) {
+        return "col s" + w;
+      }
+      return "col s12 l" + w;
+    },
+    emptyCol: function (w) {
+      w = this.clampWidth(w || 12);
+      return { w: w, col: this.colClass(w, true), items: [] };
+    },
+    leftoverWidth: function (row) {
+      var used = 0;
+      ((row && row.cols) || []).forEach(function (col) {
+        used += parseInt(col.w, 10) || 0;
+      });
+      var left = 12 - used;
+      return left > 0 ? left : 0;
+    },
+    addColClass: function (row) {
+      var left = this.leftoverWidth(row);
+      if (left < 1) {
+        left = 2;
+      }
+      if (left > 12) {
+        left = 12;
+      }
+      return "col s" + left;
+    },
+    rebalanceRow: function (row) {
+      var n = (row.cols || []).length;
+      var w = n <= 1 ? 12 : n === 2 ? 6 : n === 3 ? 4 : 3;
+      var self = this;
+      row.cols = (row.cols || []).map(function (col) {
+        return Object.assign({}, col, { w: w, col: self.colClass(w, true) });
+      });
+    },
+    mutateDraft: function (fn) {
+      var layout = this.cloneLayout(this.draftLayout);
+      fn.call(this, layout);
+      this.draftLayout = layout;
+      this.refreshVisibleWidgets();
+    },
+    catalogWidget: function (id) {
+      var found = null;
+      (this.catalog || []).some(function (w) {
+        if (w.id === id) {
+          found = w;
+          return true;
+        }
+        return false;
+      });
+      return found;
+    },
+    widgetBind: function (item) {
+      return {
+        widgetId: item && item.id,
+        users: this.users,
+        files: this.files,
+        albumes: this.albumes,
+        forms_types: this.forms_types,
+        content: this.content,
+        events: this.events,
+        calendarEvents: this.calendarEvents,
+        fragments: this.fragments,
+        inbox: this.inbox,
+        published: this.published,
+        menus: this.menus,
+        categories: this.categories,
+        videos: this.videos,
+        site: this.site,
+        total: this.widgetTotal(item),
+        kpis: this.kpis,
+        analyticsUrl: this.analyticsUrl,
+        canViewAnalytics: this.canViewAnalytics,
+        hasAnalyticsData: this.hasAnalyticsData,
+        hasReferrers: this.hasReferrers,
+        stats: this.stats,
+        graphs: this.graphs,
+        topPages: this.topPages,
+        loader: this.loader,
+        counts: this.counts,
+        creator: this.creator,
+        creatorModes: this.creatorModes,
+        drafts: this.pages_draf,
+        timeline: this.timeline,
+        defaultAvatar: this.defaultAvatar,
+      };
+    },
+    applyLayoutPayload: function (data) {
+      if (!data) return;
+      this.layout = this.asGrid(data.layout);
+      this.catalog = data.catalog || [];
+      this.layoutSource = data.layout_source || data.source || "default";
+      if (typeof data.can_edit_layout !== "undefined") {
+        this.canEditLayout = !!data.can_edit_layout;
+      }
+      if (typeof data.can_publish_layout_default !== "undefined") {
+        this.canPublishLayoutDefault = !!data.can_publish_layout_default;
+      }
+      this.draftLayout = this.cloneLayout(this.layout);
+    },
+    startEditLayout: function () {
+      if (!this.canEditLayout) return;
+      this.draftLayout = this.cloneLayout(this.layout);
+      this.layoutEditing = true;
+      this.closePicker();
+      this.refreshVisibleWidgets();
+    },
+    cancelEditLayout: function () {
+      this.draftLayout = this.cloneLayout(this.layout);
+      this.layoutEditing = false;
+      this.closePicker();
+    },
+    onPickerKey: function (evt) {
+      if (evt && evt.key === "Escape") {
+        this.closePicker();
+      }
+    },
+    openPicker: function (ri, ci) {
+      this.pickerRi = ri;
+      this.pickerCi = ci;
+      this.pickerQuery = "";
+      this.pickerCategory = "";
+      if (!this.pickerOpen) {
+        document.addEventListener("keydown", this.onPickerKey);
+      }
+      this.pickerOpen = true;
+      var self = this;
+      this.$nextTick(function () {
+        var input = self.$el.querySelector(".dashboard-picker__search-input");
+        if (input) {
+          input.focus();
+        }
+      });
+    },
+    closePicker: function () {
+      this.pickerOpen = false;
+      this.pickerQuery = "";
+      this.pickerCategory = "";
+      document.removeEventListener("keydown", this.onPickerKey);
+    },
+    pickWidget: function (id) {
+      this.addWidgetToColumn(this.pickerRi, this.pickerCi, id);
+      if (!this.addableWidgets.length) {
+        this.closePicker();
+      }
+    },
+    addRow: function () {
+      this.mutateDraft(function (layout) {
+        layout.rows.push({ cols: [this.emptyCol(12)] });
+      });
+    },
+    removeRow: function (ri) {
+      this.mutateDraft(function (layout) {
+        layout.rows.splice(ri, 1);
+      });
+    },
+    moveRow: function (ri, dir) {
+      this.mutateDraft(function (layout) {
+        var next = ri + dir;
+        if (next < 0 || next >= layout.rows.length) return;
+        var tmp = layout.rows[ri];
+        layout.rows[ri] = layout.rows[next];
+        layout.rows[next] = tmp;
+      });
+    },
+    addColumn: function (ri) {
+      this.mutateDraft(function (layout) {
+        var row = layout.rows[ri];
+        if (!row || (row.cols || []).length >= this.maxCols) return;
+        row.cols.push(this.emptyCol(4));
+        this.rebalanceRow(row);
+      });
+    },
+    removeColumn: function (ri, ci) {
+      this.mutateDraft(function (layout) {
+        var row = layout.rows[ri];
+        if (!row) return;
+        row.cols.splice(ci, 1);
+        if (!row.cols.length) {
+          layout.rows.splice(ri, 1);
+        } else {
+          this.rebalanceRow(row);
+        }
+      });
+    },
+    setColumnWidth: function (ri, ci, w) {
+      var self = this;
+      this.mutateDraft(function (layout) {
+        var row = layout.rows[ri];
+        var col = row && row.cols[ci];
+        if (!col) return;
+        var others = 0;
+        (row.cols || []).forEach(function (c, i) {
+          if (i !== ci) {
+            others += parseInt(c.w, 10) || 0;
+          }
+        });
+        if (others >= 12) {
+          self.rebalanceRow(row);
+          return;
+        }
+        var next = self.clampWidth(w);
+        if (others + next > 12) {
+          var allowed = [12, 9, 8, 7, 6, 5, 4, 3];
+          var max = 12 - others;
+          var i;
+          next = 3;
+          for (i = 0; i < allowed.length; i++) {
+            if (allowed[i] <= max) {
+              next = allowed[i];
+              break;
+            }
+          }
+        }
+        col.w = next;
+        col.col = self.colClass(col.w, true);
+      });
+    },
+    addWidgetToColumn: function (ri, ci, evt) {
+      var id = evt && evt.target ? evt.target.value : evt;
+      if (evt && evt.target) {
+        evt.target.value = "";
+      }
+      if (!id) return;
+      var found = this.catalogWidget(id);
+      if (!found) return;
+      this.mutateDraft(function (layout) {
+        if (this.collectIds(layout)[id]) return;
+        var col = layout.rows[ri] && layout.rows[ri].cols[ci];
+        if (!col) return;
+        col.items = (col.items || []).concat([
+          {
+            id: found.id,
+            component: found.component,
+            lang: found.lang,
+            title: found.title,
+            icon: found.icon,
+          },
+        ]);
+      });
+    },
+    removeWidget: function (ri, ci, id) {
+      this.mutateDraft(function (layout) {
+        var col = layout.rows[ri] && layout.rows[ri].cols[ci];
+        if (!col) return;
+        col.items = (col.items || []).filter(function (w) {
+          return w.id !== id;
+        });
+      });
+    },
+    moveWidgetInColumn: function (ri, ci, wi, dir) {
+      this.mutateDraft(function (layout) {
+        var col = layout.rows[ri] && layout.rows[ri].cols[ci];
+        if (!col || !col.items) return;
+        var next = wi + dir;
+        if (next < 0 || next >= col.items.length) return;
+        var tmp = col.items[wi];
+        col.items[wi] = col.items[next];
+        col.items[next] = tmp;
+      });
+    },
+    moveWidgetAcross: function (ri, ci, wi, dci) {
+      this.mutateDraft(function (layout) {
+        var row = layout.rows[ri];
+        if (!row) return;
+        var dest = ci + dci;
+        if (dest < 0 || dest >= row.cols.length) return;
+        var col = row.cols[ci];
+        var item = col.items && col.items[wi];
+        if (!item) return;
+        col.items.splice(wi, 1);
+        row.cols[dest].items = (row.cols[dest].items || []).concat([item]);
+      });
+    },
+    slimDraft: function () {
+      var rows = [];
+      ((this.draftLayout && this.draftLayout.rows) || []).forEach(function (row) {
+        var cols = [];
+        (row.cols || []).forEach(function (col) {
+          var items = (col.items || [])
+            .map(function (w) {
+              return w.id;
+            })
+            .filter(Boolean);
+          if (items.length) {
+            cols.push({ w: col.w, items: items });
+          }
+        });
+        if (cols.length) {
+          rows.push({ cols: cols });
+        }
+      });
+      return { v: 2, rows: rows };
+    },
+    postLayout: function (url, body, onOk) {
+      var self = this;
+      if (this.layoutSaving) return;
+      this.closePicker();
+      this.layoutSaving = true;
+      fetch(url, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "X-Requested-With": "XMLHttpRequest",
+        },
+        body: body ? JSON.stringify(body) : "{}",
+      })
+        .then(function (response) {
+          return response.json().then(function (json) {
+            return { status: response.status, json: json };
+          });
+        })
+        .then(function (res) {
+          self.layoutSaving = false;
+          if (res.status === 403) {
+            M.toast({
+              html:
+                (typeof lang === "function" && lang("dashboard_layout_forbidden")) ||
+                "You cannot change this layout",
+              classes: "red",
+            });
+            return;
+          }
+          if (res.json && res.json.code == 200 && res.json.data) {
+            onOk(res.json.data);
+          } else {
+            M.toast({
+              html:
+                (typeof lang === "function" && lang("dashboard_save_error")) ||
+                "An unexpected error occurred",
+            });
+          }
+        })
+        .catch(function () {
+          self.layoutSaving = false;
+          M.toast({
+            html:
+              (typeof lang === "function" && lang("dashboard_save_error")) ||
+              "An unexpected error occurred",
+          });
+        });
+    },
+    saveLayout: function () {
+      var self = this;
+      this.postLayout(this.api_data.dashboard + "layout", { layout: this.slimDraft() }, function (data) {
+        self.applyLayoutPayload(data);
+        self.layoutEditing = false;
+        self.closePicker();
+        M.toast({
+          html:
+            (typeof lang === "function" && lang("dashboard_layout_saved")) ||
+            "Layout saved",
+        });
+        self.$nextTick(function () {
+          self.renderCharts();
+          self.init();
+        });
+      });
+    },
+    resetLayout: function () {
+      var self = this;
+      this.postLayout(this.api_data.dashboard + "layout_reset", {}, function (data) {
+        self.applyLayoutPayload(data);
+        self.layoutEditing = false;
+        self.closePicker();
+        M.toast({
+          html:
+            (typeof lang === "function" && lang("dashboard_layout_saved")) ||
+            "Layout saved",
+        });
+        self.$nextTick(function () {
+          self.renderCharts();
+          self.init();
+        });
+      });
+    },
+    saveLayoutAsDefault: function () {
+      var self = this;
+      this.postLayout(
+        this.api_data.dashboard + "layout_default",
+        { layout: this.slimDraft() },
+        function (data) {
+          self.applyLayoutPayload(data);
+          self.layoutEditing = false;
+          self.closePicker();
+          M.toast({
+            html:
+              (typeof lang === "function" && lang("dashboard_layout_saved_default")) ||
+              "Saved as the default for your group",
+          });
+          self.$nextTick(function () {
+            self.renderCharts();
+            self.init();
+          });
+        }
+      );
+    },
+    maybeStartCustomize: function () {
+      var query = window.location.search || "";
+      if (query.indexOf("customize=1") === -1) {
+        return;
+      }
+      if (!this.canEditLayout) {
+        return;
+      }
+      this.startEditLayout();
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    },
+    renderCharts: function () {
+      var data = this.chartPayload || {};
+      if (data.chart3 && data.chart3.labels && data.chart3.labels.length) {
+        this.graphs.devices = this.calcularPorcentajeMayor(data.chart3);
+        this.createChart("myChart3", {
+          type: "bar",
+          data: data.chart3,
+          displayX: false,
+          displayY: false,
+        });
+        this.createChart("dashChartDevices", {
+          type: "bar",
+          data: data.chart3,
+          displayX: false,
+          displayY: false,
+        });
+      }
+      if (data.chart4 && data.chart4.labels && data.chart4.labels.length) {
+        this.graphs.urlFrecuentes = this.calcularPorcentajeMayor(data.chart4);
+        this.createChart("myChart4", {
+          type: "doughnut",
+          data: data.chart4,
+          displayX: false,
+          displayY: false,
+        });
+        this.createChart("dashChartUrls", {
+          type: "doughnut",
+          data: data.chart4,
+          displayX: false,
+          displayY: false,
+        });
+      }
+      if (data.chart1 && data.chart1.labels && data.chart1.labels.length) {
+        this.createChart("myChart1", {
+          type: "line",
+          data: data.chart1,
+          displayGrid: false,
+        });
+        this.createChart("dashChartVisits", {
+          type: "line",
+          data: data.chart1,
+          displayGrid: false,
+        });
+      }
+      if (data.chart2 && data.chart2.labels && data.chart2.labels.length) {
+        this.createChart("myChart2", {
+          type: "bar",
+          data: data.chart2,
+          displayGrid: false,
+        });
+        this.createChart("dashChartRequests", {
+          type: "bar",
+          data: data.chart2,
+          displayGrid: false,
+        });
+      }
+      if (data.referrers && data.referrers.labels && data.referrers.labels.length) {
+        this.createChart("myChartReferrers", {
+          type: "doughnut",
+          data: data.referrers,
+          displayX: false,
+          displayY: false,
+        });
+        this.createChart("dashChartReferrers", {
+          type: "doughnut",
+          data: data.referrers,
+          displayX: false,
+          displayY: false,
+        });
+      }
+    },
     setCreatorMode: function (mode) {
       if (this.creatorModes.indexOf(mode) === -1) {
         return;
@@ -475,6 +1180,9 @@ var DashboardModule = new Vue({
         .then((response) => response.json())
         .then((response) => {
           let data = response.data || {};
+          this.applyLayoutPayload(data);
+          this.maybeStartCustomize();
+          this.chartPayload = data;
           if (data.capabilities) {
             this.capabilities = data.capabilities;
           }
@@ -510,6 +1218,16 @@ var DashboardModule = new Vue({
             })
             : [];
           this.events = data.events ? data.events : [];
+          this.calendarEvents = data.calendar_events ? data.calendar_events : [];
+          this.fragments = data.fragments ? data.fragments : [];
+          this.inbox = data.inbox ? data.inbox : [];
+          this.published = data.published ? data.published : [];
+          this.menus = data.menus ? data.menus : [];
+          this.categories = data.categories ? data.categories : [];
+          this.videos = data.videos ? data.videos : [];
+          if (data.site) {
+            this.site = Object.assign({}, this.site, data.site);
+          }
 
           if (typeof data.can_view_analytics !== "undefined") {
             this.canViewAnalytics = !!data.can_view_analytics;
@@ -545,56 +1263,12 @@ var DashboardModule = new Vue({
           this.loader = false;
 
           var self = this;
+          if (data.timeline) {
+            this.timeline = this.getTimeLine(data.timeline);
+          }
           this.$nextTick(function () {
-            if (data.chart3 && data.chart3.labels && data.chart3.labels.length) {
-              self.graphs.devices = self.calcularPorcentajeMayor(data.chart3);
-              self.createChart("myChart3", {
-                type: "bar",
-                data: data.chart3,
-                displayX: false,
-                displayY: false,
-              });
-            }
-
-            if (data.chart4 && data.chart4.labels && data.chart4.labels.length) {
-              self.graphs.urlFrecuentes = self.calcularPorcentajeMayor(data.chart4);
-              self.createChart("myChart4", {
-                type: "doughnut",
-                data: data.chart4,
-                displayX: false,
-                displayY: false,
-              });
-            }
-
-            if (data.timeline) {
-              self.timeline = self.getTimeLine(data.timeline);
-            }
-
-            if (data.chart1 && data.chart1.labels && data.chart1.labels.length) {
-              self.createChart("myChart1", {
-                type: "line",
-                data: data.chart1,
-                displayGrid: false,
-              });
-            }
-
-            if (data.chart2 && data.chart2.labels && data.chart2.labels.length) {
-              self.createChart("myChart2", {
-                type: "bar",
-                data: data.chart2,
-                displayGrid: false,
-              });
-            }
-
-            if (data.referrers && data.referrers.labels && data.referrers.labels.length) {
-              self.createChart("myChartReferrers", {
-                type: "doughnut",
-                data: data.referrers,
-                displayX: false,
-                displayY: false,
-              });
-            }
-
+            self.maybeStartCustomize();
+            self.renderCharts();
             self.init();
           });
         })
@@ -611,6 +1285,9 @@ var DashboardModule = new Vue({
           }
         });
     },
+  },
+  beforeDestroy: function () {
+    document.removeEventListener("keydown", this.onPickerKey);
   },
   mounted: function () {
     this.$nextTick(() => {

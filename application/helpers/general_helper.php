@@ -722,6 +722,11 @@ if (!function_exists('dashboard_capabilities')) {
             'select_content_data' => 'SELECT_CONTENT_DATA',
             'select_categories' => 'SELECT_CATEGORIES',
             'select_fragments' => 'SELECT_FRAGMENTS',
+            'select_config' => 'SELECT_CONFIG',
+            'select_calendar' => 'SELECT_CALENDAR',
+            'select_siteforms' => 'SELECT_SITEFORMS',
+            'select_menus' => 'SELECT_MENUS',
+            'select_videos' => 'SELECT_VIDEOS',
             'create_page' => 'CREATE_PAGE',
             'create_user' => 'CREATE_USER',
             'create_form_custom' => 'CREATE_FORM_CUSTOM',
@@ -741,6 +746,10 @@ if (!function_exists('dashboard_capabilities')) {
         $caps['can_use_rail'] = !empty($caps['can_use_creator']) || !empty($caps['select_pages']);
         $caps['can_view_collections'] = !empty($caps['select_form_customs'])
             || !empty($caps['select_content_data']);
+        $caps['can_edit_layout'] = function_exists('has_permisions')
+            && has_permisions('UPDATE_DASHBOARD_LAYOUT');
+        $caps['can_publish_layout_default'] = !empty($caps['can_edit_layout'])
+            && has_permisions('UPDATE_USERGROUP');
         return $caps;
     }
 }
@@ -801,6 +810,489 @@ if (!function_exists('dashboard_perm_cache_key')) {
         $names = array_values(array_unique($names));
         sort($names, SORT_STRING);
         return md5(implode(',', $names));
+    }
+}
+
+
+if (!function_exists('dashboard_widget_catalog')) {
+    /**
+     * Closed widget registry (id, Vue component, SELECT or CREATE permision, width, order).
+     *
+     * @return array
+     */
+    function dashboard_widget_catalog()
+    {
+        $ci = &get_instance();
+        $ci->config->load('dashboard_widgets', true);
+        $catalog = $ci->config->item('dashboard_widget_catalog', 'dashboard_widgets');
+        return is_array($catalog) ? $catalog : array();
+    }
+}
+
+if (!function_exists('dashboard_widget_allowed')) {
+    /**
+     * @param array $widget
+     * @return bool
+     */
+    function dashboard_widget_allowed($widget)
+    {
+        if (!is_array($widget)) {
+            return false;
+        }
+        if (empty($widget['permission'])) {
+            return true;
+        }
+        $perms = is_array($widget['permission']) ? $widget['permission'] : array($widget['permission']);
+        $mode = isset($widget['permission_mode']) ? $widget['permission_mode'] : 'all';
+        $has_fn = function_exists('has_permisions');
+        if ($mode === 'any') {
+            foreach ($perms as $perm) {
+                if ($has_fn && has_permisions($perm)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        foreach ($perms as $perm) {
+            if (!$has_fn || !has_permisions($perm)) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+if (!function_exists('dashboard_layout_max_cols')) {
+    /**
+     * @return int
+     */
+    function dashboard_layout_max_cols()
+    {
+        return 4;
+    }
+}
+
+if (!function_exists('dashboard_clamp_width')) {
+    /**
+     * Materialize 12-grid presets: 3, 4, 5, 6, 7, 8, 9, 12.
+     *
+     * @param mixed $w
+     * @return int
+     */
+    function dashboard_clamp_width($w)
+    {
+        $w = (int) $w;
+        $allowed = array(3, 4, 5, 6, 7, 8, 9, 12);
+        if (in_array($w, $allowed, true)) {
+            return $w;
+        }
+        return 12;
+    }
+}
+
+if (!function_exists('dashboard_widget_col_class')) {
+    /**
+     * @param int $w
+     * @return string
+     */
+    function dashboard_widget_col_class($w)
+    {
+        $w = dashboard_clamp_width($w);
+        return 'col s12 l' . $w;
+    }
+}
+
+if (!function_exists('dashboard_hydrate_widget')) {
+    /**
+     * @param string $id
+     * @param array $def
+     * @return array
+     */
+    function dashboard_hydrate_widget($id, $def)
+    {
+        $lang_key = isset($def['lang']) ? $def['lang'] : $id;
+        $category = isset($def['category']) ? $def['category'] : 'content';
+        return array(
+            'id' => (string) $id,
+            'component' => $def['component'],
+            'lang' => $lang_key,
+            'title' => function_exists('lang') ? lang($lang_key) : $lang_key,
+            'icon' => isset($def['icon']) ? $def['icon'] : 'widgets',
+            'category' => $category,
+        );
+    }
+}
+
+if (!function_exists('dashboard_layout_is_grid')) {
+    /**
+     * @param mixed $value
+     * @return bool
+     */
+    function dashboard_layout_is_grid($value)
+    {
+        if (!is_array($value)) {
+            return false;
+        }
+        if (isset($value['rows']) && is_array($value['rows'])) {
+            return true;
+        }
+        if (isset($value[0]) && is_array($value[0]) && isset($value[0]['cols'])) {
+            return true;
+        }
+        return false;
+    }
+}
+
+if (!function_exists('dashboard_pack_flat_to_rows')) {
+    /**
+     * v1 [{id,w,o}] packed into rows that sum to at most 12.
+     *
+     * @param array $items
+     * @return array
+     */
+    function dashboard_pack_flat_to_rows($items)
+    {
+        $rows = array();
+        $cols = array();
+        $used = 0;
+        if (!is_array($items)) {
+            return $rows;
+        }
+        foreach ($items as $item) {
+            if (!is_array($item) || empty($item['id'])) {
+                continue;
+            }
+            $w = isset($item['w']) ? dashboard_clamp_width($item['w']) : 12;
+            if ($cols && ($used + $w > 12 || count($cols) >= dashboard_layout_max_cols())) {
+                $rows[] = array('cols' => $cols);
+                $cols = array();
+                $used = 0;
+            }
+            $cols[] = array(
+                'w' => $w,
+                'items' => array((string) $item['id']),
+            );
+            $used += $w;
+        }
+        if ($cols) {
+            $rows[] = array('cols' => $cols);
+        }
+        return $rows;
+    }
+}
+
+if (!function_exists('dashboard_layout_rows')) {
+    /**
+     * @param mixed $value
+     * @return array
+     */
+    function dashboard_layout_rows($value)
+    {
+        if (!is_array($value)) {
+            return array();
+        }
+        if (isset($value['rows']) && is_array($value['rows'])) {
+            return $value['rows'];
+        }
+        if (isset($value[0]) && is_array($value[0]) && isset($value[0]['cols'])) {
+            return $value;
+        }
+        return dashboard_pack_flat_to_rows($value);
+    }
+}
+
+if (!function_exists('dashboard_col_item_ids')) {
+    /**
+     * @param array $col
+     * @return array
+     */
+    function dashboard_col_item_ids($col)
+    {
+        $ids = array();
+        if (!is_array($col)) {
+            return $ids;
+        }
+        if (isset($col['items']) && is_array($col['items'])) {
+            foreach ($col['items'] as $item) {
+                if (is_array($item) && !empty($item['id'])) {
+                    $ids[] = (string) $item['id'];
+                } elseif (is_string($item) && $item !== '') {
+                    $ids[] = $item;
+                }
+            }
+            return $ids;
+        }
+        if (!empty($col['id'])) {
+            $ids[] = (string) $col['id'];
+        }
+        return $ids;
+    }
+}
+
+if (!function_exists('dashboard_layout_slim')) {
+    /**
+     * Persist rows / cols / widget ids. Widths are 3–9 or 12.
+     *
+     * @param array $layout
+     * @return array
+     */
+    function dashboard_layout_slim($layout)
+    {
+        $rows_out = array();
+        foreach (dashboard_layout_rows($layout) as $row) {
+            if (!is_array($row) || empty($row['cols']) || !is_array($row['cols'])) {
+                continue;
+            }
+            $cols_out = array();
+            foreach ($row['cols'] as $col) {
+                $ids = dashboard_col_item_ids($col);
+                if (!$ids) {
+                    continue;
+                }
+                $w = isset($col['w']) ? dashboard_clamp_width($col['w']) : 12;
+                $cols_out[] = array(
+                    'w' => $w,
+                    'items' => array_values($ids),
+                );
+            }
+            if ($cols_out) {
+                $rows_out[] = array('cols' => $cols_out);
+            }
+        }
+        return array(
+            'v' => 2,
+            'rows' => $rows_out,
+        );
+    }
+}
+
+if (!function_exists('dashboard_fit_row_cols')) {
+    /**
+     * Keep a row on the 12-grid. Overflowing widths are reset to even presets.
+     *
+     * @param array $cols_out
+     * @return array
+     */
+    function dashboard_fit_row_cols($cols_out)
+    {
+        if (!is_array($cols_out) || !$cols_out) {
+            return $cols_out;
+        }
+        $sum = 0;
+        foreach ($cols_out as $col) {
+            $sum += isset($col['w']) ? (int) $col['w'] : 0;
+        }
+        if ($sum <= 12) {
+            return $cols_out;
+        }
+        $n = count($cols_out);
+        $w = $n <= 1 ? 12 : ($n === 2 ? 6 : ($n === 3 ? 4 : 3));
+        foreach ($cols_out as $i => $col) {
+            $cols_out[$i]['w'] = $w;
+            $cols_out[$i]['col'] = dashboard_widget_col_class($w);
+        }
+        return $cols_out;
+    }
+}
+
+if (!function_exists('dashboard_normalize_layout')) {
+    /**
+     * Grid of rows and columns. Drops unknown ids and widgets the group
+     * cannot use. Overwrites width to 3–9 or 12. The API never trusts the client.
+     *
+     * @param mixed $items
+     * @return array
+     */
+    function dashboard_normalize_layout($items)
+    {
+        $catalog = dashboard_widget_catalog();
+        $by_id = array();
+        foreach ($catalog as $widget) {
+            if (!empty($widget['id'])) {
+                $by_id[$widget['id']] = $widget;
+            }
+        }
+        $seen = array();
+        $rows_out = array();
+        foreach (dashboard_layout_rows($items) as $row) {
+            if (!is_array($row) || empty($row['cols']) || !is_array($row['cols'])) {
+                continue;
+            }
+            $cols_out = array();
+            foreach ($row['cols'] as $col) {
+                if (!is_array($col)) {
+                    continue;
+                }
+                $w = isset($col['w']) ? dashboard_clamp_width($col['w']) : 12;
+                $items_out = array();
+                foreach (dashboard_col_item_ids($col) as $id) {
+                    if (isset($seen[$id]) || !isset($by_id[$id])) {
+                        continue;
+                    }
+                    $def = $by_id[$id];
+                    if (!dashboard_widget_allowed($def)) {
+                        continue;
+                    }
+                    $seen[$id] = true;
+                    $items_out[] = dashboard_hydrate_widget($id, $def);
+                }
+                if (!$items_out) {
+                    continue;
+                }
+                $cols_out[] = array(
+                    'w' => $w,
+                    'col' => dashboard_widget_col_class($w),
+                    'items' => $items_out,
+                );
+            }
+            if (!$cols_out) {
+                continue;
+            }
+            $chunks = array_chunk($cols_out, dashboard_layout_max_cols());
+            foreach ($chunks as $chunk) {
+                $rows_out[] = array('cols' => dashboard_fit_row_cols($chunk));
+            }
+        }
+        return array(
+            'v' => 2,
+            'rows' => $rows_out,
+        );
+    }
+}
+
+if (!function_exists('dashboard_default_layout')) {
+    /**
+     * Catalog order packed into rows, only widgets the current group can use.
+     *
+     * @return array
+     */
+    function dashboard_default_layout()
+    {
+        $items = array();
+        foreach (dashboard_widget_catalog() as $widget) {
+            if (isset($widget['in_default']) && !$widget['in_default']) {
+                continue;
+            }
+            $items[] = array(
+                'id' => $widget['id'],
+                'w' => isset($widget['w']) ? (int) $widget['w'] : 12,
+                'o' => isset($widget['o']) ? (int) $widget['o'] : 0,
+            );
+        }
+        return dashboard_normalize_layout($items);
+    }
+}
+
+if (!function_exists('dashboard_decode_layout_json')) {
+    /**
+     * @param mixed $json
+     * @return array|null
+     */
+    function dashboard_decode_layout_json($json)
+    {
+        if (!is_string($json) || $json === '') {
+            return null;
+        }
+        $decoded = json_decode($json, true);
+        return is_array($decoded) ? $decoded : null;
+    }
+}
+
+if (!function_exists('dashboard_layout_widget_ids')) {
+    /**
+     * @param array $layout
+     * @return array
+     */
+    function dashboard_layout_widget_ids($layout)
+    {
+        $ids = array();
+        foreach (dashboard_layout_rows($layout) as $row) {
+            if (!is_array($row) || empty($row['cols']) || !is_array($row['cols'])) {
+                continue;
+            }
+            foreach ($row['cols'] as $col) {
+                foreach (dashboard_col_item_ids($col) as $id) {
+                    $ids[$id] = true;
+                }
+            }
+        }
+        return $ids;
+    }
+}
+
+if (!function_exists('dashboard_layout_payload')) {
+    /**
+     * Resolved layout + allowed catalog for the current user.
+     *
+     * @return array
+     */
+    function dashboard_layout_payload()
+    {
+        $ci = &get_instance();
+        $ci->load->model('Admin/DashboardLayoutModel');
+        $model = new DashboardLayoutModel();
+        $user_id = (int) userdata('user_id');
+        $group_id = (int) userdata('usergroup_id');
+        $source = 'default';
+        $raw = null;
+
+        $user_row = $model->find_for_user($user_id);
+        if ($user_row) {
+            $decoded = dashboard_decode_layout_json($user_row['layout_json']);
+            if ($decoded !== null) {
+                $raw = $decoded;
+                $source = 'user';
+            }
+        }
+        if ($raw === null) {
+            $group_row = $model->find_for_group($group_id);
+            if ($group_row) {
+                $decoded = dashboard_decode_layout_json($group_row['layout_json']);
+                if ($decoded !== null) {
+                    $raw = $decoded;
+                    $source = 'group';
+                }
+            }
+        }
+        if ($raw === null) {
+            $layout = dashboard_default_layout();
+            $source = 'default';
+        } else {
+            $layout = dashboard_normalize_layout($raw);
+        }
+
+        $in_layout = dashboard_layout_widget_ids($layout);
+        $catalog = array();
+        foreach (dashboard_widget_catalog() as $widget) {
+            if (!dashboard_widget_allowed($widget)) {
+                continue;
+            }
+            $w = isset($widget['w']) ? dashboard_clamp_width($widget['w']) : 12;
+            $lang_key = isset($widget['lang']) ? $widget['lang'] : $widget['id'];
+            $category = isset($widget['category']) ? $widget['category'] : 'content';
+            $catalog[] = array(
+                'id' => $widget['id'],
+                'w' => $w,
+                'o' => isset($widget['o']) ? (int) $widget['o'] : 0,
+                'component' => $widget['component'],
+                'lang' => $lang_key,
+                'title' => function_exists('lang') ? lang($lang_key) : $lang_key,
+                'icon' => $widget['icon'],
+                'category' => $category,
+                'col' => dashboard_widget_col_class($w),
+                'in_layout' => !empty($in_layout[$widget['id']]),
+            );
+        }
+
+        return array(
+            'layout' => $layout,
+            'catalog' => $catalog,
+            'source' => $source,
+            'can_edit_layout' => function_exists('has_permisions') && has_permisions('UPDATE_DASHBOARD_LAYOUT'),
+            'can_publish_layout_default' => function_exists('has_permisions')
+                && has_permisions('UPDATE_DASHBOARD_LAYOUT')
+                && has_permisions('UPDATE_USERGROUP'),
+        );
     }
 }
 

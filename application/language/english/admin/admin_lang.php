@@ -201,6 +201,9 @@ $lang['tooltip_new_album'] = 'New Album';
 $lang['tooltip_new_event'] = 'New Event';
 $lang['tooltip_new_category'] = 'New Category';
 $lang['tooltip_new_fragment'] = 'New Fragment';
+$lang['tooltip_new_video'] = 'New video';
+$lang['tooltip_new_menu'] = 'New menu';
+$lang['tooltip_new_file'] = 'Upload file';
 
 // Categories
 $lang['categories_new'] = 'New Category';
