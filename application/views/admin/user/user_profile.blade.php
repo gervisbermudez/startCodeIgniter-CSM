@@ -67,25 +67,27 @@
                         <i v-else class="material-icons circle grey lighten-5 z-depth-1" aria-hidden="true">account_circle</i>
                     </span>
                 </div>
-                <div class="card-content row">
-                    <div class="col s12 center-align">
-                        <span class="card-title">@{{ user.get_fullname() }}</span>
+                <div class="card-content user-profile-identity">
+                    <div class="user-profile-identity__body">
+                        <span class="card-title user-profile-identity__name">@{{ user.get_fullname() }}</span>
                         <p class="user-profile-username">
                             <i class="material-icons" aria-hidden="true">person</i>
                             <span>@{{ user.username }}</span>
                         </p>
-                        <p class="user-profile-role" v-if="user.role">
-                            <i class="material-icons" aria-hidden="true">supervisor_account</i>
-                            <span>@{{ user.role }}</span>
-                        </p>
+                        <div class="user-profile-identity__chips">
+                            <span class="user-profile-role" v-if="user.role">
+                                <i class="material-icons" aria-hidden="true">supervisor_account</i>
+                                <span>@{{ user.role }}</span>
+                            </span>
+                            <span class="user-profile-status" v-bind:class="isActive ? 'user-profile-status--active' : 'user-profile-status--inactive'">
+                                <i class="material-icons" aria-hidden="true">@{{ isActive ? 'check_circle' : 'pause_circle_filled' }}</i>
+                                @{{ isActive ? lang('user_profile_status_active') : lang('user_profile_status_inactive') }}
+                            </span>
+                        </div>
                         <p class="user-profile-lastseen" v-if="user.lastseen">
                             <i class="material-icons" aria-hidden="true">schedule</i>
                             <span><?= lang('users_last_seen') ?> · @{{ timeAgo(user.lastseen) }}</span>
                         </p>
-                        <span class="user-profile-status" v-bind:class="isActive ? 'user-profile-status--active' : 'user-profile-status--inactive'">
-                            <i class="material-icons" aria-hidden="true">@{{ isActive ? 'check_circle' : 'pause_circle_filled' }}</i>
-                            @{{ isActive ? lang('user_profile_status_active') : lang('user_profile_status_inactive') }}
-                        </span>
                     </div>
                 </div>
             </div>
