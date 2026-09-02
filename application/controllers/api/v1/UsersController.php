@@ -70,22 +70,23 @@ class UsersController extends REST_Controller
      */
     public function index_get($user_id = null)
     {
-        if (!$this->require_user_permision('SELECT_USERS')) {
-            return;
-        }
-
         if ($user_id) {
-            $result = $this->User->get_full_info($user_id);
+            if (!$this->can_access_user_profile($user_id)) {
+                return;
+            }
+            $result = $this->User->get_full_info($user_id, array('include_inactive' => true));
             if ($result) {
-                // Return the first user object, not an array
                 $this->response_ok(isset($result[0]) ? $result[0] : $result);
                 return;
             }
             $this->response_error(lang('not_found_error'));
             return;
         }
-        
-        // Get all users with full info
+
+        if (!$this->require_user_permision('SELECT_USERS')) {
+            return;
+        }
+
         $result = $this->User->get_full_info();
         $this->response_ok($result);
     }
@@ -267,6 +268,9 @@ class UsersController extends REST_Controller
         $user = new UserModel();
         if (!$user->find($user_id)) {
             $this->response_error(lang('user_not_found_error'));
+            return;
+        }
+        if (!$this->assert_can_mutate_other_user($user)) {
             return;
         }
         if ($user->delete()) {
@@ -499,24 +503,165 @@ class UsersController extends REST_Controller
      */
     public function timeline_get($user_id = null)
     {
-        $session_id = (int) userdata('user_id');
-        if ((int) $user_id !== $session_id) {
-            if (!$this->require_user_permision('SELECT_USERS')) {
-                return;
-            }
+        if (!$this->can_access_user_profile($user_id)) {
+            return;
         }
-
         $user = new UserModel();
-        if ($user_id) {
-            $result = $user->find($user_id);
-            $result = $result ? $user : [];
-            if ($result) {
-                $this->response_ok($user->get_timeline($user_id));
-                return;
+        if (!$user_id || !$user->find($user_id)) {
+            $this->response_error(lang('not_found_error'));
+            return;
+        }
+        $pag = $this->pagination_from_get();
+        $total = $this->User->count_timeline($user_id);
+        $items = $this->User->get_timeline($user_id, $pag['per_page'], $pag['offset']);
+        $this->response_ok($items, $this->pagination_meta($pag, $total));
+    }
+
+    public function logs_get($user_id = null)
+    {
+        if (!$this->can_access_user_profile($user_id)) {
+            return;
+        }
+        $user = new UserModel();
+        if (!$user_id || !$user->find($user_id)) {
+            $this->response_error(lang('not_found_error'));
+            return;
+        }
+        $pag = $this->pagination_from_get();
+        $uid = (int) $user_id;
+        $this->db->from('logger');
+        $this->db->where('user_id', $uid);
+        $total = (int) $this->db->count_all_results();
+
+        $this->db->select('logger_id, type, type_id, token, comment, date_create');
+        $this->db->from('logger');
+        $this->db->where('user_id', $uid);
+        $this->db->order_by('date_create', 'DESC');
+        $this->db->limit($pag['per_page'], $pag['offset']);
+        $query = $this->db->get();
+        $rows = array();
+        if ($query && $query->num_rows() > 0) {
+            foreach ($query->result_array() as $row) {
+                $row['type_link'] = $this->logger_type_link($row['type'], $row['type_id']);
+                $rows[] = $row;
             }
         }
+        $meta = $this->pagination_meta($pag, $total);
+        $meta['logger_enabled'] = ((string) config('SYSTEM_LOGGER') === '1');
+        $this->response_ok($rows, $meta);
+    }
 
-        $this->response_error(lang('not_found_error'));
+    public function summary_get($user_id = null)
+    {
+        if (!$this->can_access_user_profile($user_id)) {
+            return;
+        }
+        $user = new UserModel();
+        if (!$user_id || !$user->find($user_id)) {
+            $this->response_error(lang('not_found_error'));
+            return;
+        }
+        $uid = (int) $user_id;
+        $drafts = array();
+        $this->db->select('page_id, title, date_update');
+        $this->db->from('page');
+        $this->db->where('user_id', $uid);
+        $this->db->where('status', 2);
+        $this->db->order_by('date_update', 'DESC');
+        $this->db->limit(5);
+        $drafts_query = $this->db->get();
+        if ($drafts_query && $drafts_query->num_rows() > 0) {
+            $drafts = $drafts_query->result_array();
+        }
+
+        $recent_files = array();
+        $this->db->select('file_id, file_name, file_path, file_type, date_create');
+        $this->db->from('file');
+        $this->db->where('user_id', $uid);
+        $this->db->where('status !=', 0);
+        $this->db->order_by('file_id', 'DESC');
+        $this->db->limit(8);
+        $files_query = $this->db->get();
+        if ($files_query && $files_query->num_rows() > 0) {
+            $recent_files = $files_query->result_array();
+        }
+
+        $last_login = null;
+        $this->db->select('date_create');
+        $this->db->from('logger');
+        $this->db->where('user_id', $uid);
+        $this->db->where('token', 'login');
+        $this->db->order_by('logger_id', 'DESC');
+        $this->db->limit(1);
+        $login_query = $this->db->get();
+        if ($login_query && $login_query->num_rows() > 0) {
+            $login_row = $login_query->row_array();
+            $last_login = isset($login_row['date_create']) ? $login_row['date_create'] : null;
+        }
+
+        $this->load->model('Admin/UsergroupModel');
+        $usergroup = new UsergroupModel();
+        $permissions = array();
+        $usergroup_name = '';
+        if ($user->usergroup_id && $usergroup->find($user->usergroup_id)) {
+            $usergroup_name = $usergroup->name;
+            $perms = $usergroup->usergroup_permisions();
+            $permissions = is_array($perms) ? $perms : array();
+        }
+
+        $status_ne = array('status !=' => 0);
+        $data = array(
+            'counts' => array(
+                'pages' => $this->count_by_user('page', $uid, $status_ne),
+                'collections' => $this->count_by_user('custom_model', $uid, $status_ne),
+                'items' => $this->count_by_user('custom_model_content', $uid, $status_ne),
+                'files' => $this->count_by_user('file', $uid, $status_ne),
+                'drafts' => $this->count_by_user('page', $uid, array('status' => 2)),
+                'fragments' => $this->count_by_user('fragmentos', $uid, $status_ne),
+                'albums' => $this->count_by_user('album', $uid, $status_ne),
+                'events' => $this->count_by_user('events', $uid, $status_ne),
+                'menus' => $this->count_by_user('menu', $uid, $status_ne),
+                'siteforms' => $this->count_by_user('siteform', $uid, $status_ne),
+            ),
+            'drafts' => $drafts,
+            'recent_files' => $recent_files,
+            'permissions' => $permissions,
+            'last_login' => $last_login,
+            'role' => isset($user->usergroup_id) ? $usergroup_name : '',
+            'usergroup_id' => $user->usergroup_id,
+            'usergroup_name' => $usergroup_name,
+        );
+        $this->response_ok($data);
+    }
+
+    public function status_post()
+    {
+        if (!$this->require_user_permision('UPDATE_USER')) {
+            return;
+        }
+        $user_id = $this->input->post('user_id');
+        $status = (int) $this->input->post('status');
+        if ($status !== 0 && $status !== 1) {
+            $this->response_error(lang('new_user_validations_error'), array(), REST_Controller::HTTP_BAD_REQUEST, REST_Controller::HTTP_BAD_REQUEST);
+            return;
+        }
+        $user = new UserModel();
+        if (!$user->find($user_id)) {
+            $this->response_error(lang('user_not_found_error'));
+            return;
+        }
+        if (!$this->assert_can_mutate_other_user($user)) {
+            return;
+        }
+        $user->status = $status;
+        if ($user->save()) {
+            $token = $status === 1 ? 'activated' : 'deactivated';
+            $comment = $status === 1 ? 'A user has been activated' : 'A user has been deactivated';
+            system_logger('users', $user->user_id, $token, $comment);
+            $this->response_ok($user);
+            return;
+        }
+        $this->response_error(lang('new_user_unexpected_error'), array(), REST_Controller::HTTP_INTERNAL_SERVER_ERROR, REST_Controller::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     public function avatar_post()
@@ -675,6 +820,163 @@ class UsersController extends REST_Controller
             return false;
         }
         return true;
+    }
+
+    /**
+     * @param mixed $user_id
+     * @return bool
+     */
+    protected function can_access_user_profile($user_id)
+    {
+        $user_id = (int) $user_id;
+        if ($user_id > 0 && $user_id === (int) userdata('user_id')) {
+            return true;
+        }
+        if (function_exists('has_permisions') && has_permisions('SELECT_USERS')) {
+            return true;
+        }
+        $this->response_error(
+            lang('not_have_permissions'),
+            array(),
+            REST_Controller::HTTP_FORBIDDEN,
+            REST_Controller::HTTP_FORBIDDEN
+        );
+        return false;
+    }
+
+    /**
+     * @param UserModel $target
+     * @return bool
+     */
+    protected function assert_can_mutate_other_user($target)
+    {
+        if (!$target || empty($target->user_id)) {
+            $this->response_error(lang('user_not_found_error'));
+            return false;
+        }
+        if ((int) $target->user_id === (int) userdata('user_id')) {
+            $this->response_error(
+                lang('not_have_permissions'),
+                array(),
+                REST_Controller::HTTP_FORBIDDEN,
+                REST_Controller::HTTP_FORBIDDEN
+            );
+            return false;
+        }
+        if ((int) $target->usergroup_id < (int) userdata('usergroup_id')) {
+            $this->response_error(
+                lang('not_have_permissions'),
+                array(),
+                REST_Controller::HTTP_FORBIDDEN,
+                REST_Controller::HTTP_FORBIDDEN
+            );
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @return array
+     */
+    protected function pagination_from_get()
+    {
+        $current_page = (int) $this->get('page');
+        if ($current_page < 1) {
+            $current_page = 1;
+        }
+        $per_page = (int) $this->get('per_page');
+        if ($per_page < 1) {
+            $per_page = 20;
+        }
+        if ($per_page > 100) {
+            $per_page = 100;
+        }
+        return array(
+            'current_page' => $current_page,
+            'per_page' => $per_page,
+            'offset' => ($current_page - 1) * $per_page,
+        );
+    }
+
+    /**
+     * @param array $pag
+     * @param int $total_rows
+     * @return array
+     */
+    protected function pagination_meta($pag, $total_rows)
+    {
+        $total_rows = (int) $total_rows;
+        $per_page = isset($pag['per_page']) ? (int) $pag['per_page'] : 20;
+        $current_page = isset($pag['current_page']) ? (int) $pag['current_page'] : 1;
+        $total_pages = $per_page > 0 ? (int) ceil($total_rows / $per_page) : 0;
+        return array(
+            'current_page' => $current_page,
+            'per_page' => $per_page,
+            'total_rows' => $total_rows,
+            'offset' => isset($pag['offset']) ? (int) $pag['offset'] : 0,
+            'total_pages' => $total_pages,
+            'first_page' => 1,
+            'last_page' => $total_pages,
+            'next_page' => $current_page + 1,
+            'prev_page' => $current_page - 1,
+        );
+    }
+
+    /**
+     * @param string $table
+     * @param int $user_id
+     * @param array $where
+     * @return int
+     */
+    protected function count_by_user($table, $user_id, $where = array())
+    {
+        $allowed = array(
+            'page',
+            'custom_model',
+            'custom_model_content',
+            'file',
+            'fragmentos',
+            'album',
+            'events',
+            'menu',
+            'siteform',
+        );
+        if (!in_array($table, $allowed, true)) {
+            return 0;
+        }
+        $this->db->from($table);
+        $this->db->where('user_id', (int) $user_id);
+        if (is_array($where)) {
+            foreach ($where as $field => $value) {
+                $this->db->where($field, $value);
+            }
+        }
+        return (int) $this->db->count_all_results();
+    }
+
+    /**
+     * @param string $type
+     * @param mixed $type_id
+     * @return string|null
+     */
+    protected function logger_type_link($type, $type_id)
+    {
+        $type_id = (int) $type_id;
+        switch ($type) {
+            case 'pages':
+                return 'admin/pages/editar/' . $type_id;
+            case 'users':
+                return 'admin/users/ver/' . $type_id;
+            case 'custom_model':
+                return 'admin/custommodels/items/' . $type_id;
+            case 'custom_model_content':
+                return 'admin/custommodels/';
+            case 'config':
+            case 'site_config':
+                return 'admin/configuracion/';
+            default:
+                return null;
+        }
     }
 
     /**

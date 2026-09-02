@@ -1437,65 +1437,7 @@ i.material-icons.right.remove {
   cursor: pointer;
 }
 
-// Dark mode is html.dark-mode vars in palette.scss. Do not paint with * { color }.
-html.dark-mode {
-  .form,
-  .explorer,
-  .dashboard .panel,
-  .page-widget,
-  .page-widget .m-portlet,
-  .timeline > li > .timeline-item,
-  .formModule .component,
-  .formModule .vtabs,
-  .card .card-reveal {
-    background-color: var(--st-surface);
-    border-color: var(--st-border);
-    color: var(--st-text);
-  }
-
-  .dropdown-content {
-    background-color: var(--st-surface-elevated);
-  }
-
-  .page-widget .btn.btn-secondary {
-    background-color: var(--st-surface);
-    border-color: var(--st-border);
-    color: var(--st-text);
-  }
-
-  .dashboard h5,
-  .card .card-reveal .card-title {
-    color: var(--st-text) !important;
-  }
-
-  .collapsible {
-    border-color: var(--st-border);
-  }
-
-  .collapsible-header,
-  .collapsible-body {
-    border-bottom-color: var(--st-border);
-  }
-
-  .input-field input[type="search"]:focus:not(.browser-default) {
-    background-color: var(--st-surface);
-    color: var(--st-text-secondary);
-  }
-
-  .explorer nav {
-    background-color: var(--st-surface);
-    box-shadow: none;
-  }
-
-  .sidemenu .sidenav i.material-icons {
-    color: var(--st-icon);
-  }
-
-  .sidemenu .sidenav li.current > a i.material-icons,
-  .sidemenu .sidenav li.current > .collapsible-header i.material-icons {
-    color: var(--st-accent);
-  }
-}
+// Dark mode: html.dark-mode vars + component paint in components/_dark-mode.scss.
 
 div.card-image>div>i.material-icons.tooltipped {
   position: absolute;

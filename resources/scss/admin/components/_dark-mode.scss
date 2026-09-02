@@ -1,0 +1,376 @@
+// Component paint for html.dark-mode. Tokens live in palette.scss.
+// Do not use * { color } or a second hex palette.
+
+html.dark-mode {
+  background-color: var(--st-page);
+  color: var(--st-text);
+
+  body {
+    background-color: var(--st-page);
+    color: var(--st-text);
+  }
+
+  .form,
+  .explorer,
+  .dashboard .panel,
+  .page-widget,
+  .page-widget .m-portlet,
+  .timeline > li > .timeline-item,
+  .formModule .component,
+  .formModule .vtabs,
+  .card .card-reveal,
+  .modal,
+  .modal .modal-content,
+  .modal .modal-footer,
+  .toast,
+  .datepicker-modal .modal-content,
+  .datepicker-container,
+  .timepicker-modal .modal,
+  .timepicker-container {
+    background-color: var(--st-surface);
+    border-color: var(--st-border);
+    color: var(--st-text);
+  }
+
+  .dropdown-content,
+  .dropdown-content li > span,
+  .select-dropdown.dropdown-content {
+    background-color: var(--st-surface-elevated);
+    color: var(--st-text);
+  }
+
+  .dropdown-content li:hover,
+  .dropdown-content li.active,
+  .dropdown-content li.selected {
+    background-color: var(--st-hover);
+  }
+
+  .dropdown-content li > a,
+  .dropdown-content li > span {
+    color: var(--st-text);
+  }
+
+  .page-widget .btn.btn-secondary,
+  .btn-flat {
+    background-color: transparent;
+    border-color: var(--st-border);
+    color: var(--st-interactive);
+  }
+
+  .dashboard h5,
+  .card .card-reveal .card-title,
+  .card .card-title,
+  .card .card-title a,
+  .card-content,
+  .helper-text,
+  label {
+    color: var(--st-text);
+  }
+
+  .helper-text,
+  .page-intro__lede,
+  label {
+    color: var(--st-text-secondary);
+  }
+
+  .collapsible {
+    border-color: var(--st-border);
+  }
+
+  .collapsible-header,
+  .collapsible-body {
+    border-bottom-color: var(--st-border);
+  }
+
+  .collection {
+    border-color: var(--st-border);
+  }
+
+  .collection .collection-item {
+    border-bottom-color: var(--st-border);
+  }
+
+  table.striped > tbody > tr:nth-child(odd),
+  table.highlight > tbody > tr:hover {
+    background-color: var(--st-table-stripe);
+  }
+
+  table.striped > tbody > tr > td,
+  table th,
+  table td {
+    border-color: var(--st-border);
+    color: var(--st-text);
+  }
+
+  .divider {
+    background-color: var(--st-border);
+  }
+
+  .chip,
+  .chips {
+    background-color: var(--st-surface-elevated);
+    color: var(--st-text);
+    border-bottom-color: var(--st-border);
+  }
+
+  .chips.focus {
+    border-bottom-color: var(--st-interactive);
+    box-shadow: 0 1px 0 0 var(--st-interactive);
+  }
+
+  .chip:focus,
+  .chip.selected {
+    background-color: var(--st-interactive);
+    color: var(--st-on-accent);
+  }
+
+  .tabs .tab a {
+    color: var(--st-text-secondary);
+  }
+
+  .tabs .tab a:hover,
+  .tabs .tab a.active,
+  .tabs .tab a:focus,
+  .tabs .tab a:focus.active {
+    color: var(--st-interactive);
+    background-color: var(--st-interactive-muted);
+  }
+
+  .tabs .indicator {
+    background-color: var(--st-interactive);
+  }
+
+  .input-field input[type="search"]:focus:not(.browser-default) {
+    background-color: var(--st-surface);
+    color: var(--st-text);
+  }
+
+  input:not([type]),
+  input[type="text"]:not(.browser-default),
+  input[type="password"]:not(.browser-default),
+  input[type="email"]:not(.browser-default),
+  input[type="url"]:not(.browser-default),
+  input[type="time"]:not(.browser-default),
+  input[type="date"]:not(.browser-default),
+  input[type="datetime"]:not(.browser-default),
+  input[type="datetime-local"]:not(.browser-default),
+  input[type="tel"]:not(.browser-default),
+  input[type="number"]:not(.browser-default),
+  input[type="search"]:not(.browser-default),
+  textarea.materialize-textarea,
+  select {
+    color: var(--st-text);
+    border-bottom-color: var(--st-border);
+  }
+
+  input:not([type]):focus:not([readonly]),
+  input[type="text"]:not(.browser-default):focus:not([readonly]),
+  input[type="password"]:not(.browser-default):focus:not([readonly]),
+  input[type="email"]:not(.browser-default):focus:not([readonly]),
+  input[type="url"]:not(.browser-default):focus:not([readonly]),
+  input[type="time"]:not(.browser-default):focus:not([readonly]),
+  input[type="date"]:not(.browser-default):focus:not([readonly]),
+  input[type="datetime"]:not(.browser-default):focus:not([readonly]),
+  input[type="datetime-local"]:not(.browser-default):focus:not([readonly]),
+  input[type="tel"]:not(.browser-default):focus:not([readonly]),
+  input[type="number"]:not(.browser-default):focus:not([readonly]),
+  input[type="search"]:not(.browser-default):focus:not([readonly]),
+  textarea.materialize-textarea:focus:not([readonly]) {
+    border-bottom: 1px solid var(--st-interactive);
+    box-shadow: 0 1px 0 0 var(--st-interactive);
+  }
+
+  input:not([type]):focus:not([readonly]) + label,
+  input[type="text"]:not(.browser-default):focus:not([readonly]) + label,
+  input[type="password"]:not(.browser-default):focus:not([readonly]) + label,
+  input[type="email"]:not(.browser-default):focus:not([readonly]) + label,
+  input[type="url"]:not(.browser-default):focus:not([readonly]) + label,
+  input[type="time"]:not(.browser-default):focus:not([readonly]) + label,
+  input[type="date"]:not(.browser-default):focus:not([readonly]) + label,
+  input[type="datetime"]:not(.browser-default):focus:not([readonly]) + label,
+  input[type="datetime-local"]:not(.browser-default):focus:not([readonly]) + label,
+  input[type="tel"]:not(.browser-default):focus:not([readonly]) + label,
+  input[type="number"]:not(.browser-default):focus:not([readonly]) + label,
+  input[type="search"]:not(.browser-default):focus:not([readonly]) + label,
+  textarea.materialize-textarea:focus:not([readonly]) + label,
+  .input-field .prefix.active {
+    color: var(--st-interactive);
+  }
+
+  .input-field .prefix {
+    color: var(--st-icon);
+  }
+
+  ::placeholder {
+    color: var(--st-text-secondary);
+    opacity: 0.7;
+  }
+
+  [type="checkbox"] + span:not(.lever):before,
+  [type="checkbox"]:not(.filled-in) + span:not(.lever):after {
+    border-color: var(--st-text-secondary);
+  }
+
+  [type="checkbox"]:checked + span:not(.lever):before {
+    border-right-color: var(--st-interactive);
+    border-bottom-color: var(--st-interactive);
+  }
+
+  [type="checkbox"].filled-in:checked + span:not(.lever):after {
+    border-color: var(--st-interactive);
+    background-color: var(--st-interactive);
+  }
+
+  [type="checkbox"].filled-in:not(:checked) + span:not(.lever):after {
+    border-color: var(--st-text-secondary);
+  }
+
+  [type="radio"]:not(:checked) + span:before,
+  [type="radio"]:not(:checked) + span:after {
+    border-color: var(--st-text-secondary);
+  }
+
+  [type="radio"]:checked + span:after,
+  [type="radio"].with-gap:checked + span:before,
+  [type="radio"].with-gap:checked + span:after {
+    border-color: var(--st-interactive);
+  }
+
+  [type="radio"]:checked + span:after,
+  [type="radio"].with-gap:checked + span:after {
+    background-color: var(--st-interactive);
+  }
+
+  .switch label .lever {
+    background-color: rgba(197, 204, 211, 0.28);
+  }
+
+  .switch label input[type="checkbox"]:checked + .lever {
+    background-color: var(--st-focus-ring);
+  }
+
+  .switch label input[type="checkbox"]:checked + .lever:after {
+    background-color: var(--st-interactive);
+  }
+
+  .select-wrapper input.select-dropdown {
+    color: var(--st-text);
+    border-bottom-color: var(--st-border);
+  }
+
+  .select-wrapper input.select-dropdown:focus {
+    border-bottom-color: var(--st-interactive);
+  }
+
+  .select-dropdown li.optgroup {
+    background-color: var(--st-surface-elevated);
+    border-top-color: var(--st-border);
+  }
+
+  .explorer nav {
+    background-color: var(--st-surface);
+    box-shadow: none;
+  }
+
+  .sidemenu .sidenav i.material-icons {
+    color: var(--st-icon);
+  }
+
+  .sidemenu .sidenav li.current > a i.material-icons,
+  .sidemenu .sidenav li.current > .collapsible-header i.material-icons {
+    color: var(--st-accent);
+  }
+
+  .btn-floating.st-accent,
+  .btn-floating.btn-large.st-accent {
+    background-color: var(--st-accent);
+
+    &:hover,
+    &:focus {
+      background-color: var(--st-accent-hover);
+    }
+  }
+
+  nav.page-navbar .page-navbar__filter,
+  nav.page-navbar form {
+    background: var(--st-surface);
+    border-color: var(--st-border);
+  }
+
+  .pagination li a {
+    color: var(--st-text);
+  }
+
+  .pagination li.active {
+    background-color: var(--st-interactive);
+  }
+
+  .preloader-wrapper .spinner-layer {
+    border-color: var(--st-interactive);
+  }
+
+  .progress {
+    background-color: var(--st-interactive-muted);
+  }
+
+  .progress .determinate,
+  .progress .indeterminate {
+    background-color: var(--st-interactive);
+  }
+
+  .toast {
+    background-color: var(--st-surface-elevated);
+    color: var(--st-text);
+  }
+
+  .datepicker-table td.is-today,
+  .datepicker-date-display,
+  .timepicker-digital-display {
+    color: var(--st-interactive);
+  }
+
+  .datepicker-table td.is-selected,
+  .datepicker-day-button:focus,
+  .datepicker-cancel,
+  .datepicker-done,
+  .datepicker-clear,
+  .timepicker-close {
+    color: var(--st-interactive);
+  }
+
+  .datepicker-table td.is-selected {
+    background-color: var(--st-interactive);
+    color: var(--st-on-accent);
+  }
+
+  .trumbowyg-box,
+  .trumbowyg-editor {
+    background: var(--st-surface);
+    color: var(--st-text);
+    border-color: var(--st-border);
+  }
+
+  .trumbowyg-button-pane {
+    background: var(--st-surface-elevated);
+    border-bottom-color: var(--st-border);
+  }
+
+  .tox .tox-toolbar,
+  .tox .tox-toolbar__overflow,
+  .tox .tox-toolbar__primary,
+  .tox .tox-menubar,
+  .tox .tox-edit-area__iframe,
+  .tox .tox-statusbar {
+    background: var(--st-surface-elevated) !important;
+    border-color: var(--st-border) !important;
+    color: var(--st-text) !important;
+  }
+
+  .file-preview,
+  .file-drop-zone,
+  .krajee-default.file-preview-frame {
+    background: var(--st-surface-elevated);
+    border-color: var(--st-border);
+    color: var(--st-text);
+  }
+}

@@ -5,6 +5,8 @@
 body {
   overflow-x: hidden;
   font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: var(--st-page);
+  color: var(--st-text);
 }
 
 .wallpapper {
@@ -23,7 +25,7 @@ body {
   font-size: 30px;
   line-height: 40px;
   text-align: center;
-  color: $gray-text;
+  color: var(--st-text-secondary);
 }
 
 .sub-brand {
@@ -33,7 +35,7 @@ body {
   font-size: 20px;
   line-height: 34px;
   text-align: center;
-  color: $gray-text;
+  color: var(--st-text-secondary);
 }
 
 .title {
@@ -42,7 +44,7 @@ body {
   font-weight: 300;
   font-size: 36px;
   line-height: 42px;
-  color: $gray-text;
+  color: var(--st-text-secondary);
   margin: 30px 0px 40px;
   display: block;
 }
@@ -113,17 +115,17 @@ i.material-icons.prefix {
 
   .avatar-username {
     display: block;
-    color: $gray-text;
+    color: var(--st-text-secondary);
   }
 
   span.name {
-    color: $gray-text;
+    color: var(--st-text-secondary);
   }
 
   .reset-user {
     display: block;
     margin-left: 42px;
-    color: $gray-text;
+    color: var(--st-text-secondary);
   }
 
   .logo {
@@ -138,7 +140,7 @@ i.material-icons.prefix {
     color: var(--st-text) !important;
 
     label {
-      color: $gray-text;
+      color: var(--st-text-secondary);
     }
 
     input {
@@ -147,7 +149,7 @@ i.material-icons.prefix {
     }
 
     .input-field > label {
-      color: $gray-text;
+      color: var(--st-text-secondary);
     }
   }
 

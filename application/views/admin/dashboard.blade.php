@@ -4,225 +4,6 @@
 
 @section('head_includes')
 <link rel="stylesheet" href="<?=base_url('public/css/admin/dashboard.min.css')?>">
-<style>
-    [v-cloak] { display: none; }
-    .rotating {
-        animation: rotate 1s linear infinite;
-    }
-    @keyframes rotate {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-    }
-    .text-green {
-        color: #4caf50;
-    }
-    .text-red {
-        color: #f44336;
-    }
-    /* Mejorar truncamiento de texto en charts */
-    .chart .col2 .truncate {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        display: block;
-        max-width: 100%;
-    }
-    .chart .chart-header .chart-description {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        max-width: 50%;
-    }
-    
-    /* Quick Actions Modal */
-    #quickActionsModal {
-        max-width: 600px;
-        border-radius: 8px;
-    }
-    .quick-search-input {
-        border: none;
-        border-bottom: 2px solid #26a69a !important;
-        font-size: 1.2rem;
-        margin: 0 !important;
-    }
-    .quick-actions-list {
-        max-height: 400px;
-        overflow-y: auto;
-    }
-    .quick-action-item {
-        padding: 12px 20px;
-        cursor: pointer;
-        transition: all 0.2s;
-        border-bottom: 1px solid #f0f0f0;
-    }
-    .quick-action-item:hover {
-        background: #f5f5f5;
-    }
-    .quick-action-item i {
-        margin-right: 15px;
-        vertical-align: middle;
-    }
-    .quick-action-shortcut {
-        float: right;
-        color: #999;
-        font-size: 0.85rem;
-    }
-    
-    .kpi-cards {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 15px;
-        margin: 20px;
-    }
-    @media only screen and (max-width: 1200px) {
-        .kpi-cards {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-    }
-    @media only screen and (max-width: 600px) {
-        .kpi-cards {
-            grid-template-columns: minmax(0, 1fr);
-        }
-    }
-    a.kpi-card,
-    .kpi-card-link {
-        display: block;
-        min-width: 0;
-        color: inherit;
-        text-decoration: none;
-        cursor: pointer;
-        box-sizing: border-box;
-    }
-    .kpi-card {
-        display: block;
-        min-width: 0;
-        color: inherit;
-        text-decoration: none;
-        cursor: default;
-        box-sizing: border-box;
-    }
-    .overview-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin: 20px;
-        gap: 12px;
-    }
-    .overview-row .overview {
-        margin: 0;
-    }
-    .panel-title-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 8px;
-    }
-    .panel-title-row h5 {
-        margin: 0;
-    }
-    .dashboard-empty {
-        text-align: center;
-        padding: 28px 16px;
-        color: #757575;
-    }
-    .dashboard-empty i.material-icons {
-        font-size: 36px;
-        display: block;
-        margin-bottom: 8px;
-        color: #9e9e9e;
-    }
-    .charts-grid {
-        display: contents;
-    }
-    .tracking-notice {
-        margin: 0 20px 16px;
-        padding: 12px 16px;
-        background: #fff8e1;
-        border-radius: 8px;
-        color: #5D5D5D;
-    }
-
-    .kpi-card {
-        background: white;
-        border-radius: 8px;
-        padding: 20px;
-        box-shadow: none;
-        border: 1px solid var(--st-border, #e0e0e0);
-    }
-    .kpi-card:hover {
-        transform: none;
-        box-shadow: none;
-    }
-    .welcome a.colum {
-        text-decoration: none;
-        color: inherit;
-    }
-    .kpi-icon {
-        font-size: 2.5rem;
-        color: #26a69a;
-        margin-bottom: 10px;
-    }
-    .kpi-value {
-        font-size: 2rem;
-        font-weight: bold;
-        color: #333;
-    }
-    .kpi-label {
-        color: #666;
-        font-size: 0.9rem;
-        margin-top: 5px;
-    }
-    .kpi-change {
-        font-size: 0.85rem;
-        margin-top: 8px;
-    }
-    .kpi-change.positive {
-        color: #4caf50;
-    }
-    .kpi-change.negative {
-        color: #f44336;
-    }
-    
-    /* Dark Mode Toggle */
-    .theme-toggle {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 1000;
-    }
-    
-    /* Dark Mode Styles */
-    html.dark-mode {
-        background-color: #1a1a1a;
-        color: #e0e0e0;
-    }
-    html.dark-mode .dashboard {
-        background-color: #1a1a1a;
-    }
-    html.dark-mode .panel,
-    html.dark-mode .kpi-card,
-    html.dark-mode .chart,
-    html.dark-mode .welcome,
-    html.dark-mode .creator-container {
-        background-color: #2d2d2d;
-        border-color: #3d3d3d;
-        color: #e0e0e0;
-    }
-    html.dark-mode .collection {
-        background-color: #2d2d2d;
-        border-color: #3d3d3d;
-    }
-    html.dark-mode .collection-item {
-        background-color: #2d2d2d;
-        border-color: #3d3d3d;
-        color: #e0e0e0;
-    }
-    html.dark-mode h5,
-    html.dark-mode .kpi-value,
-    html.dark-mode .chart-header {
-        color: #e0e0e0;
-    }
-</style>
 @endsection
 
 @section('content')
@@ -393,8 +174,7 @@ if (!isset($dashboard_fab)) {
             placeholder="{{ lang('dashboard_layout_picker_search') }}"
             aria-label="{{ lang('dashboard_layout_picker_search') }}"
             autocomplete="off"
-        >
-    </div>
+        >    </div>
     <div v-if="addableWidgets.length && pickerChipCats.length > 1" class="dashboard-picker__chips" role="tablist" aria-label="{{ lang('dashboard_widget_cat_all') }}">
         <button type="button" class="dashboard-picker-chip" :class="{ active: !pickerCategory }" @click="pickerCategory = ''">
             {{ lang('dashboard_widget_cat_all') }}
@@ -521,7 +301,7 @@ if (!isset($dashboard_fab)) {
 </script>
 
 <script type="text/x-template" id="dashboard-welcome-template">
-        <div class="welcome">
+        <div class="welcome has-deco" style="--dash-deco: url('{{ base_url('public/img/admin/undraw/undraw_growth-analytics_vzjz.svg') }}')">
             <div class="welcome_container">
                 <div class="welcome_message">
                     <span class="welcome_big">{{ lang('dashboard_welcome_back') }}</span> <br />
@@ -572,9 +352,6 @@ if (!isset($dashboard_fab)) {
                         </div>
                     </a>
                     @endif
-                </div>
-                <div class="img">
-                    <img src="{{base_url('public/img/admin/dashboard/undraw_charts.png')}}" alt="undraw_charts">
                 </div>
             </div>
         </div>
@@ -734,7 +511,7 @@ if (!isset($dashboard_fab)) {
 </script>
 
 <script type="text/x-template" id="dashboard-drafts-template">
-        <div class="dash-list-widget drafts">
+        <div class="dash-list-widget drafts has-deco" style="--dash-deco: url('{{ base_url('public/img/admin/undraw/undraw_essay-writing_nlru.svg') }}')">
             <div class="dash-widget-head">
                 <div class="dash-widget-head__lead">
                     <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">edit</i></span>
@@ -901,7 +678,7 @@ if (!isset($dashboard_fab)) {
 </script>
 
 <script type="text/x-template" id="dashboard-events-template">
-    <div class="dash-list-widget">
+    <div class="dash-list-widget has-deco" style="--dash-deco: url('{{ base_url('public/img/admin/undraw/undraw_online-meetings_zutp.svg') }}')">
         <div class="dash-widget-head">
             <div class="dash-widget-head__lead">
                 <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">event</i></span>
@@ -929,7 +706,7 @@ if (!isset($dashboard_fab)) {
 </script>
 
 <script type="text/x-template" id="dashboard-site-status-template">
-    <div class="dash-status">
+    <div class="dash-status has-deco" style="--dash-deco: url('{{ base_url('public/img/admin/undraw/undraw_verify-data_k0y1.svg') }}')">
         <div class="dash-widget-head">
             <div class="dash-widget-head__lead">
                 <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">info</i></span>
@@ -959,7 +736,7 @@ if (!isset($dashboard_fab)) {
 </script>
 
 <script type="text/x-template" id="dashboard-quick-settings-template">
-    <div class="dash-status">
+    <div class="dash-status has-deco" style="--dash-deco: url('{{ base_url('public/img/admin/undraw/undraw_settings_alfp.svg') }}')">
         <div class="dash-widget-head">
             <div class="dash-widget-head__lead">
                 <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">settings</i></span>
@@ -1141,7 +918,7 @@ if (!isset($dashboard_fab)) {
 </script>
 
 <script type="text/x-template" id="dashboard-fragments-template">
-    <div class="dash-list-widget">
+    <div class="dash-list-widget has-deco" style="--dash-deco: url('{{ base_url('public/img/admin/undraw/undraw_markdown-file_io4x.svg') }}')">
         <div class="dash-widget-head">
             <div class="dash-widget-head__lead">
                 <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">bookmark_border</i></span>
@@ -1169,7 +946,7 @@ if (!isset($dashboard_fab)) {
 </script>
 
 <script type="text/x-template" id="dashboard-inbox-template">
-    <div class="dash-list-widget">
+    <div class="dash-list-widget has-deco" style="--dash-deco: url('{{ base_url('public/img/admin/undraw/undraw_text-messages_p6bk.svg') }}')">
         <div class="dash-widget-head">
             <div class="dash-widget-head__lead">
                 <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">inbox</i></span>
@@ -1220,7 +997,7 @@ if (!isset($dashboard_fab)) {
 </script>
 
 <script type="text/x-template" id="dashboard-published-template">
-    <div class="dash-list-widget">
+    <div class="dash-list-widget has-deco" style="--dash-deco: url('{{ base_url('public/img/admin/undraw/undraw_website_27ju.svg') }}')">
         <div class="dash-widget-head">
             <div class="dash-widget-head__lead">
                 <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">check_circle</i></span>
@@ -1249,7 +1026,7 @@ if (!isset($dashboard_fab)) {
 </script>
 
 <script type="text/x-template" id="dashboard-menus-template">
-    <div class="dash-list-widget">
+    <div class="dash-list-widget has-deco" style="--dash-deco: url('{{ base_url('public/img/admin/undraw/undraw_dropdown-menu_qvci.svg') }}')">
         <div class="dash-widget-head">
             <div class="dash-widget-head__lead">
                 <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">view_list</i></span>
@@ -1307,7 +1084,7 @@ if (!isset($dashboard_fab)) {
 </script>
 
 <script type="text/x-template" id="dashboard-videos-template">
-    <div class="dash-list-widget has-deco">
+    <div class="dash-list-widget has-deco" style="--dash-deco: url('{{ base_url('public/img/admin/undraw/undraw_image-files_exha.svg') }}')">
         <div class="dash-widget-head">
             <div class="dash-widget-head__lead">
                 <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">movie</i></span>
@@ -1332,7 +1109,6 @@ if (!isset($dashboard_fab)) {
             </li>
             <li v-if="!videos.length" class="dash-list__empty">{{ lang('dashboard_no_videos') }}</li>
         </ul>
-        <img class="dash-widget-deco" src="{{ base_url('public/img/admin/dashboard/undraw_browsing_online_sr8c.png') }}" alt="" aria-hidden="true">
     </div>
 </script>
 

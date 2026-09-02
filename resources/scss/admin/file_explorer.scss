@@ -29,6 +29,33 @@
     padding: 0 32px !important;
   }
 
+  .sidenav li.current > a {
+    color: var(--st-text);
+    background-color: var(--st-hover);
+    font-weight: 500;
+
+    i.material-icons {
+      color: var(--st-accent);
+    }
+  }
+
+  .sidenav li.current {
+    position: relative;
+
+    &:before {
+      background-color: var(--st-accent);
+      content: "";
+      width: 5px;
+      height: 100%;
+      display: block;
+      position: absolute;
+      left: 0;
+      top: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+  }
+
   .sidenav li>.subheader {
     font-weight: 600;
     color: var(--st-text);
@@ -102,6 +129,39 @@
     padding: 0px !important;
   }
 
+  .file-active-filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 0 8px 12px;
+
+    .status-chip.active {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 26px;
+      padding: 0 8px 0 10px;
+      margin: 0;
+      border: 1px solid var(--st-interactive);
+      border-radius: var(--st-radius-sm);
+      background-color: var(--st-interactive);
+      color: var(--st-on-accent);
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 24px;
+      box-shadow: none;
+
+      i.material-icons {
+        font-size: 16px;
+        height: 16px;
+        width: 16px;
+        line-height: 16px;
+        color: inherit;
+      }
+    }
+  }
+
   .file-bulk-bar {
     display: flex;
     flex-wrap: wrap;
@@ -139,13 +199,17 @@
     left: 8px;
     top: 8px;
     z-index: 10;
-  }
+    width: 22px;
+    height: 22px;
+    margin: 0;
+    overflow: hidden;
 
-  .folder-menu {
-    position: absolute;
-    right: 8px;
-    top: 8px;
-    z-index: 9;
+    [type="checkbox"] + span:not(.lever) {
+      padding-left: 0;
+      width: 20px;
+      height: 20px;
+      display: block;
+    }
   }
 
   textarea.file-content-editor {
@@ -166,22 +230,36 @@
       cursor: pointer;
       position: relative;
 
-      .checkbox {
-        position: absolute;
-        left: 8px;
-        right: auto;
-        top: 8px;
-        z-index: 10;
-      }
-
       .card-panel {
+        position: relative;
         display: flex;
         align-items: center;
         overflow: hidden;
         border-radius: var(--st-radius-sm);
         min-height: 56px;
-        padding-left: 36px;
-        padding-right: 36px;
+        padding-left: 40px;
+        padding-right: 40px;
+      }
+
+      .checkbox {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        width: 22px;
+        height: 22px;
+        margin: 0;
+        line-height: 0;
+        overflow: hidden;
+
+        [type="checkbox"] + span:not(.lever) {
+          padding-left: 0;
+          width: 20px;
+          height: 20px;
+          display: block;
+          line-height: 20px;
+        }
       }
 
       .card-icon {
@@ -205,8 +283,21 @@
       }
     }
 
+    .folder-menu {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 9;
+      height: 32px;
+      width: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     .filelist {
-      padding: 0px 20px 0px 0px;
+      padding: 0 12px 0 4px;
     }
 
   .file {
@@ -306,6 +397,32 @@
 
     ul.collapsible .collapsible-body {
       padding: 10px 15px;
+    }
+
+    ul.collapsible .suboptions li.current {
+      position: relative;
+      background-color: var(--st-hover);
+
+      &:before {
+        background-color: var(--st-accent);
+        content: "";
+        width: 5px;
+        height: 100%;
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 0;
+        pointer-events: none;
+      }
+
+      > a {
+        color: var(--st-text);
+        font-weight: 500;
+
+        i.material-icons {
+          color: var(--st-accent);
+        }
+      }
     }
 
     .sidenav {
