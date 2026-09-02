@@ -63,47 +63,40 @@ class UsersController extends MY_Controller
 
     public function ver($user_id = false)
     {
-        //get_user
-        $user = $this->User->get_full_info($user_id);
+        $user = $this->User->get_full_info($user_id, array('include_inactive' => true));
         if ($user && $user_id) {
             $user = (object) $user->first();
             $user->user_data = $this->profile_user_data($user);
             $full_name = trim($user->user_data->nombre . ' ' . $user->user_data->apellido);
             $data['title'] = ADMIN_TITLE . " | " . ($full_name !== '' ? $full_name : $user->username);
             $data['user'] = $user;
-            //Make the menu options
-            $data['dropdown_id'] = 'dropdown' . random_string('alnum', 16);
-            $this->load->library('menu');
-            $this->menu->char = "'";
-            $this->menu->set_ul_properties(
-                array(
-                    'class' => 'dropdown-content',
-                    'role' => 'menu',
-                    'id' => $data['dropdown_id'],
-                )
+            $is_self = ((int) $user_id === (int) userdata('user_id'));
+            $can_update = has_permisions('UPDATE_USER') || $is_self;
+            $data['profile'] = array(
+                'userId' => (int) $user_id,
+                'isSelf' => $is_self,
+                'canUpdate' => $can_update,
+                'canDelete' => has_permisions('DELETE_USER') && !$is_self,
+                'canDeactivate' => has_permisions('UPDATE_USER') && !$is_self,
+                'canSelectFiles' => has_permisions('SELECT_FILES'),
+                'canSelectConfig' => has_permisions('SELECT_CONFIG'),
+                'canUpdateUsergroup' => has_permisions('UPDATE_USERGROUP'),
+                'loggerEnabled' => ((string) config('SYSTEM_LOGGER') === '1'),
+                'groupEditUrl' => has_permisions('UPDATE_USERGROUP')
+                    ? base_url('admin/users/editGroup/' . $user->usergroup_id)
+                    : null,
+                'can' => array(
+                    'fragments' => has_permisions('SELECT_FRAGMENTS'),
+                    'albums' => has_permisions('SELECT_GALLERY'),
+                    'events' => has_permisions('SELECT_EVENTS'),
+                    'menus' => has_permisions('SELECT_MENUS'),
+                    'siteforms' => has_permisions('SELECT_SITEFORMS'),
+                    'pages' => has_permisions('SELECT_PAGES'),
+                    'collections' => has_permisions('SELECT_FORM_CUSTOMS'),
+                    'items' => has_permisions('SELECT_CONTENT_DATA'),
+                    'files' => has_permisions('SELECT_FILES'),
+                ),
             );
-
-            $links = array(
-                lang('btn_edit') => array('href' => base_url('admin/users/edit/' . $user_id)),
-                'Change avatar' => array('href' => '#folderSelector', 'class' => 'modal-trigger'),
-                lang('btn_delete') => array('href' => '#!'),
-                'Block' => array('href' => '#!'),
-            );
-
-            if ($user_id == userdata('user_id')) {
-                $links = array(
-                    lang('btn_edit') => array('href' => base_url('admin/users/edit/' . $user_id)),
-                    'Change Password' => array('href' => base_url('admin/users/changePassword/' . $user_id)),
-                    'Change avatar' => array('href' => '#folderSelector', 'class' => 'modal-trigger'),
-                );
-            }
-
-            $data['dropdown_menu'] = $this->menu->get_menu($links);
-            //Page includes
-            //$data['head_includes'] = array('file-input' => link_tag('public/js/fileinput-master/css/fileinput.min.css'));
-            //$data['footer_includes'] = array('file-input' => '<script src="' . base_url('public/js/fileinput-master/js/fileinput.js') . '"></script>', 'file-input-canvas' => '<script src="' . base_url('public/js/fileinput-master/js/plugins/canvas-to-blob.min.js') . '"></script>');
-
-            // Load the views
             echo $this->blade->view("admin.user.user_profile", $data);
         } else {
             $this->error404();
