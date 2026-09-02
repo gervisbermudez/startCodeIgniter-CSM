@@ -27,7 +27,7 @@ Todo visible por `lang()`. Un idioma por pantalla. Toasts también (`M.toast({ h
 - Listas: `page-navbar` + filtros + un `v-for` + empty state con CTA + FAB accent + `confirm-modal`.
 - Un `more_vert` por ítem. Icono solo = tooltip + `aria-label`.
 - Títulos de página: `.page-header` (20px), no `h1`–`h3` display de Materialize.
-- Dark mode: clase `html.dark-mode`. Pintar con `var(--st-surface)` / `var(--st-text)`, nunca `* { color }`. No `body.dark-mode`.
+- Dark mode: clase `html.dark-mode`. Pintar con `var(--st-surface)` / `var(--st-text)`, nunca `* { color }`. No `body.dark-mode`. En dark, `--st-accent` es teal.
 - Iconos sidenav: files `folder`, events `event`, menus `view_list`, models `view_module`. No Font Awesome en pantallas nuevas. No `account_tree` (no está en el icon font) ni `menu` (hamburguesa).
 - Sidenav: `.current` = ruta (barra `$color3` 5px). `.active` = accordion abierto, no pintar como selected. Hojas con `isNavItemActive()`. Settings: `configNavCurrent()` en el rail principal, no un sidebar interno. Colapsado: click expande, no hover-peek.
 - Materialize: `initPlugins()` en `$nextTick`, no `M.AutoInit()`. Vue no debe reinicializar `#slide-out` (`querySelectorAll('.collapsible:not(#slide-out)')`).

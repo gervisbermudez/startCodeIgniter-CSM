@@ -26,6 +26,10 @@
   --st-icon: rgba(0, 0, 0, 0.54);
   --st-overlay: rgba(0, 0, 0, 0.43);
   --st-scrollbar: #b0b0b0;
+  --st-accent-muted: rgba(251, 150, 120, 0.14);
+  --st-interactive-muted: rgba(38, 166, 154, 0.12);
+  --st-focus-ring: rgba(38, 166, 154, 0.28);
+  --st-table-stripe: rgba(0, 0, 0, 0.03);
   --st-color1: #{$color1};
   --st-color2: #{$color2};
   --st-navbar-height: #{$navbar-height-admin};
@@ -38,6 +42,7 @@
 }
 
 html.dark-mode {
+  color-scheme: dark;
   --st-chrome: #{$dark-chrome};
   --st-page: #{$dark-page};
   --st-surface: #{$dark-surface};
@@ -48,9 +53,17 @@ html.dark-mode {
   --st-border: #{$dark-border};
   --st-border-subtle: #{$dark-border};
   --st-hover: #{$dark-hover};
-  --st-icon: rgba(174, 173, 170, 0.54);
-  --st-scrollbar: #5a5a5a;
+  --st-icon: rgba(197, 204, 211, 0.55);
+  --st-scrollbar: #{$dark-scrollbar};
   --st-on-chrome: #{$white};
+  --st-accent: #{$dark-accent};
+  --st-accent-hover: #{$dark-accent-hover};
+  --st-interactive: #{$dark-interactive};
+  --st-accent-muted: #{$dark-accent-muted};
+  --st-interactive-muted: #{$dark-accent-muted};
+  --st-focus-ring: #{$dark-focus-ring};
+  --st-table-stripe: rgba(255, 255, 255, 0.035);
+  --st-overlay: rgba(12, 16, 20, 0.55);
 }
 
 .st-surface {
@@ -113,3 +126,34 @@ $colors: (
 .btn-floating.btn-large.st-accent {
   background-color: var(--st-accent);
 }
+
+// Semantic utilities follow runtime tokens (coral light / teal dark).
+.st-accent {
+  background-color: var(--st-accent);
+}
+
+.text-st-accent {
+  color: var(--st-accent);
+}
+
+.st-chrome {
+  background-color: var(--st-chrome);
+}
+
+.text-st-chrome {
+  color: var(--st-chrome);
+}
+
+.st-teal {
+  background-color: var(--st-interactive);
+}
+
+.text-st-teal {
+  color: var(--st-interactive);
+}
+
+.st-canvas {
+  background-color: var(--st-canvas);
+}
+
+@import "dark-mode";

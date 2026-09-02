@@ -183,10 +183,10 @@ a.status-chip.active {
     font-weight: 300;
     margin-bottom: 8px;
     line-height: 1.3;
-    color: var(--st-chrome);
+    color: var(--st-text);
 
     a {
-      color: var(--st-chrome);
+      color: var(--st-text);
     }
   }
 
@@ -265,10 +265,10 @@ a.status-chip.active {
   }
 
   .card-title {
-    color: var(--st-chrome);
+    color: var(--st-text);
 
     a {
-      color: var(--st-chrome);
+      color: var(--st-text);
     }
   }
 
@@ -433,5 +433,9 @@ html.dark-mode {
       background-color: var(--st-interactive);
       color: var(--st-on-accent);
     }
+  }
+
+  .card-reveal .card-title {
+    color: var(--st-text);
   }
 }

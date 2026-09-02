@@ -214,20 +214,18 @@ jQuery(document).ready(function ($) {
 
   $("#darkmode-switch").change(function (e) {
     e.preventDefault();
-    $("html").toggleClass("dark-mode");
-    if ($(this).is(":checked")) {
+    var on = $(this).is(":checked");
+    $("html").toggleClass("dark-mode", on);
+    if (on) {
       localStorage.setItem("dark-mode", "dark-mode");
     } else {
       localStorage.removeItem("dark-mode");
     }
   });
 
-  $("#darkmode-switch").prop("checked", false);
-
-  if (localStorage.getItem("dark-mode")) {
-    $("html").toggleClass("dark-mode");
-    $("#darkmode-switch").prop("checked", true);
-  }
+  var darkOn = !!localStorage.getItem("dark-mode");
+  $("html").toggleClass("dark-mode", darkOn);
+  $("#darkmode-switch").prop("checked", darkOn);
 
   if (localStorage.getItem("sidenav-open")) {
     setRailCollapsed(true);

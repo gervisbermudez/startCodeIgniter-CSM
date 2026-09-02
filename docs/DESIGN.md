@@ -8,7 +8,7 @@ Stack visual: Materialize CSS + Vue 2 + Blade + SCSS en `resources/scss/admin/`.
 
 ## Principios
 
-1. **Una cromática.** Chrome slate, acento coral, interacción teal. Nada de un cuarto color “porque Materialize lo trae”.
+1. **Una cromática.** Chrome slate, acento coral, interacción teal. En **dark mode** acento e interacción convergen en teal (el coral queda para light). Nada de un cuarto color “porque Materialize lo trae”.
 2. **Un idioma por pantalla.** Todo el copy pasa por `lang()`. No mezclar español e inglés en el mismo flujo.
 3. **Una acción primaria.** Un botón filled por vista. El resto: flat, icono con tooltip, o menú `more_vert`.
 4. **Estilos en SCSS.** Cero `<style>` en Blade y cero `style=""` en Vue salvo excepciones puntuales (posición de un FAB ya existente).
@@ -43,14 +43,14 @@ Usar `var(--st-*)` en SCSS del admin. Dark mode es `html.dark-mode` redefiniendo
 
 | Token SCSS | CSS var | Light | Dark | Uso |
 |---|---|---|---|---|
-| `$color4` / `$color-chrome` | `--st-chrome` | `#646b7f` | `#404648` | Navbar, rail, barra `::before` de formularios |
-| `$color3` / `$color-accent` | `--st-accent` | `#fb9678` | igual | FAB, ítem de menú actual, CTA de login |
-| `$teal` / `$color-interactive` | `--st-interactive` | `#26A69A` | igual | Focus, switch, chip activo, enlace, tabs |
-| `$color5` / `$color-canvas` | `--st-canvas` | `#edf0f5` | `#1c1f20` | Fondos de widgets / hover muted |
-| `$page-bg` | `--st-page` | `#f9f9f9` | `#141617` | `body`, `.main` |
-| `$surface` | `--st-surface` | `#fff` | `#121414` | Cards, sidenav, formularios |
-| `$text-primary` | `--st-text` | `#444` | `#e0e0e0` | Cuerpo |
-| `$gray-text` | `--st-text-secondary` | `#5D5D5D` | `#aeadac` | Texto secundario |
+| `$color4` / `$color-chrome` | `--st-chrome` | `#646b7f` | `#252d33` | Navbar, rail, barra `::before` de formularios |
+| `$color3` / `$color-accent` | `--st-accent` | `#fb9678` | `#26a69a` (teal) | FAB, ítem de menú actual, CTA de login |
+| `$teal` / `$color-interactive` | `--st-interactive` | `#26A69A` | `#4db6ac` | Focus, switch, chip activo, enlace, tabs |
+| `$color5` / `$color-canvas` | `--st-canvas` | `#edf0f5` | `#2c343c` | Fondos de widgets / hover muted |
+| `$page-bg` | `--st-page` | `#f9f9f9` | `#1a1f24` | `body`, `.main` |
+| `$surface` | `--st-surface` | `#fff` | `#232a31` | Cards, sidenav, formularios |
+| `$text-primary` | `--st-text` | `#444` | `#c5ccd3` | Cuerpo |
+| `$gray-text` | `--st-text-secondary` | `#5D5D5D` | `#8b949e` | Texto secundario |
 | `$color-danger` | `--st-danger` | `#F44336` | igual | Borrar, error |
 | `$color-success` | `--st-success` | `#4CAF50` | igual | Publicado, KPI positivo |
 | `$color-warning` | `--st-warning` | `#ff9800` | igual | Archivado |
@@ -131,13 +131,14 @@ Visibilidad: público `public` + interactive teal; privado `lock` + grey. **Chip
 
 ## Dark mode
 
-El switch escribe `html.dark-mode` + `localStorage`. **No** uses `body.dark-mode` (el dashboard lo hace y no se aplica).
+El switch escribe `html.dark-mode` + `localStorage`. Un script en `head` aplica la clase **antes** del CSS para evitar flash. **No** uses `body.dark-mode`.
 
 Reglas:
 
-- Pintar **superficies** con `var(--st-surface)` / `var(--st-page)` / `var(--st-text)`. Las vars se redefinen en `html.dark-mode` (`palette.scss`).
-- No `* { color }`. Contraste mínimo 4.5:1 en texto de cuerpo (`--st-text` `#e0e0e0` sobre `--st-surface` `#121414`).
-- Acento y CTA **siguen** `--st-accent` / `--st-interactive`.
+- Pintar **superficies** con `var(--st-surface)` / `var(--st-page)` / `var(--st-text)`. Las vars se redefinen en `html.dark-mode` (`palette.scss`). Overrides de componentes: `components/_dark-mode.scss`.
+- No `* { color }`. Contraste suave: texto `#c5ccd3` sobre superficie `#232a31` (la superficie queda **más clara** que la página `#1a1f24`).
+- En dark, acento y CTA pasan a teal (`--st-accent` `#26a69a`, `--st-interactive` `#4db6ac`). En light el FAB sigue coral.
+- `color-scheme: dark` en `html.dark-mode` para controles nativos.
 - Prefer `prefers-color-scheme` como default si no hay localStorage (hoy no existe).
 
 ---

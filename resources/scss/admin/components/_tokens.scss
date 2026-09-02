@@ -32,16 +32,24 @@ $color-warning: #ff9800;
 $color-neutral: #757575;
 $color-trash: #424242;
 
-// Dark surfaces
-$dark-page: #141617;
-$dark-surface: #121414;
-$dark-chrome: #404648;
-$dark-text: #e0e0e0;
-$dark-text-secondary: #aeadac;
-$dark-border: #2f3335;
-$dark-elevated: #1c1f20;
-$dark-hover: rgba(255, 255, 255, 0.08);
-$dark-dropdown: #2a2a2a;
+// Dark surfaces — lifted slate (surface above page), no near-black.
+$dark-page: #1a1f24;
+$dark-surface: #232a31;
+$dark-chrome: #252d33;
+$dark-text: #c5ccd3;
+$dark-text-secondary: #8b949e;
+$dark-border: #3a444d;
+$dark-elevated: #2c343c;
+$dark-hover: rgba(77, 182, 172, 0.10);
+$dark-dropdown: #2c343c;
+$dark-scrollbar: #5c6872;
+
+// Dark accent converges on teal (light mode keeps coral FABs).
+$dark-accent: #26a69a;
+$dark-accent-hover: #4db6ac;
+$dark-interactive: #4db6ac;
+$dark-accent-muted: rgba(77, 182, 172, 0.16);
+$dark-focus-ring: rgba(77, 182, 172, 0.32);
 
 // Layout
 $navbar-height-admin: 50px;
