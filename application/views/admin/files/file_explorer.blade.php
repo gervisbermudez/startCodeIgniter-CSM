@@ -36,19 +36,37 @@
                                 @endif
                             </li>
                             <li><a class="subheader">@{{ t('files_my_drive') }}</a></li>
-                            <li><a href="#!" :class="sidebarActive(null)" @click="navigateFiles(root)"><i class="material-icons left">folder</i> @{{ t('files_all') }}</a></li>
-                            <li><a href="#!" :class="sidebarActive('themes')" @click="navigateFiles(libraryThemesPath())"><i class="material-icons left">palette</i> @{{ t('files_themes') }}</a></li>
-                            <li>
-                                <a href="#!" :class="sidebarActive('recent')" @click="filterFiles('recent')"><i class="material-icons left">history</i> @{{ t('files_recents') }}</a>
+                            <li :class="sidebarActive(null)">
+                                <a href="#!" :aria-current="sidebarActive(null) ? 'page' : null" @click="navigateFiles(root)"><i class="material-icons left">folder</i> @{{ t('files_all') }}</a>
                             </li>
-                            <li><a class="waves-effect" href="#!" :class="sidebarActive('important')" @click="filterFiles('important')"><i class="material-icons left">star</i> @{{ t('files_important') }}</a></li>
-                            <li><a class="waves-effect" href="#!" :class="sidebarActive('trash')" @click="filterFiles('trash')"><i class="material-icons left">delete</i> @{{ t('files_trash') }}</a></li>
+                            <li :class="sidebarActive('themes')">
+                                <a href="#!" :aria-current="sidebarActive('themes') ? 'page' : null" @click="navigateFiles(libraryThemesPath())"><i class="material-icons left">palette</i> @{{ t('files_themes') }}</a>
+                            </li>
+                            <li :class="sidebarActive('recent')">
+                                <a href="#!" :aria-current="sidebarActive('recent') ? 'page' : null" @click="filterFiles('recent')"><i class="material-icons left">history</i> @{{ t('files_recents') }}</a>
+                            </li>
+                            <li :class="sidebarActive('important')">
+                                <a class="waves-effect" href="#!" :aria-current="sidebarActive('important') ? 'page' : null" @click="filterFiles('important')"><i class="material-icons left">star</i> @{{ t('files_important') }}</a>
+                            </li>
+                            <li :class="sidebarActive('trash')">
+                                <a class="waves-effect" href="#!" :aria-current="sidebarActive('trash') ? 'page' : null" @click="filterFiles('trash')"><i class="material-icons left">delete</i> @{{ t('files_trash') }}</a>
+                            </li>
                             <li><a class="subheader">@{{ t('files_labels') }}</a></li>
-                            <li><a class="waves-effect" href="#!" :class="sidebarActive('images')" @click="filterFiles('images')"><i class="material-icons left">image</i> @{{ t('files_images') }}</a></li>
-                            <li><a class="waves-effect" href="#!" :class="sidebarActive('docs')" @click="filterFiles('docs')"><i class="material-icons left">description</i> @{{ t('files_docs') }}</a></li>
-                            <li><a class="waves-effect" href="#!" :class="sidebarActive('audio')" @click="filterFiles('audio')"><i class="material-icons left">audiotrack</i> @{{ t('files_audio') }}</a></li>
-                            <li><a class="waves-effect" href="#!" :class="sidebarActive('video')" @click="filterFiles('video')"><i class="material-icons left">movie</i> @{{ t('files_videos') }}</a></li>
-                            <li><a class="waves-effect" href="#!" :class="sidebarActive('archives')" @click="filterFiles('archives')"><i class="material-icons left">archive</i> @{{ t('files_archives') }}</a></li>
+                            <li :class="sidebarActive('images')">
+                                <a class="waves-effect" href="#!" :aria-current="sidebarActive('images') ? 'page' : null" @click="filterFiles('images')"><i class="material-icons left">image</i> @{{ t('files_images') }}</a>
+                            </li>
+                            <li :class="sidebarActive('docs')">
+                                <a class="waves-effect" href="#!" :aria-current="sidebarActive('docs') ? 'page' : null" @click="filterFiles('docs')"><i class="material-icons left">description</i> @{{ t('files_docs') }}</a>
+                            </li>
+                            <li :class="sidebarActive('audio')">
+                                <a class="waves-effect" href="#!" :aria-current="sidebarActive('audio') ? 'page' : null" @click="filterFiles('audio')"><i class="material-icons left">audiotrack</i> @{{ t('files_audio') }}</a>
+                            </li>
+                            <li :class="sidebarActive('video')">
+                                <a class="waves-effect" href="#!" :aria-current="sidebarActive('video') ? 'page' : null" @click="filterFiles('video')"><i class="material-icons left">movie</i> @{{ t('files_videos') }}</a>
+                            </li>
+                            <li :class="sidebarActive('archives')">
+                                <a class="waves-effect" href="#!" :aria-current="sidebarActive('archives') ? 'page' : null" @click="filterFiles('archives')"><i class="material-icons left">archive</i> @{{ t('files_archives') }}</a>
+                            </li>
                         </ul>
                         <ul class="collapsible hide-on-med-and-up">
                             <li>
@@ -61,17 +79,17 @@
                                                 <i class="material-icons">file_upload</i> @{{ t('files_add') }}</a>
                                             @endif
                                         </li>
-                                        <li><a href="#!" class="waves-effect waves-teal" @click="navigateFiles(root)"><i class="material-icons">folder</i> @{{ t('files_all') }}</a></li>
-                                        <li><a href="#!" class="waves-effect waves-teal" @click="navigateFiles(libraryThemesPath())"><i class="material-icons">palette</i> @{{ t('files_themes') }}</a></li>
-                                        <li><a href="#!" class="waves-effect waves-teal" @click="filterFiles('recent')"><i class="material-icons">history</i> @{{ t('files_recents') }}</a></li>
-                                        <li><a class="waves-effect waves-teal" href="#!" @click="filterFiles('important')"><i class="material-icons">star</i> @{{ t('files_important') }}</a></li>
-                                        <li><a class="waves-effect waves-teal" href="#!" @click="filterFiles('trash')"><i class="material-icons">delete</i> @{{ t('files_trash') }}</a></li>
+                                        <li :class="sidebarActive(null)"><a href="#!" class="waves-effect waves-teal" :aria-current="sidebarActive(null) ? 'page' : null" @click="navigateFiles(root)"><i class="material-icons">folder</i> @{{ t('files_all') }}</a></li>
+                                        <li :class="sidebarActive('themes')"><a href="#!" class="waves-effect waves-teal" :aria-current="sidebarActive('themes') ? 'page' : null" @click="navigateFiles(libraryThemesPath())"><i class="material-icons">palette</i> @{{ t('files_themes') }}</a></li>
+                                        <li :class="sidebarActive('recent')"><a href="#!" class="waves-effect waves-teal" :aria-current="sidebarActive('recent') ? 'page' : null" @click="filterFiles('recent')"><i class="material-icons">history</i> @{{ t('files_recents') }}</a></li>
+                                        <li :class="sidebarActive('important')"><a class="waves-effect waves-teal" href="#!" :aria-current="sidebarActive('important') ? 'page' : null" @click="filterFiles('important')"><i class="material-icons">star</i> @{{ t('files_important') }}</a></li>
+                                        <li :class="sidebarActive('trash')"><a class="waves-effect waves-teal" href="#!" :aria-current="sidebarActive('trash') ? 'page' : null" @click="filterFiles('trash')"><i class="material-icons">delete</i> @{{ t('files_trash') }}</a></li>
                                         <li><a class="subheader">@{{ t('files_labels') }}</a></li>
-                                        <li><a class="waves-effect waves-teal" href="#!" @click="filterFiles('images')"><i class="material-icons">image</i> @{{ t('files_images') }}</a></li>
-                                        <li><a class="waves-effect waves-teal" href="#!" @click="filterFiles('docs')"><i class="material-icons">description</i> @{{ t('files_docs') }}</a></li>
-                                        <li><a class="waves-effect waves-teal" href="#!" @click="filterFiles('audio')"><i class="material-icons">audiotrack</i> @{{ t('files_audio') }}</a></li>
-                                        <li><a class="waves-effect waves-teal" href="#!" @click="filterFiles('video')"><i class="material-icons">movie</i> @{{ t('files_videos') }}</a></li>
-                                        <li><a class="waves-effect waves-teal" href="#!" @click="filterFiles('archives')"><i class="material-icons">archive</i> @{{ t('files_archives') }}</a></li>
+                                        <li :class="sidebarActive('images')"><a class="waves-effect waves-teal" href="#!" :aria-current="sidebarActive('images') ? 'page' : null" @click="filterFiles('images')"><i class="material-icons">image</i> @{{ t('files_images') }}</a></li>
+                                        <li :class="sidebarActive('docs')"><a class="waves-effect waves-teal" href="#!" :aria-current="sidebarActive('docs') ? 'page' : null" @click="filterFiles('docs')"><i class="material-icons">description</i> @{{ t('files_docs') }}</a></li>
+                                        <li :class="sidebarActive('audio')"><a class="waves-effect waves-teal" href="#!" :aria-current="sidebarActive('audio') ? 'page' : null" @click="filterFiles('audio')"><i class="material-icons">audiotrack</i> @{{ t('files_audio') }}</a></li>
+                                        <li :class="sidebarActive('video')"><a class="waves-effect waves-teal" href="#!" :aria-current="sidebarActive('video') ? 'page' : null" @click="filterFiles('video')"><i class="material-icons">movie</i> @{{ t('files_videos') }}</a></li>
+                                        <li :class="sidebarActive('archives')"><a class="waves-effect waves-teal" href="#!" :aria-current="sidebarActive('archives') ? 'page' : null" @click="filterFiles('archives')"><i class="material-icons">archive</i> @{{ t('files_archives') }}</a></li>
                                     </ul>
                                 </div>
                             </li>
@@ -127,6 +145,13 @@
                                         </ul>
                                     </div>
                                 </nav>
+                                <div class="file-active-filter" v-if="activeLibraryLabel">
+                                    <button type="button" class="status-chip active" @click="clearLibraryFilter"
+                                        :aria-label="t('filter_empty_cta')" :title="t('filter_empty_cta')">
+                                        @{{ activeLibraryLabel }}
+                                        <i class="material-icons">close</i>
+                                    </button>
+                                </div>
                                 <nav v-if="curDir != root || getbreadcrumb.length" class="navigation-nav">
                                     <div class="nav-wrapper">
                                         <div class="col s12 breadcrumb-nav">
@@ -183,12 +208,22 @@
                                 </div>
                                 <div class="col s12 m6 l4 xl3 folder" v-for="(item, index) in getFolders" :key="'f'+item.file_id"
                                     :class="{ selected: isSelected(item) }">
-                                    <label class="checkbox" @click.stop>
-                                        <input type="checkbox" :checked="isSelected(item)" @change="toggleSelect(item, $event)">
-                                        <span>&nbsp;</span>
-                                    </label>
-                                    <a class="grey-text text-darken-4 dropdown-trigger folder-menu" href="#!"
-                                        :data-target="'folder_options' + item.file_id" @click.stop><i class="material-icons right">more_vert</i></a>
+                                    <div class="card-panel" @click="navigateFiles(item.file_path + item.file_name + '/')">
+                                        <label class="checkbox" @click.stop>
+                                            <input type="checkbox" class="filled-in" :checked="isSelected(item)" @change="toggleSelect(item, $event)">
+                                            <span>&nbsp;</span>
+                                        </label>
+                                        <a class="grey-text text-darken-4 dropdown-trigger folder-menu" href="#!"
+                                            :data-target="'folder_options' + item.file_id" @click.stop><i class="material-icons right">more_vert</i></a>
+                                        <div class="card-icon">
+                                            <div class="icon">
+                                                <i class="material-icons">folder</i>
+                                            </div>
+                                        </div>
+                                        <div class="card-content" :title="item.file_name">
+                                            <span>@{{item.file_name}}</span>
+                                        </div>
+                                    </div>
                                     <ul :id="'folder_options' + item.file_id" class="dropdown-content">
                                         @if(has_permisions('UPDATE_FILE'))
                                         <li><a class="modal-trigger" href="#modal1" @click="renameFile(item)">@{{ t('files_rename') }}</a></li>
@@ -199,16 +234,6 @@
                                         <li><a class="modal-trigger" href="#deleteFileModal" @click="trashFile(item)">@{{ t('files_delete') }}</a></li>
                                         @endif
                                     </ul>
-                                    <div class="card-panel" @click="navigateFiles(item.file_path + item.file_name + '/')">
-                                        <div class="card-icon">
-                                            <div class="icon">
-                                                <i class="material-icons">folder</i>
-                                            </div>
-                                        </div>
-                                        <div class="card-content" :title="item.file_name">
-                                            <span>@{{item.file_name}}</span>
-                                        </div>
-                                    </div>
                                 </div>
                                 <div class="col s12 m6 l4 xl3 folder new-folder" v-if="creatingFolder">
                                     <div class="card-panel">
@@ -236,10 +261,11 @@
                             <div v-if="getFiles.length == 0 && getFolders.length == 0 && !fileloader">
                                 <div class="row">
                                     <div class="col s12 file-empty">
-                                        <h5>@{{ t('files_empty') }}</h5>
-                                        <p>@{{ t('files_empty_cta') }}</p>
+                                        <h5>@{{ activeLibraryLabel ? t('list_filter_empty') : t('files_empty') }}</h5>
+                                        <p>@{{ activeLibraryLabel ? t('filter_empty_cta') : t('files_empty_cta') }}</p>
+                                        <button v-if="activeLibraryLabel" type="button" class="btn" @click="clearLibraryFilter">@{{ t('filter_empty_cta') }}</button>
                                         @if(has_permisions('CREATE_FILE'))
-                                        <a class="btn modal-trigger" href="#uploaderModal">@{{ t('files_add') }}</a>
+                                        <a v-else class="btn modal-trigger" href="#uploaderModal">@{{ t('files_add') }}</a>
                                         @endif
                                     </div>
                                 </div>

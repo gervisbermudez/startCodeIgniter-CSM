@@ -62,6 +62,25 @@ var FileExplorerModule = new Vue({
     selectedCount: function () {
       return this.selectedIds.length;
     },
+    activeLibraryLabel: function () {
+      var keys = {
+        recent: "files_recents",
+        important: "files_important",
+        trash: "files_trash",
+        images: "files_images",
+        docs: "files_docs",
+        audio: "files_audio",
+        video: "files_videos",
+        archives: "files_archives",
+      };
+      if (this.activeFilter && keys[this.activeFilter]) {
+        return this.t(keys[this.activeFilter]);
+      }
+      if (this.inThemes) {
+        return this.t("files_themes");
+      }
+      return "";
+    },
     getBackPath: function () {
       if (this.getbreadcrumb.length > 1) {
         return this.getbreadcrumb[this.getbreadcrumb.length - 2].path;
@@ -788,6 +807,18 @@ var FileExplorerModule = new Vue({
         return !this.activeFilter && !this.inThemes ? "current" : "";
       }
       return this.activeFilter === name ? "current" : "";
+    },
+    clearLibraryFilter: function () {
+      var stayInFolder =
+        this.activeFilter && this.activeFilter !== "trash" && !this.inThemes;
+      var path = stayInFolder ? this.curDir : this.root;
+      if (this.search) {
+        this.activeFilter = null;
+        this.curDir = path || this.root;
+        this.searchfiles();
+        return;
+      }
+      this.navigateFiles(path || this.root);
     },
     initMT: function () {
       var self = this;
