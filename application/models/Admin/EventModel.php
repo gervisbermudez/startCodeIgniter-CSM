@@ -95,7 +95,7 @@ class EventModel extends MY_Model
     }
 
     /**
-     * Happenings whose date_start falls in [from, to]. Includes drafts.
+     * Published + visible happenings whose date_start falls in [from, to].
      *
      * @param string $from Y-m-d H:i:s
      * @param string $to Y-m-d H:i:s
@@ -104,7 +104,8 @@ class EventModel extends MY_Model
      */
     public function in_range($from, $to, $limit = 80)
     {
-        $this->db->where('status !=', 0);
+        $this->db->where('status', 1);
+        $this->db->where('visibility', 1);
         $this->db->where('date_start >=', $from);
         $this->db->where('date_start <=', $to);
         $this->db->order_by('date_start', 'ASC');

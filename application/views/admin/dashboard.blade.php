@@ -93,6 +93,14 @@
         cursor: pointer;
         box-sizing: border-box;
     }
+    .kpi-card {
+        display: block;
+        min-width: 0;
+        color: inherit;
+        text-decoration: none;
+        cursor: default;
+        box-sizing: border-box;
+    }
     .overview-row {
         display: flex;
         justify-content: space-between;
@@ -138,12 +146,16 @@
         background: white;
         border-radius: 8px;
         padding: 20px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: none;
+        border: 1px solid var(--st-border, #e0e0e0);
     }
     .kpi-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transform: none;
+        box-shadow: none;
+    }
+    .welcome a.colum {
+        text-decoration: none;
+        color: inherit;
     }
     .kpi-icon {
         font-size: 2.5rem;
@@ -249,7 +261,7 @@ if (!isset($dashboard_fab)) {
             </div>
             <div v-if="layoutEditing" class="dashboard-layout-toolbar__actions">
                 <a href="#!" class="btn-flat waves-effect" @click.prevent="cancelEditLayout">
-                    {{ lang('dashboard_layout_done') }}
+                    {{ lang('dashboard_layout_cancel') }}
                 </a>
             </div>
         </div>
@@ -263,13 +275,13 @@ if (!isset($dashboard_fab)) {
 
         <div v-if="layoutEditing && canEditLayout" class="dashboard-layout-toolbar">
             <div class="dashboard-layout-toolbar__actions">
-                <button class="btn waves-effect waves-light" :class="{disabled: layoutSaving}" @click="saveLayout">
+                <button type="button" class="btn waves-effect waves-light" :disabled="layoutSaving" @click="saveLayout">
                     {{ lang('dashboard_layout_save') }}
                 </button>
-                <button type="button" class="btn-flat waves-effect" :class="{disabled: layoutSaving}" @click="saveLayoutAsDefault">
+                <button v-if="canPublishLayoutDefault" type="button" class="btn-flat waves-effect" :disabled="layoutSaving" @click="saveLayoutAsDefault">
                     {{ lang('dashboard_layout_save_default') }}
                 </button>
-                <button class="btn-flat waves-effect" :class="{disabled: layoutSaving}" @click="resetLayout">
+                <button type="button" class="btn-flat waves-effect" :disabled="layoutSaving" @click="resetLayout">
                     {{ lang('dashboard_layout_reset') }}
                 </button>
                 <button type="button" class="btn-flat waves-effect dashboard-layout-toolbar__ghost" @click="addRow">
@@ -304,7 +316,7 @@ if (!isset($dashboard_fab)) {
                             <div class="dashboard-grid-col" :class="{'is-editing': layoutEditing, 'is-target': pickerOpen && pickerRi === ri && pickerCi === ci}">
                                 <div v-if="layoutEditing && canEditLayout" class="dashboard-grid-col__bar">
                                     <div class="dashboard-grid-col__widths" role="group" aria-label="{{ lang('dashboard_layout_width') }}">
-                                        <button type="button" v-for="size in columnWidths" :key="'w-'+ri+'-'+ci+'-'+size" class="dashboard-width-chip" :class="{active: col.w === size}" @click="setColumnWidth(ri, ci, size)">@{{ size }}</button>
+                                        <button type="button" v-for="size in columnWidths" :key="'w-'+ri+'-'+ci+'-'+size" class="dashboard-width-chip" :class="{active: col.w === size}" :disabled="size > leftoverWidth(row) + (col.w || 0)" @click="setColumnWidth(ri, ci, size)">@{{ size }}</button>
                                     </div>
                                     <button type="button" class="dashboard-icon-btn tooltipped" data-position="top" data-tooltip="{{ lang('dashboard_layout_remove_column') }}" aria-label="{{ lang('dashboard_layout_remove_column') }}" @click="removeColumn(ri, ci)">
                                         <i class="material-icons">close</i>
@@ -357,6 +369,9 @@ if (!isset($dashboard_fab)) {
                 <div class="dashboard-empty">
                     <i class="material-icons">dashboard</i>
                     <p>{{ lang('dashboard_layout_empty') }}</p>
+                    <button v-if="canEditLayout" type="button" class="btn-flat waves-effect teal-text" @click="startEditLayout">
+                        {{ lang('dashboard_layout_edit') }}
+                    </button>
                 </div>
             </div>
         </div>
@@ -514,7 +529,7 @@ if (!isset($dashboard_fab)) {
                 </div>
                 <div class="columns">
                     @if(has_permisions('SELECT_USERS'))
-                    <a href="{{ base_url('admin/users') }}" class="colum st-teal" style="text-decoration:none;">
+                    <a href="{{ base_url('admin/users') }}" class="colum st-teal">
                         <div class="colum__icon">
                             <i class="material-icons text-st-white">people</i>
                         </div>
@@ -525,7 +540,7 @@ if (!isset($dashboard_fab)) {
                     </a>
                     @endif
                     @if(has_permisions('SELECT_PAGES'))
-                    <a href="{{ base_url('admin/pages') }}" class="colum st-pink" style="text-decoration:none;">
+                    <a href="{{ base_url('admin/pages') }}" class="colum st-pink">
                         <div class="colum__icon">
                             <i class="material-icons text-st-white">web</i>
                         </div>
@@ -536,7 +551,7 @@ if (!isset($dashboard_fab)) {
                     </a>
                     @endif
                     @if(has_permisions('SELECT_FILES'))
-                    <a href="{{ base_url('admin/files') }}" class="colum st-gray" style="text-decoration:none;">
+                    <a href="{{ base_url('admin/files') }}" class="colum st-gray">
                         <div class="colum__icon">
                             <i class="material-icons text-st-white">markunread_mailbox</i>
                         </div>
@@ -547,7 +562,7 @@ if (!isset($dashboard_fab)) {
                     </a>
                     @endif
                     @if(has_permisions('SELECT_EVENTS'))
-                    <a href="{{ base_url('admin/events') }}" class="colum st-gray-light" style="text-decoration:none;">
+                    <a href="{{ base_url('admin/events') }}" class="colum st-gray-light">
                         <div class="colum__icon">
                             <i class="material-icons text-st-gray">event</i>
                         </div>
@@ -572,15 +587,11 @@ if (!isset($dashboard_fab)) {
                         <div class="panel">
                             <div class="title panel-title-row">
                                 <h5>{{ lang('dashboard_statistics') }}</h5>
-                                <a :href="analyticsUrl" class="btn-flat waves-effect teal-text">
-                                    {{ lang('dashboard_view_analytics') }}
-                                </a>
                             </div>
                             <div class="charts">
                                 <div class="dashboard-empty" v-if="canViewAnalytics && !hasAnalyticsData && !loader">
                                     <i class="material-icons">insights</i>
                                     <p>{{ lang('dashboard_no_analytics_data') }}</p>
-                                    <a :href="analyticsUrl">{{ lang('dashboard_view_analytics') }}</a>
                                 </div>
                                 <div class="charts-grid" v-show="hasAnalyticsData">
                                 <div class="chart chart-1">
@@ -658,11 +669,10 @@ if (!isset($dashboard_fab)) {
                         <div class="panel">
                             <div class="title panel-title-row">
                                 <h5><i class="material-icons tiny">trending_up</i> {{ lang('dashboard_top_pages') }}</h5>
-                                <a :href="analyticsUrl" class="btn-flat waves-effect teal-text">{{ lang('dashboard_view_analytics') }}</a>
                             </div>
-                            <ul class="collection" style="border: 0; margin: 0;">
+                            <ul class="collection dashboard-plain-list">
                                 <li class="collection-item" v-for="(count, url) in topPages" :key="url">
-                                    <a :href="analyticsUrl" class="truncate teal-text" style="max-width: 70%; display: inline-block;">@{{url}}</a>
+                                    <span class="truncate">@{{url}}</span>
                                     <span class="badge">@{{count}} {{ lang('analytics_visits') }}</span>
                                 </li>
                                 <li v-if="Object.keys(topPages).length === 0" class="collection-item dashboard-empty">
@@ -675,13 +685,12 @@ if (!isset($dashboard_fab)) {
                         <div class="panel">
                             <div class="title panel-title-row">
                                 <h5><i class="material-icons tiny">share</i> {{ lang('dashboard_traffic_sources') }}</h5>
-                                <a :href="analyticsUrl" class="btn-flat waves-effect teal-text">{{ lang('dashboard_view_analytics') }}</a>
                             </div>
                             <div class="dashboard-empty" v-if="!hasReferrers">
                                 {{ lang('dashboard_no_analytics_data') }}
                             </div>
-                            <div v-show="hasReferrers" style="padding: 20px;">
-                                <canvas id="myChartReferrers" style="max-height: 200px;"></canvas>
+                            <div v-show="hasReferrers" class="chart-solo-wrap">
+                                <canvas id="myChartReferrers"></canvas>
                             </div>
                         </div>
                     </div>
@@ -690,15 +699,20 @@ if (!isset($dashboard_fab)) {
 </script>
 
 <script type="text/x-template" id="dashboard-creator-template">
-        <div class="row creator">
-            <div class="col s12 ">
-                <div class="creator-container">
+        <div class="creator">
+            <div class="dash-widget-head">
+                <div class="dash-widget-head__lead">
+                    <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">edit</i></span>
+                    <h5>{{ lang('dashboard_widget_creator') }}</h5>
+                </div>
+            </div>
+            <div class="creator-container">
                     <div class="user-avatar">
-                        <img class="circle responsive-img" src="{{userdata('avatar')}}" />
+                        <img class="circle" src="{{ userdata('avatar') ?: base_url('public/img/profile/default_profile_2.jpg') }}" onerror="this.onerror=null;this.src='{{ base_url('public/img/profile/default_profile_2.jpg') }}';" alt="" />
                         <span class="truncate">{{ lang('dashboard_create_something') }} {{userdata('nombre')}}</span>
                     </div>
                     <div class="creator-input-field">
-                        <textarea id="creator-input" placeholder="{{ lang('dashboard_creator_placeholder') }}" class="materialize-textarea"
+                        <textarea id="creator-input" placeholder="{!! lang('dashboard_creator_placeholder') !!}" class="materialize-textarea"
                             v-model="creator.content"></textarea>
                     </div>
                     <div class="creator-options">
@@ -715,57 +729,78 @@ if (!isset($dashboard_fab)) {
                             <i class="material-icons right rotating" v-else>sync</i>
                         </button>
                     </div>
-                </div>
             </div>
         </div>
 </script>
 
 <script type="text/x-template" id="dashboard-drafts-template">
-        <div class="row drafts">
-            <div class="col s12">
-                <div class="title">
-                    <span>{{ lang('dashboard_latest_drafts') }}</span>
+        <div class="dash-list-widget drafts">
+            <div class="dash-widget-head">
+                <div class="dash-widget-head__lead">
+                    <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">edit</i></span>
+                    <h5><a href="{{ base_url('admin/pages') }}">{{ lang('dashboard_latest_drafts') }}</a></h5>
                 </div>
-                <div class="collection">
-                    <a v-for="(draf, index) in drafts" :key="index" :href="draf.link" class="collection-item"><span
-                            class="badge">{{ lang('dashboard_draft_badge') }}</span><span class="truncate">@{{draf.title}}</span></a>
-                    <div v-if="!drafts.length" class="dashboard-empty">{{ lang('dashboard_no_drafts') }}</div>
+                <div class="dash-widget-head__tools">
+                    @include('admin.components.dash_widget_add', [
+                        'perm' => 'CREATE_PAGE',
+                        'href' => base_url('admin/pages/new/'),
+                        'tip' => lang('tooltip_new_page'),
+                    ])
                 </div>
             </div>
+            <ul class="dash-list">
+                <li v-for="(draf, index) in drafts" :key="index">
+                    <a :href="draf.link" class="dash-list__row">
+                        <span class="dash-list__glyph" aria-hidden="true"><i class="material-icons">description</i></span>
+                        <span class="dash-list__title truncate">@{{draf.title}}</span>
+                        <span class="dash-list__meta">{{ lang('dashboard_draft_badge') }}</span>
+                    </a>
+                </li>
+                <li v-if="!drafts.length" class="dash-list__empty">{{ lang('dashboard_no_drafts') }}</li>
+            </ul>
         </div>
 </script>
 
 <script type="text/x-template" id="dashboard-timeline-template">
-        <div class="row timeline">
-            <div class="col s12">
-                <div class="title">
-                    <span>{{ lang('dashboard_timeline') }}</span>
+        <div class="timeline">
+            <div class="dash-widget-head">
+                <div class="dash-widget-head__lead">
+                    <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">history</i></span>
+                    <h5>{{ lang('dashboard_timeline') }}</h5>
                 </div>
-                <div class="timeline-container">
-                    <div class="card horizontal" v-for="(card, index) in timeline" :key="index">
-                        <div v-if="card.imagen_file" class="card-image"
-                            :style="'background-image: url(' + card.imagen_file.file_front_path + ');'"></div>
-                        <div class="card-stacked">
-                            <i class="material-icons card-options">more_vert</i>
-                            <div class="card-header">
-                                <img class="circle responsive-img"
-                                    :src="card.user && card.user.avatar ? card.user.avatar : defaultAvatar" />
-                                <div class="card-info">
-                                    <span class="truncate title">@{{card.title}}</span>
-                                    <span class="truncate datetime">@{{card.date}}</span>
-                                </div>
-                            </div>
-                            <div class="card-content">
-                                <p>@{{card.content}}</p>
-                            </div>
-                            <div class="card-action">
-                                <a :href="card.link">{{ lang('dashboard_view_item') }}</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div v-if="!timeline.length" class="dashboard-empty">{{ lang('dashboard_no_timeline') }}</div>
+                <div class="dash-widget-head__tools">
+                    @include('admin.components.dash_widget_add', [
+                        'perm' => 'CREATE_PAGE',
+                        'href' => base_url('admin/pages/new/'),
+                        'tip' => lang('tooltip_new_page'),
+                    ])
                 </div>
             </div>
+            <div class="timeline-container" v-if="timeline.length">
+                <a class="card horizontal" v-for="(card, index) in timeline" :key="index" :href="card.link">
+                    <div v-if="card.imagen_file && card.imagen_file.file_front_path" class="card-image"
+                        :style="'background-image: url(' + card.imagen_file.file_front_path + ');'"></div>
+                    <div class="card-stacked">
+                        <div class="card-header">
+                            <img class="circle"
+                                :src="card.user && card.user.avatar ? card.user.avatar : defaultAvatar"
+                                v-on:error="card.user && (card.user.avatar = '')"
+                                alt="" />
+                            <div class="card-info">
+                                <span class="truncate title">@{{card.title}}</span>
+                                <span class="truncate datetime">@{{card.date}}</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <p>@{{card.content}}</p>
+                        </div>
+                        <div class="card-action">
+                            <span>{{ lang('dashboard_view_item') }}</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div v-else class="dashboard-empty">{{ lang('dashboard_no_timeline') }}</div>
         </div>
 </script>
 
@@ -814,7 +849,6 @@ if (!isset($dashboard_fab)) {
             <h5 v-else-if="widgetId === 'chart_urls'">{{ lang('dashboard_frequent_urls') }}</h5>
             <h5 v-else-if="widgetId === 'chart_top_pages'">{{ lang('dashboard_top_pages') }}</h5>
             <h5 v-else>{{ lang('dashboard_traffic_sources') }}</h5>
-            <a :href="analyticsUrl" class="btn-flat waves-effect teal-text">{{ lang('dashboard_view_analytics') }}</a>
         </div>
         <div class="dashboard-empty" v-if="canViewAnalytics && !hasAnalyticsData && !loader">
             <i class="material-icons">insights</i>
@@ -867,40 +901,70 @@ if (!isset($dashboard_fab)) {
 </script>
 
 <script type="text/x-template" id="dashboard-events-template">
-    <div class="panel dashboard-side-panel">
-        <div class="title panel-title-row">
-            <h5>{{ lang('dashboard_widget_events') }}</h5>
-            <a href="{{ base_url('admin/events') }}" class="btn-flat waves-effect teal-text">{{ lang('menu_events') }}</a>
+    <div class="dash-list-widget">
+        <div class="dash-widget-head">
+            <div class="dash-widget-head__lead">
+                <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">event</i></span>
+                <h5><a href="{{ base_url('admin/events') }}">{{ lang('dashboard_widget_events') }}</a></h5>
+            </div>
+            <div class="dash-widget-head__tools">
+                @include('admin.components.dash_widget_add', [
+                    'perm' => 'CREATE_EVENT',
+                    'href' => base_url('admin/events/add/'),
+                    'tip' => lang('tooltip_new_event'),
+                ])
+            </div>
         </div>
-        <ul class="collection dashboard-plain-list">
-            <li class="collection-item" v-for="ev in events" :key="ev.event_id">
-                <a :href="ev.link" class="truncate teal-text">@{{ ev.name }}</a>
-                <span class="badge">@{{ ev.date_start }}</span>
+        <ul class="dash-list">
+            <li v-for="ev in events" :key="ev.event_id">
+                <a :href="ev.link" class="dash-list__row">
+                    <span class="dash-list__glyph" aria-hidden="true"><i class="material-icons">event</i></span>
+                    <span class="dash-list__title truncate">@{{ ev.name }}</span>
+                    <span class="dash-list__meta">@{{ ev.date_start }}</span>
+                </a>
             </li>
-            <li v-if="!events.length" class="collection-item dashboard-empty">{{ lang('dashboard_no_events') }}</li>
+            <li v-if="!events.length" class="dash-list__empty">{{ lang('dashboard_no_events') }}</li>
         </ul>
     </div>
 </script>
 
 <script type="text/x-template" id="dashboard-site-status-template">
-    <div class="panel dashboard-side-panel">
-        <div class="title panel-title-row">
-            <h5>{{ lang('dashboard_widget_site_status') }}</h5>
-            <a href="{{ base_url('admin/configuration') }}" class="btn-flat waves-effect teal-text">{{ lang('dashboard_enable_tracking') }}</a>
+    <div class="dash-status">
+        <div class="dash-widget-head">
+            <div class="dash-widget-head__lead">
+                <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">info</i></span>
+                <h5><a href="{{ base_url('admin/configuration') }}">{{ lang('dashboard_widget_site_status') }}</a></h5>
+            </div>
         </div>
-        <ul class="collection dashboard-plain-list">
-            <li class="collection-item">@{{ site.title }}</li>
-            <li class="collection-item" v-if="site.tracking">{{ lang('dashboard_tracking_on') }}</li>
-            <li class="collection-item" v-else>{{ lang('dashboard_tracking_disabled') }}</li>
-            <li class="collection-item" v-if="site.theme">@{{ site.theme }}</li>
-        </ul>
+        <dl class="dash-status__dl">
+            <div>
+                <dt>{{ lang('dashboard_site_name') }}</dt>
+                <dd class="truncate">@{{ site.title }}</dd>
+            </div>
+            <div>
+                <dt>{{ lang('dashboard_site_tracking') }}</dt>
+                <dd>
+                    <span class="dash-pill" :class="site.tracking ? 'is-on' : 'is-off'">
+                        <template v-if="site.tracking">{{ lang('dashboard_tracking_on') }}</template>
+                        <template v-else>{{ lang('dashboard_tracking_disabled') }}</template>
+                    </span>
+                </dd>
+            </div>
+            <div v-if="site.theme">
+                <dt>{{ lang('dashboard_site_theme') }}</dt>
+                <dd class="truncate">@{{ site.theme }}</dd>
+            </div>
+        </dl>
     </div>
 </script>
 
 <script type="text/x-template" id="dashboard-quick-settings-template">
-    <div class="panel dashboard-side-panel">
-        <div class="title panel-title-row">
-            <h5>{{ lang('dashboard_widget_quick_settings') }}</h5>
+    <div class="dash-status">
+        <div class="dash-widget-head">
+            <div class="dash-widget-head__lead">
+                <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">settings</i></span>
+                <h5>{{ lang('dashboard_widget_quick_settings') }}</h5>
+            </div>
         </div>
         <div class="dashboard-quick-settings">
             <a href="{{ base_url('admin/configuration') }}?section=general">{{ lang('config_general') }}</a>
@@ -1001,14 +1065,40 @@ if (!isset($dashboard_fab)) {
             <div>Contact</div>
             <div>Newsletter</div>
         </div>
+        <div v-else-if="widgetId === 'page_pulse'" class="dash-preview-bars">
+            <i></i><i></i><i></i><i></i><i></i>
+        </div>
+        <div v-else-if="widgetId === 'published'" class="dash-preview-list">
+            <div>Home</div>
+            <div>About</div>
+        </div>
+        <div v-else-if="widgetId === 'menus'" class="dash-preview-list">
+            <div>top_nav</div>
+        </div>
+        <div v-else-if="widgetId === 'categories'" class="dash-preview-list">
+            <div>Web Design</div>
+            <div>Tutorials</div>
+        </div>
+        <div v-else-if="widgetId === 'videos'" class="dash-preview-list">
+            <div>Intro</div>
+        </div>
     </div>
 </script>
 
 <script type="text/x-template" id="dashboard-calendar-template">
-    <div class="panel dashboard-list-panel dashboard-calendar">
-        <div class="title panel-title-row">
-            <h5>{{ lang('dashboard_widget_calendar') }}</h5>
-            <a href="{{ base_url('admin/calendar') }}" class="btn-flat waves-effect teal-text">{{ lang('menu_calendar') }}</a>
+    <div class="dash-list-widget dashboard-calendar">
+        <div class="dash-widget-head">
+            <div class="dash-widget-head__lead">
+                <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">event_note</i></span>
+                <h5>{{ lang('dashboard_widget_calendar') }}</h5>
+            </div>
+            <div class="dash-widget-head__tools">
+                @include('admin.components.dash_widget_add', [
+                    'perm' => 'CREATE_EVENT',
+                    'href' => base_url('admin/events/add/'),
+                    'tip' => lang('tooltip_new_event'),
+                ])
+            </div>
         </div>
         <div class="dash-cal">
             <div class="dash-cal__nav">
@@ -1036,54 +1126,213 @@ if (!isset($dashboard_fab)) {
                     <span>@{{ cell.day }}</span>
                 </button>
             </div>
-            <ul class="collection dashboard-plain-list">
-                <li class="collection-item" v-for="ev in selectedEvents" :key="ev.event_id">
-                    <a :href="ev.link" class="truncate teal-text">@{{ ev.name }}</a>
-                    <span class="badge">@{{ ev.date_start }}</span>
+            <ul class="dash-list">
+                <li v-for="ev in selectedEvents" :key="ev.event_id">
+                    <a :href="ev.link" class="dash-list__row">
+                        <span class="dash-list__glyph" aria-hidden="true"><i class="material-icons">event</i></span>
+                        <span class="dash-list__title truncate">@{{ ev.name }}</span>
+                        <span class="dash-list__meta">@{{ ev.date_start }}</span>
+                    </a>
                 </li>
-                <li v-if="!selectedEvents.length" class="collection-item dashboard-empty">{{ lang('dashboard_no_calendar_events') }}</li>
+                <li v-if="!selectedEvents.length" class="dash-list__empty">{{ lang('dashboard_no_calendar_events') }}</li>
             </ul>
         </div>
     </div>
 </script>
 
 <script type="text/x-template" id="dashboard-fragments-template">
-    <div class="panel dashboard-list-panel dashboard-side-panel">
-        <div class="title panel-title-row">
-            <h5>{{ lang('dashboard_widget_fragments') }}</h5>
-            <a href="{{ base_url('admin/fragments') }}" class="btn-flat waves-effect teal-text">{{ lang('menu_fragments') }}</a>
+    <div class="dash-list-widget">
+        <div class="dash-widget-head">
+            <div class="dash-widget-head__lead">
+                <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">bookmark_border</i></span>
+                <h5><a href="{{ base_url('admin/fragments') }}">{{ lang('dashboard_widget_fragments') }}</a></h5>
+            </div>
+            <div class="dash-widget-head__tools">
+                @include('admin.components.dash_widget_add', [
+                    'perm' => 'CREATE_FRAGMENT',
+                    'href' => base_url('admin/fragments/new/'),
+                    'tip' => lang('tooltip_new_fragment'),
+                ])
+            </div>
         </div>
-        <ul class="collection dashboard-plain-list">
-            <li class="collection-item" v-for="item in fragments" :key="item.fragment_id">
-                <a :href="item.link" class="truncate teal-text">@{{ item.name }}</a>
-                <span class="badge">@{{ item.type }}</span>
+        <ul class="dash-list">
+            <li v-for="item in fragments" :key="item.fragment_id">
+                <a :href="item.link" class="dash-list__row">
+                    <span class="dash-list__glyph" aria-hidden="true"><i class="material-icons">bookmark_border</i></span>
+                    <span class="dash-list__title truncate">@{{ item.name }}</span>
+                    <span class="dash-list__meta">@{{ item.type }}</span>
+                </a>
             </li>
-            <li v-if="!fragments.length" class="collection-item dashboard-empty">
-                <p>{{ lang('dashboard_no_fragments') }}</p>
-                @if(has_permisions('CREATE_FRAGMENT'))
-                <a href="{{ base_url('admin/fragments/new') }}" class="btn-small waves-effect waves-light">{{ lang('dashboard_fragments_empty_cta') }}</a>
-                @endif
-            </li>
+            <li v-if="!fragments.length" class="dash-list__empty">{{ lang('dashboard_no_fragments') }}</li>
         </ul>
     </div>
 </script>
 
 <script type="text/x-template" id="dashboard-inbox-template">
-    <div class="panel dashboard-list-panel dashboard-side-panel">
-        <div class="title panel-title-row">
-            <h5>{{ lang('dashboard_widget_inbox') }}</h5>
-            <a href="{{ base_url('admin/siteforms/submit') }}" class="btn-flat waves-effect teal-text">{{ lang('menu_siteforms_submissions') }}</a>
+    <div class="dash-list-widget">
+        <div class="dash-widget-head">
+            <div class="dash-widget-head__lead">
+                <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">inbox</i></span>
+                <h5><a href="{{ base_url('admin/siteforms/submit') }}">{{ lang('dashboard_widget_inbox') }}</a></h5>
+            </div>
         </div>
-        <ul class="collection dashboard-plain-list">
-            <li class="collection-item" v-for="item in inbox" :key="item.siteform_submit_id">
-                <a :href="item.link" class="truncate teal-text">@{{ item.preview || item.form_name }}</a>
-                <span class="badge">@{{ item.form_name }}</span>
+        <ul class="dash-list">
+            <li v-for="item in inbox" :key="item.siteform_submit_id">
+                <a :href="item.link" class="dash-list__row">
+                    <span class="dash-list__glyph" aria-hidden="true"><i class="material-icons">mail_outline</i></span>
+                    <span class="dash-list__title truncate">@{{ item.preview || item.form_name }}</span>
+                    <span class="dash-list__meta">@{{ item.form_name }}</span>
+                </a>
             </li>
-            <li v-if="!inbox.length" class="collection-item dashboard-empty">
-                <p>{{ lang('dashboard_no_inbox') }}</p>
-                <a href="{{ base_url('admin/siteforms') }}" class="btn-small waves-effect waves-light">{{ lang('dashboard_inbox_empty_cta') }}</a>
-            </li>
+            <li v-if="!inbox.length" class="dash-list__empty">{{ lang('dashboard_no_inbox') }}</li>
         </ul>
+    </div>
+</script>
+
+
+<script type="text/x-template" id="dashboard-page-pulse-template">
+    <div class="dash-pulse">
+        <div class="dash-widget-head">
+            <div class="dash-widget-head__lead">
+                <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">pie_chart</i></span>
+                <h5><a href="{{ base_url('admin/pages') }}">{{ lang('dashboard_widget_page_pulse') }}</a></h5>
+            </div>
+            <div class="dash-widget-head__tools">
+                @include('admin.components.dash_widget_add', [
+                    'perm' => 'CREATE_PAGE',
+                    'href' => base_url('admin/pages/new/'),
+                    'tip' => lang('tooltip_new_page'),
+                ])
+            </div>
+        </div>
+        <div class="dash-pulse__row" v-for="row in pulseRows" :key="row.key">
+            <div class="dash-pulse__label">
+                <span v-if="row.key === 'published'">{{ lang('dashboard_pulse_published') }}</span>
+                <span v-else-if="row.key === 'draft'">{{ lang('dashboard_pulse_draft') }}</span>
+                <span v-else>{{ lang('dashboard_pulse_archived') }}</span>
+                <strong>@{{ row.value }}</strong>
+            </div>
+            <div class="dash-pulse__track" :class="'is-'+row.key">
+                <i :style="{ width: row.pct + '%' }"></i>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/x-template" id="dashboard-published-template">
+    <div class="dash-list-widget">
+        <div class="dash-widget-head">
+            <div class="dash-widget-head__lead">
+                <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">check_circle</i></span>
+                <h5><a href="{{ base_url('admin/pages') }}">{{ lang('dashboard_widget_published') }}</a></h5>
+            </div>
+            <div class="dash-widget-head__tools">
+                <span class="dash-widget-head__count" v-if="typeof total === 'number'">@{{ total }}</span>
+                @include('admin.components.dash_widget_add', [
+                    'perm' => 'CREATE_PAGE',
+                    'href' => base_url('admin/pages/new/'),
+                    'tip' => lang('tooltip_new_page'),
+                ])
+            </div>
+        </div>
+        <ul class="dash-list">
+            <li v-for="(item, index) in published" :key="item.page_id || index">
+                <a :href="item.link" class="dash-list__row">
+                    <span class="dash-list__glyph" aria-hidden="true"><i class="material-icons">web</i></span>
+                    <span class="dash-list__title truncate">@{{ item.title }}</span>
+                    <span class="dash-list__meta" v-if="item.date_update">@{{ item.date_update }}</span>
+                </a>
+            </li>
+            <li v-if="!published.length" class="dash-list__empty">{{ lang('dashboard_no_published') }}</li>
+        </ul>
+    </div>
+</script>
+
+<script type="text/x-template" id="dashboard-menus-template">
+    <div class="dash-list-widget">
+        <div class="dash-widget-head">
+            <div class="dash-widget-head__lead">
+                <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">view_list</i></span>
+                <h5><a href="{{ base_url('admin/menus') }}">{{ lang('dashboard_widget_menus') }}</a></h5>
+            </div>
+            <div class="dash-widget-head__tools">
+                <span class="dash-widget-head__count" v-if="typeof total === 'number'">@{{ total }}</span>
+                @include('admin.components.dash_widget_add', [
+                    'perm' => 'CREATE_MENU',
+                    'href' => base_url('admin/menus/new/'),
+                    'tip' => lang('tooltip_new_menu'),
+                ])
+            </div>
+        </div>
+        <ul class="dash-list">
+            <li v-for="item in menus" :key="item.menu_id">
+                <a :href="item.link" class="dash-list__row">
+                    <span class="dash-list__glyph" aria-hidden="true"><i class="material-icons">view_list</i></span>
+                    <span class="dash-list__title truncate">@{{ item.name }}</span>
+                    <span class="dash-list__meta">@{{ item.position }}</span>
+                </a>
+            </li>
+            <li v-if="!menus.length" class="dash-list__empty">{{ lang('dashboard_no_menus') }}</li>
+        </ul>
+    </div>
+</script>
+
+<script type="text/x-template" id="dashboard-categories-template">
+    <div class="dash-list-widget">
+        <div class="dash-widget-head">
+            <div class="dash-widget-head__lead">
+                <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">receipt</i></span>
+                <h5><a href="{{ base_url('admin/categories') }}">{{ lang('dashboard_widget_categories') }}</a></h5>
+            </div>
+            <div class="dash-widget-head__tools">
+                <span class="dash-widget-head__count" v-if="typeof total === 'number'">@{{ total }}</span>
+                @include('admin.components.dash_widget_add', [
+                    'perm' => 'CREATE_CATEGORIE',
+                    'href' => base_url('admin/categories/new/'),
+                    'tip' => lang('tooltip_new_category'),
+                ])
+            </div>
+        </div>
+        <ul class="dash-list">
+            <li v-for="item in categories" :key="item.categorie_id">
+                <a :href="item.link" class="dash-list__row">
+                    <span class="dash-list__glyph" aria-hidden="true"><i class="material-icons">label</i></span>
+                    <span class="dash-list__title truncate">@{{ item.name }}</span>
+                    <span class="dash-list__meta">@{{ item.type }}</span>
+                </a>
+            </li>
+            <li v-if="!categories.length" class="dash-list__empty">{{ lang('dashboard_no_categories') }}</li>
+        </ul>
+    </div>
+</script>
+
+<script type="text/x-template" id="dashboard-videos-template">
+    <div class="dash-list-widget has-deco">
+        <div class="dash-widget-head">
+            <div class="dash-widget-head__lead">
+                <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">movie</i></span>
+                <h5><a href="{{ base_url('admin/videos') }}">{{ lang('dashboard_widget_videos') }}</a></h5>
+            </div>
+            <div class="dash-widget-head__tools">
+                <span class="dash-widget-head__count" v-if="typeof total === 'number'">@{{ total }}</span>
+                @include('admin.components.dash_widget_add', [
+                    'perm' => 'CREATE_VIDEO',
+                    'href' => base_url('admin/videos/new/'),
+                    'tip' => lang('tooltip_new_video'),
+                ])
+            </div>
+        </div>
+        <ul class="dash-list">
+            <li v-for="item in videos" :key="item.video_id">
+                <a :href="item.link" class="dash-list__row">
+                    <span class="dash-list__glyph" aria-hidden="true"><i class="material-icons">play_circle_outline</i></span>
+                    <span class="dash-list__title truncate">@{{ item.name }}</span>
+                    <span class="dash-list__meta">@{{ item.duration }}</span>
+                </a>
+            </li>
+            <li v-if="!videos.length" class="dash-list__empty">{{ lang('dashboard_no_videos') }}</li>
+        </ul>
+        <img class="dash-widget-deco" src="{{ base_url('public/img/admin/dashboard/undraw_browsing_online_sr8c.png') }}" alt="" aria-hidden="true">
     </div>
 </script>
 
@@ -1151,6 +1400,11 @@ if (!isset($dashboard_fab)) {
         'dashboard_widget_calendar' => lang('dashboard_widget_calendar'),
         'dashboard_widget_fragments' => lang('dashboard_widget_fragments'),
         'dashboard_widget_inbox' => lang('dashboard_widget_inbox'),
+        'dashboard_widget_page_pulse' => lang('dashboard_widget_page_pulse'),
+        'dashboard_widget_published' => lang('dashboard_widget_published'),
+        'dashboard_widget_menus' => lang('dashboard_widget_menus'),
+        'dashboard_widget_categories' => lang('dashboard_widget_categories'),
+        'dashboard_widget_videos' => lang('dashboard_widget_videos'),
         'dashboard_cal_dow' => lang('dashboard_cal_dow'),
         'dashboard_cal_prev' => lang('dashboard_cal_prev'),
         'dashboard_cal_next' => lang('dashboard_cal_next'),

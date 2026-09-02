@@ -64,6 +64,10 @@ var DashboardModule = new Vue({
     calendarEvents: [],
     fragments: [],
     inbox: [],
+    published: [],
+    menus: [],
+    categories: [],
+    videos: [],
     pickerQuery: "",
     pickerCategory: "",
     pickerCategoryOrder: [
@@ -87,6 +91,11 @@ var DashboardModule = new Vue({
       typeof DASHBOARD_CAPS !== "undefined" &&
       DASHBOARD_CAPS &&
       DASHBOARD_CAPS.can_edit_layout
+    ),
+    canPublishLayoutDefault: !!(
+      typeof DASHBOARD_CAPS !== "undefined" &&
+      DASHBOARD_CAPS &&
+      DASHBOARD_CAPS.can_publish_layout_default
     ),
     layoutSource: "default",
     layoutSaving: false,
@@ -262,6 +271,11 @@ var DashboardModule = new Vue({
         inbox: "inbox",
         events: "events",
         calendar: "events",
+        published: "pages_published",
+        menus: "menus",
+        categories: "categories",
+        videos: "videos",
+        page_pulse: "pages",
       };
       var key = map[item.id];
       return key ? this.counts[key] : undefined;
@@ -372,6 +386,10 @@ var DashboardModule = new Vue({
         calendarEvents: this.calendarEvents,
         fragments: this.fragments,
         inbox: this.inbox,
+        published: this.published,
+        menus: this.menus,
+        categories: this.categories,
+        videos: this.videos,
         site: this.site,
         total: this.widgetTotal(item),
         kpis: this.kpis,
@@ -398,6 +416,9 @@ var DashboardModule = new Vue({
       this.layoutSource = data.layout_source || data.source || "default";
       if (typeof data.can_edit_layout !== "undefined") {
         this.canEditLayout = !!data.can_edit_layout;
+      }
+      if (typeof data.can_publish_layout_default !== "undefined") {
+        this.canPublishLayoutDefault = !!data.can_publish_layout_default;
       }
       this.draftLayout = this.cloneLayout(this.layout);
     },
@@ -489,9 +510,33 @@ var DashboardModule = new Vue({
     setColumnWidth: function (ri, ci, w) {
       var self = this;
       this.mutateDraft(function (layout) {
-        var col = layout.rows[ri] && layout.rows[ri].cols[ci];
+        var row = layout.rows[ri];
+        var col = row && row.cols[ci];
         if (!col) return;
-        col.w = self.clampWidth(w);
+        var others = 0;
+        (row.cols || []).forEach(function (c, i) {
+          if (i !== ci) {
+            others += parseInt(c.w, 10) || 0;
+          }
+        });
+        if (others >= 12) {
+          self.rebalanceRow(row);
+          return;
+        }
+        var next = self.clampWidth(w);
+        if (others + next > 12) {
+          var allowed = [12, 9, 8, 7, 6, 5, 4, 3];
+          var max = 12 - others;
+          var i;
+          next = 3;
+          for (i = 0; i < allowed.length; i++) {
+            if (allowed[i] <= max) {
+              next = allowed[i];
+              break;
+            }
+          }
+        }
+        col.w = next;
         col.col = self.colClass(col.w, true);
       });
     },
@@ -574,6 +619,7 @@ var DashboardModule = new Vue({
     postLayout: function (url, body, onOk) {
       var self = this;
       if (this.layoutSaving) return;
+      this.closePicker();
       this.layoutSaving = true;
       fetch(url, {
         method: "POST",
@@ -661,6 +707,8 @@ var DashboardModule = new Vue({
         { layout: this.slimDraft() },
         function (data) {
           self.applyLayoutPayload(data);
+          self.layoutEditing = false;
+          self.closePicker();
           M.toast({
             html:
               (typeof lang === "function" && lang("dashboard_layout_saved_default")) ||
@@ -1173,6 +1221,10 @@ var DashboardModule = new Vue({
           this.calendarEvents = data.calendar_events ? data.calendar_events : [];
           this.fragments = data.fragments ? data.fragments : [];
           this.inbox = data.inbox ? data.inbox : [];
+          this.published = data.published ? data.published : [];
+          this.menus = data.menus ? data.menus : [];
+          this.categories = data.categories ? data.categories : [];
+          this.videos = data.videos ? data.videos : [];
           if (data.site) {
             this.site = Object.assign({}, this.site, data.site);
           }

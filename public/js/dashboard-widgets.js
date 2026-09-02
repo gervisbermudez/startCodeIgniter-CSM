@@ -69,6 +69,7 @@ Vue.component("dashboardSiteStatus", {
 
 Vue.component("dashboardQuickSettings", {
   template: "#dashboard-quick-settings-template",
+  props: ["site"],
 });
 
 Vue.component("dashboardFragments", {
@@ -210,6 +211,48 @@ Vue.component("dashboardCalendar", {
       this.selectedKey = cell.key;
     },
   },
+});
+
+Vue.component("dashboardPagePulse", {
+  template: "#dashboard-page-pulse-template",
+  props: ["counts"],
+  computed: {
+    pulseRows: function () {
+      var c = this.counts || {};
+      var pub = parseInt(c.pages_published, 10) || 0;
+      var draft = parseInt(c.pages_draft, 10) || 0;
+      var arch = parseInt(c.pages_archived, 10) || 0;
+      var total = pub + draft + arch;
+      if (total < 1) {
+        total = 1;
+      }
+      return [
+        { key: "published", value: pub, pct: Math.round((pub / total) * 100) },
+        { key: "draft", value: draft, pct: Math.round((draft / total) * 100) },
+        { key: "archived", value: arch, pct: Math.round((arch / total) * 100) },
+      ];
+    },
+  },
+});
+
+Vue.component("dashboardPublished", {
+  template: "#dashboard-published-template",
+  props: ["published", "total"],
+});
+
+Vue.component("dashboardMenus", {
+  template: "#dashboard-menus-template",
+  props: ["menus", "total"],
+});
+
+Vue.component("dashboardCategories", {
+  template: "#dashboard-categories-template",
+  props: ["categories", "total"],
+});
+
+Vue.component("dashboardVideos", {
+  template: "#dashboard-videos-template",
+  props: ["videos", "total"],
 });
 
 Vue.component("dashboardWidgetPreview", {

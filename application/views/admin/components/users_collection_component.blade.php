@@ -1,25 +1,31 @@
 <script type="text/x-template" id="user-collection-template">
-    <ul class="collection">
-	<li class="collection-header collection-item avatar">
-		<h5>{{ lang('dashboard_users_title') }}</h5>
-		<p class="sub-header">
-			@{{typeof total === 'number' ? total : users.length}} {{ lang('dashboard_users_total') }}
-		</p>
-	</li>
-	<li class="collection-item avatar" v-for="(user, index) in users" :key="index">
-		<a :href="user.get_profileurl()">
-			<img :src="user.get_avatarurl()" :alt="user.get_fullname()" class="circle">
-			<span class="title">@{{user.get_fullname()}}</span>
-			<p>@{{user.role}}</p>
-		</a>
-		<a :href="user.get_edit_url()" class="secondary-content"><i class="material-icons">more_vert</i></a>
-	</li>
-	<li v-if="users.length === 0" class="collection-item center-align" style="padding: 40px 20px;">
-		<i class="material-icons" style="font-size: 48px; color: #9e9e9e;">people_outline</i>
-		<p style="color: #9e9e9e; margin-top: 10px;">{{ lang('dashboard_users_empty') }}</p>
-		@if(has_permisions('CREATE_USER'))
-		<a href="{{base_url('admin/users/agregar')}}" class="btn-small waves-effect waves-light" style="margin-top: 10px;">{{ lang('dashboard_users_empty_cta') }}</a>
-		@endif
-	</li>
-</ul>
+    <div class="dash-list-widget has-deco">
+        <div class="dash-widget-head">
+            <div class="dash-widget-head__lead">
+                <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">people</i></span>
+                <h5><a href="{{ base_url('admin/users') }}">{{ lang('dashboard_users_title') }}</a></h5>
+            </div>
+            <div class="dash-widget-head__tools">
+                <span class="dash-widget-head__count">@{{typeof total === 'number' ? total : users.length}} {{ lang('dashboard_users_total') }}</span>
+                @include('admin.components.dash_widget_add', [
+                    'perm' => 'CREATE_USER',
+                    'href' => base_url('admin/users/add'),
+                    'tip' => lang('tooltip_new_user'),
+                ])
+            </div>
+        </div>
+        <ul class="dash-people">
+            <li v-for="(user, index) in users" :key="index">
+                <a :href="user.get_profileurl()" class="dash-people__row">
+                    <img :src="user.get_avatarurl()" alt="" class="dash-people__avatar">
+                    <div class="dash-people__meta">
+                        <span class="dash-people__name truncate">@{{user.get_fullname()}}</span>
+                        <span class="dash-people__role truncate">@{{user.role}}</span>
+                    </div>
+                </a>
+            </li>
+            <li v-if="users.length === 0" class="dash-list__empty">{{ lang('dashboard_users_empty') }}</li>
+        </ul>
+        <img class="dash-widget-deco" src="{{ base_url('public/img/admin/dashboard/undraw_browsing_online.png') }}" alt="" aria-hidden="true">
+    </div>
 </script>

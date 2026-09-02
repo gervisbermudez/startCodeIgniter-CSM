@@ -1,35 +1,34 @@
 <script type="text/x-template" id="albumes-widget-template">
-    <div class="panel albumes">
-		<div class="title">
-			<h5>{{ lang('dashboard_albums_title') }}</h5>
-			<div class="subtitle sub-header">
-				@{{typeof total === 'number' ? total : albumes.length}} {{ lang('dashboard_albums_total') }}
-			</div>
-			<img src="{{base_url()}}public/img/admin/dashboard/undraw_Photo_re_5blb.png" />
-		</div>
-		<div class="panel-boddy">
-			<div class="row">
-				<div class="col s12" v-for="(album, index) in albumes" :key="index">
-                    <div class="card album">
-                        <a :href="base_url('admin/gallery/items/' + album.album_id)" class="card-image">
-                            <div class="card-image-container">
-                                <img :src="getPageImagePath(album, 0)" class="bottom"/>
-                                <img :src="getPageImagePath(album, 1)" class="top"/>
-                            </div>
-                        </a>
-                        <div class="card-content">
-                            <span class="card-title"><a :href="base_url('admin/gallery/items/' + album.album_id)">@{{album.name}}</a></span>
-                        </div>
-                    </div>
-				</div>
-				<div v-if="albumes.length === 0" class="col s12 center-align" style="padding: 60px 20px;">
-					<i class="material-icons" style="font-size: 64px; color: #9e9e9e;">photo_library</i>
-					<p style="color: #9e9e9e; margin-top: 15px; font-size: 16px;">{{ lang('dashboard_albums_empty') }}</p>
-					@if(has_permisions('CREATE_GALLERY'))
-					<a href="{{base_url('admin/gallery/nuevo')}}" class="btn waves-effect waves-light" style="margin-top: 15px;">{{ lang('dashboard_albums_empty_cta') }}</a>
-					@endif
-				</div>
-			</div>
-		</div>
-	</div>
+    <div class="dash-list-widget albumes has-deco">
+        <div class="dash-widget-head">
+            <div class="dash-widget-head__lead">
+                <span class="dash-widget-glyph" aria-hidden="true"><i class="material-icons">photo_library</i></span>
+                <h5><a href="{{ base_url('admin/gallery') }}">{{ lang('dashboard_albums_title') }}</a></h5>
+            </div>
+            <div class="dash-widget-head__tools">
+                <span class="dash-widget-head__count">@{{typeof total === 'number' ? total : albumes.length}} {{ lang('dashboard_albums_total') }}</span>
+                @include('admin.components.dash_widget_add', [
+                    'perm' => 'CREATE_GALLERY',
+                    'href' => base_url('admin/gallery/new/'),
+                    'tip' => lang('tooltip_new_album'),
+                ])
+            </div>
+        </div>
+        <ul class="dash-albums" v-if="albumes.length">
+            <li v-for="(album, index) in albumes" :key="index">
+                <a :href="base_url('admin/gallery/items/' + album.album_id)" class="dash-albums__item">
+                    <span class="dash-albums__stack">
+                        <img :src="getPageImagePath(album, 0)" alt="">
+                        <img :src="getPageImagePath(album, 1)" alt="">
+                    </span>
+                    <span class="dash-albums__name truncate">@{{album.name}}</span>
+                </a>
+            </li>
+        </ul>
+        <div v-else class="dashboard-empty">
+            <i class="material-icons">photo_library</i>
+            <p>{{ lang('dashboard_albums_empty') }}</p>
+        </div>
+        <img class="dash-widget-deco" src="{{ base_url('public/img/admin/dashboard/undraw_Photo_re_5blb.png') }}" alt="" aria-hidden="true">
+    </div>
 </script>

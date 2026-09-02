@@ -690,6 +690,8 @@ if (!function_exists('dashboard_capabilities')) {
             'select_config' => 'SELECT_CONFIG',
             'select_calendar' => 'SELECT_CALENDAR',
             'select_siteforms' => 'SELECT_SITEFORMS',
+            'select_menus' => 'SELECT_MENUS',
+            'select_videos' => 'SELECT_VIDEOS',
             'create_page' => 'CREATE_PAGE',
             'create_user' => 'CREATE_USER',
             'create_form_custom' => 'CREATE_FORM_CUSTOM',
@@ -711,6 +713,8 @@ if (!function_exists('dashboard_capabilities')) {
             || !empty($caps['select_content_data']);
         $caps['can_edit_layout'] = function_exists('has_permisions')
             && has_permisions('UPDATE_DASHBOARD_LAYOUT');
+        $caps['can_publish_layout_default'] = !empty($caps['can_edit_layout'])
+            && has_permisions('UPDATE_USERGROUP');
         return $caps;
     }
 }
@@ -1027,6 +1031,35 @@ if (!function_exists('dashboard_layout_slim')) {
     }
 }
 
+if (!function_exists('dashboard_fit_row_cols')) {
+    /**
+     * Keep a row on the 12-grid. Overflowing widths are reset to even presets.
+     *
+     * @param array $cols_out
+     * @return array
+     */
+    function dashboard_fit_row_cols($cols_out)
+    {
+        if (!is_array($cols_out) || !$cols_out) {
+            return $cols_out;
+        }
+        $sum = 0;
+        foreach ($cols_out as $col) {
+            $sum += isset($col['w']) ? (int) $col['w'] : 0;
+        }
+        if ($sum <= 12) {
+            return $cols_out;
+        }
+        $n = count($cols_out);
+        $w = $n <= 1 ? 12 : ($n === 2 ? 6 : ($n === 3 ? 4 : 3));
+        foreach ($cols_out as $i => $col) {
+            $cols_out[$i]['w'] = $w;
+            $cols_out[$i]['col'] = dashboard_widget_col_class($w);
+        }
+        return $cols_out;
+    }
+}
+
 if (!function_exists('dashboard_normalize_layout')) {
     /**
      * Grid of rows and columns. Drops unknown ids and widgets the group
@@ -1082,7 +1115,7 @@ if (!function_exists('dashboard_normalize_layout')) {
             }
             $chunks = array_chunk($cols_out, dashboard_layout_max_cols());
             foreach ($chunks as $chunk) {
-                $rows_out[] = array('cols' => $chunk);
+                $rows_out[] = array('cols' => dashboard_fit_row_cols($chunk));
             }
         }
         return array(
@@ -1221,6 +1254,9 @@ if (!function_exists('dashboard_layout_payload')) {
             'catalog' => $catalog,
             'source' => $source,
             'can_edit_layout' => function_exists('has_permisions') && has_permisions('UPDATE_DASHBOARD_LAYOUT'),
+            'can_publish_layout_default' => function_exists('has_permisions')
+                && has_permisions('UPDATE_DASHBOARD_LAYOUT')
+                && has_permisions('UPDATE_USERGROUP'),
         );
     }
 }

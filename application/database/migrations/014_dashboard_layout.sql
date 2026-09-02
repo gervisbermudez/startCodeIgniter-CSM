@@ -3,6 +3,7 @@
 -- Date: 2026-09-01
 -- MySQL 5.7. Idempotent. Apply by hand (CI3 migrations is not the flow).
 -- Additive: new table + UPDATE_DASHBOARD_LAYOUT. No DROP/ALTER of existing columns.
+-- Publishing a group default also requires UPDATE_USERGROUP (existing perm).
 -- =====================================================
 
 CREATE TABLE IF NOT EXISTS `dashboard_layout` (
