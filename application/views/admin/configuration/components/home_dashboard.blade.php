@@ -7,16 +7,57 @@
 		<div class="config-overview-hero">
 			<div class="card z-depth-1 dashboard-widget config-overview-value">
 				<div class="card-content">
-					<span class="widget-title">
-						<i class="material-icons" aria-hidden="true">storefront</i> {{ lang('config_value_title') }}
-					</span>
-					<h3 class="config-overview-value__name">@{{ overviewView.site.title || '—' }}</h3>
-					<p class="config-overview-value__desc" v-if="overviewView.site.description">@{{ overviewView.site.description }}</p>
-					<p class="config-overview-value__desc" v-else>{{ lang('config_value_empty_desc') }}</p>
-					<p class="config-overview-value__pitch">@{{ sitePitch }}</p>
-					<div class="config-overview-value__actions">
-						<a :href="overviewView.site.public_url || base_url('')" class="btn btn-accent waves-effect waves-light" target="_blank" rel="noopener">{{ lang('config_overview_view_site') }}</a>
-						<button type="button" class="btn-flat waves-effect waves-teal" v-on:click="changeSectionActive('general')">{{ lang('config_overview_edit_site') }}</button>
+					<div class="config-overview-value__head">
+						<span class="config-overview-mark config-overview-mark--accent" aria-hidden="true">
+							<i class="material-icons">storefront</i>
+						</span>
+						<span class="config-overview-kicker">{{ lang('config_value_title') }}</span>
+					</div>
+					<div class="config-overview-value__body">
+						<div class="config-overview-value__copy">
+							<h3 class="config-overview-value__name">@{{ overviewView.site.title || '—' }}</h3>
+							<p class="config-overview-value__desc" v-if="overviewView.site.description">@{{ overviewView.site.description }}</p>
+							<p class="config-overview-value__desc" v-else>{{ lang('config_value_empty_desc') }}</p>
+							<div class="config-overview-value__actions">
+								<a :href="overviewView.site.public_url || base_url('')" class="btn btn-accent waves-effect waves-light" target="_blank" rel="noopener">
+									<i class="material-icons" aria-hidden="true">open_in_new</i>
+									{{ lang('config_overview_view_site') }}
+								</a>
+								<button type="button" class="btn-flat waves-effect waves-teal" v-on:click="changeSectionActive('general')">
+									<i class="material-icons" aria-hidden="true">tune</i>
+									{{ lang('config_overview_edit_site') }}
+								</button>
+							</div>
+						</div>
+						<div class="config-overview-value__stats" role="list">
+							<a class="config-overview-chip config-overview-chip--pages" role="listitem" :href="base_url('admin/pages')">
+								<span class="config-overview-mark config-overview-mark--interactive" aria-hidden="true">
+									<i class="material-icons">description</i>
+								</span>
+								<span class="config-overview-chip__copy">
+									<span class="config-overview-chip__label">{{ lang('config_content_pages') }}</span>
+									<strong>@{{ formatCount(overviewView.content.pages) }}</strong>
+								</span>
+							</a>
+							<a class="config-overview-chip config-overview-chip--visits" role="listitem" :href="base_url('admin/configuration/logs?tab=tracking')">
+								<span class="config-overview-mark config-overview-mark--accent" aria-hidden="true">
+									<i class="material-icons">visibility</i>
+								</span>
+								<span class="config-overview-chip__copy">
+									<span class="config-overview-chip__label">{{ lang('config_activity_visits') }}</span>
+									<strong>@{{ formatCount(overviewView.activity.visits_7) }}</strong>
+								</span>
+							</a>
+							<a class="config-overview-chip config-overview-chip--cms" role="listitem" :href="base_url('admin/configuration/logs?tab=system')">
+								<span class="config-overview-mark config-overview-mark--chrome" aria-hidden="true">
+									<i class="material-icons">timeline</i>
+								</span>
+								<span class="config-overview-chip__copy">
+									<span class="config-overview-chip__label">{{ lang('config_activity_cms') }}</span>
+									<strong>@{{ formatCount(overviewView.activity.cms_7) }}</strong>
+								</span>
+							</a>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -24,63 +65,103 @@
 			<div class="card z-depth-1 dashboard-widget config-overview-health">
 				<div class="card-content">
 					<div class="config-overview-health__head">
-						<span class="widget-title">
-							<i class="material-icons" aria-hidden="true">verified_user</i> {{ lang('config_health_check') }}
+						<span class="config-overview-value__head">
+							<span class="config-overview-mark" :class="healthMarkClass" aria-hidden="true">
+								<i class="material-icons">verified_user</i>
+							</span>
+							<span class="config-overview-kicker">{{ lang('config_health_check') }}</span>
 						</span>
 						<span class="config-health-badge" :class="'is-' + healthStatus">@{{ healthStatusLabel }}</span>
 					</div>
-					<div class="config-overview-health__score">
-						<strong>@{{ overviewView.health.score }}</strong>
-						<span>{{ lang('config_health_score') }}</span>
-					</div>
-					<div class="health-check-list" v-if="healthIssues.length > 0">
-						<div
-							v-for="issue in healthIssues"
-							:key="issue.id || issue.title"
-							:class="'alert-item alert-' + issue.type + (issue.href ? ' is-link' : '')"
-							:role="issue.href ? 'link' : null"
-							:tabindex="issue.href ? 0 : -1"
-							@click="openHealthIssue(issue)"
-							@keyup.enter="openHealthIssue(issue)"
-						>
-							<i v-if="issue.type == 'critical' || issue.type == 'warning'" class="material-icons tiny" aria-hidden="true">warning</i>
-							<i v-else-if="issue.type == 'info'" class="material-icons tiny" aria-hidden="true">info</i>
-							<i v-else class="material-icons tiny" aria-hidden="true">check_circle</i>
-							<div class="alert-content">
-								<b class="alert-title">@{{ issue.title }}</b>
-								<span class="alert-msg">@{{ issue.message }}</span>
+					<div class="config-overview-health__body">
+						<div class="config-health-meter">
+							<div
+								class="config-health-ring"
+								:class="'is-' + healthStatus"
+								:style="{ '--score': overviewView.health.score }"
+								role="img"
+								aria-label="{{ lang('config_health_score') }}"
+							>
+								<span class="config-health-ring__hole">
+									<strong>@{{ overviewView.health.score }}</strong>
+								</span>
+							</div>
+							<span class="config-health-meter__label">{{ lang('config_health_score') }}</span>
+						</div>
+						<div class="health-check-list" v-if="healthIssues.length > 0">
+							<div
+								v-for="issue in healthIssues"
+								:key="issue.id || issue.title"
+								:class="'alert-item alert-' + issue.type + (issue.href ? ' is-link' : '')"
+								:role="issue.href ? 'link' : null"
+								:tabindex="issue.href ? 0 : -1"
+								@click="openHealthIssue(issue)"
+								@keyup.enter="openHealthIssue(issue)"
+							>
+								<span class="config-overview-mark" :class="'config-overview-mark--' + healthIssueTone(issue)" aria-hidden="true">
+									<i class="material-icons">@{{ healthIssueIcon(issue) }}</i>
+								</span>
+								<div class="alert-content">
+									<b class="alert-title">@{{ issue.title }}</b>
+									<span class="alert-msg">@{{ issue.message }}</span>
+								</div>
+								<i v-if="issue.href" class="material-icons alert-chevron" aria-hidden="true">chevron_right</i>
 							</div>
 						</div>
-					</div>
-					<div v-else class="center-align health-empty">
-						<i class="material-icons medium" aria-hidden="true">check_circle</i>
-						<p>{{ lang('config_system_healthy') }}</p>
-						<p class="config-help">{{ lang('config_health_ok_desc') }}</p>
+						<div v-else class="health-empty">
+							<span class="config-overview-mark config-overview-mark--success" aria-hidden="true">
+								<i class="material-icons">check_circle</i>
+							</span>
+							<div>
+								<p>{{ lang('config_system_healthy') }}</p>
+								<p class="config-help">{{ lang('config_health_ok_desc') }}</p>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 
 		<div class="config-overview-kpis" role="group" aria-label="{{ lang('dashboard_overview') }}">
-			<a class="config-overview-kpi" :href="base_url('admin/pages')">
-				<span class="config-overview-kpi__label">{{ lang('config_kpi_pages') }}</span>
-				<strong>@{{ formatCount(overviewView.content.pages) }}</strong>
-				<span class="config-overview-kpi__hint">@{{ formatCount(overviewView.content.drafts) }} {{ lang('config_content_drafts') }}</span>
+			<a class="config-overview-kpi config-overview-kpi--pages" :href="base_url('admin/pages')">
+				<span class="config-overview-kpi__icon" aria-hidden="true">
+					<i class="material-icons">description</i>
+				</span>
+				<span class="config-overview-kpi__meta">
+					<span class="config-overview-kpi__label">{{ lang('config_kpi_pages') }}</span>
+					<strong>@{{ formatCount(overviewView.content.pages) }}</strong>
+					<span class="config-overview-kpi__hint">@{{ formatCount(overviewView.content.drafts) }} {{ lang('config_content_drafts') }}</span>
+				</span>
 			</a>
-			<a class="config-overview-kpi" :href="base_url('admin/configuration/logs?tab=tracking')">
-				<span class="config-overview-kpi__label">{{ lang('config_kpi_visits') }}</span>
-				<strong>@{{ formatCount(overviewView.activity.visits_7) }}</strong>
-				<span class="config-overview-kpi__hint">@{{ formatCount(overviewView.activity.unique_visitors_7) }} {{ lang('config_kpi_visitors') }}</span>
+			<a class="config-overview-kpi config-overview-kpi--visits" :href="base_url('admin/configuration/logs?tab=tracking')">
+				<span class="config-overview-kpi__icon" aria-hidden="true">
+					<i class="material-icons">visibility</i>
+				</span>
+				<span class="config-overview-kpi__meta">
+					<span class="config-overview-kpi__label">{{ lang('config_kpi_visits') }}</span>
+					<strong>@{{ formatCount(overviewView.activity.visits_7) }}</strong>
+					<span class="config-overview-kpi__hint">@{{ formatCount(overviewView.activity.unique_visitors_7) }} {{ lang('config_kpi_visitors') }}</span>
+				</span>
 			</a>
-			<a class="config-overview-kpi" :href="base_url('admin/configuration/logs?tab=system')">
-				<span class="config-overview-kpi__label">{{ lang('config_kpi_editors') }}</span>
-				<strong>@{{ formatCount(overviewView.activity.cms_7) }}</strong>
-				<span class="config-overview-kpi__hint">{{ lang('config_logs_system') }}</span>
+			<a class="config-overview-kpi config-overview-kpi--cms" :href="base_url('admin/configuration/logs?tab=system')">
+				<span class="config-overview-kpi__icon" aria-hidden="true">
+					<i class="material-icons">timeline</i>
+				</span>
+				<span class="config-overview-kpi__meta">
+					<span class="config-overview-kpi__label">{{ lang('config_kpi_editors') }}</span>
+					<strong>@{{ formatCount(overviewView.activity.cms_7) }}</strong>
+					<span class="config-overview-kpi__hint">{{ lang('config_logs_system') }}</span>
+				</span>
 			</a>
-			<a class="config-overview-kpi" :href="base_url('admin/siteforms')">
-				<span class="config-overview-kpi__label">{{ lang('config_kpi_messages') }}</span>
-				<strong>@{{ formatCount(overviewView.activity.messages_7) }}</strong>
-				<span class="config-overview-kpi__hint">@{{ formatCount(overviewView.content.forms) }} {{ lang('config_content_forms') }}</span>
+			<a class="config-overview-kpi config-overview-kpi--messages" :href="base_url('admin/siteforms')">
+				<span class="config-overview-kpi__icon" aria-hidden="true">
+					<i class="material-icons">email</i>
+				</span>
+				<span class="config-overview-kpi__meta">
+					<span class="config-overview-kpi__label">{{ lang('config_kpi_messages') }}</span>
+					<strong>@{{ formatCount(overviewView.activity.messages_7) }}</strong>
+					<span class="config-overview-kpi__hint">@{{ formatCount(overviewView.content.forms) }} {{ lang('config_content_forms') }}</span>
+				</span>
 			</a>
 		</div>
 
@@ -112,27 +193,57 @@
 					</span>
 					<ul class="config-overview-inventory">
 						<li>
-							<a :href="base_url('admin/pages')">{{ lang('config_content_pages') }}</a>
+							<a :href="base_url('admin/pages')">
+								<span class="config-overview-mark config-overview-mark--interactive" aria-hidden="true">
+									<i class="material-icons">description</i>
+								</span>
+								{{ lang('config_content_pages') }}
+							</a>
 							<strong>@{{ formatCount(overviewView.content.pages) }}</strong>
 						</li>
 						<li>
-							<a :href="base_url('admin/pages')">{{ lang('config_content_drafts') }}</a>
+							<a :href="base_url('admin/pages')">
+								<span class="config-overview-mark config-overview-mark--chrome" aria-hidden="true">
+									<i class="material-icons">edit</i>
+								</span>
+								{{ lang('config_content_drafts') }}
+							</a>
 							<strong>@{{ formatCount(overviewView.content.drafts) }}</strong>
 						</li>
 						<li>
-							<a :href="base_url('admin/files')">{{ lang('config_content_files') }}</a>
+							<a :href="base_url('admin/files')">
+								<span class="config-overview-mark config-overview-mark--accent" aria-hidden="true">
+									<i class="material-icons">folder</i>
+								</span>
+								{{ lang('config_content_files') }}
+							</a>
 							<strong>@{{ formatCount(overviewView.content.files) }}</strong>
 						</li>
 						<li>
-							<a :href="base_url('admin/siteforms')">{{ lang('config_content_forms') }}</a>
+							<a :href="base_url('admin/siteforms')">
+								<span class="config-overview-mark config-overview-mark--success" aria-hidden="true">
+									<i class="material-icons">email</i>
+								</span>
+								{{ lang('config_content_forms') }}
+							</a>
 							<strong>@{{ formatCount(overviewView.content.forms) }}</strong>
 						</li>
 						<li>
-							<a :href="base_url('admin/users')">{{ lang('config_content_users') }}</a>
+							<a :href="base_url('admin/users')">
+								<span class="config-overview-mark config-overview-mark--chrome" aria-hidden="true">
+									<i class="material-icons">people</i>
+								</span>
+								{{ lang('config_content_users') }}
+							</a>
 							<strong>@{{ formatCount(overviewView.content.users) }}</strong>
 						</li>
 						<li>
-							<a :href="base_url('admin/custommodels')">{{ lang('config_content_collections') }}</a>
+							<a :href="base_url('admin/custommodels')">
+								<span class="config-overview-mark config-overview-mark--warning" aria-hidden="true">
+									<i class="material-icons">view_module</i>
+								</span>
+								{{ lang('config_content_collections') }}
+							</a>
 							<strong>@{{ formatCount(overviewView.content.collections) }}</strong>
 						</li>
 					</ul>
@@ -176,7 +287,9 @@
 
 			<div class="card z-depth-1 dashboard-widget">
 				<div class="card-content">
-					<span class="widget-title">{{ lang('config_recent_backups') }}</span>
+					<span class="widget-title">
+						<i class="material-icons" aria-hidden="true">save</i> {{ lang('config_recent_backups') }}
+					</span>
 					<div v-if="recentBackupPreview.length > 0">
 						<ul class="backup-mini-list">
 							<li v-for="file in recentBackupPreview" :key="file.filename">
@@ -196,7 +309,9 @@
 
 			<div class="card z-depth-1 dashboard-widget">
 				<div class="card-content">
-					<span class="widget-title">{{ lang('config_quick_settings') }}</span>
+					<span class="widget-title">
+						<i class="material-icons" aria-hidden="true">tune</i> {{ lang('config_quick_settings') }}
+					</span>
 					<ul class="quick-settings-list">
 						<li>
 							<span>{{ lang('config_analytics_tracking') }}</span>

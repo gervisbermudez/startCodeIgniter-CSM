@@ -222,6 +222,15 @@ var ConfiguracionList = new Vue({
       }
       return configT("healthOk", "Healthy");
     },
+    healthMarkClass: function () {
+      if (this.healthStatus === "critical") {
+        return "config-overview-mark--danger";
+      }
+      if (this.healthStatus === "attention") {
+        return "config-overview-mark--warning";
+      }
+      return "config-overview-mark--success";
+    },
     hasOverviewTrend: function () {
       var series = this.overview && this.overview.activity && this.overview.activity.series;
       if (!series) {
@@ -285,6 +294,44 @@ var ConfiguracionList = new Vue({
       } catch (e) {
         return String(num);
       }
+    },
+    healthIssueTone: function (issue) {
+      var type = issue && issue.type ? issue.type : "info";
+      if (type === "critical") {
+        return "danger";
+      }
+      if (type === "warning") {
+        return "warning";
+      }
+      if (type === "success") {
+        return "success";
+      }
+      return "interactive";
+    },
+    healthIssueIcon: function (issue) {
+      var byId = {
+        disk: "storage",
+        backup_none: "save",
+        backup_stale: "history",
+        writable: "folder",
+        env: "code",
+        analytics: "assessment",
+        pixel: "share",
+        seo: "search",
+        cleanup: "history",
+        logger: "timeline",
+        cleanup_done: "check_circle",
+      };
+      if (issue && byId[issue.id]) {
+        return byId[issue.id];
+      }
+      if (issue && (issue.type === "critical" || issue.type === "warning")) {
+        return "warning";
+      }
+      if (issue && issue.type === "success") {
+        return "check_circle";
+      }
+      return "info";
     },
     openHealthIssue: function (issue) {
       if (!issue || !issue.href) {
